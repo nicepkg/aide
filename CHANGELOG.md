@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/nicepkg/aide/compare/aide-v1.0.0...aide-v1.1.0) (2024-07-02)
+
+
+### Features
+
+* update version ([5611a30](https://github.com/nicepkg/aide/commit/5611a303c630be3fbc980be505f5782572223a2b))
+
 ## [0.10.0](https://github.com/nicepkg/aide/compare/aide-v0.9.0...aide-v0.10.0) (2024-07-02)
 
 
