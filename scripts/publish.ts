@@ -16,7 +16,7 @@ const publish = async () => {
   const pkgPath = join(root, 'package.json')
   const rawJSON = await fs.readFile(pkgPath, 'utf-8')
   const pkg = JSON.parse(rawJSON)
-  pkg.name = 'aide'
+  pkg.name = 'aide-pro'
   await fs.writeJSON(pkgPath, pkg, { spaces: 2 })
 
   await execa('npm', ['run', 'build'], { cwd: root, stdio: 'inherit' })
