@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/nicepkg/aide/compare/aide-v1.3.1...aide-v1.4.0) (2024-07-02)
+
+
+### Features
+
+* update icon ([4527764](https://github.com/nicepkg/aide/commit/4527764da1d48ca6a41de593765150cec4f433c5))
+
 ## [1.3.1](https://github.com/nicepkg/aide/compare/aide-v1.3.0...aide-v1.3.1) (2024-07-02)
 
 
