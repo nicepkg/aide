@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.0](https://github.com/nicepkg/aide/compare/aide-v1.4.1...aide-v1.5.0) (2024-07-02)
+
+
+### Features
+
+* update docs ([eac2fae](https://github.com/nicepkg/aide/commit/eac2faecca6bf3f3f8683452985bd0e08101d4ec))
+
 ## [1.4.1](https://github.com/nicepkg/aide/compare/aide-v1.4.0...aide-v1.4.1) (2024-07-02)
 
 
