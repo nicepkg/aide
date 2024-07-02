@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.1](https://github.com/nicepkg/aide/compare/aide-v1.4.0...aide-v1.4.1) (2024-07-02)
+
+
+### Bug Fixes
+
+* fix ci ([17e8fc5](https://github.com/nicepkg/aide/commit/17e8fc5646181259c0adcd342ccc700d09a33135))
+
 ## [1.4.0](https://github.com/nicepkg/aide/compare/aide-v1.3.1...aide-v1.4.0) (2024-07-02)
 
 
