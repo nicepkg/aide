@@ -3,7 +3,7 @@
 
 <h1 align="center">Aide</h1>
 
-English / [简体中文 🌏](https://github.com/nicepkg/aide/tree/main/README_CN.md)
+English / [简体中文 🌏](https://github.com/nicepkg/aide/tree/master/README_CN.md)
 
 Convert selected files to AI prompts with one click, enabling custom AI commands to initiate inquiries about these files. 🚀
 
@@ -12,7 +12,7 @@ Convert selected files to AI prompts with one click, enabling custom AI commands
 [![Version](https://img.shields.io/visual-studio-marketplace/v/nicepkg.aide-pro)](https://marketplace.visualstudio.com/items?itemName=nicepkg.aide-pro)
 [![Downloads](https://img.shields.io/visual-studio-marketplace/d/nicepkg.aide-pro)](https://marketplace.visualstudio.com/items?itemName=nicepkg.aide-pro)
 [![Rating](https://img.shields.io/visual-studio-marketplace/r/nicepkg.aide-pro)](https://marketplace.visualstudio.com/items?itemName=nicepkg.aide-pro)
-[![License](https://img.shields.io/github/license/nicepkg/aide)](https://github.com/nicepkg/aide/blob/main/LICENSE)
+[![License](https://img.shields.io/github/license/nicepkg/aide)](https://github.com/nicepkg/aide/blob/master/LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/nicepkg/aide)](https://github.com/nicepkg/aide)
 
 </div>

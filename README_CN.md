@@ -3,14 +3,14 @@
 
 <h1 align="center">Aide</h1>
 
-[English 🌏](https://github.com/nicepkg/aide/tree/main/README.md) / 简体中文
+[English 🌏](https://github.com/nicepkg/aide/tree/master/README.md) / 简体中文
 
 一键将选定文件复制为 AI 提示, 支持自定义 AI 命令以针对这些文件发起聊天。🚀
 
 [![Version](https://img.shields.io/visual-studio-marketplace/v/nicepkg.aide-pro)](https://marketplace.visualstudio.com/items?itemName=nicepkg.aide-pro)
 [![Downloads](https://img.shields.io/visual-studio-marketplace/d/nicepkg.aide-pro)](https://marketplace.visualstudio.com/items?itemName=nicepkg.aide-pro)
 [![Rating](https://img.shields.io/visual-studio-marketplace/r/nicepkg.aide-pro)](https://marketplace.visualstudio.com/items?itemName=nicepkg.aide-pro)
-[![License](https://img.shields.io/github/license/nicepkg/aide)](https://github.com/nicepkg/aide/blob/main/LICENSE)
+[![License](https://img.shields.io/github/license/nicepkg/aide)](https://github.com/nicepkg/aide/blob/master/LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/nicepkg/aide)](https://github.com/nicepkg/aide)
 
 </div>
