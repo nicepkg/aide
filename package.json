@@ -126,7 +126,7 @@
     "lint:fix": "eslint . --fix",
     "publish": "vsce publish --no-dependencies",
     "prepare": "husky",
-    "test": "tsc --noEmit &&vitest"
+    "test": "tsc --noEmit &&vitest --run"
   },
   "devDependencies": {
     "@atao60/fse-cli": "^0.1.9",
