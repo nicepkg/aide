@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.1](https://github.com/nicepkg/aide/compare/aide-v1.3.0...aide-v1.3.1) (2024-07-02)
+
+
+### Bug Fixes
+
+* fix ci ([0bf1480](https://github.com/nicepkg/aide/commit/0bf1480c0a0d41b6e632dd5a5e657f8589830c1a))
+
 ## [1.3.0](https://github.com/nicepkg/aide/compare/aide-v1.2.0...aide-v1.3.0) (2024-07-02)
 
 
