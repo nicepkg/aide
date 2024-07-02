@@ -32,6 +32,9 @@ jobs:
       - name: Test
         run: pnpm run test
 
+      - name: Build
+        run: pnpm run build
+
       - name: Publish
         run: pnpm run publish
         env:
