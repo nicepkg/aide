@@ -86,7 +86,7 @@
         },
         "aide.aiCommand": {
           "type": "string",
-          "default": "aider #{filesRelativePath}",
+          "default": "",
           "description": "%config.aiCommand.description%"
         },
         "aide.aiCommandCopyBeforeRun": {

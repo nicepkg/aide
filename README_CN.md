@@ -60,7 +60,7 @@
 
 例如：
 
-- 配置 `aide.aiCommand`:
+- 使用 [aider (一个广受好评的 AI 命令行工具)](https://github.com/paul-gauthier/aider) 来配置 `aide.aiCommand`:
 
 ```bash
 aider #{filesAbsolutePath}

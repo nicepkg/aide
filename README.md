@@ -62,7 +62,7 @@ Whether you're a seasoned developer or a coding novice, Aide can be your powerfu
 
 For example:
 
-- Configure `aide.aiCommand`:
+- Configure `aide.aiCommand` with [aider (A widely acclaimed command line tool for AI)](https://github.com/paul-gauthier/aider):
 
 ```bash
 aider #{filesAbsolutePath}
