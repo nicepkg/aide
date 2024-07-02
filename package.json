@@ -1,6 +1,6 @@
 {
   "publisher": "nicepkg",
-  "name": "aide",
+  "name": "aide-pro",
   "displayName": "Aide",
   "description": "Convert selected files to AI prompts with one click, enabling custom AI commands to initiate inquiries about these files. 🚀",
   "version": "0.2.0",

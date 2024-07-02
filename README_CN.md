@@ -7,9 +7,9 @@
 
 一键将选定文件复制为 AI 提示, 支持自定义 AI 命令以针对这些文件发起聊天。🚀
 
-[![Version](https://img.shields.io/visual-studio-marketplace/v/nicepkg.aide)](https://marketplace.visualstudio.com/items?itemName=nicepkg.aide)
-[![Downloads](https://img.shields.io/visual-studio-marketplace/d/nicepkg.aide)](https://marketplace.visualstudio.com/items?itemName=nicepkg.aide)
-[![Rating](https://img.shields.io/visual-studio-marketplace/r/nicepkg.aide)](https://marketplace.visualstudio.com/items?itemName=nicepkg.aide)
+[![Version](https://img.shields.io/visual-studio-marketplace/v/nicepkg.aide-pro)](https://marketplace.visualstudio.com/items?itemName=nicepkg.aide-pro)
+[![Downloads](https://img.shields.io/visual-studio-marketplace/d/nicepkg.aide-pro)](https://marketplace.visualstudio.com/items?itemName=nicepkg.aide-pro)
+[![Rating](https://img.shields.io/visual-studio-marketplace/r/nicepkg.aide-pro)](https://marketplace.visualstudio.com/items?itemName=nicepkg.aide-pro)
 [![License](https://img.shields.io/github/license/nicepkg/aide)](https://github.com/nicepkg/aide/blob/main/LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/nicepkg/aide)](https://github.com/nicepkg/aide)
 
@@ -40,7 +40,7 @@
 
 1. 打开 Visual Studio Code
 2. 进入扩展 (Ctrl+Shift+X)
-3. 搜索 “[Aide](https://marketplace.visualstudio.com/items?itemName=nicepkg.aide)”
+3. 搜索 “[Aide](https://marketplace.visualstudio.com/items?itemName=nicepkg.aide-pro)”
 4. 点击安装
 
 ## 使用方法 🛠
