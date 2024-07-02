@@ -1,0 +1,17 @@
+{
+  "command.copyAsPrompt": "✨ Aide: Copy As AI Prompt",
+  "command.askAI": "✨ Aide: Ask AI",
+  "config.title": "Aide Configuration",
+  "config.aiPrompt.description": "Template for copied content, use #{content} as a placeholder for file content",
+  "config.aiCommand.description": "Custom AI command template. Available variables: #{filesRelativePath}, #{filesFullPath}, #{content}",
+  "config.aiCommandCopyBeforeRun.description": "Copy AI command to clipboard before running",
+  "config.ignorePatterns.description": "Ignored file name patterns, supports glob syntax",
+  "error.noWorkspace": "Unable to determine workspace folder",
+  "error.noAICommand": "No AI command set, please refer to the documentation: {0}",
+  "info.openDoc": "Open Documentation",
+  "info.noSelection": "No file or folder selected",
+  "info.copied": "File contents have been copied to clipboard",
+  "input.aiCommand.prompt": "Enter question for AI command",
+  "input.aiCommand.placeholder": "Enter question for AI command",
+  "file.content": "File: {0}\n```{1}\n{2}\n```\n\n"
+}

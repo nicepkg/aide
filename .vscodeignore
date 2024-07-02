@@ -1,0 +1,7 @@
+src
+node_modules
+test
+.github
+.vscode
+dist/tsconfig.tsbuildinfo
+dist/*.vsix

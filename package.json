@@ -1,0 +1,188 @@
+{
+  "publisher": "nicepkg",
+  "name": "aide",
+  "displayName": "Aide",
+  "description": "Convert selected files to AI prompts with one click, enabling custom AI commands to initiate inquiries about these files. 🚀",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@9.3.0",
+  "author": "Nicepkg <2214962083@qq.com>",
+  "license": "MIT",
+  "funding": "https://github.com/sponsors/2214962083",
+  "homepage": "https://github.com/nicepkg/aide#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nicepkg/aide"
+  },
+  "bugs": {
+    "url": "https://github.com/nicepkg/aide/issues"
+  },
+  "sponsor": {
+    "url": "https://github.com/sponsors/2214962083"
+  },
+  "keywords": [
+    "prompt",
+    "chatgpt",
+    "copilot",
+    "openai",
+    "claude",
+    "gemini",
+    "llm",
+    "ai",
+    "gpt",
+    "anthropic",
+    "copy"
+  ],
+  "categories": [
+    "AI",
+    "Data Science",
+    "Machine Learning",
+    "Programming Languages",
+    "Testing",
+    "Linters",
+    "Formatters",
+    "Education"
+  ],
+  "main": "./dist/index.js",
+  "icon": "res/icon.png",
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "extension.copyAsPrompt",
+        "title": "%command.copyAsPrompt%"
+      },
+      {
+        "command": "extension.askAI",
+        "title": "%command.askAI%"
+      }
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "when": "explorerResourceIsFolder || selectedFilesCount > 0 || resourceLangId",
+          "command": "extension.copyAsPrompt",
+          "group": "1_navigation@1"
+        },
+        {
+          "when": "explorerResourceIsFolder || selectedFilesCount > 0 || resourceLangId",
+          "command": "extension.askAI",
+          "group": "1_navigation@2"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "%config.title%",
+      "properties": {
+        "aide.aiPrompt": {
+          "type": "string",
+          "default": "#{content}",
+          "description": "%config.aiPrompt.description%"
+        },
+        "aide.aiCommand": {
+          "type": "string",
+          "default": "aider #{filesRelativePath}",
+          "description": "%config.aiCommand.description%"
+        },
+        "aide.aiCommandCopyBeforeRun": {
+          "type": "boolean",
+          "default": true,
+          "description": "%config.aiCommandCopyBeforeRun.description%"
+        },
+        "aide.ignorePatterns": {
+          "type": "array",
+          "default": [
+            "**/node_modules",
+            "**/.git",
+            "**/__pycache__",
+            "**/.Python",
+            "**/.DS_Store",
+            "**/.cache",
+            "**/.next",
+            "**/.nuxt",
+            "**/.out",
+            "**/dist",
+            "**/.serverless",
+            "**/.parcel-cache"
+          ],
+          "description": "%config.ignorePatterns.description%"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "copyFiles": "fse copy ./package.nls.en.json ./package.nls.json",
+    "dev": "pnpm run copyFiles &&pnpm run build --watch --sourcemap",
+    "build": "tsc --noEmit &&pnpm run copyFiles &&tsup src/index.ts --external vscode",
+    "build:pack": "pnpm run build &&vsce package -o dist/aide.vsix --no-dependencies",
+    "commit": "git add . && cz",
+    "knip": "knip",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "publish": "vsce publish --no-dependencies",
+    "prepare": "husky",
+    "test": "tsc --noEmit &&vitest"
+  },
+  "devDependencies": {
+    "@atao60/fse-cli": "^0.1.9",
+    "@commitlint/cli": "^19.3.0",
+    "@commitlint/config-conventional": "^19.2.2",
+    "@commitlint/cz-commitlint": "^19.2.0",
+    "@ianvs/prettier-plugin-sort-imports": "^4.3.0",
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^20.14.9",
+    "@types/shell-quote": "^1.7.5",
+    "@types/vscode": "^1.90.0",
+    "@typescript-eslint/eslint-plugin": "^7.15.0",
+    "@typescript-eslint/parser": "^7.15.0",
+    "@vscode/vsce": "^2.29.0",
+    "commitizen": "^4.3.0",
+    "dotenv": "^16.4.5",
+    "eslint": "^8.57.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-airbnb-typescript": "^18.0.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-import-resolver-alias": "^1.1.2",
+    "eslint-import-resolver-typescript": "^3.6.1",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-json": "^4.0.0",
+    "eslint-plugin-prettier": "^5.1.3",
+    "eslint-plugin-simple-import-sort": "^12.1.0",
+    "eslint-plugin-unused-imports": "^3.2.0",
+    "esno": "^4.7.0",
+    "execa": "^9.3.0",
+    "fs-extra": "^11.2.0",
+    "glob": "^10.4.2",
+    "husky": "^9.0.11",
+    "inquirer": "^9.3.2",
+    "knip": "^5.23.3",
+    "lint-staged": "^15.2.7",
+    "minimatch": "^9.0.5",
+    "pnpm": "^9.4.0",
+    "prettier": "^3.3.2",
+    "rimraf": "^5.0.7",
+    "shell-quote": "^1.8.1",
+    "tsup": "^8.1.0",
+    "typescript": "5.4.5",
+    "vite": "^5.3.2",
+    "vitest": "^1.6.0"
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": "pnpm exec eslint"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./cz-adapter.cjs"
+    }
+  }
+}

@@ -1,0 +1,18 @@
+name: release-please
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: googleapis/release-please-action@v4
+        id: release
+
+      - name: Release Please Results
+        env:
+          RESULTS: ${{ toJSON(steps.release.outputs) }}
+        run: echo "$RESULTS"

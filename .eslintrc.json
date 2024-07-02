@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json.schemastore.org/eslintrc",
+  "extends": ["airbnb-base", "prettier"],
+  "plugins": ["json", "prettier"],
+  "env": {
+    "es2020": true
+  },
+  "rules": {
+    "prettier/prettier": [
+      "error",
+      {
+        "singleQuote": true,
+        "endOfLine": "auto"
+      }
+    ],
+    "no-nested-ternary": "off",
+    "no-param-reassign": "off",
+    "no-await-in-loop": "off",
+    "no-continue": "off",
+    "no-plusplus": "off",
+    "no-bitwise": "off",
+    "no-empty": "off",
+    "consistent-return": "off",
+    "no-promise-executor-return": "off",
+    "class-methods-use-this": "off",
+    "import/no-cycle": "off",
+    "unused-imports/no-unused-imports": "error",
+    "unused-imports/no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^_|[pP]rops$"
+      }
+    ],
+    "@typescript-eslint/return-await": "off"
+  },
+  "overrides": [
+    {
+      "files": ["**/*.ts", "**/*.mts"],
+      "parser": "@typescript-eslint/parser",
+      "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended",
+        "airbnb-base",
+        "airbnb-typescript/base",
+        "prettier"
+      ],
+      "parserOptions": {
+        "project": ["./tsconfig.json"]
+      },
+      "plugins": [
+        "@typescript-eslint",
+        "unused-imports",
+        "prettier"
+      ],
+      "rules": {
+        "prettier/prettier": [
+          "error",
+          {
+            "singleQuote": true,
+            "endOfLine": "auto"
+          }
+        ],
+        "import/extensions": "off",
+        "@typescript-eslint/comma-dangle": "off",
+        "import/prefer-default-export": "off",
+        "import/order": "off",
+        "@typescript-eslint/no-unused-vars": "off",
+        "@typescript-eslint/no-use-before-define": "off",
+        "@typescript-eslint/no-shadow": "off",
+        "@typescript-eslint/no-unused-expressions": "off",
+        "@typescript-eslint/consistent-type-imports": "off",
+        "no-nested-ternary": "off",
+        "no-param-reassign": "off",
+        "no-await-in-loop": "off",
+        "no-continue": "off",
+        "no-plusplus": "off",
+        "no-bitwise": "off",
+        "no-empty": "off",
+        "consistent-return": "off",
+        "no-promise-executor-return": "off",
+        "class-methods-use-this": "off",
+        "import/no-cycle": "off",
+        "unused-imports/no-unused-imports": "error",
+        "unused-imports/no-unused-vars": [
+          "error",
+          {
+            "argsIgnorePattern": "^_|[pP]rops$"
+          }
+        ],
+        "@typescript-eslint/return-await": "off",
+        "guard-for-in": "off",
+        "no-restricted-syntax": "off",
+        "@typescript-eslint/no-explicit-any": "off",
+        "max-classes-per-file": "off",
+        "no-underscore-dangle": "off",
+        "@typescript-eslint/naming-convention": "off",
+        "no-alert": "off",
+        "@typescript-eslint/ban-types": "off",
+        "import/no-extraneous-dependencies": "off"
+      }
+    }
+  ]
+}

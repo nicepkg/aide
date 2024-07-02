@@ -1,0 +1,16 @@
+/docker
+node_modules
+**/coverage/
+*.js
+!.storybook
+.changeset
+dist
+CHANGELOG.md
+*.typegen.ts
+.next/
+kube-manifests/
+buildspec.yml
+deployspec.yml
+.storybook/*.html
+cz-adapter.cjs
+LICENSE
