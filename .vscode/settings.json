@@ -54,7 +54,9 @@
     "knip",
     "Nicepkg",
     "nodir",
+    "openai",
     "tsup",
+    "undici",
     "vsix"
   ]
 }

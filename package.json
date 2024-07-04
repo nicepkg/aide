@@ -54,25 +54,45 @@
   "contributes": {
     "commands": [
       {
-        "command": "extension.copyAsPrompt",
+        "command": "aide.copyAsPrompt",
         "title": "%command.copyAsPrompt%"
       },
       {
-        "command": "extension.askAI",
+        "command": "aide.askAI",
         "title": "%command.askAI%"
+      },
+      {
+        "command": "aide.codeConvert",
+        "title": "%command.codeConvert%",
+        "icon": "$(notebook-open-as-text)"
+      },
+      {
+        "command": "aide.codeViewerHelper",
+        "title": "%command.codeViewerHelper%",
+        "icon": "$(open-editors-view-icon)"
       }
     ],
     "menus": {
       "explorer/context": [
         {
           "when": "explorerResourceIsFolder || selectedFilesCount > 0 || resourceLangId",
-          "command": "extension.copyAsPrompt",
+          "command": "aide.copyAsPrompt",
           "group": "1_navigation@1"
         },
         {
           "when": "explorerResourceIsFolder || selectedFilesCount > 0 || resourceLangId",
-          "command": "extension.askAI",
+          "command": "aide.askAI",
           "group": "1_navigation@2"
+        }
+      ],
+      "editor/title": [
+        {
+          "command": "aide.codeViewerHelper",
+          "group": "navigation@1"
+        },
+        {
+          "command": "aide.codeConvert",
+          "group": "navigation@2"
         }
       ]
     },
@@ -82,16 +102,19 @@
         "aide.aiPrompt": {
           "type": "string",
           "default": "#{content}",
+          "scope": "resource",
           "description": "%config.aiPrompt.description%"
         },
         "aide.aiCommand": {
           "type": "string",
           "default": "",
+          "scope": "resource",
           "description": "%config.aiCommand.description%"
         },
         "aide.aiCommandCopyBeforeRun": {
           "type": "boolean",
           "default": true,
+          "scope": "resource",
           "description": "%config.aiCommandCopyBeforeRun.description%"
         },
         "aide.ignorePatterns": {
@@ -110,7 +133,35 @@
             "**/.serverless",
             "**/.parcel-cache"
           ],
+          "scope": "resource",
           "description": "%config.ignorePatterns.description%"
+        },
+        "aide.convertLanguagePairs": {
+          "type": "object",
+          "default": {},
+          "scope": "resource",
+          "description": "%config.convertLanguagePairs.description%"
+        },
+        "aide.codeViewerHelperPrompt": {
+          "type": "string",
+          "default": "You are a programming language commentator.\nYou need to help me add comments to ${sourceLanguage} code as much as possible to make it readable for beginners.\nDo not change the original code, just add as detailed comments as possible,\nbecause my purpose is only to understand and read. Please use my native language ${locale} as the commenting language.\nPlease do not reply with any text other than the code, and do not use markdown syntax.\nHere is the code you need to comment on:\n\n#{content}",
+          "scope": "resource",
+          "description": "%config.codeViewerHelperPrompt.description%"
+        },
+        "aide.openaiKey": {
+          "type": "string",
+          "default": "",
+          "description": "%config.openaiKey.description%"
+        },
+        "aide.openaiBaseUrl": {
+          "type": "string",
+          "default": "https://api.openai.com/v1",
+          "description": "%config.openaiBaseUrl.description%"
+        },
+        "aide.openaiModel": {
+          "type": "string",
+          "default": "gpt-4o",
+          "description": "%config.openaiModel.description%"
         }
       }
     }
@@ -129,18 +180,21 @@
     "test": "tsc --noEmit &&vitest --run"
   },
   "devDependencies": {
+    "@ai-sdk/openai": "^0.0.34",
     "@atao60/fse-cli": "^0.1.9",
     "@commitlint/cli": "^19.3.0",
     "@commitlint/config-conventional": "^19.2.2",
     "@commitlint/cz-commitlint": "^19.2.0",
     "@ianvs/prettier-plugin-sort-imports": "^4.3.0",
     "@types/fs-extra": "^11.0.4",
+    "@types/global-agent": "^2.1.3",
     "@types/node": "^20.14.9",
     "@types/shell-quote": "^1.7.5",
     "@types/vscode": "^1.90.0",
     "@typescript-eslint/eslint-plugin": "^7.15.0",
     "@typescript-eslint/parser": "^7.15.0",
     "@vscode/vsce": "^2.29.0",
+    "ai": "^3.2.16",
     "commitizen": "^4.3.0",
     "dotenv": "^16.4.5",
     "eslint": "^8.57.0",
@@ -158,6 +212,7 @@
     "execa": "^9.3.0",
     "fs-extra": "^11.2.0",
     "glob": "^10.4.2",
+    "global-agent": "^3.0.0",
     "husky": "^9.0.11",
     "inquirer": "^9.3.2",
     "knip": "^5.23.3",
@@ -169,6 +224,7 @@
     "shell-quote": "^1.8.1",
     "tsup": "^8.1.0",
     "typescript": "5.4.5",
+    "undici": "^6.19.2",
     "vite": "^5.3.2",
     "vitest": "^1.6.0"
   },

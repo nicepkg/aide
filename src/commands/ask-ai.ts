@@ -1,50 +1,14 @@
 /* eslint-disable @typescript-eslint/no-loop-func */
+import { getConfigKey } from '@/config'
+import { processWorkspaceItem } from '@/files-processor'
+import { t } from '@/i18n'
+import { executeCommand } from '@/utils'
 import { quote } from 'shell-quote'
 import * as vscode from 'vscode'
 
-import pkg from '../package.json'
-import { getConfig } from './config'
-import { processWorkspaceItem } from './files-processor'
-import { t } from './i18n'
-import { commandErrorCatcher, executeCommand } from './utils'
+import pkg from '../../package.json'
 
-const handleCopyAsPrompt = async (
-  uri: vscode.Uri,
-  selectedUris: vscode.Uri[] = []
-) => {
-  const workspaceFolder = vscode.workspace.getWorkspaceFolder(uri)
-
-  if (!workspaceFolder) {
-    vscode.window.showErrorMessage(t('error.noWorkspace'))
-    return
-  }
-
-  const selectedItems = selectedUris?.length > 0 ? selectedUris : [uri]
-
-  if (selectedItems.length === 0) {
-    vscode.window.showInformationMessage(t('info.noSelection'))
-    return
-  }
-
-  let promptFullContent = ''
-  for (const item of selectedItems) {
-    promptFullContent += (
-      await processWorkspaceItem(item, workspaceFolder.uri.fsPath)
-    ).promptFullContent
-  }
-
-  const config = getConfig()
-
-  const finalPrompt = config.aiPromptTemplate.replace(
-    '#{content}',
-    promptFullContent
-  )
-
-  await vscode.env.clipboard.writeText(finalPrompt)
-  vscode.window.showInformationMessage(t('info.copied'))
-}
-
-const handleAskAI = async (
+export const handleAskAI = async (
   uri: vscode.Uri,
   selectedUris: vscode.Uri[] = []
 ) => {
@@ -75,10 +39,10 @@ const handleAskAI = async (
     })
   }
 
-  const config = getConfig()
-  const { aiCommandTemplate, aiCommandCopyBeforeRun } = config
+  const aiCommand = await getConfigKey('aiCommand')
+  const aiCommandCopyBeforeRun = await getConfigKey('aiCommandCopyBeforeRun')
 
-  if (!aiCommandTemplate) {
+  if (!aiCommand) {
     vscode.window
       .showInformationMessage(
         t('error.noAICommand', pkg.homepage),
@@ -97,7 +61,7 @@ const handleAskAI = async (
   }
 
   let userInput = ''
-  if (aiCommandTemplate.includes('#{question}')) {
+  if (aiCommand.includes('#{question}')) {
     userInput =
       (await vscode.window.showInputBox({
         prompt: t('input.aiCommand.prompt'),
@@ -105,7 +69,7 @@ const handleAskAI = async (
       })) || ''
   }
 
-  const finalCommand = aiCommandTemplate
+  const finalCommand = aiCommand
     .replace(/#{filesRelativePath}/g, filesRelativePath)
     .replace(/#{filesFullPath}/g, filesFullPath)
     .replace(/#{content}/g, ` "${quote([filesPrompt.trim()])}" `)
@@ -116,17 +80,4 @@ const handleAskAI = async (
   }
 
   await executeCommand(finalCommand, workspaceFolder.uri.fsPath)
-}
-
-export const registerCommands = (context: vscode.ExtensionContext) => {
-  const copyDisposable = vscode.commands.registerCommand(
-    'extension.copyAsPrompt',
-    commandErrorCatcher(handleCopyAsPrompt)
-  )
-  const askAIDisposable = vscode.commands.registerCommand(
-    'extension.askAI',
-    commandErrorCatcher(handleAskAI)
-  )
-
-  context.subscriptions.push(copyDisposable, askAIDisposable)
 }

@@ -1,9 +1,9 @@
-/* eslint-disable no-console */
-import fs from 'fs/promises'
 import * as path from 'path'
 import * as vscode from 'vscode'
 
+import { logger } from './logger'
 import { LocalizeFunction, Messages } from './types'
+import { VsCodeFS } from './vscode-fs'
 
 let messages: Messages = {}
 
@@ -18,12 +18,13 @@ export const initializeLocalization = async (
   const defaultFilePath = path.join(extensionPath, 'package.nls.en.json')
 
   try {
-    messages = JSON.parse(await fs.readFile(languageFilePath, 'utf-8'))
+    messages = JSON.parse(await VsCodeFS.readFile(languageFilePath, 'utf-8'))
   } catch (err) {
-    console.warn(
-      `Failed to load language file for ${language}, falling back to default`
+    logger.warn(
+      `Failed to load language file for ${language}, falling back to default`,
+      err
     )
-    messages = JSON.parse(await fs.readFile(defaultFilePath, 'utf-8'))
+    messages = JSON.parse(await VsCodeFS.readFile(defaultFilePath, 'utf-8'))
   }
 }
 
@@ -36,3 +37,10 @@ export const t: LocalizeFunction = (key: string, ...args: any[]) => {
   const message = messages[key] ?? key
   return args.length > 0 ? format(message, args) : message
 }
+
+/**
+ * @example
+ * translateVscodeJsonText("%config.key%") === t('config.key')
+ */
+export const translateVscodeJsonText = (text: string): string =>
+  text.replace(/%([^%]+)%/g, (_, key) => t(key))

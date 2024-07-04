@@ -1,5 +1,4 @@
 <div align="center">
-<img src="https://github.com/2214962083/2214962083/assets/35005637/f7a42850-0b23-45fc-9b33-bf1173e1319d" alt="icon"/>
 
 <h1 align="center">Aide</h1>
 
@@ -16,19 +15,6 @@ Convert selected files to AI prompts with one click, enabling custom AI commands
 [![GitHub stars](https://img.shields.io/github/stars/nicepkg/aide)](https://github.com/nicepkg/aide)
 
 </div>
-
-## Why Aide 🤷‍♂️
-
-- **🚀 Efficiency Boost:** Convert selected files to AI prompts with one click, saving tons of manual copy-paste time.
-- **🧠 Intelligent Interaction:** Customize AI commands to directly converse with your code files, getting tailored advice and answers.
-- **🛠 Flexible Customization:** Highly configurable prompt templates and AI commands to adapt to your personalized workflow.
-- **🔍 Deep Integration:** Seamlessly integrated into VS Code, making AI-assisted programming a part of your daily development routine.
-- **🌟 Open Source & Free:** Completely open-source, continuously updated, and community-driven innovative tool.
-- **📈 Quality Enhancement:** Leverage AI power to improve code quality and accelerate problem-solving.
-- **🎓 Learning Assistant:** Beginner-friendly, helping you better understand and improve your code.
-- **🌐 Cross-language Support:** Applicable to various programming languages and project types.
-
-Whether you're a seasoned developer or a coding novice, Aide can be your powerful assistant, significantly enhancing your programming experience and work efficiency. Try it now and experience the new era of AI-driven programming!
 
 ## Features ✨
 

@@ -1,11 +1,11 @@
-import fs from 'fs/promises'
 import * as path from 'path'
 import { glob } from 'glob'
 import { minimatch } from 'minimatch'
 import * as vscode from 'vscode'
 
-import { getConfig, type Config } from './config'
+import { getConfigKey } from './config'
 import { t } from './i18n'
+import { VsCodeFS } from './vscode-fs'
 
 const getAllFiles = async (
   dirPath: string,
@@ -48,16 +48,16 @@ interface ProcessWorkspaceResult {
 
 const processWorkspaceFile = async (
   file: vscode.Uri,
-  workspacePath: string,
-  config: Config
+  workspacePath: string
 ): Promise<ProcessWorkspaceResult> => {
   const relativePath = path.relative(workspacePath, file.fsPath)
+  const ignorePatterns = await getConfigKey('ignorePatterns')
 
-  if (await shouldIgnore(file.fsPath, config.ignorePatterns, workspacePath)) {
+  if (await shouldIgnore(file.fsPath, ignorePatterns, workspacePath)) {
     return { promptFullContent: '', files: [] }
   }
 
-  const fileContent = await fs.readFile(file.fsPath, 'utf-8')
+  const fileContent = await VsCodeFS.readFile(file.fsPath, 'utf-8')
   const language = path.extname(file.fsPath).slice(1)
 
   const promptFullContent = t(
@@ -70,7 +70,7 @@ const processWorkspaceFile = async (
   const fileInfo: WorkspaceFileInfo = {
     relativePath,
     fullPath: file.fsPath,
-    content: await fs.readFile(file.fsPath, 'utf-8')
+    content: await VsCodeFS.readFile(file.fsPath, 'utf-8')
   }
 
   return { promptFullContent, files: [fileInfo] }
@@ -78,13 +78,13 @@ const processWorkspaceFile = async (
 
 const processWorkspaceDirectory = async (
   dir: vscode.Uri,
-  workspacePath: string,
-  config: Config
+  workspacePath: string
 ): Promise<ProcessWorkspaceResult> => {
-  const allFiles = await getAllFiles(dir.fsPath, config.ignorePatterns)
+  const ignorePatterns = await getConfigKey('ignorePatterns')
+  const allFiles = await getAllFiles(dir.fsPath, ignorePatterns)
   const results = await Promise.all(
     allFiles.map(file =>
-      processWorkspaceFile(vscode.Uri.file(file), workspacePath, config)
+      processWorkspaceFile(vscode.Uri.file(file), workspacePath)
     )
   )
 
@@ -101,11 +101,10 @@ export const processWorkspaceItem = async (
   item: vscode.Uri,
   workspacePath: string
 ): Promise<ProcessWorkspaceResult> => {
-  const stat = await fs.stat(item.fsPath)
-  const config = getConfig()
+  const stat = await VsCodeFS.stat(item.fsPath)
 
-  if (stat.isDirectory()) {
-    return processWorkspaceDirectory(item, workspacePath, config)
+  if (stat.type === vscode.FileType.Directory) {
+    return processWorkspaceDirectory(item, workspacePath)
   }
-  return processWorkspaceFile(item, workspacePath, config)
+  return processWorkspaceFile(item, workspacePath)
 }

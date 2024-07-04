@@ -1,5 +1,7 @@
-/* eslint-disable no-console */
 import * as vscode from 'vscode'
+
+import { languageIdExtMap } from './constants'
+import { logger } from './logger'
 
 export const getOrCreateTerminal = async (
   name: string,
@@ -40,7 +42,21 @@ export const commandErrorCatcher = <T extends (...args: any[]) => any>(
     try {
       return await commandFn(...args)
     } catch (err) {
-      console.error('aide: commandErrorCatcher', err)
+      logger.warn('commandErrorCatcher', err)
       vscode.window.showErrorMessage(getErrorMsg(err))
     }
   }) as T
+
+export const getLanguageIdExt = (languageId: string): string =>
+  languageIdExtMap[languageId as keyof typeof languageIdExtMap]?.[0] || ''
+
+export const getCurrentWorkspaceFolder = () => {
+  const activeEditor = vscode.window.activeTextEditor
+  if (!activeEditor) return
+
+  const workspaceFolder = vscode.workspace.getWorkspaceFolder(
+    activeEditor.document.uri
+  )
+
+  return workspaceFolder
+}
