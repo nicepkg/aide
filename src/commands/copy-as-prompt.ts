@@ -9,17 +9,11 @@ export const handleCopyAsPrompt = async (
 ) => {
   const workspaceFolder = vscode.workspace.getWorkspaceFolder(uri)
 
-  if (!workspaceFolder) {
-    vscode.window.showErrorMessage(t('error.noWorkspace'))
-    return
-  }
+  if (!workspaceFolder) throw new Error(t('error.noWorkspace'))
 
   const selectedItems = selectedUris?.length > 0 ? selectedUris : [uri]
 
-  if (selectedItems.length === 0) {
-    vscode.window.showInformationMessage(t('info.noSelection'))
-    return
-  }
+  if (selectedItems.length === 0) throw new Error(t('error.noSelection'))
 
   let promptFullContent = ''
   for (const item of selectedItems) {

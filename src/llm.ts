@@ -33,7 +33,7 @@ export const askOpenAIStream = async (prompt: string) => {
 // eslint-disable-next-line unused-imports/no-unused-vars
 const askVscodeLLM = async (prompt: string) => {
   const activeEditor = vscode.window.activeTextEditor
-  if (!activeEditor) throw new Error(t('info.noActiveEditor'))
+  if (!activeEditor) throw new Error(t('error.noActiveEditor'))
 
   const [model] = await vscode.lm.selectChatModels({
     vendor: 'copilot',

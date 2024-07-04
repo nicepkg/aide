@@ -3,6 +3,7 @@ import { languageIds } from '@/constants'
 import { createTempFileAndWriter } from '@/create-tmp-file'
 import { t } from '@/i18n'
 import { askOpenAIStream } from '@/llm'
+import { getActiveEditorContent } from '@/utils'
 import * as vscode from 'vscode'
 
 const askAiForCode = async ({
@@ -29,13 +30,7 @@ const askAiForCode = async ({
 }
 
 export const handleCodeConvert = async () => {
-  const activeEditor = vscode.window.activeTextEditor
-  if (!activeEditor) {
-    vscode.window.showInformationMessage(t('info.noActiveEditor'))
-    return
-  }
-
-  const content = activeEditor.document.getText()
+  const { activeEditor, content } = await getActiveEditorContent()
 
   const convertLanguagePairs = await getConfigKey('convertLanguagePairs', {
     targetForSet: vscode.ConfigurationTarget.WorkspaceFolder,

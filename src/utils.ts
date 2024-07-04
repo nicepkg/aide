@@ -1,6 +1,7 @@
 import * as vscode from 'vscode'
 
 import { languageIdExtMap } from './constants'
+import { t } from './i18n'
 import { logger } from './logger'
 
 export const getOrCreateTerminal = async (
@@ -60,3 +61,28 @@ export const getCurrentWorkspaceFolder = () => {
 
   return workspaceFolder
 }
+
+interface ActiveEditorContent {
+  activeEditor: vscode.TextEditor
+  content: string
+  isSelection: boolean
+}
+
+export const getActiveEditorContent =
+  async (): Promise<ActiveEditorContent> => {
+    const activeEditor = vscode.window.activeTextEditor
+
+    if (!activeEditor) throw new Error(t('error.noActiveEditor'))
+
+    const { selection } = activeEditor
+    const isSelection = !selection.isEmpty
+    const content = isSelection
+      ? activeEditor.document.getText(selection)
+      : activeEditor.document.getText()
+
+    return {
+      activeEditor,
+      content,
+      isSelection
+    }
+  }

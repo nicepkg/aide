@@ -20,7 +20,7 @@ export async function createTempFileAndWriter(
 ): Promise<WriteTempFileResult> {
   const activeEditor = vscode.window.activeTextEditor
   if (!activeEditor) {
-    throw new Error(t('info.noActiveEditor'))
+    throw new Error(t('error.noActiveEditor'))
   }
 
   const originalFilePath = activeEditor.document.fileName
