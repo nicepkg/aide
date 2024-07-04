@@ -5,3 +5,4 @@ test
 .vscode
 dist/tsconfig.tsbuildinfo
 dist/*.vsix
+docs

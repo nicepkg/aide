@@ -4,9 +4,9 @@
 
 English / [简体中文 🌏](https://github.com/nicepkg/aide/tree/master/README_CN.md)
 
-Convert selected files to AI prompts with one click, enabling custom AI commands to initiate inquiries about these files. 🚀
+Master Any Code: One-Click Comments and Language Conversion. 💪
 
-一键将选定文件复制为 AI 提示,支持自定义 AI 命令以针对这些文件发起聊天。🚀
+掌握任何屎山代码：一键注释和语言转换。💪
 
 [![Version](https://img.shields.io/visual-studio-marketplace/v/nicepkg.aide-pro)](https://marketplace.visualstudio.com/items?itemName=nicepkg.aide-pro)
 [![Downloads](https://img.shields.io/visual-studio-marketplace/d/nicepkg.aide-pro)](https://marketplace.visualstudio.com/items?itemName=nicepkg.aide-pro)
@@ -18,11 +18,14 @@ Convert selected files to AI prompts with one click, enabling custom AI commands
 
 ## Features ✨
 
-- 📋 Copy selected files as AI prompts
-- 💬 Ask AI about selected files with custom commands
-- 🎛 Customizable AI prompt template
-- 📁 Support selected multiple files and folders
-- 🚫 Custom ignore patterns for excluding files
+- 🔄 **Code Conversion**: One-click code transformation between languages.
+- 📖 **Code Annotation**: One-click detailed comments for better readability.
+- 📋 **Quick Copy**: Copy files/folders as AI prompts instantly.
+- 💬 **Custom Commands**: Execute custom AI commands on selected files.
+- 🎛 **Prompt Templates**: Define flexible AI prompt templates.
+- 📁 **Multi-File Support**: Select multiple files/folders for AI prompts or commands.
+- 🚫 **Ignore Patterns**: Exclude files/folders using custom glob rules.
+- ⌨ **Keyboard Shortcuts**: Set your preferred shortcuts for features.
 
 ## Installation 📦
 
@@ -33,83 +36,54 @@ Convert selected files to AI prompts with one click, enabling custom AI commands
 
 ## Usage 🛠
 
-### Copy as Prompt
+### 1. Aide: Code Convert
 
-1. Select some files or folders in the Explorer and right-click
-2. Select `✨ Aide: Copy As AI Prompt`
-3. The file content will be copied to your clipboard in the configured format
+Convert selected code from one programming language to another using AI.
 
-### Ask AI
+**How to Use:**
 
-1. Select some files or folders in the Explorer and right-click
-2. Select `✨ Aide: Ask AI`
-3. If prompted, enter your question
-4. The configured AI command will be executed with the selected files path
+- Select code in the editor.
+- Click the paper-like icon in the top right corner or right-click and choose `✨ Aide: Code Convert`.
 
-For example:
+### 2. Aide: Code Viewer Helper
 
-- Configure `aide.aiCommand` with [aider (A widely acclaimed command line tool for AI)](https://github.com/paul-gauthier/aider):
+Add comments to the selected code to make it readable for beginners, using AI.
 
-```bash
-aider #{filesAbsolutePath}
-```
+**How to Use:**
 
-- Select `a.ts` and `b.ts` and run `✨ Aide: Ask AI`:
+- Select code in the editor.
+- Click the book-like icon in the top right corner or right-click and choose `✨ Aide: Code Viewer Helper`.
 
-```bash
-aider "/xxxx/your-project/a.ts" "/xxxx/your-project/b.ts"
-```
+### 3. Aide: Copy As AI Prompt
 
-## Configuration ⚙️
+Copy selected files' contents into the clipboard, formatted as a prompt for AI interaction.
 
-Aide can be customized through VS Code settings:
+**How to Use:**
 
-- `aide.aiPrompt`: Template for AI prompts (default: `#{content}`)
+- Select files or folders in the Explorer.
+- Right-click and choose `✨ Aide: Copy As AI Prompt`.
 
-  - For Example: you custom aiPrompt template as `This is my files content: #{content} Please answer the question:`.
-  - then select `a.ts` and `b.ts` and run `✨ Aide: Copy As AI Prompt`:
-  - You will got:
+### 4. Aide: Ask AI
 
-    ````txt
-    This is my files content:
-    File: a.ts
-    ```ts
-    // a.ts content
+Prepare and execute custom AI commands based on selected files and user input.
 
-    ```
+**How to Use:**
 
-    File: b.ts
-    ```ts
-    // b.ts content
+- Select files or folders in the Explorer.
+- Right-click and choose `✨ Aide: Ask AI`.
+- Enter your question when prompted.
 
-    ```
-    Please answer the question:
-    ````
+### 5. Customizing Keyboard Shortcuts
 
-- `aide.aiCommand`: Template for AI command execution (default: "")
+Assign custom keyboard shortcuts to these commands for faster access:
 
-  - `#{filesRelativePath}`: Selected files relative path
-  - `#{filesAbsolutePath}`: Selected files absolute path
-  - `#{question}`: User input question, this will show a prompt to ask for a question
+1. Open the Keyboard Shortcuts editor (`Ctrl+K Ctrl+S` or `Cmd+K Cmd+S`).
+2. Search for the desired Aide command.
+3. Click the plus icon next to the command and press your desired key combination.
 
-- `aide.aiCommandCopyBeforeRun`: Copy AI command before execution (default: `true`)
-- `aide.ignorePatterns`: Supports [glob](https://github.com/isaacs/node-glob) rules, ignored file rule sets, default:
-  ```json
-  [
-    "**/node_modules",
-    "**/.git",
-    "**/__pycache__",
-    "**/.Python",
-    "**/.DS_Store",
-    "**/.cache",
-    "**/.next",
-    "**/.nuxt",
-    "**/.out",
-    "**/dist",
-    "**/.serverless",
-    "**/.parcel-cache"
-  ]
-  ```
+Enhance your productivity with Aide's AI-powered features. Install now and experience a smarter way to code!
+
+**For more, see: [Document](https://github.com/nicepkg/aide/tree/master/docs/configuration/README.md)**
 
 ## Contributing 🤝
 

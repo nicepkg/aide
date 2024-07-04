@@ -4,7 +4,7 @@
 
 [English 🌏](https://github.com/nicepkg/aide/tree/master/README.md) / 简体中文
 
-一键将选定文件复制为 AI 提示, 支持自定义 AI 命令以针对这些文件发起聊天。🚀
+掌握任何屎山代码：一键注释和语言转换。💪
 
 [![Version](https://img.shields.io/visual-studio-marketplace/v/nicepkg.aide-pro)](https://marketplace.visualstudio.com/items?itemName=nicepkg.aide-pro)
 [![Downloads](https://img.shields.io/visual-studio-marketplace/d/nicepkg.aide-pro)](https://marketplace.visualstudio.com/items?itemName=nicepkg.aide-pro)
@@ -16,11 +16,14 @@
 
 ## 功能 ✨
 
-- 📋 将选定文件复制为 AI 提示
-- 💬 使用自定义命令向 AI 询问选定文件
-- 🎛 可定制的 AI 提示模板
-- 📁 支持选定多个文件和文件夹
-- 🚫 自定义文件忽略规则，用于排除文件
+- 🔄 **代码转换**：一键代码语言转换。
+- 📖 **代码注释**：一键添加详细注释，提升可读性。
+- 📋 **快速复制**：即时复制文件/文件夹为AI提示。
+- 💬 **自定义命令**：对选定文件执行自定义AI命令。
+- 🎛 **提示模板**：定义灵活的AI提示模板。
+- 📁 **多文件支持**：选择多个文件/文件夹进行AI提示或命令。
+- 🚫 **忽略模式**：使用自定义glob规则排除文件/文件夹。
+- ⌨ **快捷键**：设置你偏好的功能快捷键。
 
 ## 安装 📦
 
@@ -29,85 +32,56 @@
 3. 搜索 “[Aide](https://marketplace.visualstudio.com/items?itemName=nicepkg.aide-pro)”
 4. 点击安装
 
-## 使用方法 🛠
+## 用法 🛠
 
-### 复制为提示
+### 1. Aide: Code Convert
 
-1. 在资源管理器中选择一些文件或文件夹并右键点击
-2. 选择 `✨ Aide: 复制为 AI Prompt`
-3. 文件内容将以配置的格式复制到剪贴板
+使用 AI 将选定的代码从一种编程语言转换为另一种。
 
-### 向 AI 询问
+**使用方法：**
 
-1. 在资源管理器中选择一些文件或文件夹并右键点击
-2. 选择 `✨ Aide: 问 AI`
-3. 如果出现提示，输入你的问题
-4. 配置的 AI 命令将与选定文件路径一起执行
+- 在编辑器中选择代码。
+- 点击右上角的纸张图标或右键选择 `✨ Aide: Code Convert`。
 
-例如：
+### 2. Aide: Code Viewer Helper
 
-- 使用 [aider (一个广受好评的 AI 命令行工具)](https://github.com/paul-gauthier/aider) 来配置 `aide.aiCommand`:
+使用 AI 为选定的代码添加注释，使其易于初学者阅读。
 
-```bash
-aider #{filesAbsolutePath}
-```
+**使用方法：**
 
-- 选择 `a.ts` 和 `b.ts` 并运行 `✨ Aide: Ask AI`:
+- 在编辑器中选择代码。
+- 点击右上角的书本图标或右键选择 `✨ Aide: Code Viewer Helper`。
 
-```bash
-aider "/xxxx/your-project/a.ts" "/xxxx/your-project/b.ts"
-```
+### 3. Aide: Copy As AI Prompt
 
-## 配置 ⚙️
+将选定文件的内容复制到剪贴板，并格式化为 AI 交互提示。
 
-可以通过 VS Code 设置自定义 Aide:
+**使用方法：**
 
-- `aide.aiPrompt`: AI 提示模板 (默认: `#{content}`)
+- 在资源管理器中选择文件或文件夹。
+- 右键选择 `✨ Aide: Copy As AI Prompt`。
 
-  - 例如: 你自定义 aiPrompt 模板为 `这是我的文件内容: #{content} 请回答问题:`.
-  - 然后选择 `a.ts` 和 `b.ts` 并运行 `✨ Aide: Copy As AI Prompt`:
-  - 你将得到:
+### 4. Aide: Ask AI
 
-    ````txt
-    这是我的文件内容:
-    文件: a.ts
-    ```ts
-    // a.ts 内容
+基于选定的文件和用户输入准备并执行自定义 AI 命令。
 
-    ```
+**使用方法：**
 
-    文件: b.ts
-    ```ts
-    // b.ts 内容
+- 在资源管理器中选择文件或文件夹。
+- 右键选择 `✨ Aide: Ask AI`。
+- 按提示输入您的问题。
 
-    ```
-    请回答问题:
-    ````
+### 5. 自定义键盘快捷键
 
-- `aide.aiCommand`: AI 命令执行模板 (默认: "")
+为这些命令分配自定义键盘快捷键以更快地访问：
 
-  - `#{filesRelativePath}`: 选定文件的相对路径
-  - `#{filesAbsolutePath}`: 选定文件的绝对路径
-  - `#{question}`: 用户输入的问题，这将显示一个提示以询问问题
+1. 打开键盘快捷键编辑器（`Ctrl+K Ctrl+S` 或 `Cmd+K Cmd+S`）。
+2. 搜索所需的 Aide 命令。
+3. 点击命令旁的加号图标并按下您想要的快捷键组合。
 
-- `aide.aiCommandCopyBeforeRun`: 在执行前复制 AI 命令 (默认: `true`)
-- `aide.ignorePatterns`: 支持[glob](https://github.com/isaacs/node-glob)规则，忽略的文件规则集合，默认:
-  ```json
-  [
-    "**/node_modules",
-    "**/.git",
-    "**/__pycache__",
-    "**/.Python",
-    "**/.DS_Store",
-    "**/.cache",
-    "**/.next",
-    "**/.nuxt",
-    "**/.out",
-    "**/dist",
-    "**/.serverless",
-    "**/.parcel-cache"
-  ]
-  ```
+通过 Aide 的 AI 驱动功能提升您的工作效率。立即安装，体验更智能的编码方式！
+
+**更多信息，请参见：[文档](https://github.com/nicepkg/aide/tree/master/docs/configuration/README_CN.md)**
 
 ## 贡献 🤝
 

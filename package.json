@@ -2,7 +2,7 @@
   "publisher": "nicepkg",
   "name": "aide-pro",
   "displayName": "Aide",
-  "description": "Convert selected files to AI prompts with one click, enabling custom AI commands to initiate inquiries about these files. 🚀",
+  "description": "Master Any Code: One-Click Comments and Language Conversion. 💪",
   "version": "1.5.0",
   "private": true,
   "packageManager": "pnpm@9.3.0",
@@ -31,7 +31,21 @@
     "ai",
     "gpt",
     "anthropic",
-    "copy"
+    "copy",
+    "code",
+    "annotation",
+    "conversion",
+    "multi-file",
+    "ignore patterns",
+    "keyboard shortcuts",
+    "custom ai commands",
+    "ai prompts",
+    "code transformation",
+    "code comments",
+    "code readability",
+    "code management",
+    "developer tools",
+    "vscode extension"
   ],
   "categories": [
     "AI",
@@ -156,7 +170,7 @@
         },
         "aide.codeViewerHelperPrompt": {
           "type": "string",
-          "default": "You are a programming language commentator.\nYou need to help me add comments to ${sourceLanguage} code as much as possible to make it readable for beginners.\nDo not change the original code, just add as detailed comments as possible,\nbecause my purpose is only to understand and read. Please use my native language ${locale} as the commenting language.\nPlease do not reply with any text other than the code, and do not use markdown syntax.\nHere is the code you need to comment on:\n\n#{content}",
+          "default": "You are a programming language commentator.\nYou need to help me add comments to #{sourceLanguage} code as much as possible to make it readable for beginners.\nDo not change the original code, just add as detailed comments as possible,\nbecause my purpose is only to understand and read. Please use my native language #{locale} as the commenting language.\nPlease do not reply with any text other than the code, and do not use markdown syntax.\nHere is the code you need to comment on:\n\n#{content}",
           "scope": "resource",
           "description": "%config.codeViewerHelperPrompt.description%"
         },
