@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.7.1](https://github.com/nicepkg/aide/compare/aide-v1.7.0...aide-v1.7.1) (2024-07-05)
+
+
+### Bug Fixes
+
+* fix proxy bug ([5755213](https://github.com/nicepkg/aide/commit/575521391f28842267fc2a216e0cb5eb2b87f8f3))
+* try fix command not found issue ([7138c67](https://github.com/nicepkg/aide/commit/7138c673bf9580a8bd4a5aa2553e1a495b017ffb))
+
 ## [1.7.0](https://github.com/nicepkg/aide/compare/aide-v1.6.0...aide-v1.7.0) (2024-07-05)
 
 
