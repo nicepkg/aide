@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.7.0](https://github.com/nicepkg/aide/compare/aide-v1.6.0...aide-v1.7.0) (2024-07-05)
+
+
+### Features
+
+* add codeConvert and codeViewerHelper features ([fc2775b](https://github.com/nicepkg/aide/commit/fc2775bab433dde51f679e3c3a5bd1df74eb7ff0))
+* add context meun for open ai code viewer ([3c6c1a3](https://github.com/nicepkg/aide/commit/3c6c1a34f7c6f23f09d1f9a6ec164348b8911350))
+* support older version vscode install ([a8918a4](https://github.com/nicepkg/aide/commit/a8918a4cba2bd0b8484d04e75b8ce8809defb94a))
+
 ## [1.6.0](https://github.com/nicepkg/aide/compare/aide-v1.5.0...aide-v1.6.0) (2024-07-02)
 
 
