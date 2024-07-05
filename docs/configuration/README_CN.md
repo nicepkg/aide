@@ -282,6 +282,46 @@ Provide detailed comments for the following #{sourceLanguage} code, using #{loca
 
 ---
 
+### OpenAI 配置
+
+#### 配置 - `aide.openaiKey`
+
+此设置允许您指定您的 OpenAI API 密钥。您可以从 [OpenAI 网站](https://platform.openai.com) 获取您的 API 密钥。
+
+- **默认值:**
+
+  ```json
+  {
+    "aide.openaiKey": ""
+  }
+  ```
+
+#### 配置 - `aide.openaiModel`
+
+此设置允许您指定用于 AI 交互的 [OpenAI 模型](https://platform.openai.com/docs/models)。
+
+- **默认值:**
+
+  ```json
+  {
+    "aide.openaiModel": "gpt-4o"
+  }
+  ```
+
+#### 配置 - `aide.openaiBaseUrl`
+
+此设置允许您指定 OpenAI API 的基础 URL。
+
+- **默认值:**
+
+  ```json
+  {
+    "aide.openaiBaseUrl": "https://api.openai.com/v1"
+  }
+  ```
+
+---
+
 ## 自定义键盘快捷键
 
 上述带有 ✨ 标记的命令是 Aide VSCode 扩展的内置命令。它允许你自定义键盘快捷键来调用这些命令，这可以提高你在 VSCode 中的生产力。

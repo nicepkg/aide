@@ -278,6 +278,46 @@ This setting allows you to specify the template for the code viewer helper promp
 
 ---
 
+### OpenAI Configuration
+
+#### Configuration - `aide.openaiKey`
+
+This setting allows you to specify your OpenAI API key. You can get your API key from the [OpenAI website](https://platform.openai.com)
+
+- **Default Value:**
+
+  ```json
+  {
+    "aide.openaiKey": ""
+  }
+  ```
+
+#### Configuration - `aide.openaiModel`
+
+This setting allows you to specify the [OpenAI model](https://platform.openai.com/docs/models) to use for AI interactions.
+
+- **Default Value:**
+
+  ```json
+  {
+    "aide.openaiModel": "gpt-4o"
+  }
+  ```
+
+#### Configuration - `aide.openaiBaseUrl`
+
+This setting allows you to specify the base URL for the OpenAI API.
+
+- **Default Value:**
+
+  ```json
+  {
+    "aide.openaiBaseUrl": "https://api.openai.com/v1"
+  }
+  ```
+
+---
+
 ## Customizing Keyboard Shortcuts
 
 The commands marked with ✨ above are built-in commands of the Aide VSCode extension. It allows you to customize keyboard shortcuts to invoke these commands, which can improve your productivity in VSCode.
