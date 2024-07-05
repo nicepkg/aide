@@ -107,6 +107,6 @@ If you find this project helpful, please consider giving it a ⭐️ on [GitHub]
 
 <div align="center">
 
-<img src="https://api.star-history.com/svg?repos=nicepkg/smart-web&type=Date" width="600" height="400" alt="Star History Chart" valign="middle">
+<img src="https://api.star-history.com/svg?repos=nicepkg/aide&type=Date" width="600" height="400" alt="Star History Chart" valign="middle">
 
 </div>
