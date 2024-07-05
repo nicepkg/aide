@@ -101,12 +101,10 @@
       ],
       "editor/context": [
         {
-          "when": "editorTextFocus || editorHasSelection",
           "command": "aide.codeViewerHelper",
           "group": "0_navigation@0"
         },
         {
-          "when": "editorTextFocus || editorHasSelection",
           "command": "aide.codeConvert",
           "group": "0_navigation@1"
         }
