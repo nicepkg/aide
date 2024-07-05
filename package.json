@@ -63,7 +63,7 @@
     "dist"
   ],
   "engines": {
-    "vscode": "^1.90.0"
+    "vscode": "^1.76.0"
   },
   "contributes": {
     "commands": [
@@ -216,7 +216,7 @@
     "@types/global-agent": "^2.1.3",
     "@types/node": "^20.14.9",
     "@types/shell-quote": "^1.7.5",
-    "@types/vscode": "^1.90.0",
+    "@types/vscode": "1.76.0",
     "@typescript-eslint/eslint-plugin": "^7.15.0",
     "@typescript-eslint/parser": "^7.15.0",
     "@vscode/vsce": "^2.29.0",
@@ -232,7 +232,7 @@
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-json": "^4.0.0",
     "eslint-plugin-prettier": "^5.1.3",
-    "eslint-plugin-simple-import-sort": "^12.1.0",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
     "eslint-plugin-unused-imports": "^3.2.0",
     "esno": "^4.7.0",
     "execa": "^9.3.0",
@@ -240,8 +240,8 @@
     "glob": "^10.4.2",
     "global-agent": "^3.0.0",
     "husky": "^9.0.11",
-    "inquirer": "^9.3.2",
-    "knip": "^5.23.3",
+    "inquirer": "^9.3.4",
+    "knip": "^5.24.1",
     "lint-staged": "^15.2.7",
     "minimatch": "^9.0.5",
     "pnpm": "^9.4.0",
@@ -251,7 +251,7 @@
     "tsup": "^8.1.0",
     "typescript": "5.4.5",
     "undici": "^6.19.2",
-    "vite": "^5.3.2",
+    "vite": "^5.3.3",
     "vitest": "^1.6.0"
   },
   "commitlint": {

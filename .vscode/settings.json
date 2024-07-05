@@ -58,5 +58,8 @@
     "tsup",
     "undici",
     "vsix"
-  ]
+  ],
+  "aide.convertLanguagePairs": {
+    "typescript": "python"
+  }
 }
