@@ -1,6 +1,8 @@
 import { bootstrap } from 'global-agent'
 import { ProxyAgent, setGlobalDispatcher } from 'undici'
 
+import { logger } from './logger'
+
 function getDefaultProxyUrl() {
   let proxyUrl = ''
 
@@ -25,11 +27,16 @@ function getDefaultProxyUrl() {
 }
 
 export const enableGlobalProxy = () => {
-  const proxyUrl = getDefaultProxyUrl()
+  try {
+    const proxyUrl = getDefaultProxyUrl()
 
-  bootstrap()
-  const dispatcher = new ProxyAgent(proxyUrl)
-  setGlobalDispatcher(dispatcher)
+    bootstrap()
 
-  return dispatcher
+    if (proxyUrl) {
+      const dispatcher = new ProxyAgent(proxyUrl)
+      setGlobalDispatcher(dispatcher)
+    }
+  } catch (err) {
+    logger.log('Failed to enable global proxy', err)
+  }
 }
