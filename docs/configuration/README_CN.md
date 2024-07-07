@@ -272,10 +272,10 @@ VSCode 将打开一个临时文本以显示带注释的代码。
 
 - **示例：**
 
-```plaintext
-Provide detailed comments for the following #{sourceLanguage} code, using #{locale}:
-#{content}
-```
+  ```plaintext
+  Provide detailed comments for the following #{sourceLanguage} code, using #{locale}:
+  #{content}
+  ```
 
 ---
 
