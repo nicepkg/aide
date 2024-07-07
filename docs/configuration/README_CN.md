@@ -9,11 +9,11 @@
 
 2. 在设置窗口中，在顶部的搜索栏输入“aide”。现在你应该可以在主面板中看到所有 Aide 特定的设置。
 
-### `✨ Aide: Copy As AI Prompt`
+### `✨ Aide: 复制为 AI Prompt`
 
 此命令将所选文件的内容复制到剪贴板，格式化为 AI 交互提示。
 
-你可以在资源管理器中选择一些文件或文件夹，右键点击，然后选择 `✨ Aide: Copy As AI Prompt`。文件内容将以配置的格式复制到你的剪贴板。
+你可以在资源管理器中选择一些文件或文件夹，右键点击，然后选择 `✨ Aide: 复制为 AI Prompt`。文件内容将以配置的格式复制到你的剪贴板。
 
 #### 配置 - `aide.aiPrompt`
 
@@ -77,11 +77,11 @@
 
 ---
 
-### `✨ Aide: Ask AI`
+### `✨ Aide: 问 AI`
 
 此命令根据所选文件和用户输入准备自定义 AI 命令，然后执行该命令。
 
-你可以在资源管理器中选择一些文件或文件夹，右键点击，然后选择 `✨ Aide: Ask AI`。如果出现提示，请输入你的问题。配置的 AI 命令将与所选文件路径一起执行。
+你可以在资源管理器中选择一些文件或文件夹，右键点击，然后选择 `✨ Aide: 问 AI`。如果出现提示，请输入你的问题。配置的 AI 命令将与所选文件路径一起执行。
 
 #### 配置 - `aide.aiCommand`
 
@@ -124,17 +124,17 @@
 
 #### 配置 - `aide.ignorePatterns`
 
-与 `✨ Aide: Copy As AI Prompt` 命令的 `aide.ignorePatterns` 配置相同。
+与 `✨ Aide: 复制为 AI Prompt` 命令的 `aide.ignorePatterns` 配置相同。
 
 此设置允许你指定要从 AI 提示中排除的文件模式。支持 [glob](https://github.com/isaacs/node-glob) 规则。
 
 ---
 
-### `✨ Aide: Code Convert`
+### `✨ Aide: 代码转换`
 
 此命令使用 AI 将所选代码从一种编程语言转换为另一种编程语言。
 
-你可以点击 VSCode 右上角的纸片图标，或在编辑器中右键点击并选择 `✨ Aide: Code Convert`。你也可以选择特定的代码片段并执行上述操作。
+你可以点击 VSCode 右上角的纸片图标，或在编辑器中右键点击并选择 `✨ Aide: 代码转换`。你也可以选择特定的代码片段并执行上述操作。
 
 VSCode 将打开一个临时文本以显示转换后的代码。
 
@@ -234,13 +234,13 @@ VSCode 将打开一个临时文本以显示转换后的代码。
 
 ---
 
-### `✨ Aide: Code Viewer Helper`
+### `✨ Aide: 代码查看器助手`
 
 此命令使用 AI 为所选代码添加注释，使其对初学者更具可读性。
 
 有时即使是高级开发人员也无法一次理解一堆代码。这时，你需要一些注释来帮助你理解。此命令旨在尽可能多地为代码添加注释，使其更易于理解。
 
-你可以点击 VSCode 右上角的书本图标，或在编辑器中右键点击并选择 `✨ Aide: Code Viewer Helper`。你也可以选择特定的代码片段并执行上述操作。
+你可以点击 VSCode 右上角的书本图标，或在编辑器中右键点击并选择 `✨ Aide: 代码查看器助手`。你也可以选择特定的代码片段并执行上述操作。
 
 VSCode 将打开一个临时文本以显示带注释的代码。
 
@@ -265,20 +265,17 @@ VSCode 将打开一个临时文本以显示带注释的代码。
   You need to help me add comments to #{sourceLanguage} code as much as possible to make it readable for beginners.
   Do not change the original code, just add as detailed comments as possible, because my purpose is only to understand and read.
   Please use my native language #{locale} as the commenting language.
-  Please do not
+  Please do not reply with any text other than the code, and do not use markdown syntax.
+  Here is the code you need to comment on:
+  #{content}
   ```
 
-reply with any text other than the code, and do not use markdown syntax.
-Here is the code you need to comment on:
-#{content}
-
-````
-
 - **示例：**
+
 ```plaintext
 Provide detailed comments for the following #{sourceLanguage} code, using #{locale}:
 #{content}
-````
+```
 
 ---
 
@@ -335,10 +332,10 @@ Provide detailed comments for the following #{sourceLanguage} code, using #{loca
 
 2. 在键盘快捷键编辑器中，搜索你想要自定义的命令：
 
-   - "Aide: Copy as Prompt"
-   - "Aide: Ask AI"
-   - "Aide: Code Convert"
-   - "Aide: Code Viewer Helper"
+   - "Aide: 复制为 AI Prompt"
+   - "Aide: 问 AI"
+   - "Aide: 代码转换"
+   - "Aide: 代码查看器助手"
    - ...也许更多
 
 3. 点击你想要分配快捷键的命令旁边的加号图标。
@@ -349,10 +346,10 @@ Provide detailed comments for the following #{sourceLanguage} code, using #{loca
 
 以下是你可以自定义的默认命令：
 
-- `aide.copyAsPrompt`: Copy as Prompt
-- `aide.askAI`: Ask AI
-- `aide.codeConvert`: Code Convert
-- `aide.codeViewerHelper`: Code Viewer Helper
+- `aide.copyAsPrompt`: 复制为 AI Prompt
+- `aide.askAI`: 问 AI
+- `aide.codeConvert`: 代码转换
+- `aide.codeViewerHelper`: 代码查看器助手
 - ...也许更多
 
 **示例：**
