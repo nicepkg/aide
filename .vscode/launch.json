@@ -6,16 +6,16 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Run Extension",
+      "name": "Extension",
       "type": "extensionHost",
       "request": "launch",
-      "runtimeExecutable": "pnpm",
+      "runtimeExecutable": "${execPath}",
       "args": [
         "--extensionDevelopmentPath=${workspaceFolder}",
         "--disable-extensions"
       ],
       "outFiles": ["${workspaceFolder}/dist/**/*.js"],
-      "preLaunchTask": "watch"
+      "preLaunchTask": "npm: watch"
     }
   ]
 }
