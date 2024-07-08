@@ -32,7 +32,11 @@
 3. 搜索 “[Aide](https://marketplace.visualstudio.com/items?itemName=nicepkg.aide-pro)”
 4. 点击安装
 
-## 用法 🛠
+## 配置 🛠
+
+查看：[文档](https://github.com/nicepkg/aide/tree/master/docs/configuration/README_CN.md)
+
+## 用法 🚀
 
 ### 1. Aide: 代码转换
 
@@ -81,11 +85,13 @@
 
 通过 Aide 的 AI 驱动功能提升您的工作效率。立即安装，体验更智能的编码方式！
 
-**更多信息，请参见：[文档](https://github.com/nicepkg/aide/tree/master/docs/configuration/README_CN.md)**
+## 更新日志 📅
+
+查看最新的更新和功能：[更新日志](https://github.com/nicepkg/aide/blob/master/CHANGELOG.md)
 
 ## 贡献 🤝
 
-欢迎贡献！请随时提交拉取请求。有关详细信息，请参阅 [贡献指南](CONTRIBUTING.md)。
+欢迎贡献！请随时提交拉取请求。有关详细信息，请参阅 [贡献指南](https://github.com/nicepkg/aide/blob/master/CONTRIBUTING.md)。
 
 这个项目的存在感谢所有贡献者：
 
@@ -95,7 +101,7 @@
 
 ## 许可证 📄
 
-此项目根据 MIT 许可证授权 - 有关详细信息，请参阅 [LICENSE](LICENSE) 文件。
+此项目根据 MIT 许可证授权 - 有关详细信息，请参阅 [LICENSE](https://github.com/nicepkg/aide/blob/master/LICENSE) 文件。
 
 ## 支持 💖
 

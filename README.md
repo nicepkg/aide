@@ -34,7 +34,11 @@ Master Any Code: One-Click Comments and Language Conversion. 💪
 3. Search for "[Aide](https://marketplace.visualstudio.com/items?itemName=nicepkg.aide-pro)"
 4. Click Install
 
-## Usage 🛠
+## Configuration 🛠
+
+See: [Document](https://github.com/nicepkg/aide/tree/master/docs/configuration/README.md)
+
+## Usage 🚀
 
 ### 1. Aide: Code Convert
 
@@ -83,11 +87,13 @@ Assign custom keyboard shortcuts to these commands for faster access:
 
 Enhance your productivity with Aide's AI-powered features. Install now and experience a smarter way to code!
 
-**For more, see: [Document](https://github.com/nicepkg/aide/tree/master/docs/configuration/README.md)**
+## ChangeLog 📅
+
+See the [CHANGELOG](https://github.com/nicepkg/aide/blob/master/CHANGELOG.md) for the latest updates.
 
 ## Contributing 🤝
 
-Contributions are welcome! Please feel free to submit a Pull Request. See the [contributing guide](CONTRIBUTING.md) for more details.
+Contributions are welcome! Please feel free to submit a Pull Request. See the [contributing guide](https://github.com/nicepkg/aide/blob/master/CONTRIBUTING.md) for more details.
 
 This project exists thanks to all the people who contribute:
 
@@ -97,7 +103,7 @@ This project exists thanks to all the people who contribute:
 
 ## License 📄
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/nicepkg/aide/blob/master/LICENSE) file for details.
 
 ## Support 💖
 
