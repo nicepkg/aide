@@ -47,11 +47,7 @@
       "parserOptions": {
         "project": ["./tsconfig.json"]
       },
-      "plugins": [
-        "@typescript-eslint",
-        "unused-imports",
-        "prettier"
-      ],
+      "plugins": ["@typescript-eslint", "unused-imports", "prettier"],
       "rules": {
         "prettier/prettier": [
           "error",
