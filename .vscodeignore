@@ -6,3 +6,10 @@ test
 dist/tsconfig.tsbuildinfo
 dist/*.vsix
 docs
+.github
+.husky
+scripts
+.vscode/**
+.vscode-test/**
+.vscode-test-web/**
+out/**

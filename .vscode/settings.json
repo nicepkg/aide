@@ -56,6 +56,7 @@
     "Nicepkg",
     "nodir",
     "openai",
+    "treeshake",
     "tsup",
     "undici",
     "vsix"

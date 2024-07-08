@@ -11,3 +11,4 @@ logs
 node_modules
 temp
 .aider*
+.vscode-test-web
