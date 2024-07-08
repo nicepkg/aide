@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.0](https://github.com/nicepkg/aide/compare/aide-v1.7.1...aide-v1.8.0) (2024-07-08)
+
+
+### Features
+
+* migrate to langchain, support stop generation and fix some bugs ([e5c3a8b](https://github.com/nicepkg/aide/commit/e5c3a8bfc37f78773f1435634b334411666e3b35))
+
 ## [1.7.1](https://github.com/nicepkg/aide/compare/aide-v1.7.0...aide-v1.7.1) (2024-07-05)
 
 
