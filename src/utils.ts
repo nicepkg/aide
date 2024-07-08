@@ -86,3 +86,11 @@ export const getActiveEditorContent =
       isSelection
     }
   }
+
+export const removeCodeBlockSyntax = (str: string): string => {
+  if (!str) return ''
+  return str
+    .trim()
+    .replace(/^```[\s\S]*?\n([\s\S]*?)\n```$/g, '$1')
+    .trim()
+}

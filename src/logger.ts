@@ -3,7 +3,11 @@
 const isServer = typeof window === 'undefined'
 
 // Helper function to convert HSL to RGB
-function hslToRgb(h: number, s: number, l: number): [number, number, number] {
+const hslToRgb = (
+  h: number,
+  s: number,
+  l: number
+): [number, number, number] => {
   s /= 100
   l /= 100
 

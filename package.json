@@ -204,21 +204,21 @@
     "test": "tsc --noEmit &&vitest --run"
   },
   "devDependencies": {
-    "@ai-sdk/openai": "^0.0.34",
     "@atao60/fse-cli": "^0.1.9",
     "@commitlint/cli": "^19.3.0",
     "@commitlint/config-conventional": "^19.2.2",
     "@commitlint/cz-commitlint": "^19.2.0",
     "@ianvs/prettier-plugin-sort-imports": "^4.3.0",
+    "@langchain/core": "0.2.14",
+    "@langchain/openai": "^0.2.1",
     "@types/fs-extra": "^11.0.4",
     "@types/global-agent": "^2.1.3",
-    "@types/node": "^20.14.9",
+    "@types/node": "^20.14.10",
     "@types/shell-quote": "^1.7.5",
     "@types/vscode": "1.76.0",
     "@typescript-eslint/eslint-plugin": "^7.15.0",
     "@typescript-eslint/parser": "^7.15.0",
     "@vscode/vsce": "^2.29.0",
-    "ai": "^3.2.16",
     "commitizen": "^4.3.0",
     "dotenv": "^16.4.5",
     "eslint": "^8.57.0",
@@ -235,22 +235,28 @@
     "esno": "^4.7.0",
     "execa": "^9.3.0",
     "fs-extra": "^11.2.0",
-    "glob": "^10.4.2",
+    "glob": "^10.4.3",
     "global-agent": "^3.0.0",
     "husky": "^9.0.11",
     "inquirer": "^9.3.4",
-    "knip": "^5.24.1",
+    "knip": "^5.24.2",
+    "langchain": "^0.2.8",
     "lint-staged": "^15.2.7",
     "minimatch": "^9.0.5",
-    "pnpm": "^9.4.0",
+    "pnpm": "^9.5.0",
     "prettier": "^3.3.2",
-    "rimraf": "^5.0.7",
+    "rimraf": "^5.0.8",
     "shell-quote": "^1.8.1",
     "tsup": "^8.1.0",
     "typescript": "5.4.5",
     "undici": "^6.19.2",
     "vite": "^5.3.3",
     "vitest": "^1.6.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "@langchain/core": "0.2.14"
+    }
   },
   "commitlint": {
     "extends": [

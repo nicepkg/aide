@@ -3,7 +3,7 @@ import { ProxyAgent, setGlobalDispatcher } from 'undici'
 
 import { logger } from './logger'
 
-function getDefaultProxyUrl() {
+const getDefaultProxyUrl = () => {
   let proxyUrl = ''
 
   ;['HTTP_PROXY', 'HTTPS_PROXY', 'ALL_PROXY'].forEach(key => {

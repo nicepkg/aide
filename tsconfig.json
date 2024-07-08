@@ -19,7 +19,7 @@
     "allowUnreachableCode": false,
     "noFallthroughCasesInSwitch": true,
 
-    "target": "es2017",
+    "target": "es2020",
     "outDir": "dist",
     "sourceMap": true,
 
@@ -50,9 +50,5 @@
     "*.cjs",
     "*.mjs"
   ],
-  "exclude": [
-    "**/dist/**",
-    "**/node_modules/**",
-    "cz-adapter.cjs"
-  ]
+  "exclude": ["**/dist/**", "**/node_modules/**", "cz-adapter.cjs"]
 }

@@ -1,7 +1,7 @@
 import { getConfigKey } from '@/config'
 import { createTempFileAndWriter } from '@/create-tmp-file'
-import { askOpenAIStream } from '@/llm'
-import { getActiveEditorContent } from '@/utils'
+import { askOpenAIStream, openaiAnswerContentToText } from '@/llm'
+import { getActiveEditorContent, removeCodeBlockSyntax } from '@/utils'
 import * as vscode from 'vscode'
 
 const askAiForCode = async ({
@@ -25,18 +25,23 @@ export const handleCodeViewerHelper = async () => {
   const { activeEditor, content } = await getActiveEditorContent()
   const currentLanguage = activeEditor.document.languageId
 
-  const { writeTextPart } = await createTempFileAndWriter({
-    languageId: currentLanguage,
-    buildFileName: (originalFileName, languageExt) =>
-      `${originalFileName}.temp.${languageExt}`
-  })
+  const { writeTextPart, getText, writeText, isClosedWithoutSaving } =
+    await createTempFileAndWriter({
+      languageId: currentLanguage,
+      buildFileName: (originalFileName, languageExt) =>
+        `${originalFileName}.temp.${languageExt}`
+    })
 
   const result = await askAiForCode({
     sourceLanguage: currentLanguage,
     code: content
   })
 
-  for await (const textPart of result.textStream) {
-    await writeTextPart(textPart)
+  for await (const chunk of result) {
+    if (isClosedWithoutSaving()) return
+    await writeTextPart(openaiAnswerContentToText(chunk.content))
   }
+
+  const finalCode = removeCodeBlockSyntax(getText())
+  await writeText(finalCode)
 }

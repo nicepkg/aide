@@ -13,11 +13,13 @@ export interface WriteTempFileResult {
   document: vscode.TextDocument
   writeText: (text: string) => Promise<void>
   writeTextPart: (textPart: string) => Promise<void>
+  getText: () => string
+  isClosedWithoutSaving: () => boolean
 }
 
-export async function createTempFileAndWriter(
+export const createTempFileAndWriter = async (
   options: CreateTempFileOptions = {}
-): Promise<WriteTempFileResult> {
+): Promise<WriteTempFileResult> => {
   const activeEditor = vscode.window.activeTextEditor
   if (!activeEditor) {
     throw new Error(t('error.noActiveEditor'))
@@ -52,6 +54,15 @@ export async function createTempFileAndWriter(
 
   const writeText = async (text: string) => {
     const edit = new vscode.WorkspaceEdit()
+
+    // clean the file
+    const fullRange = new vscode.Range(
+      new vscode.Position(0, 0),
+      newDocument.lineAt(newDocument.lineCount - 1).range.end
+    )
+    edit.delete(newFileUri, fullRange)
+
+    // write the new content
     edit.insert(newFileUri, new vscode.Position(0, 0), text)
     await vscode.workspace.applyEdit(edit)
   }
@@ -63,5 +74,20 @@ export async function createTempFileAndWriter(
     await vscode.workspace.applyEdit(edit)
   }
 
-  return { document: newDocument, writeText, writeTextPart }
+  const getText = () => newDocument.getText()
+
+  const isClosedWithoutSaving = () => {
+    if (newDocument.isClosed) {
+      return !newDocument.getText()
+    }
+    return false
+  }
+
+  return {
+    document: newDocument,
+    writeText,
+    writeTextPart,
+    getText,
+    isClosedWithoutSaving
+  }
 }

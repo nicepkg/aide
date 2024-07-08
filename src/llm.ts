@@ -1,24 +1,34 @@
 import { getConfigKey } from '@/config'
-import { createOpenAI } from '@ai-sdk/openai'
-import { streamText } from 'ai'
+import { HumanMessage, type MessageContent } from '@langchain/core/messages'
+import { ChatOpenAI } from '@langchain/openai'
 
 export const askOpenAIStream = async (prompt: string) => {
   const openaiBaseUrl = await getConfigKey('openaiBaseUrl')
   const openaiKey = await getConfigKey('openaiKey')
   const openaiModel = await getConfigKey('openaiModel')
 
-  const openai = createOpenAI({
-    baseURL: openaiBaseUrl,
+  const model = new ChatOpenAI({
     apiKey: openaiKey,
-    compatibility: 'strict' // strict mode, enable when using the OpenAI API
-  })
-  const model = openai(openaiModel)
-  const result = await streamText({
-    model,
-    prompt
+    configuration: {
+      baseURL: openaiBaseUrl
+    },
+    model: openaiModel
   })
 
-  return result
+  const resStream = await model.stream([new HumanMessage(prompt)])
+
+  return resStream
+}
+
+export const openaiAnswerContentToText = (content: MessageContent): string => {
+  if (typeof content === 'string') return content
+
+  return content
+    .map(c => {
+      if (c.type === 'text') return c.text
+      return ''
+    })
+    .join('')
 }
 
 /**
