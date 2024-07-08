@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.8.1](https://github.com/nicepkg/aide/compare/aide-v1.8.0...aide-v1.8.1) (2024-07-08)
+
+
+### Bug Fixes
+
+* fix ci ([a940637](https://github.com/nicepkg/aide/commit/a940637c2ded18a2d691ff5ff542e655aeff9aaf))
+* fix ci ([d21fdaa](https://github.com/nicepkg/aide/commit/d21fdaacccd0934328da76bdc47bb431708b99c7))
+
 ## [1.8.0](https://github.com/nicepkg/aide/compare/aide-v1.7.1...aide-v1.8.0) (2024-07-08)
 
 
