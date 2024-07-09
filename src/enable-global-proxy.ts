@@ -2,6 +2,7 @@ import { bootstrap } from 'global-agent'
 import { ProxyAgent, setGlobalDispatcher } from 'undici'
 
 import { logger } from './logger'
+import { tryParseJSON } from './utils'
 
 const getDefaultProxyUrl = () => {
   let proxyUrl = ''
@@ -39,4 +40,26 @@ export const enableGlobalProxy = () => {
   } catch (err) {
     logger.log('Failed to enable global proxy', err)
   }
+}
+
+export const enableLogFetch = () => {
+  const originalFetch = globalThis.fetch
+  const logFetch: typeof globalThis.fetch = (input, init) => {
+    const reqBody =
+      typeof init?.body === 'string'
+        ? tryParseJSON(init.body, true)
+        : init?.body
+
+    logger.log('fetching...', {
+      input,
+      init,
+      url: input.toString(),
+      method: init?.method || 'GET',
+      headers: init?.headers || {},
+      body: reqBody
+    })
+
+    return originalFetch(input, init)
+  }
+  globalThis.fetch = logFetch
 }

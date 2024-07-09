@@ -1,59 +1,58 @@
+import { createOpenAIRunnable, sessionIdHistoriesMap } from '@/ai/llm'
+import { tmpFileWriter } from '@/ai/tmp-file-writer'
 import { getConfigKey, setConfigKey } from '@/config'
 import { languageIds } from '@/constants'
-import { createTempFileAndWriter } from '@/create-tmp-file'
+import { createTmpFileInfo } from '@/create-tmp-file'
 import { t } from '@/i18n'
-import { askOpenAIStream, openaiAnswerContentToText } from '@/llm'
-import { getActiveEditorContent, removeCodeBlockSyntax } from '@/utils'
+import type { BaseLanguageModelInput } from '@langchain/core/language_models/base'
+import type { RunnableConfig } from '@langchain/core/runnables'
 import * as vscode from 'vscode'
 
-const askAiForCode = async ({
-  sourceLanguage,
-  targetLanguage,
-  code
+const buildGeneratePrompt = async ({
+  sourceLanguageId,
+  targetLanguageId,
+  sourceCode
 }: {
-  sourceLanguage: string
-  targetLanguage: string
-  code: string
-}) => {
+  sourceLanguageId: string
+  targetLanguageId: string
+  sourceCode: string
+}): Promise<BaseLanguageModelInput> => {
   const locale = vscode.env.language
   const prompt = `
   You are a programming language converter.
-  You need to help me convert ${sourceLanguage} code into ${targetLanguage} code.
+  You need to help me convert ${sourceLanguageId} code into ${targetLanguageId} code.
   All third-party API and third-party dependency names do not need to be changed,
   as my purpose is only to understand and read, not to run. Please use ${locale} language to add some additional comments as appropriate.
   Please do not reply with any text other than the code, and do not use markdown syntax.
   Here is the code you need to convert:
 
-  ${code}
+  ${sourceCode}
 `
-  return askOpenAIStream(prompt)
+  return prompt
 }
 
-export const handleCodeConvert = async () => {
-  const { activeEditor, content } = await getActiveEditorContent()
-
+const getTargetLanguageId = async (originalFileLanguageId: string) => {
   const convertLanguagePairs = await getConfigKey('convertLanguagePairs', {
     targetForSet: vscode.ConfigurationTarget.WorkspaceFolder,
     allowCustomOptionValue: true
   })
 
-  const currentLanguage = activeEditor.document.languageId
-  let targetLanguage = convertLanguagePairs?.[currentLanguage] || ''
+  let targetLanguageId = convertLanguagePairs?.[originalFileLanguageId] || ''
 
-  if (!targetLanguage) {
-    targetLanguage =
+  if (!targetLanguageId) {
+    targetLanguageId =
       (await vscode.window.showQuickPick(languageIds, {
         placeHolder: t('input.codeConvertTargetLanguage.prompt'),
         canPickMany: false
       })) || ''
 
-    if (!targetLanguage) return
+    if (!targetLanguageId) throw new Error(t('error.noTargetLanguage'))
 
     await setConfigKey(
       'convertLanguagePairs',
       {
         ...convertLanguagePairs,
-        [currentLanguage]: targetLanguage
+        [originalFileLanguageId]: targetLanguageId
       },
       {
         targetForSet: vscode.ConfigurationTarget.WorkspaceFolder,
@@ -62,26 +61,79 @@ export const handleCodeConvert = async () => {
     )
   }
 
-  const languageId = languageIds.includes(targetLanguage)
-    ? targetLanguage
+  targetLanguageId = languageIds.includes(targetLanguageId)
+    ? targetLanguageId
     : 'plaintext'
 
-  const { writeTextPart, getText, writeText, isClosedWithoutSaving } =
-    await createTempFileAndWriter({
-      languageId
-    })
+  return targetLanguageId
+}
 
-  const result = await askAiForCode({
-    sourceLanguage: currentLanguage,
-    targetLanguage,
-    code: content
+export const cleanupCodeConvertRunnables = () => {
+  const openDocumentPaths = new Set(
+    vscode.workspace.textDocuments.map(doc => doc.uri.fsPath)
+  )
+
+  Object.keys(sessionIdHistoriesMap).forEach(sessionId => {
+    const path = sessionId.match(/^codeConvert:(.*)$/)?.[1]
+
+    if (path && !openDocumentPaths.has(path)) {
+      delete sessionIdHistoriesMap[sessionId]
+    }
+  })
+}
+
+export const handleCodeConvert = async () => {
+  const {
+    originalFileContent,
+    originalFileLanguageId,
+    tmpFileUri,
+    isTmpFileHasContent
+  } = await createTmpFileInfo()
+
+  const targetLanguageId = await getTargetLanguageId(originalFileLanguageId)
+
+  const aiRunnable = await createOpenAIRunnable()
+  const sessionId = `codeConvert:${tmpFileUri.fsPath}}`
+  const aiRunnableConfig: RunnableConfig = {
+    configurable: {
+      sessionId
+    }
+  }
+  const isSessionHistoryExists = !!sessionIdHistoriesMap[sessionId]
+  const isContinue = isTmpFileHasContent && isSessionHistoryExists
+
+  const generatePrompt = await buildGeneratePrompt({
+    sourceLanguageId: originalFileLanguageId,
+    targetLanguageId,
+    sourceCode: originalFileContent
   })
 
-  for await (const chunk of result) {
-    if (isClosedWithoutSaving()) return
-    await writeTextPart(openaiAnswerContentToText(chunk.content))
-  }
+  await tmpFileWriter({
+    languageId: targetLanguageId,
+    buildAiStream: async () => {
+      if (!isContinue) {
+        // cleanup previous session
+        delete sessionIdHistoriesMap[sessionId]
 
-  const finalCode = removeCodeBlockSyntax(getText())
-  await writeText(finalCode)
+        const aiStream = aiRunnable.stream(
+          {
+            input: generatePrompt
+          },
+          aiRunnableConfig
+        )
+        return aiStream
+      }
+
+      // continue
+      return aiRunnable.stream(
+        {
+          input: `
+        continue, please do not reply with any text other than the code, and do not use markdown syntax.
+        go continue.
+        `
+        },
+        aiRunnableConfig
+      )
+    }
+  })
 }

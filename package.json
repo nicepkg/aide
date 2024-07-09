@@ -218,8 +218,8 @@
     "@types/node": "^20.14.10",
     "@types/shell-quote": "^1.7.5",
     "@types/vscode": "1.82.0",
-    "@typescript-eslint/eslint-plugin": "^7.15.0",
-    "@typescript-eslint/parser": "^7.15.0",
+    "@typescript-eslint/eslint-plugin": "^7.16.0",
+    "@typescript-eslint/parser": "^7.16.0",
     "@vscode/vsce": "^2.29.0",
     "commitizen": "^4.3.0",
     "dotenv": "^16.4.5",
@@ -241,19 +241,19 @@
     "global-agent": "^3.0.0",
     "husky": "^9.0.11",
     "inquirer": "^9.3.4",
-    "knip": "^5.24.2",
+    "knip": "^5.25.1",
     "langchain": "^0.2.8",
     "lint-staged": "^15.2.7",
     "minimatch": "^9.0.5",
     "pnpm": "^9.5.0",
     "prettier": "^3.3.2",
-    "rimraf": "^5.0.8",
+    "rimraf": "^6.0.0",
     "shell-quote": "^1.8.1",
     "tsup": "^8.1.0",
     "typescript": "5.4.5",
     "undici": "^6.19.2",
     "vite": "^5.3.3",
-    "vitest": "^1.6.0"
+    "vitest": "^2.0.1"
   },
   "pnpm": {
     "overrides": {

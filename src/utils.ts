@@ -1,7 +1,6 @@
 import * as vscode from 'vscode'
 
 import { languageIdExtMap } from './constants'
-import { t } from './i18n'
 import { logger } from './logger'
 
 export const getOrCreateTerminal = async (
@@ -62,30 +61,30 @@ export const getCurrentWorkspaceFolder = () => {
   return workspaceFolder
 }
 
-interface ActiveEditorContent {
-  activeEditor: vscode.TextEditor
-  content: string
-  isSelection: boolean
-}
+// interface ActiveEditorContent {
+//   activeEditor: vscode.TextEditor
+//   content: string
+//   isSelection: boolean
+// }
 
-export const getActiveEditorContent =
-  async (): Promise<ActiveEditorContent> => {
-    const activeEditor = vscode.window.activeTextEditor
+// export const getActiveEditorContent =
+//   async (): Promise<ActiveEditorContent> => {
+//     const activeEditor = vscode.window.activeTextEditor
 
-    if (!activeEditor) throw new Error(t('error.noActiveEditor'))
+//     if (!activeEditor) throw new Error(t('error.noActiveEditor'))
 
-    const { selection } = activeEditor
-    const isSelection = !selection.isEmpty
-    const content = isSelection
-      ? activeEditor.document.getText(selection)
-      : activeEditor.document.getText()
+//     const { selection } = activeEditor
+//     const isSelection = !selection.isEmpty
+//     const content = isSelection
+//       ? activeEditor.document.getText(selection)
+//       : activeEditor.document.getText()
 
-    return {
-      activeEditor,
-      content,
-      isSelection
-    }
-  }
+//     return {
+//       activeEditor,
+//       content,
+//       isSelection
+//     }
+//   }
 
 export const removeCodeBlockSyntax = (str: string): string => {
   if (!str) return ''
@@ -93,4 +92,22 @@ export const removeCodeBlockSyntax = (str: string): string => {
     .trim()
     .replace(/^```[\s\S]*?\n([\s\S]*?)\n```$/g, '$1')
     .trim()
+}
+
+export const removeCodeBlockStartSyntax = (str: string): string => {
+  if (!str) return ''
+  return str.replace(/^\s*```[\s\S]*?\n/, '')
+}
+
+export const removeCodeBlockEndSyntax = (str: string): string => {
+  if (!str) return ''
+  return str.replace(/\n```\s*$/g, '')
+}
+
+export const tryParseJSON = (str: string, returnOriginal = false) => {
+  try {
+    return JSON.parse(str)
+  } catch (err) {
+    return returnOriginal ? str : null
+  }
 }

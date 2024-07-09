@@ -1,47 +1,90 @@
+import { createOpenAIRunnable, sessionIdHistoriesMap } from '@/ai/llm'
+import { tmpFileWriter } from '@/ai/tmp-file-writer'
 import { getConfigKey } from '@/config'
-import { createTempFileAndWriter } from '@/create-tmp-file'
-import { askOpenAIStream, openaiAnswerContentToText } from '@/llm'
-import { getActiveEditorContent, removeCodeBlockSyntax } from '@/utils'
+import { createTmpFileInfo } from '@/create-tmp-file'
+import type { BaseLanguageModelInput } from '@langchain/core/language_models/base'
+import type { RunnableConfig } from '@langchain/core/runnables'
 import * as vscode from 'vscode'
 
-const askAiForCode = async ({
+const buildGeneratePrompt = async ({
   sourceLanguage,
   code
 }: {
   sourceLanguage: string
   code: string
-}) => {
+}): Promise<BaseLanguageModelInput> => {
   const locale = vscode.env.language
   const codeViewerHelperPrompt = await getConfigKey('codeViewerHelperPrompt')
   const prompt = codeViewerHelperPrompt
     .replace('#{sourceLanguage}', sourceLanguage)
     .replace('#{locale}', locale)
     .replace('#{content}', code)
+  return prompt
+}
 
-  return askOpenAIStream(prompt)
+export const cleanupCodeViewerHelperRunnables = () => {
+  const openDocumentPaths = new Set(
+    vscode.workspace.textDocuments.map(doc => doc.uri.fsPath)
+  )
+
+  Object.keys(sessionIdHistoriesMap).forEach(sessionId => {
+    const path = sessionId.match(/^codeViewerHelper:(.*)$/)?.[1]
+
+    if (path && !openDocumentPaths.has(path)) {
+      delete sessionIdHistoriesMap[sessionId]
+    }
+  })
 }
 
 export const handleCodeViewerHelper = async () => {
-  const { activeEditor, content } = await getActiveEditorContent()
-  const currentLanguage = activeEditor.document.languageId
+  const {
+    originalFileContent,
+    originalFileLanguageId,
+    tmpFileUri,
+    isTmpFileHasContent
+  } = await createTmpFileInfo()
 
-  const { writeTextPart, getText, writeText, isClosedWithoutSaving } =
-    await createTempFileAndWriter({
-      languageId: currentLanguage,
-      buildFileName: (originalFileName, languageExt) =>
-        `${originalFileName}.temp.${languageExt}`
-    })
+  const aiRunnable = await createOpenAIRunnable()
+  const sessionId = `codeViewerHelper:${tmpFileUri.fsPath}}`
+  const aiRunnableConfig: RunnableConfig = {
+    configurable: {
+      sessionId
+    }
+  }
+  const isSessionHistoryExists = !!sessionIdHistoriesMap[sessionId]
+  const isContinue = isTmpFileHasContent && isSessionHistoryExists
 
-  const result = await askAiForCode({
-    sourceLanguage: currentLanguage,
-    code: content
+  const generatePrompt = await buildGeneratePrompt({
+    sourceLanguage: originalFileLanguageId,
+    code: originalFileContent
   })
 
-  for await (const chunk of result) {
-    if (isClosedWithoutSaving()) return
-    await writeTextPart(openaiAnswerContentToText(chunk.content))
-  }
+  await tmpFileWriter({
+    languageId: originalFileLanguageId,
+    buildAiStream: async () => {
+      if (!isContinue) {
+        // cleanup previous session
+        delete sessionIdHistoriesMap[sessionId]
 
-  const finalCode = removeCodeBlockSyntax(getText())
-  await writeText(finalCode)
+        const aiStream = aiRunnable.stream(
+          {
+            input: generatePrompt
+          },
+          aiRunnableConfig
+        )
+        return aiStream
+      }
+
+      // continue
+      return aiRunnable.stream(
+        {
+          input: `
+        continue, please do not reply with any text other than the code, and do not use markdown syntax.
+        go continue.
+        `
+        },
+        aiRunnableConfig
+      )
+    }
+  })
 }
