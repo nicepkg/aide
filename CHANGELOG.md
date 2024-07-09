@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.9.0](https://github.com/nicepkg/aide/compare/aide-v1.8.1...aide-v1.9.0) (2024-07-09)
+
+
+### Features
+
+* add continue generate support, fix some bug about third-party models error response ([9c5e3e5](https://github.com/nicepkg/aide/commit/9c5e3e5ee75b4578a7fb5f1691f141422dabdd2b))
+
 ## [1.8.1](https://github.com/nicepkg/aide/compare/aide-v1.8.0...aide-v1.8.1) (2024-07-08)
 
 
