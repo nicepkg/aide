@@ -1,4 +1,7 @@
-import { createOpenAIRunnable, sessionIdHistoriesMap } from '@/ai/llm'
+import {
+  createCurrentModelRunnable,
+  getCurrentSessionIdHistoriesMap
+} from '@/ai/model-providers'
 import { tmpFileWriter } from '@/ai/tmp-file-writer'
 import { getConfigKey, setConfigKey } from '@/config'
 import { languageIds } from '@/constants'
@@ -68,10 +71,12 @@ const getTargetLanguageId = async (originalFileLanguageId: string) => {
   return targetLanguageId
 }
 
-export const cleanupCodeConvertRunnables = () => {
+export const cleanupCodeConvertRunnables = async () => {
   const openDocumentPaths = new Set(
     vscode.workspace.textDocuments.map(doc => doc.uri.fsPath)
   )
+
+  const sessionIdHistoriesMap = await getCurrentSessionIdHistoriesMap()
 
   Object.keys(sessionIdHistoriesMap).forEach(sessionId => {
     const path = sessionId.match(/^codeConvert:(.*)$/)?.[1]
@@ -92,13 +97,15 @@ export const handleCodeConvert = async () => {
 
   const targetLanguageId = await getTargetLanguageId(originalFileLanguageId)
 
-  const aiRunnable = await createOpenAIRunnable()
+  const aiRunnable = await createCurrentModelRunnable()
   const sessionId = `codeConvert:${tmpFileUri.fsPath}}`
   const aiRunnableConfig: RunnableConfig = {
     configurable: {
       sessionId
     }
   }
+
+  const sessionIdHistoriesMap = await getCurrentSessionIdHistoriesMap()
   const isSessionHistoryExists = !!sessionIdHistoriesMap[sessionId]
   const isContinue = isTmpFileHasContent && isSessionHistoryExists
 

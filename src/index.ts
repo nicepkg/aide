@@ -14,12 +14,11 @@ export const activate = async (context: vscode.ExtensionContext) => {
     const { extensionPath } = context
     const isDev = context.extensionMode !== vscode.ExtensionMode.Production
 
+    logger.log('"aide" is now active!')
+
     initializeLocalization(extensionPath)
     setContext(context)
     WorkspaceStorage.initialize(context)
-
-    logger.log('"aide" is now active!')
-
     await enablePolyfill()
     enableGlobalProxy()
     isDev && enableLogFetch()

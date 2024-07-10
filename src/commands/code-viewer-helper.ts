@@ -1,4 +1,7 @@
-import { createOpenAIRunnable, sessionIdHistoriesMap } from '@/ai/llm'
+import {
+  createCurrentModelRunnable,
+  getCurrentSessionIdHistoriesMap
+} from '@/ai/model-providers'
 import { tmpFileWriter } from '@/ai/tmp-file-writer'
 import { getConfigKey } from '@/config'
 import { createTmpFileInfo } from '@/create-tmp-file'
@@ -22,10 +25,11 @@ const buildGeneratePrompt = async ({
   return prompt
 }
 
-export const cleanupCodeViewerHelperRunnables = () => {
+export const cleanupCodeViewerHelperRunnables = async () => {
   const openDocumentPaths = new Set(
     vscode.workspace.textDocuments.map(doc => doc.uri.fsPath)
   )
+  const sessionIdHistoriesMap = await getCurrentSessionIdHistoriesMap()
 
   Object.keys(sessionIdHistoriesMap).forEach(sessionId => {
     const path = sessionId.match(/^codeViewerHelper:(.*)$/)?.[1]
@@ -44,13 +48,14 @@ export const handleCodeViewerHelper = async () => {
     isTmpFileHasContent
   } = await createTmpFileInfo()
 
-  const aiRunnable = await createOpenAIRunnable()
+  const aiRunnable = await createCurrentModelRunnable()
   const sessionId = `codeViewerHelper:${tmpFileUri.fsPath}}`
   const aiRunnableConfig: RunnableConfig = {
     configurable: {
       sessionId
     }
   }
+  const sessionIdHistoriesMap = await getCurrentSessionIdHistoriesMap()
   const isSessionHistoryExists = !!sessionIdHistoriesMap[sessionId]
   const isContinue = isTmpFileHasContent && isSessionHistoryExists
 
