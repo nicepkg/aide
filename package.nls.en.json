@@ -8,6 +8,7 @@
   "config.aiCommand.description": "Custom AI command template. Available variables: #{filesRelativePath}, #{filesFullPath}, #{content}",
   "config.aiCommandCopyBeforeRun.description": "Copy AI command to clipboard before running",
   "config.ignorePatterns.description": "Ignored file name patterns, supports glob syntax",
+  "config.respectGitIgnore.description": "Respect .gitignore file",
   "config.convertLanguagePairs.description": "Default convert language pairs",
   "config.codeViewerHelperPrompt.description": "Code viewer helper prompt template",
   "config.openaiKey.description": "OpenAI Key",

@@ -49,18 +49,18 @@
   ```json
   {
     "aide.ignorePatterns": [
-      "**/node_modules",
-      "**/.git",
-      "**/__pycache__",
-      "**/.Python",
-      "**/.DS_Store",
-      "**/.cache",
-      "**/.next",
-      "**/.nuxt",
-      "**/.out",
-      "**/dist",
-      "**/.serverless",
-      "**/.parcel-cache"
+      "**/node_modules/**",
+      "**/.git/**",
+      "**/__pycache__/**",
+      "**/.Python/**",
+      "**/.DS_Store/**",
+      "**/.cache/**",
+      "**/.next/**",
+      "**/.nuxt/**",
+      "**/.out/**",
+      "**/dist/**",
+      "**/.serverless/**",
+      "**/.parcel-cache/**"
     ]
   }
   ```
@@ -74,6 +74,10 @@
     "aide.ignorePatterns": ["**/node_modules", "**/.git", "**/dist", "**/build"]
   }
   ```
+
+#### 配置 - `aide.respectGitIgnore`
+
+此设置允许您指定在复制文件时是否尊重 `.gitignore` 文件以排除文件。默认为 `true`。
 
 ---
 
@@ -127,6 +131,10 @@
 与 `✨ Aide: 复制为 AI Prompt` 命令的 `aide.ignorePatterns` 配置相同。
 
 此设置允许你指定要从 AI 提示中排除的文件模式。支持 [glob](https://github.com/isaacs/node-glob) 规则。
+
+#### 配置 - `aide.respectGitIgnore`
+
+此设置允许您指定在运行问 ai 时是否尊重`.gitignore` 文件以排除文件。默认为 `true`。
 
 ---
 

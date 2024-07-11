@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-loop-func */
+import path from 'node:path'
 import { getConfigKey } from '@/config'
-import { processWorkspaceItem } from '@/files-processor'
+import { traverseFileOrFolders, type FileInfo } from '@/files-processor'
 import { t } from '@/i18n'
 import { executeCommand } from '@/utils'
 import { quote } from 'shell-quote'
@@ -16,25 +17,36 @@ export const handleAskAI = async (
   const selectedItems = selectedUris?.length > 0 ? selectedUris : [uri]
   if (selectedItems.length === 0) throw new Error(t('error.noSelection'))
 
+  const selectedFileOrFolders = selectedItems.map(item => item.fsPath)
   let filesPrompt = ''
   let filesRelativePath = ''
   let filesFullPath = ''
 
-  for (const item of selectedItems) {
-    const { promptFullContent: itemPromptFullContent, files: itemFilesInfo } =
-      await processWorkspaceItem(item, workspaceFolder.uri.fsPath)
-    filesPrompt += itemPromptFullContent
+  const processFile = async (fileInfo: FileInfo) => {
+    const { fullPath, relativePath, content } = fileInfo
+    const language = path.extname(fullPath).slice(1)
+    const promptFullContent = t(
+      'file.content',
+      relativePath,
+      language,
+      content.toString()
+    )
 
-    itemFilesInfo.forEach(fileInfo => {
-      filesRelativePath += ` "${quote([fileInfo.relativePath.trim()])}" `
-      filesFullPath += ` "${quote([fileInfo.fullPath.trim()])}" `
-    })
+    filesPrompt += promptFullContent
+    filesRelativePath += ` "${quote([relativePath.trim()])}" `
+    filesFullPath += ` "${quote([fullPath.trim()])}" `
   }
+
+  await traverseFileOrFolders(
+    selectedFileOrFolders,
+    workspaceFolder.uri.fsPath,
+    processFile
+  )
 
   const aiCommand = await getConfigKey('aiCommand')
   const aiCommandCopyBeforeRun = await getConfigKey('aiCommandCopyBeforeRun')
-
   let userInput = ''
+
   if (aiCommand.includes('#{question}')) {
     userInput =
       (await vscode.window.showInputBox({

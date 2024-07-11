@@ -141,21 +141,27 @@
           "scope": "resource",
           "description": "%config.aiCommandCopyBeforeRun.description%"
         },
+        "aide.respectGitIgnore": {
+          "type": "boolean",
+          "default": true,
+          "scope": "resource",
+          "description": "%config.respectGitIgnore.description%"
+        },
         "aide.ignorePatterns": {
           "type": "array",
           "default": [
-            "**/node_modules",
-            "**/.git",
-            "**/__pycache__",
-            "**/.Python",
-            "**/.DS_Store",
-            "**/.cache",
-            "**/.next",
-            "**/.nuxt",
-            "**/.out",
-            "**/dist",
-            "**/.serverless",
-            "**/.parcel-cache"
+            "**/node_modules/**",
+            "**/.git/**",
+            "**/__pycache__/**",
+            "**/.Python/**",
+            "**/.DS_Store/**",
+            "**/.cache/**",
+            "**/.next/**",
+            "**/.nuxt/**",
+            "**/.out/**",
+            "**/dist/**",
+            "**/.serverless/**",
+            "**/.parcel-cache/**"
           ],
           "scope": "resource",
           "description": "%config.ignorePatterns.description%"
@@ -240,6 +246,7 @@
     "glob": "^10.4.3",
     "global-agent": "^3.0.0",
     "husky": "^9.0.11",
+    "ignore": "^5.3.1",
     "inquirer": "^9.3.4",
     "knip": "^5.25.1",
     "langchain": "^0.2.9",

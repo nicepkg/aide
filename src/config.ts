@@ -34,6 +34,10 @@ type ConfigKeyInfoMap = {
 }
 
 const configKey = {
+  respectGitIgnore: {
+    ...pkgConfig['aide.respectGitIgnore'],
+    type: 'boolean'
+  },
   ignorePatterns: {
     ...pkgConfig['aide.ignorePatterns'],
     type: 'array',

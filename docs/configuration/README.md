@@ -49,18 +49,18 @@ This setting allows you to specify file patterns to exclude from the AI prompt. 
   ```json
   {
     "aide.ignorePatterns": [
-      "**/node_modules",
-      "**/.git",
-      "**/__pycache__",
-      "**/.Python",
-      "**/.DS_Store",
-      "**/.cache",
-      "**/.next",
-      "**/.nuxt",
-      "**/.out",
-      "**/dist",
-      "**/.serverless",
-      "**/.parcel-cache"
+      "**/node_modules/**",
+      "**/.git/**",
+      "**/__pycache__/**",
+      "**/.Python/**",
+      "**/.DS_Store/**",
+      "**/.cache/**",
+      "**/.next/**",
+      "**/.nuxt/**",
+      "**/.out/**",
+      "**/dist/**",
+      "**/.serverless/**",
+      "**/.parcel-cache/**"
     ]
   }
   ```
@@ -74,6 +74,10 @@ This setting allows you to specify file patterns to exclude from the AI prompt. 
     "aide.ignorePatterns": ["**/node_modules", "**/.git", "**/dist", "**/build"]
   }
   ```
+
+#### Configuration - `aide.respectGitIgnore`
+
+This setting allows you to specify whether to respect the `.gitignore` file to exclude files when copying files. default is `true`.
 
 ---
 
@@ -127,6 +131,10 @@ This setting allows you to specify whether to copy the AI command before executi
 The same as the `✨ Aide: Copy As AI Prompt` command's `aide.ignorePatterns` configuration.
 
 This setting allows you to specify file patterns to exclude from the AI prompt. Supports [glob](https://github.com/isaacs/node-glob) rules.
+
+#### Configuration - `aide.respectGitIgnore`
+
+This setting allows you to specify whether to respect the `.gitignore` file to exclude files when run ask ai. default is `true`.
 
 ---
 

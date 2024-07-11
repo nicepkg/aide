@@ -8,6 +8,7 @@
   "config.aiCommand.description": "自定义 AI 命令模板。可用变量：#{filesRelativePath}, #{filesFullPath}, #{content}",
   "config.aiCommandCopyBeforeRun.description": "运行前将 AI 命令复制到剪贴板",
   "config.ignorePatterns.description": "忽略的文件名模式, 支持 glob 语法",
+  "config.respectGitIgnore.description": "是否尊重 .gitignore 文件",
   "config.convertLanguagePairs.description": "默认转换语言对照表",
   "config.codeViewerHelperPrompt.description": "代码查看器助手 prompt 模板",
   "config.openaiKey.description": "OpenAI Key",

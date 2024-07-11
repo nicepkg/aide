@@ -50,6 +50,7 @@
     "commitlint",
     "esno",
     "execa",
+    "fullpath",
     "ianvs",
     "knip",
     "langchain",
