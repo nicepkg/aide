@@ -1,31 +1,21 @@
-import * as path from 'path'
 import * as vscode from 'vscode'
 
-import { logger } from './logger'
+// locale files
+import en from '../package.nls.en.json'
+import zhCn from '../package.nls.zh-cn.json'
 import { LocalizeFunction, Messages } from './types'
-import { VsCodeFS } from './vscode-fs'
+
+const localeFilesMap = {
+  en,
+  'zh-cn': zhCn
+}
 
 let messages: Messages = {}
 
-export const initializeLocalization = async (
-  extensionPath: string
-): Promise<void> => {
+export const initializeLocalization = async (): Promise<void> => {
   const { language } = vscode.env
-  const languageFilePath = path.join(
-    extensionPath,
-    `package.nls.${language}.json`
-  )
-  const defaultFilePath = path.join(extensionPath, 'package.nls.en.json')
 
-  try {
-    messages = JSON.parse(await VsCodeFS.readFile(languageFilePath, 'utf-8'))
-  } catch (err) {
-    logger.warn(
-      `Failed to load language file for ${language}, falling back to default`,
-      err
-    )
-    messages = JSON.parse(await VsCodeFS.readFile(defaultFilePath, 'utf-8'))
-  }
+  messages = localeFilesMap[language as keyof typeof localeFilesMap] ?? en
 }
 
 const format = (message: string, args: any[]): string =>

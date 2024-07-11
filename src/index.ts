@@ -11,12 +11,11 @@ import { WorkspaceStorage } from './workspace-storage'
 
 export const activate = async (context: vscode.ExtensionContext) => {
   try {
-    const { extensionPath } = context
     const isDev = context.extensionMode !== vscode.ExtensionMode.Production
 
     logger.log('"aide" is now active!')
 
-    initializeLocalization(extensionPath)
+    initializeLocalization()
     setContext(context)
     WorkspaceStorage.initialize(context)
     await enablePolyfill()

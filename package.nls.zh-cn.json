@@ -28,6 +28,7 @@
   "error.noTargetLanguage": "未选择目标语言",
   "error.noContext": "上下文未初始化",
   "info.copied": "文件内容已复制到剪贴板",
+  "info.customLanguage": "自定义语言",
   "input.array.promptEnding": "输入逗号分隔的值",
   "input.json.promptEnding": "输入 JSON 格式的值",
   "input.aiCommand.prompt": "输入 AI 命令的问题",

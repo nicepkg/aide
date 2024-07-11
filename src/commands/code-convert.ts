@@ -39,15 +39,27 @@ const getTargetLanguageId = async (originalFileLanguageId: string) => {
     targetForSet: vscode.ConfigurationTarget.WorkspaceFolder,
     allowCustomOptionValue: true
   })
-
   let targetLanguageId = convertLanguagePairs?.[originalFileLanguageId] || ''
+  const customLanguageOption = t('info.customLanguage')
 
   if (!targetLanguageId) {
     targetLanguageId =
-      (await vscode.window.showQuickPick(languageIds, {
-        placeHolder: t('input.codeConvertTargetLanguage.prompt'),
-        canPickMany: false
-      })) || ''
+      (await vscode.window.showQuickPick(
+        [customLanguageOption, ...languageIds],
+        {
+          placeHolder: t('input.codeConvertTargetLanguage.prompt'),
+          canPickMany: false
+        }
+      )) || ''
+
+    if (!targetLanguageId) throw new Error(t('error.noTargetLanguage'))
+
+    if (targetLanguageId === customLanguageOption) {
+      targetLanguageId =
+        (await vscode.window.showInputBox({
+          prompt: t('info.customLanguage')
+        })) || ''
+    }
 
     if (!targetLanguageId) throw new Error(t('error.noTargetLanguage'))
 
@@ -63,10 +75,6 @@ const getTargetLanguageId = async (originalFileLanguageId: string) => {
       }
     )
   }
-
-  targetLanguageId = languageIds.includes(targetLanguageId)
-    ? targetLanguageId
-    : 'plaintext'
 
   return targetLanguageId
 }

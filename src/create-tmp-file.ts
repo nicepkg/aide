@@ -1,6 +1,7 @@
 import path from 'path'
 import * as vscode from 'vscode'
 
+import { languageIds } from './constants'
 import { t } from './i18n'
 import { getLanguageIdExt } from './utils'
 
@@ -12,7 +13,7 @@ export const getTmpFileUri = (
   const originalFileName = path.parse(originalFileUri.fsPath).name
   const originalFileExt = path.parse(originalFileUri.fsPath).ext
 
-  const languageExt = getLanguageIdExt(languageId || 'plaintext')
+  const languageExt = getLanguageIdExt(languageId) || languageId
 
   return vscode.Uri.parse(
     `untitled:${path.join(originalFileDir, `${originalFileName}${originalFileExt}.aide${languageExt ? `.${languageExt}` : ''}`)}`
@@ -128,7 +129,11 @@ export const createTmpFileAndWriter = async (
     })
   }
 
-  vscode.languages.setTextDocumentLanguage(tmpDocument, languageId)
+  const docLanguageId = languageIds.includes(languageId)
+    ? languageId
+    : 'plaintext'
+
+  vscode.languages.setTextDocumentLanguage(tmpDocument, docLanguageId)
 
   const writeText = async (text: string) => {
     const edit = new vscode.WorkspaceEdit()
