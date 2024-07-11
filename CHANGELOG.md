@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.10.0](https://github.com/nicepkg/aide/compare/aide-v1.9.0...aide-v1.10.0) (2024-07-11)
+
+
+### Features
+
+* add azure openai support ([607e5bd](https://github.com/nicepkg/aide/commit/607e5bd095ae97d8d7c3efc36c4efedfe71dacf4))
+* allow custom convert target language ([0454b70](https://github.com/nicepkg/aide/commit/0454b70013c9c981bcf3eefa789b320c7f5ef026))
+
 ## [1.9.0](https://github.com/nicepkg/aide/compare/aide-v1.8.1...aide-v1.9.0) (2024-07-09)
 
 
