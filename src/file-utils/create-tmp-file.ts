@@ -1,9 +1,8 @@
 import path from 'path'
+import { languageIds } from '@/constants'
+import { t } from '@/i18n'
+import { getLanguageIdExt } from '@/utils'
 import * as vscode from 'vscode'
-
-import { languageIds } from './constants'
-import { t } from './i18n'
-import { getLanguageIdExt } from './utils'
 
 export const getTmpFileUri = (
   originalFileUri: vscode.Uri,

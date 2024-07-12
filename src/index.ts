@@ -7,7 +7,6 @@ import { enableGlobalProxy, enableLogFetch } from './enable-global-proxy'
 import { initializeLocalization } from './i18n'
 import { logger } from './logger'
 import { enablePolyfill } from './polyfill'
-import { WorkspaceStorage } from './workspace-storage'
 
 export const activate = async (context: vscode.ExtensionContext) => {
   try {
@@ -17,7 +16,6 @@ export const activate = async (context: vscode.ExtensionContext) => {
 
     initializeLocalization()
     setContext(context)
-    WorkspaceStorage.initialize(context)
     await enablePolyfill()
     enableGlobalProxy()
     isDev && enableLogFetch()

@@ -2,10 +2,10 @@ import {
   createModelProvider,
   getCurrentSessionIdHistoriesMap
 } from '@/ai/model-providers'
-import { tmpFileWriter } from '@/ai/tmp-file-writer'
 import { getConfigKey, setConfigKey } from '@/config'
 import { languageIds } from '@/constants'
-import { createTmpFileInfo } from '@/create-tmp-file'
+import { createTmpFileInfo } from '@/file-utils/create-tmp-file'
+import { tmpFileWriter } from '@/file-utils/tmp-file-writer'
 import { t } from '@/i18n'
 import type { BaseLanguageModelInput } from '@langchain/core/language_models/base'
 import type { RunnableConfig } from '@langchain/core/runnables'

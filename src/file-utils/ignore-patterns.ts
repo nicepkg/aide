@@ -1,12 +1,12 @@
 import path from 'path'
+import { getConfigKey } from '@/config'
+import { t } from '@/i18n'
+import { logger } from '@/logger'
 import { glob } from 'glob'
 import ignore from 'ignore'
 import { Minimatch } from 'minimatch'
 import * as vscode from 'vscode'
 
-import { getConfigKey } from './config'
-import { t } from './i18n'
-import { logger } from './logger'
 import { VsCodeFS } from './vscode-fs'
 
 export const createShouldIgnore = async (fullDirPath: string) => {

@@ -1,7 +1,4 @@
-import {
-  createTmpFileAndWriter,
-  type CreateTmpFileOptions
-} from '@/create-tmp-file'
+import { getCurrentModelProvider } from '@/ai/model-providers'
 import { hideProcessLoading, showProcessLoading } from '@/loading'
 import {
   removeCodeBlockEndSyntax,
@@ -11,7 +8,10 @@ import {
 import type { IterableReadableStream } from '@langchain/core/dist/utils/stream'
 import type { AIMessageChunk } from '@langchain/core/messages'
 
-import { getCurrentModelProvider } from './model-providers'
+import {
+  createTmpFileAndWriter,
+  type CreateTmpFileOptions
+} from './create-tmp-file'
 
 export interface TmpFileWriterOptions extends CreateTmpFileOptions {
   buildAiStream: () => Promise<IterableReadableStream<AIMessageChunk>>

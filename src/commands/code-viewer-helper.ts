@@ -2,9 +2,9 @@ import {
   createModelProvider,
   getCurrentSessionIdHistoriesMap
 } from '@/ai/model-providers'
-import { tmpFileWriter } from '@/ai/tmp-file-writer'
 import { getConfigKey } from '@/config'
-import { createTmpFileInfo } from '@/create-tmp-file'
+import { createTmpFileInfo } from '@/file-utils/create-tmp-file'
+import { tmpFileWriter } from '@/file-utils/tmp-file-writer'
 import type { BaseLanguageModelInput } from '@langchain/core/language_models/base'
 import type { RunnableConfig } from '@langchain/core/runnables'
 import * as vscode from 'vscode'

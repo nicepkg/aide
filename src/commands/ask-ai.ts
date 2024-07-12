@@ -1,7 +1,10 @@
 /* eslint-disable @typescript-eslint/no-loop-func */
 import path from 'node:path'
 import { getConfigKey } from '@/config'
-import { traverseFileOrFolders, type FileInfo } from '@/files-processor'
+import {
+  traverseFileOrFolders,
+  type FileInfo
+} from '@/file-utils/files-processor'
 import { t } from '@/i18n'
 import { executeCommand } from '@/utils'
 import { quote } from 'shell-quote'

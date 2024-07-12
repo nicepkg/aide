@@ -1,7 +1,7 @@
 import path from 'path'
 import { getConfigKey } from '@/config'
-import type { FileInfo } from '@/files-processor'
-import { traverseFileOrFolders } from '@/files-processor'
+import type { FileInfo } from '@/file-utils/files-processor'
+import { traverseFileOrFolders } from '@/file-utils/files-processor'
 import { t } from '@/i18n'
 import * as vscode from 'vscode'
 
