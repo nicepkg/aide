@@ -95,12 +95,12 @@
         {
           "when": "explorerResourceIsFolder || selectedFilesCount > 0 || resourceLangId",
           "command": "aide.copyAsPrompt",
-          "group": "0_navigation@0"
+          "group": "0_aide@0"
         },
         {
           "when": "explorerResourceIsFolder || selectedFilesCount > 0 || resourceLangId",
           "command": "aide.askAI",
-          "group": "0_navigation@1"
+          "group": "0_aide@1"
         }
       ],
       "editor/context": [
@@ -120,11 +120,11 @@
       "editor/title": [
         {
           "command": "aide.codeViewerHelper",
-          "group": "0_aide@1"
+          "group": "navigation@1"
         },
         {
           "command": "aide.codeConvert",
-          "group": "0_aide@2"
+          "group": "navigation@2"
         }
       ]
     },
