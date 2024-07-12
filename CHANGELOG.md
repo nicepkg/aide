@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.11.0](https://github.com/nicepkg/aide/compare/aide-v1.10.0...aide-v1.11.0) (2024-07-12)
+
+
+### Features
+
+* add ai rename variable feature ([cb03027](https://github.com/nicepkg/aide/commit/cb03027546ed6a5c06e63ace74a5511a3222d4df))
+
 ## [1.10.0](https://github.com/nicepkg/aide/compare/aide-v1.9.0...aide-v1.10.0) (2024-07-11)
 
 
