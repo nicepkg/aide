@@ -1,5 +1,5 @@
 import {
-  createCurrentModelRunnable,
+  createModelProvider,
   getCurrentSessionIdHistoriesMap
 } from '@/ai/model-providers'
 import { tmpFileWriter } from '@/ai/tmp-file-writer'
@@ -48,7 +48,8 @@ export const handleCodeViewerHelper = async () => {
     isTmpFileHasContent
   } = await createTmpFileInfo()
 
-  const aiRunnable = await createCurrentModelRunnable()
+  const modelProvider = await createModelProvider()
+  const aiRunnable = await modelProvider.createRunnable()
   const sessionId = `codeViewerHelper:${tmpFileUri.fsPath}}`
   const aiRunnableConfig: RunnableConfig = {
     configurable: {
@@ -59,7 +60,7 @@ export const handleCodeViewerHelper = async () => {
   const isSessionHistoryExists = !!sessionIdHistoriesMap[sessionId]
   const isContinue = isTmpFileHasContent && isSessionHistoryExists
 
-  const generatePrompt = await buildGeneratePrompt({
+  const prompt = await buildGeneratePrompt({
     sourceLanguage: originalFileLanguageId,
     code: originalFileContent
   })
@@ -73,7 +74,7 @@ export const handleCodeViewerHelper = async () => {
 
         const aiStream = aiRunnable.stream(
           {
-            input: generatePrompt
+            input: prompt
           },
           aiRunnableConfig
         )

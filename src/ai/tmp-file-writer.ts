@@ -2,7 +2,7 @@ import {
   createTmpFileAndWriter,
   type CreateTmpFileOptions
 } from '@/create-tmp-file'
-import { hideLoading, showLoading } from '@/loading'
+import { hideProcessLoading, showProcessLoading } from '@/loading'
 import {
   removeCodeBlockEndSyntax,
   removeCodeBlockStartSyntax,
@@ -24,12 +24,12 @@ export const tmpFileWriter = async (options: TmpFileWriterOptions) => {
   const ModelProvider = await getCurrentModelProvider()
 
   try {
-    showLoading()
+    showProcessLoading()
     const aiStream = await buildAiStream()
 
     for await (const chunk of aiStream) {
       if (isClosedWithoutSaving()) {
-        hideLoading()
+        hideProcessLoading()
         return
       }
 
@@ -65,6 +65,6 @@ export const tmpFileWriter = async (options: TmpFileWriterOptions) => {
     // write the final code
     await writeText(finalCode)
   } finally {
-    hideLoading()
+    hideProcessLoading()
   }
 }

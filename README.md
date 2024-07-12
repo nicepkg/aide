@@ -22,6 +22,7 @@ Master Any Code: One-Click Comments and Language Conversion. 💪
 - 📖 **Code Annotation**: One-click detailed comments for better readability.
 - 📋 **Quick Copy**: Copy files/folders as AI prompts instantly.
 - 💬 **Custom Commands**: Execute custom AI commands on selected files.
+- 🔀 **Variable Rename**: Rename variables using AI-suggested variable names.
 - 🎛 **Prompt Templates**: Define flexible AI prompt templates.
 - 📁 **Multi-File Support**: Select multiple files/folders for AI prompts or commands.
 - 🚫 **Ignore Patterns**: Exclude files/folders using custom glob rules.
@@ -77,7 +78,17 @@ Prepare and execute custom AI commands based on selected files and user input.
 - Right-click and choose `✨ Aide: Ask AI`.
 - Enter your question when prompted.
 
-### 5. Customizing Keyboard Shortcuts
+### 5. Aide: Rename Variable
+
+Rename variables using AI-suggested variable names.
+
+**How to Use:**
+
+- Select a variable in the editor.
+- Right-click and choose `✨ Aide: Rename Variable`.
+- Select a suggested variable name.
+
+### 6. Customizing Keyboard Shortcuts
 
 Assign custom keyboard shortcuts to these commands for faster access:
 

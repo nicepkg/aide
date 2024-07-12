@@ -16,9 +16,17 @@ import {
   type Runnable,
   type RunnableConfig
 } from '@langchain/core/runnables'
+import { z } from 'zod'
 
 export interface BaseModelProviderCreateRunnableOptions {
-  historyMessages: BaseMessage[]
+  historyMessages?: BaseMessage[]
+}
+
+export interface BaseModelProviderCreateStructuredOutputRunnableOptions<
+  ZSchema extends z.ZodType<any>
+> {
+  historyMessages?: BaseMessage[]
+  zodSchema: ZSchema
 }
 
 export abstract class BaseModelProvider<Model extends BaseChatModel> {
@@ -46,16 +54,8 @@ export abstract class BaseModelProvider<Model extends BaseChatModel> {
     return prompt
   }
 
-  createChain(
-    prompt: ChatPromptTemplate,
-    model: Model
-  ): MaybePromise<Runnable<any, AIMessageChunk, RunnableConfig>> {
-    const chain = prompt.pipe(model)
-    return chain
-  }
-
-  createRunnableWithMessageHistory(
-    chain: Runnable<any, AIMessageChunk, RunnableConfig>,
+  createRunnableWithMessageHistory<Chunk extends AIMessageChunk>(
+    chain: Runnable<any, Chunk, RunnableConfig>,
     historyMessages: BaseMessage[]
   ) {
     return new RunnableWithMessageHistory({
@@ -82,7 +82,21 @@ export abstract class BaseModelProvider<Model extends BaseChatModel> {
     const { historyMessages } = options ?? {}
     const model = await this.createModel()
     const prompt = await this.createPrompt()
-    const chain = await this.createChain(prompt, model)
+    const chain = prompt.pipe(model)
+    return await this.createRunnableWithMessageHistory(
+      chain,
+      historyMessages || []
+    )
+  }
+
+  async createStructuredOutputRunnable<ZSchema extends z.ZodType<any>>(
+    options: BaseModelProviderCreateStructuredOutputRunnableOptions<ZSchema>
+  ) {
+    const { historyMessages, zodSchema } = options
+    const model = await this.createModel()
+    const prompt = await this.createPrompt()
+    const chain = prompt.pipe(model.withStructuredOutput(zodSchema))
+
     return await this.createRunnableWithMessageHistory(
       chain,
       historyMessages || []

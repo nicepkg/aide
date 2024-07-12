@@ -84,6 +84,10 @@
         "command": "aide.codeViewerHelper",
         "title": "%command.codeViewerHelper%",
         "icon": "$(open-editors-view-icon)"
+      },
+      {
+        "command": "aide.renameVariable",
+        "title": "%command.renameVariable%"
       }
     ],
     "menus": {
@@ -102,21 +106,25 @@
       "editor/context": [
         {
           "command": "aide.codeViewerHelper",
-          "group": "0_navigation@0"
+          "group": "0_aide@100"
         },
         {
           "command": "aide.codeConvert",
-          "group": "0_navigation@1"
+          "group": "0_aide@101"
+        },
+        {
+          "command": "aide.renameVariable",
+          "group": "0_aide@102"
         }
       ],
       "editor/title": [
         {
           "command": "aide.codeViewerHelper",
-          "group": "navigation@1"
+          "group": "0_aide@1"
         },
         {
           "command": "aide.codeConvert",
-          "group": "navigation@2"
+          "group": "0_aide@2"
         }
       ]
     },
@@ -260,7 +268,8 @@
     "typescript": "5.4.5",
     "undici": "^6.19.2",
     "vite": "^5.3.3",
-    "vitest": "^2.0.2"
+    "vitest": "^2.0.2",
+    "zod": "^3.23.8"
   },
   "pnpm": {
     "overrides": {

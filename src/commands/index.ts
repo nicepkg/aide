@@ -5,6 +5,7 @@ import { handleAskAI } from './ask-ai'
 import { handleCodeConvert } from './code-convert'
 import { handleCodeViewerHelper } from './code-viewer-helper'
 import { handleCopyAsPrompt } from './copy-as-prompt'
+import { handleRenameVariable } from './rename-variable'
 
 export const registerCommands = (context: vscode.ExtensionContext) => {
   const copyDisposable = vscode.commands.registerCommand(
@@ -26,10 +27,16 @@ export const registerCommands = (context: vscode.ExtensionContext) => {
     commandErrorCatcher(handleCodeViewerHelper)
   )
 
+  const renameVariableDisposable = vscode.commands.registerCommand(
+    'aide.renameVariable',
+    commandErrorCatcher(handleRenameVariable)
+  )
+
   context.subscriptions.push(
     copyDisposable,
     askAIDisposable,
     codeConvertDisposable,
-    codeViewerHelperDisposable
+    codeViewerHelperDisposable,
+    renameVariableDisposable
   )
 }

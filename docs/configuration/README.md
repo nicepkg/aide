@@ -284,6 +284,14 @@ This setting allows you to specify the template for the code viewer helper promp
   #{content}
   ```
 
+### `✨ Aide: Rename Variable`
+
+This command allows you to rename variables using AI-suggested variable names.
+
+You can select a variable in the editor, right-click, and choose `✨ Aide: Rename Variable`. Then, you can select a suggested variable name from the list.
+
+It uses the built-in `rename symbol` feature of `vscode`, which renames all references to the variable together.
+
 ---
 
 ### OpenAI Configuration
@@ -357,6 +365,7 @@ Here are the default commands you can customize:
 - `aide.askAI`: Ask AI
 - `aide.codeConvert`: Code Convert
 - `aide.codeViewerHelper`: Code Viewer Helper
+- `aide.renameVariable`: Rename Variable
 - ...maybe more
 
 Example:

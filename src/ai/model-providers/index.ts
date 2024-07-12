@@ -18,8 +18,8 @@ export const getCurrentSessionIdHistoriesMap = async () => {
   return ModelProvider.sessionIdHistoriesMap
 }
 
-export const createCurrentModelRunnable = async () => {
+export const createModelProvider = async () => {
   const ModelProvider = await getCurrentModelProvider()
   const modelProvider = new ModelProvider()
-  return modelProvider.createRunnable()
+  return modelProvider
 }

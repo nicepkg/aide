@@ -1,5 +1,5 @@
 import {
-  createCurrentModelRunnable,
+  createModelProvider,
   getCurrentSessionIdHistoriesMap
 } from '@/ai/model-providers'
 import { tmpFileWriter } from '@/ai/tmp-file-writer'
@@ -104,8 +104,8 @@ export const handleCodeConvert = async () => {
   } = await createTmpFileInfo()
 
   const targetLanguageId = await getTargetLanguageId(originalFileLanguageId)
-
-  const aiRunnable = await createCurrentModelRunnable()
+  const modelProvider = await createModelProvider()
+  const aiRunnable = await modelProvider.createRunnable()
   const sessionId = `codeConvert:${tmpFileUri.fsPath}}`
   const aiRunnableConfig: RunnableConfig = {
     configurable: {
@@ -117,7 +117,7 @@ export const handleCodeConvert = async () => {
   const isSessionHistoryExists = !!sessionIdHistoriesMap[sessionId]
   const isContinue = isTmpFileHasContent && isSessionHistoryExists
 
-  const generatePrompt = await buildGeneratePrompt({
+  const prompt = await buildGeneratePrompt({
     sourceLanguageId: originalFileLanguageId,
     targetLanguageId,
     sourceCode: originalFileContent
@@ -132,7 +132,7 @@ export const handleCodeConvert = async () => {
 
         const aiStream = aiRunnable.stream(
           {
-            input: generatePrompt
+            input: prompt
           },
           aiRunnableConfig
         )

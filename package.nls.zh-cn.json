@@ -3,6 +3,7 @@
   "command.askAI": "✨ Aide: 问 AI",
   "command.codeConvert": "✨ Aide: 代码转换",
   "command.codeViewerHelper": "✨ Aide: 代码查看器助手",
+  "command.renameVariable": "✨ Aide: 重命名变量",
   "config.title": "Aide 配置",
   "config.aiPrompt.description": "复制内容的模板，使用#{content}作为文件内容的占位符",
   "config.aiCommand.description": "自定义 AI 命令模板。可用变量：#{filesRelativePath}, #{filesFullPath}, #{content}",
@@ -29,10 +30,13 @@
   "error.noContext": "上下文未初始化",
   "info.copied": "文件内容已复制到剪贴板",
   "info.customLanguage": "自定义语言",
+  "info.noAiSuggestionsVariableName": " AI 觉得你这个变量名字已经很好了",
+  "info.processing": "Aide 正在处理中...",
   "input.array.promptEnding": "输入逗号分隔的值",
   "input.json.promptEnding": "输入 JSON 格式的值",
   "input.aiCommand.prompt": "输入 AI 命令的问题",
   "input.aiCommand.placeholder": "输入 AI 命令的问题",
   "input.codeConvertTargetLanguage.prompt": "选择转换目标语言",
+  "input.selectAiSuggestionsVariableName.prompt": "选择 AI 建议的变量名",
   "file.content": "File: {0}\n```{1}\n{2}\n```\n\n"
 }
