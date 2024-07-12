@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.11.1](https://github.com/nicepkg/aide/compare/aide-v1.11.0...aide-v1.11.1) (2024-07-12)
+
+
+### Bug Fixes
+
+* fix icon not found bug ([31a45e7](https://github.com/nicepkg/aide/commit/31a45e75aa7ba6fa8f2d165a00fc6a24389c41ab))
+
 ## [1.11.0](https://github.com/nicepkg/aide/compare/aide-v1.10.0...aide-v1.11.0) (2024-07-12)
 
 
