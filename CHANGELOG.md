@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.12.0](https://github.com/nicepkg/aide/compare/aide-v1.11.1...aide-v1.12.0) (2024-07-16)
+
+
+### Features
+
+* support azure-openai and add continue tips and add autoRememberConvertLanguagePairs config ([5438bf2](https://github.com/nicepkg/aide/commit/5438bf2c408a6be55321a089821e6cbab26f30b4))
+
 ## [1.11.1](https://github.com/nicepkg/aide/compare/aide-v1.11.0...aide-v1.11.1) (2024-07-12)
 
 
