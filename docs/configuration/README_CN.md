@@ -146,6 +146,10 @@
 
 VSCode 将打开一个临时文本以显示转换后的代码。
 
+#### 配置 - `aide.aide.autoRememberConvertLanguagePairs`
+
+此设置允许你指定是否自动记住代码转换的语言映射。默认为 `true`。
+
 #### 配置 - `aide.convertLanguagePairs`
 
 此设置允许你指定代码转换的语言映射。映射应采用 `sourceLanguage: targetLanguage` 的形式。

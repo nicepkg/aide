@@ -1,10 +1,11 @@
 import {
   createModelProvider,
   getCurrentSessionIdHistoriesMap
-} from '@/ai/model-providers'
+} from '@/ai/helpers'
 import { getConfigKey, setConfigKey } from '@/config'
 import { languageIds } from '@/constants'
 import { createTmpFileInfo } from '@/file-utils/create-tmp-file'
+import { showContinueMessage } from '@/file-utils/show-continue-message'
 import { tmpFileWriter } from '@/file-utils/tmp-file-writer'
 import { t } from '@/i18n'
 import type { BaseLanguageModelInput } from '@langchain/core/language_models/base'
@@ -63,17 +64,23 @@ const getTargetLanguageId = async (originalFileLanguageId: string) => {
 
     if (!targetLanguageId) throw new Error(t('error.noTargetLanguage'))
 
-    await setConfigKey(
-      'convertLanguagePairs',
-      {
-        ...convertLanguagePairs,
-        [originalFileLanguageId]: targetLanguageId
-      },
-      {
-        targetForSet: vscode.ConfigurationTarget.WorkspaceFolder,
-        allowCustomOptionValue: true
-      }
+    const autoRememberConvertLanguagePairs = await getConfigKey(
+      'autoRememberConvertLanguagePairs'
     )
+
+    if (autoRememberConvertLanguagePairs) {
+      await setConfigKey(
+        'convertLanguagePairs',
+        {
+          ...convertLanguagePairs,
+          [originalFileLanguageId]: targetLanguageId
+        },
+        {
+          targetForSet: vscode.ConfigurationTarget.WorkspaceFolder,
+          allowCustomOptionValue: true
+        }
+      )
+    }
   }
 
   return targetLanguageId
@@ -123,7 +130,7 @@ export const handleCodeConvert = async () => {
     sourceCode: originalFileContent
   })
 
-  await tmpFileWriter({
+  const tmpFileWriterReturns = await tmpFileWriter({
     languageId: targetLanguageId,
     buildAiStream: async () => {
       if (!isContinue) {
@@ -149,6 +156,15 @@ export const handleCodeConvert = async () => {
         },
         aiRunnableConfig
       )
+    }
+  })
+
+  await showContinueMessage({
+    tmpFileUri: tmpFileWriterReturns.tmpFileUri,
+    originalFileContentLineCount: originalFileContent.split('\n').length,
+    continueMessage: t('info.continueMessage') + t('info.iconContinueMessage'),
+    onContinue: async () => {
+      await handleCodeConvert()
     }
   })
 }

@@ -2,9 +2,9 @@ import path from 'path'
 import {
   createModelProvider,
   getCurrentSessionIdHistoriesMap
-} from '@/ai/model-providers'
+} from '@/ai/helpers'
 import { t } from '@/i18n'
-import { hideProcessLoading, showProcessLoading } from '@/loading'
+import { createLoading } from '@/loading'
 import { getActiveEditorContent, getCurrentWorkspaceFolder } from '@/utils'
 import type { BaseLanguageModelInput } from '@langchain/core/language_models/base'
 import type { RunnableConfig } from '@langchain/core/runnables'
@@ -122,6 +122,7 @@ export const handleRenameVariable = async () => {
   const { selection } = activeEditor
   const variableName = activeEditor.document.getText(selection)
   const modelProvider = await createModelProvider()
+  const { showProcessLoading, hideProcessLoading } = createLoading()
 
   const aiRunnable = await modelProvider.createStructuredOutputRunnable({
     zodSchema: renameSuggestionZodSchema

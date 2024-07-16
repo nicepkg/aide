@@ -146,6 +146,10 @@ You can click on a paper-like icon in the top right corner of VS Code or right-c
 
 vscode will open a temporary text to show you the converted code.
 
+#### Configuration - `aide.aide.autoRememberConvertLanguagePairs`
+
+This setting allows you to specify whether to automatically remember the language pairs used for code conversion. Default is `true`.
+
 #### Configuration - `aide.convertLanguagePairs`
 
 This setting allows you to specify the language mapping for code conversion. The mapping should be in the form of `sourceLanguage: targetLanguage`.

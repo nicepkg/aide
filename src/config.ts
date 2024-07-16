@@ -55,6 +55,10 @@ const configKey = {
     ...pkgConfig['aide.aiCommandCopyBeforeRun'],
     type: 'boolean'
   },
+  autoRememberConvertLanguagePairs: {
+    ...pkgConfig['aide.autoRememberConvertLanguagePairs'],
+    type: 'boolean'
+  },
   convertLanguagePairs: {
     ...pkgConfig['aide.convertLanguagePairs'],
     default: pkgConfig['aide.convertLanguagePairs'].default as Record<

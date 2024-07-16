@@ -3,6 +3,7 @@ import { getContext } from '@/context'
 import { ChatOpenAI, type ChatOpenAICallOptions } from '@langchain/openai'
 import * as vscode from 'vscode'
 
+import { parseModelBaseUrl } from '../parse-model-base-url'
 import { BaseModelProvider } from './base'
 
 export class OpenAIModelProvider extends BaseModelProvider<
@@ -10,7 +11,7 @@ export class OpenAIModelProvider extends BaseModelProvider<
 > {
   async createModel() {
     const isDev = getContext().extensionMode !== vscode.ExtensionMode.Production
-    const openaiBaseUrl = await getConfigKey('openaiBaseUrl')
+    const { url: openaiBaseUrl } = await parseModelBaseUrl()
     const openaiKey = await getConfigKey('openaiKey')
     const openaiModel = await getConfigKey('openaiModel')
 

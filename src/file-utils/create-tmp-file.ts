@@ -103,6 +103,8 @@ export interface CreateTmpFileOptions {
 }
 
 export interface WriteTmpFileResult {
+  originalFileUri: vscode.Uri
+  tmpFileUri: vscode.Uri
   tmpDocument: vscode.TextDocument
   writeText: (text: string) => Promise<void>
   writeTextPart: (textPart: string) => Promise<void>
@@ -166,6 +168,8 @@ export const createTmpFileAndWriter = async (
   }
 
   return {
+    originalFileUri,
+    tmpFileUri,
     tmpDocument,
     writeText,
     writeTextPart,

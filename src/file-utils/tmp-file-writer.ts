@@ -1,5 +1,5 @@
-import { getCurrentModelProvider } from '@/ai/model-providers'
-import { hideProcessLoading, showProcessLoading } from '@/loading'
+import { getCurrentModelProvider } from '@/ai/helpers'
+import { createLoading } from '@/loading'
 import {
   removeCodeBlockEndSyntax,
   removeCodeBlockStartSyntax,
@@ -10,18 +10,26 @@ import type { AIMessageChunk } from '@langchain/core/messages'
 
 import {
   createTmpFileAndWriter,
-  type CreateTmpFileOptions
+  type CreateTmpFileOptions,
+  type WriteTmpFileResult
 } from './create-tmp-file'
 
 export interface TmpFileWriterOptions extends CreateTmpFileOptions {
   buildAiStream: () => Promise<IterableReadableStream<AIMessageChunk>>
 }
 
-export const tmpFileWriter = async (options: TmpFileWriterOptions) => {
+export const tmpFileWriter = async (
+  options: TmpFileWriterOptions
+): Promise<WriteTmpFileResult> => {
   const { buildAiStream, ...createTmpFileOptions } = options
-  const { writeTextPart, getText, writeText, isClosedWithoutSaving } =
+
+  const createTmpFileAndWriterReturns =
     await createTmpFileAndWriter(createTmpFileOptions)
+  const { writeTextPart, getText, writeText, isClosedWithoutSaving } =
+    createTmpFileAndWriterReturns
+
   const ModelProvider = await getCurrentModelProvider()
+  const { showProcessLoading, hideProcessLoading } = createLoading()
 
   try {
     showProcessLoading()
@@ -30,7 +38,7 @@ export const tmpFileWriter = async (options: TmpFileWriterOptions) => {
     for await (const chunk of aiStream) {
       if (isClosedWithoutSaving()) {
         hideProcessLoading()
-        return
+        return createTmpFileAndWriterReturns
       }
 
       // convert openai answer content to text
@@ -67,4 +75,6 @@ export const tmpFileWriter = async (options: TmpFileWriterOptions) => {
   } finally {
     hideProcessLoading()
   }
+
+  return createTmpFileAndWriterReturns
 }

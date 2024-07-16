@@ -1,10 +1,12 @@
 import {
   createModelProvider,
   getCurrentSessionIdHistoriesMap
-} from '@/ai/model-providers'
+} from '@/ai/helpers'
 import { getConfigKey } from '@/config'
 import { createTmpFileInfo } from '@/file-utils/create-tmp-file'
+import { showContinueMessage } from '@/file-utils/show-continue-message'
 import { tmpFileWriter } from '@/file-utils/tmp-file-writer'
+import { t } from '@/i18n'
 import type { BaseLanguageModelInput } from '@langchain/core/language_models/base'
 import type { RunnableConfig } from '@langchain/core/runnables'
 import * as vscode from 'vscode'
@@ -65,7 +67,7 @@ export const handleCodeViewerHelper = async () => {
     code: originalFileContent
   })
 
-  await tmpFileWriter({
+  const tmpFileWriterReturns = await tmpFileWriter({
     languageId: originalFileLanguageId,
     buildAiStream: async () => {
       if (!isContinue) {
@@ -91,6 +93,15 @@ export const handleCodeViewerHelper = async () => {
         },
         aiRunnableConfig
       )
+    }
+  })
+
+  await showContinueMessage({
+    tmpFileUri: tmpFileWriterReturns?.tmpFileUri,
+    originalFileContentLineCount: originalFileContent.split('\n').length,
+    continueMessage: t('info.continueMessage') + t('info.iconContinueMessage'),
+    onContinue: async () => {
+      await handleCodeViewerHelper()
     }
   })
 }
