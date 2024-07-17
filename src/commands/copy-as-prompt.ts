@@ -1,43 +1,7 @@
-import path from 'path'
 import { getConfigKey } from '@/config'
-import type { FileInfo } from '@/file-utils/traverse-fs'
-import { traverseFileOrFolders } from '@/file-utils/traverse-fs'
+import { getFileOrFoldersPromptInfo } from '@/file-utils/get-fs-prompt-info'
 import { t } from '@/i18n'
 import * as vscode from 'vscode'
-
-interface PromptInfo {
-  promptFullContent: string
-  filesInfo: FileInfo[]
-}
-
-const getFileOrFoldersPromptInfo = async (
-  fileOrFolders: string[],
-  workspacePath: string
-): Promise<PromptInfo> => {
-  const result: PromptInfo = {
-    promptFullContent: '',
-    filesInfo: []
-  }
-
-  const processFile = async (fileInfo: FileInfo) => {
-    const { fullPath, relativePath, content } = fileInfo
-    const language = path.extname(fullPath).slice(1)
-
-    const promptFullContent = t(
-      'file.content',
-      relativePath,
-      language,
-      content.toString()
-    )
-
-    result.filesInfo.push(fileInfo)
-    result.promptFullContent += promptFullContent
-  }
-
-  await traverseFileOrFolders(fileOrFolders, workspacePath, processFile)
-
-  return result
-}
 
 export const handleCopyAsPrompt = async (
   uri: vscode.Uri,

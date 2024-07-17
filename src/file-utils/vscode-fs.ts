@@ -13,6 +13,41 @@ export class VsCodeFS {
     return Buffer.from(uint8Array).toString(encoding)
   }
 
+  static _getOpenTextDocumentContent(path: string): string | undefined {
+    const documents = vscode.workspace.textDocuments
+    const document = documents.find(doc => doc.uri.fsPath === path)
+    return document?.getText()
+  }
+
+  /**
+   * Reads the content of a file, prioritizing open documents in VS Code.
+   *
+   * This method addresses a limitation of the standard file system read operations
+   * in VS Code extensions. While `vscode.workspace.fs.readFile()` only reads the
+   * content saved on disk, this method also considers unsaved changes in open editors.
+   *
+   * The method works as follows:
+   * 1. It first checks if the file is open in any VS Code text editor.
+   * 2. If the file is open, it returns the current content of the document,
+   *    including any unsaved changes.
+   * 3. If the file is not open in any editor, it falls back to reading the file
+   *    content from the disk.
+   *
+   * This approach ensures that the most up-to-date content is always returned,
+   * whether it's the saved file on disk or the current state in an open editor.
+   *
+   */
+  static async readFileOrOpenDocumentContent(
+    path: string,
+    encoding: BufferEncoding = 'utf-8'
+  ): Promise<string> {
+    const openDocumentContent = this._getOpenTextDocumentContent(path)
+    if (openDocumentContent !== undefined) {
+      return openDocumentContent
+    }
+    return await this.readFile(path, encoding)
+  }
+
   static async writeFile(
     path: string,
     data: string | Uint8Array,

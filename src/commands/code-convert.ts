@@ -111,8 +111,13 @@ export const handleCodeConvert = async () => {
   } = await createTmpFileInfo()
 
   const targetLanguageId = await getTargetLanguageId(originalFileLanguageId)
+
+  // ai
   const modelProvider = await createModelProvider()
-  const aiRunnable = await modelProvider.createRunnable()
+  const aiRunnableAbortController = new AbortController()
+  const aiRunnable = await modelProvider.createRunnable({
+    signal: aiRunnableAbortController.signal
+  })
   const sessionId = `codeConvert:${tmpFileUri.fsPath}}`
   const aiRunnableConfig: RunnableConfig = {
     configurable: {
@@ -132,6 +137,9 @@ export const handleCodeConvert = async () => {
 
   const tmpFileWriterReturns = await tmpFileWriter({
     languageId: targetLanguageId,
+    onCancel() {
+      aiRunnableAbortController.abort()
+    },
     buildAiStream: async () => {
       if (!isContinue) {
         // cleanup previous session

@@ -6,6 +6,7 @@ import { handleCodeConvert } from './code-convert'
 import { handleCodeViewerHelper } from './code-viewer-helper'
 import { handleCopyAsPrompt } from './copy-as-prompt'
 import { handleRenameVariable } from './rename-variable'
+import { handleSmartPaste } from './smart-paste'
 
 export const registerCommands = (context: vscode.ExtensionContext) => {
   const copyDisposable = vscode.commands.registerCommand(
@@ -32,11 +33,17 @@ export const registerCommands = (context: vscode.ExtensionContext) => {
     commandErrorCatcher(handleRenameVariable)
   )
 
+  const smartPasteDisposable = vscode.commands.registerCommand(
+    'aide.smartPaste',
+    commandErrorCatcher(handleSmartPaste)
+  )
+
   context.subscriptions.push(
     copyDisposable,
     askAIDisposable,
     codeConvertDisposable,
     codeViewerHelperDisposable,
-    renameVariableDisposable
+    renameVariableDisposable,
+    smartPasteDisposable
   )
 }

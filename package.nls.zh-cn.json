@@ -4,6 +4,7 @@
   "command.codeConvert": "✨ Aide: 代码转换",
   "command.codeViewerHelper": "✨ Aide: 代码查看器助手",
   "command.renameVariable": "✨ Aide: 重命名变量",
+  "command.smartPaste": "✨ Aide: 智能粘贴",
   "config.title": "Aide 配置",
   "config.aiPrompt.description": "复制内容的模板，使用#{content}作为文件内容的占位符",
   "config.aiCommand.description": "自定义 AI 命令模板。可用变量：#{filesRelativePath}, #{filesFullPath}, #{content}",
