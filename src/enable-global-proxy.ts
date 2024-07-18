@@ -38,7 +38,7 @@ export const enableGlobalProxy = () => {
       setGlobalDispatcher(dispatcher)
     }
   } catch (err) {
-    logger.log('Failed to enable global proxy', err)
+    logger.warn('Failed to enable global proxy', err)
   }
 }
 

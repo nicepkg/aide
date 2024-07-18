@@ -6,7 +6,6 @@ import {
 import { getFileOrFoldersPromptInfo } from '@/file-utils/get-fs-prompt-info'
 import { insertTextAtSelection } from '@/file-utils/insert-text-at-selection'
 import { streamingCompletionWriter } from '@/file-utils/stream-completion-writer'
-import { logger } from '@/logger'
 import { getCurrentWorkspaceFolderEditor } from '@/utils'
 import type { BaseLanguageModelInput } from '@langchain/core/language_models/base'
 import type { RunnableConfig } from '@langchain/core/runnables'
@@ -43,11 +42,11 @@ const buildConvertPrompt = async ({
   const { promptFullContent: referenceFileContent } =
     await getFileOrFoldersPromptInfo(referencePaths, workspaceFolder.uri.fsPath)
 
-  logger.log('smart-paste', {
-    referencePaths,
-    currentFileRelativePath,
-    clipboardContent
-  })
+  // console.log('smart-paste', {
+  //   referencePaths,
+  //   currentFileRelativePath,
+  //   clipboardContent
+  // })
 
   const prompt = `
   I will provide the content of the current file, as well as the content of several most useful files related to the currently edited file, to you.

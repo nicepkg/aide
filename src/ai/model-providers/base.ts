@@ -72,25 +72,31 @@ export abstract class BaseModelProvider<Model extends BaseChatModel> {
     return prompt
   }
 
+  async getHistory(
+    sessionId: string,
+    appendHistoryMessages?: BaseMessage[]
+  ): Promise<InMemoryChatMessageHistory> {
+    if (BaseModelProvider.sessionIdHistoriesMap[sessionId] === undefined) {
+      const messageHistory = new InMemoryChatMessageHistory()
+
+      if (appendHistoryMessages && appendHistoryMessages.length > 0) {
+        await messageHistory.addMessages(appendHistoryMessages)
+      }
+
+      BaseModelProvider.sessionIdHistoriesMap[sessionId] = messageHistory
+    }
+
+    return BaseModelProvider.sessionIdHistoriesMap[sessionId]!
+  }
+
   createRunnableWithMessageHistory<Chunk extends AIMessageChunk>(
     chain: Runnable<any, Chunk, RunnableConfig>,
     historyMessages: BaseMessage[]
   ) {
     return new RunnableWithMessageHistory({
       runnable: chain,
-      getMessageHistory: async sessionId => {
-        if (BaseModelProvider.sessionIdHistoriesMap[sessionId] === undefined) {
-          const messageHistory = new InMemoryChatMessageHistory()
-
-          if (historyMessages.length > 0) {
-            await messageHistory.addMessages(historyMessages)
-          }
-
-          BaseModelProvider.sessionIdHistoriesMap[sessionId] = messageHistory
-        }
-
-        return BaseModelProvider.sessionIdHistoriesMap[sessionId]!
-      },
+      getMessageHistory: async sessionId =>
+        await this.getHistory(sessionId, historyMessages),
       inputMessagesKey: 'input',
       historyMessagesKey: 'history'
     })
