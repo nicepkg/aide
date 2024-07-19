@@ -2,6 +2,7 @@ import type { BaseChatModel } from '@langchain/core/language_models/chat_models'
 
 import { AzureOpenAIModelProvider } from './model-providers/azure-openai'
 import type { BaseModelProvider } from './model-providers/base'
+import { AnthropicModelProvider } from './model-providers/claude'
 import { OpenAIModelProvider } from './model-providers/openai'
 import { parseModelBaseUrl, type ModelUrlType } from './parse-model-base-url'
 
@@ -10,7 +11,8 @@ export const getCurrentModelProvider = async () => {
 
   const urlTypeProviderMap = {
     openai: OpenAIModelProvider,
-    'azure-openai': AzureOpenAIModelProvider
+    'azure-openai': AzureOpenAIModelProvider,
+    anthropic: AnthropicModelProvider
   } satisfies Record<ModelUrlType, typeof BaseModelProvider<BaseChatModel>>
 
   return urlTypeProviderMap[urlType] || OpenAIModelProvider

@@ -4,9 +4,9 @@
 
 English / [简体中文 🌏](https://github.com/nicepkg/aide/tree/master/README_CN.md)
 
-Master Any Code: One-Click Comments and Language Conversion. 💪
+Mastering Any Code In VSCode: One-click commenting and language conversion. 💪
 
-掌握任何屎山代码：一键注释和语言转换。💪
+在 VSCode 里掌握任何屎山代码：一键注释和语言转换。💪
 
 [![Version](https://img.shields.io/visual-studio-marketplace/v/nicepkg.aide-pro)](https://marketplace.visualstudio.com/items?itemName=nicepkg.aide-pro)
 [![Downloads](https://img.shields.io/visual-studio-marketplace/d/nicepkg.aide-pro)](https://marketplace.visualstudio.com/items?itemName=nicepkg.aide-pro)
