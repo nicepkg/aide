@@ -16,7 +16,7 @@
 
 ## 文档 📚
 
-- 查看：[https://aide.nicepkg.cn](https://aide.nicepkg.cn)
+- 查看：[https://aide.nicepkg.cn/zh](https://aide.nicepkg.cn/zh)
 - 视频：
 
 https://github.com/user-attachments/assets/55f85f8e-7515-4da3-b850-9c078b3440d5

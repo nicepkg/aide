@@ -1,6 +1,6 @@
 # 温情提示
 
-## 本处文档不再维护，请移步到 [https://aide.nicepkg.cn](https://aide.nicepkg.cn) 查看完整文档。
+## 本处文档不再维护，请移步到 [https://aide.nicepkg.cn/zh](https://aide.nicepkg.cn/zh) 查看完整文档。
 
 ---
 
