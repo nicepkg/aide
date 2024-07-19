@@ -20,8 +20,7 @@ Mastering Any Code In VSCode: One-click commenting and language conversion. 💪
 
 - See: [https://aide.nicepkg.cn](https://aide.nicepkg.cn)
 
-- video:
-  https://github.com/user-attachments/assets/55f85f8e-7515-4da3-b850-9c078b3440d5
+https://github.com/user-attachments/assets/55f85f8e-7515-4da3-b850-9c078b3440d5
 
 ## Features ✨
 
