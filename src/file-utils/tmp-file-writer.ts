@@ -16,12 +16,13 @@ import {
 
 export interface TmpFileWriterOptions extends CreateTmpFileOptions {
   buildAiStream: () => Promise<IterableReadableStream<AIMessageChunk>>
+  onCancel?: () => void
 }
 
 export const tmpFileWriter = async (
   options: TmpFileWriterOptions
 ): Promise<WriteTmpFileResult> => {
-  const { buildAiStream, ...createTmpFileOptions } = options
+  const { buildAiStream, onCancel, ...createTmpFileOptions } = options
 
   const createTmpFileAndWriterReturns =
     await createTmpFileAndWriter(createTmpFileOptions)
@@ -32,7 +33,9 @@ export const tmpFileWriter = async (
   const { showProcessLoading, hideProcessLoading } = createLoading()
 
   try {
-    showProcessLoading()
+    showProcessLoading({
+      onCancel
+    })
     const aiStream = await buildAiStream()
 
     for await (const chunk of aiStream) {

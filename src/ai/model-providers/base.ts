@@ -19,12 +19,15 @@ import {
 import { z } from 'zod'
 
 export interface BaseModelProviderCreateRunnableOptions {
+  useHistory?: boolean
   historyMessages?: BaseMessage[]
+  signal?: AbortSignal
 }
 
 export interface BaseModelProviderCreateStructuredOutputRunnableOptions<
-  ZSchema extends z.ZodType<any>
+  ZSchema extends z.ZodType<any> = z.ZodType<any>
 > {
+  useHistory?: boolean
   historyMessages?: BaseMessage[]
   zodSchema: ZSchema
 }
@@ -43,15 +46,47 @@ export abstract class BaseModelProvider<Model extends BaseChatModel> {
       .join('')
   }
 
+  model?: Model
+
   abstract createModel(): MaybePromise<Model>
 
-  createPrompt(): MaybePromise<ChatPromptTemplate> {
-    const prompt = ChatPromptTemplate.fromMessages([
-      new MessagesPlaceholder('history'),
-      HumanMessagePromptTemplate.fromTemplate('{input}')
-    ])
+  async getModel(): Promise<Model> {
+    if (!this.model) {
+      this.model = await this.createModel()
+    }
+
+    return this.model
+  }
+
+  createPrompt(options?: {
+    useHistory?: boolean
+  }): MaybePromise<ChatPromptTemplate> {
+    const { useHistory = true } = options ?? {}
+    const prompt = ChatPromptTemplate.fromMessages(
+      [
+        useHistory ? new MessagesPlaceholder('history') : '',
+        HumanMessagePromptTemplate.fromTemplate('{input}')
+      ].filter(Boolean)
+    )
 
     return prompt
+  }
+
+  async getHistory(
+    sessionId: string,
+    appendHistoryMessages?: BaseMessage[]
+  ): Promise<InMemoryChatMessageHistory> {
+    if (BaseModelProvider.sessionIdHistoriesMap[sessionId] === undefined) {
+      const messageHistory = new InMemoryChatMessageHistory()
+
+      if (appendHistoryMessages && appendHistoryMessages.length > 0) {
+        await messageHistory.addMessages(appendHistoryMessages)
+      }
+
+      BaseModelProvider.sessionIdHistoriesMap[sessionId] = messageHistory
+    }
+
+    return BaseModelProvider.sessionIdHistoriesMap[sessionId]!
   }
 
   createRunnableWithMessageHistory<Chunk extends AIMessageChunk>(
@@ -60,46 +95,39 @@ export abstract class BaseModelProvider<Model extends BaseChatModel> {
   ) {
     return new RunnableWithMessageHistory({
       runnable: chain,
-      getMessageHistory: async sessionId => {
-        if (BaseModelProvider.sessionIdHistoriesMap[sessionId] === undefined) {
-          const messageHistory = new InMemoryChatMessageHistory()
-
-          if (historyMessages.length > 0) {
-            await messageHistory.addMessages(historyMessages)
-          }
-
-          BaseModelProvider.sessionIdHistoriesMap[sessionId] = messageHistory
-        }
-
-        return BaseModelProvider.sessionIdHistoriesMap[sessionId]!
-      },
+      getMessageHistory: async sessionId =>
+        await this.getHistory(sessionId, historyMessages),
       inputMessagesKey: 'input',
       historyMessagesKey: 'history'
     })
   }
 
   async createRunnable(options?: BaseModelProviderCreateRunnableOptions) {
-    const { historyMessages } = options ?? {}
-    const model = await this.createModel()
-    const prompt = await this.createPrompt()
-    const chain = prompt.pipe(model)
-    return await this.createRunnableWithMessageHistory(
-      chain,
-      historyMessages || []
-    )
+    const { useHistory = true, historyMessages, signal } = options ?? {}
+    const model = await this.getModel()
+    const prompt = await this.createPrompt({ useHistory })
+    const chain = prompt.pipe(signal ? model.bind({ signal }) : model)
+    return useHistory
+      ? await this.createRunnableWithMessageHistory(
+          chain,
+          historyMessages || []
+        )
+      : chain
   }
 
-  async createStructuredOutputRunnable<ZSchema extends z.ZodType<any>>(
-    options: BaseModelProviderCreateStructuredOutputRunnableOptions<ZSchema>
-  ) {
-    const { historyMessages, zodSchema } = options
-    const model = await this.createModel()
-    const prompt = await this.createPrompt()
+  async createStructuredOutputRunnable<
+    ZSchema extends z.ZodType<any> = z.ZodType<any>
+  >(options: BaseModelProviderCreateStructuredOutputRunnableOptions<ZSchema>) {
+    const { useHistory = true, historyMessages, zodSchema } = options
+    const model = await this.getModel()
+    const prompt = await this.createPrompt({ useHistory })
     const chain = prompt.pipe(model.withStructuredOutput(zodSchema))
 
-    return await this.createRunnableWithMessageHistory(
-      chain,
-      historyMessages || []
-    )
+    return useHistory
+      ? await this.createRunnableWithMessageHistory(
+          chain,
+          historyMessages || []
+        )
+      : chain
   }
 }

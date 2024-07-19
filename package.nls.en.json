@@ -4,6 +4,7 @@
   "command.codeConvert": "✨ Aide: Code Convert",
   "command.codeViewerHelper": "✨ Aide: Code Viewer Helper",
   "command.renameVariable": "✨ Aide: Rename Variable",
+  "command.smartPaste": "✨ Aide: Smart Paste",
   "config.title": "Aide Configuration",
   "config.aiPrompt.description": "Template for copied content, use #{content} as a placeholder for file content",
   "config.aiCommand.description": "Custom AI command template. Available variables: #{filesRelativePath}, #{filesFullPath}, #{content}",

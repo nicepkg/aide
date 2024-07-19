@@ -4,9 +4,9 @@
 
 English / [简体中文 🌏](https://github.com/nicepkg/aide/tree/master/README_CN.md)
 
-Master Any Code: One-Click Comments and Language Conversion. 💪
+Mastering Any Code In VSCode: One-click commenting and language conversion. 💪
 
-掌握任何屎山代码：一键注释和语言转换。💪
+在 VSCode 里掌握任何屎山代码：一键注释和语言转换。💪
 
 [![Version](https://img.shields.io/visual-studio-marketplace/v/nicepkg.aide-pro)](https://marketplace.visualstudio.com/items?itemName=nicepkg.aide-pro)
 [![Downloads](https://img.shields.io/visual-studio-marketplace/d/nicepkg.aide-pro)](https://marketplace.visualstudio.com/items?itemName=nicepkg.aide-pro)
@@ -16,11 +16,18 @@ Master Any Code: One-Click Comments and Language Conversion. 💪
 
 </div>
 
+## Document 📚
+
+- See: [https://aide.nicepkg.cn](https://aide.nicepkg.cn)
+- Video:
+
+https://github.com/user-attachments/assets/55f85f8e-7515-4da3-b850-9c078b3440d5
+
 ## Features ✨
 
 - 🔄 **Code Conversion**: One-click code transformation between languages.
 - 📖 **Code Annotation**: One-click detailed comments for better readability.
-- 📋 **Quick Copy**: Copy files/folders as AI prompts instantly.
+- 📋 **Quick Copy**: Batch copy files/folders as AI prompts.
 - 💬 **Custom Commands**: Execute custom AI commands on selected files.
 - 🔀 **Variable Rename**: Rename variables using AI-suggested variable names.
 - 🎛 **Prompt Templates**: Define flexible AI prompt templates.
@@ -35,76 +42,13 @@ Master Any Code: One-Click Comments and Language Conversion. 💪
 3. Search for "[Aide](https://marketplace.visualstudio.com/items?itemName=nicepkg.aide-pro)"
 4. Click Install
 
-## Configuration 🛠
-
-See: [Document](https://github.com/nicepkg/aide/tree/master/docs/configuration/README.md)
-
-## Usage 🚀
-
-### 1. Aide: Code Convert
-
-Convert selected code from one programming language to another using AI.
-
-**How to Use:**
-
-- Select code in the editor.
-- Click the paper-like icon in the top right corner or right-click and choose `✨ Aide: Code Convert`.
-
-### 2. Aide: Code Viewer Helper
-
-Add comments to the selected code to make it readable for beginners, using AI.
-
-**How to Use:**
-
-- Select code in the editor.
-- Click the book-like icon in the top right corner or right-click and choose `✨ Aide: Code Viewer Helper`.
-
-### 3. Aide: Copy As AI Prompt
-
-Copy selected files' contents into the clipboard, formatted as a prompt for AI interaction.
-
-**How to Use:**
-
-- Select files or folders in the Explorer.
-- Right-click and choose `✨ Aide: Copy As AI Prompt`.
-
-### 4. Aide: Ask AI
-
-Prepare and execute custom AI commands based on selected files and user input.
-
-**How to Use:**
-
-- Select files or folders in the Explorer.
-- Right-click and choose `✨ Aide: Ask AI`.
-- Enter your question when prompted.
-
-### 5. Aide: Rename Variable
-
-Rename variables using AI-suggested variable names.
-
-**How to Use:**
-
-- Select a variable in the editor.
-- Right-click and choose `✨ Aide: Rename Variable`.
-- Select a suggested variable name.
-
-### 6. Customizing Keyboard Shortcuts
-
-Assign custom keyboard shortcuts to these commands for faster access:
-
-1. Open the Keyboard Shortcuts editor (`Ctrl+K Ctrl+S` or `Cmd+K Cmd+S`).
-2. Search for the desired Aide command.
-3. Click the plus icon next to the command and press your desired key combination.
-
-Enhance your productivity with Aide's AI-powered features. Install now and experience a smarter way to code!
-
 ## ChangeLog 📅
 
 See the [CHANGELOG](https://github.com/nicepkg/aide/blob/master/CHANGELOG.md) for the latest updates.
 
 ## Contributing 🤝
 
-Contributions are welcome! Please feel free to submit a Pull Request. See the [contributing guide](https://github.com/nicepkg/aide/blob/master/CONTRIBUTING.md) for more details.
+Contributions are welcome! Please feel free to submit a Pull Request. See the [Contributing Guide](https://github.com/nicepkg/aide/blob/master/CONTRIBUTING.md) for more details.
 
 This project exists thanks to all the people who contribute:
 

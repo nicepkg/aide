@@ -14,3 +14,4 @@ deployspec.yml
 .storybook/*.html
 cz-adapter.cjs
 LICENSE
+*.vue

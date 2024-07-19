@@ -3,7 +3,7 @@ import * as vscode from 'vscode'
 import pkg from '../package.json'
 import { t, translateVscodeJsonText } from './i18n'
 import { logger } from './logger'
-import { getCurrentWorkspaceFolder, getErrorMsg } from './utils'
+import { getCurrentWorkspaceFolderEditor, getErrorMsg } from './utils'
 
 const pkgConfig = pkg.contributes.configuration.properties
 type ConfigKey = keyof {
@@ -107,8 +107,8 @@ export const getConfigKey = async <T extends ConfigKey>(
     required,
     allowCustomOptionValue
   } = options || {}
-  const workspaceFolderUri = getCurrentWorkspaceFolder()
-  const config = vscode.workspace.getConfiguration('aide', workspaceFolderUri)
+  const { workspaceFolder } = getCurrentWorkspaceFolderEditor(false)
+  const config = vscode.workspace.getConfiguration('aide', workspaceFolder)
   const configKeyInfo = {
     ...configKey[key],
     description: translateVscodeJsonText(configKey[key].description)
@@ -256,8 +256,8 @@ export const setConfigKey = async <T extends ConfigKey>(
     targetForSet = vscode.ConfigurationTarget.Global,
     allowCustomOptionValue = false
   } = options || {}
-  const workspaceFolderUri = getCurrentWorkspaceFolder()
-  const config = vscode.workspace.getConfiguration('aide', workspaceFolderUri)
+  const { workspaceFolder } = getCurrentWorkspaceFolderEditor(false)
+  const config = vscode.workspace.getConfiguration('aide', workspaceFolder)
   const configKeyInfo = configKey[key] as ConfigKeyInfo
 
   if (!configKeyInfo) {
@@ -284,7 +284,7 @@ export const setConfigKey = async <T extends ConfigKey>(
   try {
     if (
       targetForSet === vscode.ConfigurationTarget.WorkspaceFolder &&
-      !workspaceFolderUri
+      !workspaceFolder
     ) {
       // if can't find WorkspaceFolder, fallback to Workspace level
       await config.update(key, value, vscode.ConfigurationTarget.Workspace)

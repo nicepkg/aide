@@ -5,7 +5,7 @@ import {
 } from '@/ai/helpers'
 import { t } from '@/i18n'
 import { createLoading } from '@/loading'
-import { getActiveEditorContent, getCurrentWorkspaceFolder } from '@/utils'
+import { getCurrentWorkspaceFolderEditor } from '@/utils'
 import type { BaseLanguageModelInput } from '@langchain/core/language_models/base'
 import type { RunnableConfig } from '@langchain/core/runnables'
 import * as vscode from 'vscode'
@@ -117,8 +117,7 @@ const renameVariable = async ({
 }
 
 export const handleRenameVariable = async () => {
-  const workspaceFolder = getCurrentWorkspaceFolder()
-  const { activeEditor } = await getActiveEditorContent()
+  const { workspaceFolder, activeEditor } = getCurrentWorkspaceFolderEditor()
   const { selection } = activeEditor
   const variableName = activeEditor.document.getText(selection)
   const modelProvider = await createModelProvider()

@@ -12,3 +12,6 @@ node_modules
 temp
 .aider*
 .vscode-test-web
+**/.vitepress/cache
+**/.vitepress/.temp
+.gpt-runner

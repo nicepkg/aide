@@ -47,22 +47,31 @@
     "titleBar.activeForeground": "#F8FCFD"
   },
   "cSpell.words": [
+    "autoplay",
+    "Codegee",
+    "Codeium",
     "commitlint",
+    "deepseek",
     "esno",
     "execa",
     "fullpath",
     "ianvs",
+    "iconify",
     "knip",
     "langchain",
     "Nicepkg",
     "nodir",
+    "Ollama",
     "openai",
+    "Pipfile",
+    "pyproject",
+    "qwen",
+    "tailwindcss",
     "treeshake",
     "tsup",
     "undici",
-    "vsix"
-  ],
-  "aide.convertLanguagePairs": {
-    "typescript": "python"
-  }
+    "vitepress",
+    "vsix",
+    "Zhipu"
+  ]
 }

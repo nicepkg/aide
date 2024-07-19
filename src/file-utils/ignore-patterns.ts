@@ -69,7 +69,11 @@ export const getAllValidFiles = async (
         return shouldIgnore(p.fullpath())
       },
       childrenIgnored(p) {
-        return shouldIgnore(p.fullpath())
+        try {
+          return shouldIgnore(p.fullpath())
+        } catch {
+          return false
+        }
       }
     }
   })

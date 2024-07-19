@@ -50,8 +50,12 @@ export const handleCodeViewerHelper = async () => {
     isTmpFileHasContent
   } = await createTmpFileInfo()
 
+  // ai
   const modelProvider = await createModelProvider()
-  const aiRunnable = await modelProvider.createRunnable()
+  const aiRunnableAbortController = new AbortController()
+  const aiRunnable = await modelProvider.createRunnable({
+    signal: aiRunnableAbortController.signal
+  })
   const sessionId = `codeViewerHelper:${tmpFileUri.fsPath}}`
   const aiRunnableConfig: RunnableConfig = {
     configurable: {
@@ -69,6 +73,9 @@ export const handleCodeViewerHelper = async () => {
 
   const tmpFileWriterReturns = await tmpFileWriter({
     languageId: originalFileLanguageId,
+    onCancel() {
+      aiRunnableAbortController.abort()
+    },
     buildAiStream: async () => {
       if (!isContinue) {
         // cleanup previous session

@@ -1,3 +1,9 @@
+# Warm Reminder
+
+## This document is no longer maintained. Please visit [https://aide.nicepkg.cn](https://aide.nicepkg.cn) for the complete documentation.
+
+---
+
 ## Aide Configuration Documentation
 
 To customize Aide's settings and tailor it to your workflow, follow these steps to access its configuration area:
