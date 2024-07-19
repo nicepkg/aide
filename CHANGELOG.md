@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.13.0](https://github.com/nicepkg/aide/compare/aide-v1.12.0...aide-v1.13.0) (2024-07-19)
+
+
+### Features
+
+* add smart-paste command ([5c29152](https://github.com/nicepkg/aide/commit/5c291520781c2678c3c3e577cb9ed0f09e5010c9))
+
 ## [1.12.0](https://github.com/nicepkg/aide/compare/aide-v1.11.1...aide-v1.12.0) (2024-07-16)
 
 
