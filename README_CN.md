@@ -18,7 +18,8 @@
 
 - 查看：[https://aide.nicepkg.cn](https://aide.nicepkg.cn)
 
-<img src="https://github.com/user-attachments/assets/9eafa68b-30ec-4ad6-96de-317231e604b1" alt="Aide Intro" width="100%" />
+- 视频：
+  https://github.com/user-attachments/assets/55f85f8e-7515-4da3-b850-9c078b3440d5
 
 ## 功能 ✨
 
