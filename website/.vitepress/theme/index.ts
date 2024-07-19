@@ -3,7 +3,7 @@ import type { App } from 'vue'
 
 import Video from '../../components/Video.vue'
 
-import 'uno.css'
+import 'virtual:uno.css'
 import './style.css'
 
 export default {

@@ -2,7 +2,6 @@ import {
   defineConfig,
   presetIcons,
   presetUno,
-  presetWebFonts,
   transformerDirectives,
   transformerVariantGroup
 } from 'unocss'
@@ -13,14 +12,12 @@ export default defineConfig({
     presetIcons({
       scale: 1.2,
       unit: 'em'
-    }),
-    presetWebFonts({
-      fonts: {
-        sans: 'Inter',
-        mono: 'Jet Brains Mono'
-      }
     })
   ],
   transformers: [transformerVariantGroup(), transformerDirectives()],
-  include: ['./**/*.vue', './**/*.md']
+  content: {
+    pipeline: {
+      include: ['./**/*.vue', './**/*.md']
+    }
+  }
 })
