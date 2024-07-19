@@ -19,10 +19,13 @@ hero:
     - theme: alt
       text: 为什么选 Aide?
       link: /zh/guide/getting-started/#为什么选择-aide
+    - theme: alt
+      text: 在 Github 上查看
+      link: https://github.com/nicepkg/aide
 ---
 
-<div class="px-16">
-
+<div>
+  <Video src="/videos/aide-intro.mp4" />
 </div>
 
 <style>

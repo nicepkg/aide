@@ -13,3 +13,4 @@ scripts
 .vscode-test/**
 .vscode-test-web/**
 out/**
+website/**

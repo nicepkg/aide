@@ -18,11 +18,14 @@ hero:
       link: /guide/getting-started/installation
     - theme: alt
       text: Why Aide?
-      link: /guide/getting-started/#why-aide
+      link: /guide/getting-started/#why-choose-aide
+    - theme: alt
+      text: View on Github
+      link: https://github.com/nicepkg/aide
 ---
 
-<div class="px-16">
-
+<div>
+  <Video src="/videos/aide-intro.mp4" />
 </div>
 
 <style>

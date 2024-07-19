@@ -59,9 +59,6 @@
   ],
   "main": "./dist/node/index.js",
   "icon": "res/icon.png",
-  "files": [
-    "dist"
-  ],
   "engines": {
     "vscode": "^1.82.0"
   },

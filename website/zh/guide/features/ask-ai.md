@@ -10,6 +10,8 @@
 - 右键选择 `✨ Aide: 问 AI`。
 - 按提示输入您的问题。
 
+<Video src="/videos/aide-ask-ai.mp4"/>
+
 **相关配置：**
 
 - 你可以通过修改 [`aide.aiCommand`](../configuration/ai-command.md) 配置来自定义 AI 命令。

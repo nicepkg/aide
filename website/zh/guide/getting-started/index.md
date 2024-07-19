@@ -1,5 +1,8 @@
 # 简介
 
+<br/>
+<Video src="/videos/aide-intro.mp4" />
+
 ## 为什么选择 `Aide`？
 
 - **😩 你是否在阅读前任留下的混乱代码时痛苦不堪？**

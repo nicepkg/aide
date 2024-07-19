@@ -3,7 +3,7 @@ import type { DefaultTheme } from 'vitepress'
 import { defineConfig } from 'vitepress'
 
 const require = createRequire(import.meta.url)
-const pkg = require('../../package.json')
+const pkg = require('../../../package.json')
 
 export const zh = defineConfig({
   lang: 'zh-Hans',
@@ -48,7 +48,7 @@ function nav(): DefaultTheme.NavItem[] {
   return [
     {
       text: '指南',
-      link: '/zh/guide/index',
+      link: '/zh/guide/getting-started/',
       activeMatch: '/zh/guide/'
     },
     {

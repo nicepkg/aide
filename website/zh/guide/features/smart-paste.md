@@ -28,6 +28,8 @@
 
 :::
 
+<Video src="/videos/aide-smart-paste.mp4"/>
+
 **使用示例：**
 
 - **从 `JSON` 到 `TypeScript` 类型**

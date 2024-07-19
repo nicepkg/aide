@@ -5,7 +5,7 @@
 1. 打开键盘快捷键编辑器：
 
    - 按 `Ctrl+K Ctrl+S`（Windows/Linux）或 `Cmd+K Cmd+S`（Mac）
-   - 或者转到 `文件 > 首选项 > 键盘快捷键`
+   - 或者转到 `Code > 首选项 > 键盘快捷方式`
 
 2. 在键盘快捷键编辑器中，搜索你想要自定义的命令：
 
@@ -32,6 +32,10 @@
 - `aide.renameVariable`: 重命名变量
 - `aide.smartPaste`: 智能粘贴
 - ...也许更多，你可以在每个功能文档里找到对应的命令。
+
+<br/>
+<Video src="/videos/aide-customize-shortcuts.mp4"/>
+<br/>
 
 **示例：**
 

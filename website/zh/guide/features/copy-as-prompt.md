@@ -9,6 +9,8 @@
 - 在资源管理器中选择文件或文件夹。
 - 右键选择 `✨ Aide: 复制为 AI 提示词`。
 
+<Video src="/videos/aide-copy-as-prompt.mp4"/>
+
 **相关配置：**
 
 - 你可以通过配置 [`aide.aiPrompt`](../configuration/ai-prompt.md) 来自定义 AI 提示词模板。

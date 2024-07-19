@@ -9,3 +9,6 @@
     "aide.openaiKey": ""
   }
   ```
+
+<br/>
+<Video src="/videos/aide-customize-configuration.mp4"/>

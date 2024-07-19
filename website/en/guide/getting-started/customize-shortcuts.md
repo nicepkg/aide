@@ -5,7 +5,7 @@ You can customize the keyboard shortcuts for the commands of this extension to s
 1. Open the Keyboard Shortcuts editor:
 
    - Press `Ctrl+K Ctrl+S` (Windows/Linux) or `Cmd+K Cmd+S` (Mac)
-   - Alternatively, go to `File > Preferences > Keyboard Shortcuts`
+   - Alternatively, go to `Code > Settings > Keyboard Shortcuts`
 
 2. In the Keyboard Shortcuts editor, search for the command you want to customize:
 
@@ -32,6 +32,10 @@ Here are the default commands you can customize:
 - `aide.renameVariable`: Rename Variable
 - `aide.smartPaste`: Smart Paste
 - ...and possibly more, you can find the corresponding commands in each feature documentation.
+
+<br/>
+<Video src="/videos/aide-customize-shortcuts.mp4"/>
+<br/>
 
 **Example:**
 

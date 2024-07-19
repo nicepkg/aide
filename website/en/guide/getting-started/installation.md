@@ -13,3 +13,5 @@ If you like this extension, please give it a `⭐️⭐️⭐️⭐️⭐️` ra
 If you encounter any issues, first check the [FAQ](./faq.md). If you still have questions, please [submit an issue](https://github.com/nicepkg/aide/issues).
 
 :::
+
+<Video src="/videos/aide-install.mp4"/>

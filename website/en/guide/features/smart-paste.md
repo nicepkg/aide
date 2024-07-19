@@ -28,6 +28,8 @@ Of course, its functionalities are not limited to these examples. Feel free to e
 
 :::
 
+<Video src="/videos/aide-smart-paste.mp4"/>
+
 **Examples:**
 
 - **From `JSON` to `TypeScript` Type**

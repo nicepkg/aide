@@ -13,6 +13,8 @@
 如果输出中断，可以点击原来的书本图标或右键选择 `✨ Aide: 代码查看器助手`以便继续。
 :::
 
+<Video src="/videos/aide-code-viewer-helper.mp4"/>
+
 **相关配置：**
 
 - 你可以通过配置 [`aide.codeViewerHelperPrompt`](../configuration/code-viewer-helper-prompt.md) 来自定义对应的 AI 提示词模板。

@@ -10,6 +10,8 @@ Prepare and execute a custom AI command based on the selected file and user inpu
 - Right-click and select `✨ Aide: Ask AI`.
 - Follow the prompt to enter your question.
 
+<Video src="/videos/aide-ask-ai.mp4"/>
+
 **Related Configuration:**
 
 - You can customize the AI command by modifying the [`aide.aiCommand`](../configuration/ai-command.md) configuration.

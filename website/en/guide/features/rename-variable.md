@@ -13,3 +13,5 @@ Use AI to provide several possible variable name suggestions along with explanat
 ::: warning
 This feature requires the AI model to support the `function_call` feature.
 :::
+
+<Video src="/videos/aide-rename-variable.mp4"/>

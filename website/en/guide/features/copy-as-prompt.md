@@ -9,6 +9,8 @@ Copies the content of the selected files to the clipboard and formats it as AI i
 - Select files or folders in the explorer.
 - Right-click and select `✨ Aide: Copy as AI Prompt`.
 
+<Video src="/videos/aide-copy-as-prompt.mp4"/>
+
 **Related Configuration:**
 
 - You can customize the AI prompt template by configuring [`aide.aiPrompt`](../configuration/ai-prompt.md).

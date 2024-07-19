@@ -1,5 +1,8 @@
 # Introduction
 
+<br/>
+<Video src="/videos/aide-intro.mp4" />
+
 ## Why Choose `Aide`?
 
 - **😩 Are you suffering from reading through the messy code left by your predecessors?**

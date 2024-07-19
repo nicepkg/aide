@@ -13,3 +13,5 @@
 ::: warning 警告
 该功能需要 AI 模型支持 `function_call` 功能
 :::
+
+<Video src="/videos/aide-rename-variable.mp4"/>

@@ -13,3 +13,5 @@
 遇到问题，先查看[常见问题解答](./faq.md)，如果还有问题，请[提交 issue](https://github.com/nicepkg/aide/issues)
 
 :::
+
+<Video src="/videos/aide-install.mp4"/>

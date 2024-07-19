@@ -47,6 +47,7 @@
     "titleBar.activeForeground": "#F8FCFD"
   },
   "cSpell.words": [
+    "autoplay",
     "Codegee",
     "Codeium",
     "commitlint",
@@ -72,8 +73,5 @@
     "vitepress",
     "vsix",
     "Zhipu"
-  ],
-  "aide.convertLanguagePairs": {
-    "typescript": "python"
-  }
+  ]
 }
