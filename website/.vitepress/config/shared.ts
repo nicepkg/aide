@@ -11,7 +11,7 @@ export const shared = defineConfig({
   },
 
   lastUpdated: true,
-  cleanUrls: false,
+  cleanUrls: true,
   metaChunk: true,
 
   markdown: {
