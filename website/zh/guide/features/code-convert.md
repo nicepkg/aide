@@ -15,6 +15,21 @@
 
 <Video src="/videos/aide-code-convert.mp4"/>
 
+::: tip 自定义语言 + 补充描述支持
+
+当选择自定义语言时，你可以在语言后加上补充描述。例如，如果你想将 `Vue2` 项目迁移到 `Vue3 setup`，你可以在输入框中选择 `自定义语言` 然后输入
+
+`vue vue2 转 vue3 <script setup> 写法`
+
+这将会被解析为：
+
+转换后的语言：`vue`
+
+补充描述：`vue2 转 vue3 <script setup> 写法`
+
+规则是：目标语言 + 空格 + 补充描述
+:::
+
 **相关配置：**
 
 - 默认情况下，编辑器会在当前项目 `.vscode/settings.json` 文件中记住你的语言映射，位于 [`aide.convertLanguagePairs`](../configuration/convert-language-pairs.md) 配置下, 以便下次转换对应的语言时不需要再次选择。

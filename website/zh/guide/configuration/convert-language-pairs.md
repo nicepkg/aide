@@ -9,7 +9,12 @@
   //其他设置...
   "aide.convertLanguagePairs": {
     "javascript": "python", // 将 javascript 转换为 python
-    "json": "yaml" // 将 json 转换为 yaml
+    "json": "yaml", // 将 json 转换为 yaml
+    "vue": "vue vue2 转 vue3 <script setup> 写法" // 将 vue 转换成 vue
+    // 解析为：
+    //    转换后的语言：vue
+    //    补充描述：vue2 文件迁移到 vue3 <script setup> 写法
+    // 规则为：目标语言 + 空格 + 补充描述
   }
 }
 ```

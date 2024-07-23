@@ -9,7 +9,12 @@ By default, the editor will remember your language mapping in the current projec
   //other settings...
   "aide.convertLanguagePairs": {
     "javascript": "python", // Convert javascript to python
-    "json": "yaml" // Convert json to yaml
+    "json": "yaml", // Convert json to yaml
+    "vue": "vue migrate from vue2 to vue3 <script setup> syntax" // Convert vue to vue
+    // Parsed as:
+    //    Target language: vue
+    //    Additional description: migrate from vue2 to vue3 <script setup> syntax
+    // Rule: target language + space + additional description
   }
 }
 ```

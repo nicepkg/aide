@@ -23,7 +23,7 @@ type ConfigValueTypeMap = {
 type ConfigValueType = keyof ConfigValueTypeMap
 type ConfigKeyInfo<T extends ConfigValueType = ConfigValueType> = {
   type: T
-  description?: string
+  markdownDescription?: string
   default?: ConfigValueTypeMap[T]
   optional?: boolean
   options?: string[]
@@ -111,7 +111,9 @@ export const getConfigKey = async <T extends ConfigKey>(
   const config = vscode.workspace.getConfiguration('aide', workspaceFolder)
   const configKeyInfo = {
     ...configKey[key],
-    description: translateVscodeJsonText(configKey[key].description)
+    markdownDescription: translateVscodeJsonText(
+      configKey[key].markdownDescription
+    )
   } as ConfigKeyInfo
   const isRequired = required ?? !configKeyInfo.optional
   type ReturnValue = (typeof configKey)[T]['default']
@@ -152,7 +154,7 @@ export const getConfigKey = async <T extends ConfigKey>(
           inputValue = (await vscode.window.showQuickPick(
             configKeyInfo.options,
             {
-              title: configKeyInfo.description,
+              title: configKeyInfo.markdownDescription,
               placeHolder: configKeyInfo.default as string,
               ignoreFocusOut: true,
               canPickMany: false
@@ -161,7 +163,7 @@ export const getConfigKey = async <T extends ConfigKey>(
           break
         } else {
           inputValue = (await vscode.window.showInputBox({
-            prompt: configKeyInfo.description,
+            prompt: configKeyInfo.markdownDescription,
             placeHolder: String(configKeyInfo.default || ''),
             ignoreFocusOut: true
           })) as string | undefined
@@ -171,7 +173,7 @@ export const getConfigKey = async <T extends ConfigKey>(
       case 'boolean':
         inputValue = await vscode.window
           .showQuickPick(['true', 'false'], {
-            title: configKeyInfo.description,
+            title: configKeyInfo.markdownDescription,
             placeHolder: configKeyInfo.default ? 'true' : 'false',
             ignoreFocusOut: true
           })
@@ -181,7 +183,7 @@ export const getConfigKey = async <T extends ConfigKey>(
       case 'array':
         inputValue = await vscode.window
           .showInputBox({
-            prompt: `${configKeyInfo.description} (${t('input.array.promptEnding')})`,
+            prompt: `${configKeyInfo.markdownDescription} (${t('input.array.promptEnding')})`,
             placeHolder: (configKeyInfo.default as string[]).join(', '),
             ignoreFocusOut: true
           })
@@ -193,7 +195,7 @@ export const getConfigKey = async <T extends ConfigKey>(
       case 'object':
         inputValue = await vscode.window
           .showInputBox({
-            prompt: `${configKeyInfo.description} (${t('input.json.promptEnding')})`,
+            prompt: `${configKeyInfo.markdownDescription} (${t('input.json.promptEnding')})`,
             placeHolder: JSON.stringify(configKeyInfo.default, null, 2),
             ignoreFocusOut: true
           })
@@ -213,7 +215,7 @@ export const getConfigKey = async <T extends ConfigKey>(
         // @ts-ignore
         inputValue = await vscode.window
           .showInputBox({
-            prompt: configKeyInfo.description,
+            prompt: configKeyInfo.markdownDescription,
             placeHolder: String(configKeyInfo.default || ''),
             ignoreFocusOut: true,
             validateInput: value =>

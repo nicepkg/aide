@@ -136,29 +136,43 @@
     "configuration": {
       "title": "%config.title%",
       "properties": {
+        "aide.openaiKey": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "%config.openaiKey.description%"
+        },
+        "aide.openaiModel": {
+          "type": "string",
+          "default": "gpt-4o",
+          "markdownDescription": "%config.openaiModel.description%"
+        },
+        "aide.openaiBaseUrl": {
+          "type": "string",
+          "default": "https://api.openai.com/v1",
+          "markdownDescription": "%config.openaiBaseUrl.description%"
+        },
+        "aide.codeViewerHelperPrompt": {
+          "type": "string",
+          "default": "You are a programming language commentator.\nYou need to help me add comments to #{sourceLanguage} code as much as possible to make it readable for beginners.\nDo not change the original code, just add as detailed comments as possible,\nbecause my purpose is only to understand and read. Please use my native language #{locale} as the commenting language.\nPlease do not reply with any text other than the code, and do not use markdown syntax.\nHere is the code you need to comment on:\n\n#{content}",
+          "scope": "resource",
+          "markdownDescription": "%config.codeViewerHelperPrompt.description%"
+        },
+        "aide.convertLanguagePairs": {
+          "type": "object",
+          "default": {},
+          "scope": "resource",
+          "markdownDescription": "%config.convertLanguagePairs.description%"
+        },
+        "aide.autoRememberConvertLanguagePairs": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "%config.autoRememberConvertLanguagePairs.description%"
+        },
         "aide.aiPrompt": {
           "type": "string",
           "default": "#{content}",
           "scope": "resource",
-          "description": "%config.aiPrompt.description%"
-        },
-        "aide.aiCommand": {
-          "type": "string",
-          "default": "",
-          "scope": "resource",
-          "description": "%config.aiCommand.description%"
-        },
-        "aide.aiCommandCopyBeforeRun": {
-          "type": "boolean",
-          "default": true,
-          "scope": "resource",
-          "description": "%config.aiCommandCopyBeforeRun.description%"
-        },
-        "aide.respectGitIgnore": {
-          "type": "boolean",
-          "default": true,
-          "scope": "resource",
-          "description": "%config.respectGitIgnore.description%"
+          "markdownDescription": "%config.aiPrompt.description%"
         },
         "aide.ignorePatterns": {
           "type": "array",
@@ -177,39 +191,25 @@
             "**/.parcel-cache/**"
           ],
           "scope": "resource",
-          "description": "%config.ignorePatterns.description%"
+          "markdownDescription": "%config.ignorePatterns.description%"
         },
-        "aide.autoRememberConvertLanguagePairs": {
+        "aide.respectGitIgnore": {
           "type": "boolean",
           "default": true,
-          "description": "%config.autoRememberConvertLanguagePairs.description%"
-        },
-        "aide.convertLanguagePairs": {
-          "type": "object",
-          "default": {},
           "scope": "resource",
-          "description": "%config.convertLanguagePairs.description%"
+          "markdownDescription": "%config.respectGitIgnore.description%"
         },
-        "aide.codeViewerHelperPrompt": {
-          "type": "string",
-          "default": "You are a programming language commentator.\nYou need to help me add comments to #{sourceLanguage} code as much as possible to make it readable for beginners.\nDo not change the original code, just add as detailed comments as possible,\nbecause my purpose is only to understand and read. Please use my native language #{locale} as the commenting language.\nPlease do not reply with any text other than the code, and do not use markdown syntax.\nHere is the code you need to comment on:\n\n#{content}",
-          "scope": "resource",
-          "description": "%config.codeViewerHelperPrompt.description%"
-        },
-        "aide.openaiKey": {
+        "aide.aiCommand": {
           "type": "string",
           "default": "",
-          "description": "%config.openaiKey.description%"
+          "scope": "resource",
+          "markdownDescription": "%config.aiCommand.description%"
         },
-        "aide.openaiBaseUrl": {
-          "type": "string",
-          "default": "https://api.openai.com/v1",
-          "description": "%config.openaiBaseUrl.description%"
-        },
-        "aide.openaiModel": {
-          "type": "string",
-          "default": "gpt-4o",
-          "description": "%config.openaiModel.description%"
+        "aide.aiCommandCopyBeforeRun": {
+          "type": "boolean",
+          "default": true,
+          "scope": "resource",
+          "markdownDescription": "%config.aiCommandCopyBeforeRun.description%"
         }
       }
     }
@@ -236,16 +236,16 @@
     "@commitlint/cz-commitlint": "^19.2.0",
     "@ianvs/prettier-plugin-sort-imports": "^4.3.1",
     "@langchain/anthropic": "^0.2.6",
-    "@langchain/core": "0.2.17",
+    "@langchain/core": "0.2.18",
     "@langchain/openai": "^0.2.4",
     "@types/fs-extra": "^11.0.4",
     "@types/global-agent": "^2.1.3",
     "@types/node": "^20.14.11",
     "@types/shell-quote": "^1.7.5",
     "@types/vscode": "1.82.0",
-    "@typescript-eslint/eslint-plugin": "^7.16.1",
-    "@typescript-eslint/parser": "^7.16.1",
-    "@vscode/vsce": "^2.31.0",
+    "@typescript-eslint/eslint-plugin": "^7.17.0",
+    "@typescript-eslint/parser": "^7.17.0",
+    "@vscode/vsce": "^2.31.1",
     "commitizen": "^4.3.0",
     "dotenv": "^16.4.5",
     "eslint": "^8.57.0",
@@ -264,27 +264,27 @@
     "fs-extra": "^11.2.0",
     "glob": "^10.4.3",
     "global-agent": "^3.0.0",
-    "husky": "^9.1.0",
+    "husky": "^9.1.1",
     "ignore": "^5.3.1",
     "inquirer": "^9.3.4",
-    "knip": "^5.26.0",
+    "knip": "^5.27.0",
     "langchain": "^0.2.10",
     "lint-staged": "^15.2.7",
     "minimatch": "^9.0.5",
-    "pnpm": "^9.5.0",
+    "pnpm": "^9.6.0",
     "prettier": "^3.3.3",
     "rimraf": "^6.0.1",
     "shell-quote": "^1.8.1",
-    "tsup": "^8.1.2",
+    "tsup": "^8.2.2",
     "typescript": "5.4.5",
-    "undici": "^6.19.2",
+    "undici": "^6.19.4",
     "vite": "^5.3.4",
-    "vitest": "^2.0.3",
+    "vitest": "^2.0.4",
     "zod": "^3.23.8"
   },
   "pnpm": {
     "overrides": {
-      "@langchain/core": "0.2.17"
+      "@langchain/core": "0.2.18"
     }
   },
   "commitlint": {

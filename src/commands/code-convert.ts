@@ -15,16 +15,26 @@ import * as vscode from 'vscode'
 const buildGeneratePrompt = async ({
   sourceLanguageId,
   targetLanguageId,
+  targetLanguageDescription,
   sourceCode
 }: {
   sourceLanguageId: string
   targetLanguageId: string
+  targetLanguageDescription: string
   sourceCode: string
 }): Promise<BaseLanguageModelInput> => {
   const locale = vscode.env.language
+
+  const targetLanguageDescriptionPrompt = targetLanguageDescription
+    ? `
+    For the converted language, my additional notes are as follows: **${targetLanguageDescription}.**
+  `
+    : ''
+
   const prompt = `
   You are a programming language converter.
   You need to help me convert ${sourceLanguageId} code into ${targetLanguageId} code.
+  ${targetLanguageDescriptionPrompt}
   All third-party API and third-party dependency names do not need to be changed,
   as my purpose is only to understand and read, not to run. Please use ${locale} language to add some additional comments as appropriate.
   Please do not reply with any text other than the code, and do not use markdown syntax.
@@ -35,16 +45,21 @@ const buildGeneratePrompt = async ({
   return prompt
 }
 
-const getTargetLanguageId = async (originalFileLanguageId: string) => {
+/**
+ * Get target language info
+ * if user input custom language like: vue please convert to vue3
+ * return { targetLanguageId: 'vue', targetLanguageDescription: 'please convert to vue3' }
+ */
+const getTargetLanguageInfo = async (originalFileLanguageId: string) => {
   const convertLanguagePairs = await getConfigKey('convertLanguagePairs', {
     targetForSet: vscode.ConfigurationTarget.WorkspaceFolder,
     allowCustomOptionValue: true
   })
-  let targetLanguageId = convertLanguagePairs?.[originalFileLanguageId] || ''
+  let targetLanguageInfo = convertLanguagePairs?.[originalFileLanguageId] || ''
   const customLanguageOption = t('info.customLanguage')
 
-  if (!targetLanguageId) {
-    targetLanguageId =
+  if (!targetLanguageInfo) {
+    targetLanguageInfo =
       (await vscode.window.showQuickPick(
         [customLanguageOption, ...languageIds],
         {
@@ -53,16 +68,16 @@ const getTargetLanguageId = async (originalFileLanguageId: string) => {
         }
       )) || ''
 
-    if (!targetLanguageId) throw new Error(t('error.noTargetLanguage'))
+    if (!targetLanguageInfo) throw new Error(t('error.noTargetLanguage'))
 
-    if (targetLanguageId === customLanguageOption) {
-      targetLanguageId =
+    if (targetLanguageInfo === customLanguageOption) {
+      targetLanguageInfo =
         (await vscode.window.showInputBox({
           prompt: t('info.customLanguage')
         })) || ''
     }
 
-    if (!targetLanguageId) throw new Error(t('error.noTargetLanguage'))
+    if (!targetLanguageInfo) throw new Error(t('error.noTargetLanguage'))
 
     const autoRememberConvertLanguagePairs = await getConfigKey(
       'autoRememberConvertLanguagePairs'
@@ -73,7 +88,7 @@ const getTargetLanguageId = async (originalFileLanguageId: string) => {
         'convertLanguagePairs',
         {
           ...convertLanguagePairs,
-          [originalFileLanguageId]: targetLanguageId
+          [originalFileLanguageId]: targetLanguageInfo
         },
         {
           targetForSet: vscode.ConfigurationTarget.WorkspaceFolder,
@@ -83,7 +98,14 @@ const getTargetLanguageId = async (originalFileLanguageId: string) => {
     }
   }
 
-  return targetLanguageId
+  const [targetLanguageId, ...targetLanguageRest] =
+    targetLanguageInfo.split(/\s+/)
+  const targetLanguageDescription = targetLanguageRest.join(' ')
+
+  return {
+    targetLanguageId: targetLanguageId || targetLanguageInfo,
+    targetLanguageDescription: targetLanguageDescription?.trim() || ''
+  }
 }
 
 export const cleanupCodeConvertRunnables = async () => {
@@ -110,7 +132,8 @@ export const handleCodeConvert = async () => {
     isTmpFileHasContent
   } = await createTmpFileInfo()
 
-  const targetLanguageId = await getTargetLanguageId(originalFileLanguageId)
+  const { targetLanguageId, targetLanguageDescription } =
+    await getTargetLanguageInfo(originalFileLanguageId)
 
   // ai
   const modelProvider = await createModelProvider()
@@ -132,6 +155,7 @@ export const handleCodeConvert = async () => {
   const prompt = await buildGeneratePrompt({
     sourceLanguageId: originalFileLanguageId,
     targetLanguageId,
+    targetLanguageDescription,
     sourceCode: originalFileContent
   })
 

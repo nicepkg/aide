@@ -6,10 +6,14 @@ import {
 import { getFileOrFoldersPromptInfo } from '@/file-utils/get-fs-prompt-info'
 import { insertTextAtSelection } from '@/file-utils/insert-text-at-selection'
 import { streamingCompletionWriter } from '@/file-utils/stream-completion-writer'
+import { t } from '@/i18n'
+import { cacheFn } from '@/storage'
 import { getCurrentWorkspaceFolderEditor } from '@/utils'
 import type { BaseLanguageModelInput } from '@langchain/core/language_models/base'
 import type { RunnableConfig } from '@langchain/core/runnables'
 import * as vscode from 'vscode'
+
+const cacheGetReferenceFilePaths = cacheFn(getReferenceFilePaths, 60 * 5)
 
 const buildConvertPrompt = async ({
   workspaceFolder,
@@ -23,6 +27,8 @@ const buildConvertPrompt = async ({
   // content from clipboard
   const clipboardContent = await vscode.env.clipboard.readText()
 
+  if (!clipboardContent?.trim()) throw new Error(t('error.emptyClipboard'))
+
   // current file content
   const locationMark = `### Here is the code you need to insert after convert ###`
   const currentFileContent = await insertTextAtSelection({
@@ -35,7 +41,7 @@ const buildConvertPrompt = async ({
 
   // reference file content
   const { referenceFileRelativePaths, dependenceFileRelativePath } =
-    await getReferenceFilePaths({ currentFilePath })
+    await cacheGetReferenceFilePaths({ currentFilePath })
   const referencePaths = [
     ...new Set([dependenceFileRelativePath, ...referenceFileRelativePaths])
   ]
