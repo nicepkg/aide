@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.14.0](https://github.com/nicepkg/aide/compare/aide-v1.13.0...aide-v1.14.0) (2024-07-23)
+
+
+### Features
+
+* support add desc when code convert to custom language, add cache for some ai request ([227d2ab](https://github.com/nicepkg/aide/commit/227d2abb6987c9214fa05f5b35b527e95ad4a5c4))
+
 ## [1.13.0](https://github.com/nicepkg/aide/compare/aide-v1.12.0...aide-v1.13.0) (2024-07-19)
 
 
