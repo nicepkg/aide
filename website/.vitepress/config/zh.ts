@@ -155,6 +155,10 @@ function sidebar(): DefaultTheme.Sidebar {
             text: 'aide.autoRememberConvertLanguagePairs',
             link: '/auto-remember-convert-language-pairs'
           },
+          {
+            text: 'aide.readClipboardImage',
+            link: '/read-clipboard-image'
+          },
           { text: 'aide.aiPrompt', link: '/ai-prompt' },
           {
             text: 'aide.ignorePatterns',

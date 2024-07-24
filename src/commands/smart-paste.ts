@@ -3,19 +3,34 @@ import {
   createModelProvider,
   getCurrentSessionIdHistoriesMap
 } from '@/ai/helpers'
+import { safeReadClipboard } from '@/clipboard'
+import { getConfigKey } from '@/config'
 import { getFileOrFoldersPromptInfo } from '@/file-utils/get-fs-prompt-info'
 import { insertTextAtSelection } from '@/file-utils/insert-text-at-selection'
 import { streamingCompletionWriter } from '@/file-utils/stream-completion-writer'
 import { t } from '@/i18n'
 import { cacheFn } from '@/storage'
 import { getCurrentWorkspaceFolderEditor } from '@/utils'
-import type { BaseLanguageModelInput } from '@langchain/core/language_models/base'
-import type { RunnableConfig } from '@langchain/core/runnables'
+import { HumanMessage, type BaseMessage } from '@langchain/core/messages'
 import * as vscode from 'vscode'
 
+// cache for 5 minutes
 const cacheGetReferenceFilePaths = cacheFn(getReferenceFilePaths, 60 * 5)
 
-const buildConvertPrompt = async ({
+const getClipboardContent = async () => {
+  const readClipboardImage = await getConfigKey('readClipboardImage')
+  const { img: clipboardImg, text: clipboardContent } = await safeReadClipboard(
+    { readImg: readClipboardImage }
+  )
+
+  // nothing to paste
+  if (!clipboardImg && !clipboardContent) {
+    throw new Error(t('error.emptyClipboard'))
+  }
+  return { clipboardImg, clipboardContent }
+}
+
+const buildConvertChatMessages = async ({
   workspaceFolder,
   currentFilePath,
   selection
@@ -23,11 +38,10 @@ const buildConvertPrompt = async ({
   workspaceFolder: vscode.WorkspaceFolder
   currentFilePath: string
   selection: vscode.Selection
-}): Promise<BaseLanguageModelInput> => {
-  // content from clipboard
-  const clipboardContent = await vscode.env.clipboard.readText()
+}): Promise<BaseMessage[]> => {
+  const { clipboardImg, clipboardContent } = await getClipboardContent()
 
-  if (!clipboardContent?.trim()) throw new Error(t('error.emptyClipboard'))
+  // console.log('smart-paste', { img: clipboardImg?.slice(0, 100) })
 
   // current file content
   const locationMark = `### Here is the code you need to insert after convert ###`
@@ -48,12 +62,30 @@ const buildConvertPrompt = async ({
   const { promptFullContent: referenceFileContent } =
     await getFileOrFoldersPromptInfo(referencePaths, workspaceFolder.uri.fsPath)
 
-  // console.log('smart-paste', {
-  //   referencePaths,
-  //   currentFileRelativePath,
-  //   clipboardContent
-  // })
+  // build clipboard content prompt
+  const clipboardContentPrompt = clipboardImg
+    ? `
+  1. Clipboard content:
+  ${
+    clipboardContent
+      ? `
+  \`\`\`
+  ${clipboardContent}
+  \`\`\`
+  `
+      : 'No Clipboard Content'
+  }
 
+  BTW, I copied an image, please automatically recognize and convert it into code based on the image content.
+  `
+    : `
+  1. Clipboard content:
+  \`\`\`
+  ${clipboardContent}
+  \`\`\`
+`
+  // some prompt comes from https://github.com/abi/screenshot-to-code/blob/main/backend/prompts/claude_prompts.py
+  // thanks to the author
   const prompt = `
   I will provide the content of the current file, as well as the content of several most useful files related to the currently edited file, to you.
 
@@ -65,13 +97,33 @@ const buildConvertPrompt = async ({
 
   **You should try to guess the my intention and the desired conversion style as much as possible.**
 
-  For example, if I copied Tailwind CSS template code and pasted it into Flutter code, you should automatically recognize this as Tailwind CSS code and convert it to Flutter code.
+  Example 1:
+    - If I copied Tailwind CSS template code and pasted it into Flutter code, you should automatically recognize this as Tailwind CSS code and convert it to Flutter code.
 
-  Another example if I copied Tailwind CSS template code and pasted it into vue style tag, you should automatically convert it as css/less/sass(which I use) code for me to insert into the style tag.
+  Example 2:
+    - If I copied Tailwind CSS template code and pasted it into vue style tag, you should automatically convert it as css/less/sass(which I use) code for me to insert into the style tag.
 
-  Another example would be if I copied JSON data and pasted it into a TypeScript \`types XXX = {}\` statement, you should automatically recognize this as JSON data and convert it to a TypeScript type.
+  Example 3:
+    - If I copied JSON data and pasted it into a TypeScript \`types XXX = {}\` statement, you should automatically recognize this as JSON data and convert it to a TypeScript type.
 
-  **In short, you are always very smart to guess my intention based on the position where I paste, and then automatically convert the code.**
+  Example 4:
+    - If I copied an image and pasted it into a jsx/vue template,
+      you should read the ui elements in the image and automatically convert them to the corresponding jsx/vue code,
+      the class name style should be consistent with the current file, and you also need follow the following rules:
+        - Make sure the app looks exactly like the screenshot.
+        - Do not leave out smaller UI elements. Make sure to include every single thing in the screenshot.
+        - Pay close attention to background color, text color, font size, font family, padding, margin, border, etc. Match the colors and sizes exactly.
+        - In particular, pay attention to background color and overall color scheme.
+        - Use the exact text from the screenshot.
+        - Do not add comments in the code such as "<!-- Add other navigation links as needed -->" and "<!-- ... other news items ... -->" in place of writing the full code. WRITE THE FULL CODE.
+        - Make sure to always get the layout right (if things are arranged in a row in the screenshot, they should be in a row in the app as well)
+        - **For images, use placeholder images from \`https://placehold.co\`** and include a detailed description of the image in the alt text so that an image generation AI can generate the image later.
+
+
+  Important:
+    - **In short, you are always very smart to guess my intention based on the position where I paste, and then automatically convert the code.**
+
+  If there is no text content in the clipboard, I will tell you \`No Clipboard Content.\`
 
   You should not respond with anything other than the converted code.
 
@@ -81,10 +133,7 @@ const buildConvertPrompt = async ({
 
   Here are the details:
 
-  1. Clipboard content:
-  \`\`\`
-  ${clipboardContent}
-  \`\`\`
+  ${clipboardContentPrompt}
 
   2. Current file content:
   File: ${currentFileRelativePath}
@@ -100,7 +149,32 @@ const buildConvertPrompt = async ({
   **Please do not reply with any text other than the code, and do not use markdown syntax**
   `
 
-  return prompt
+  const messages: BaseMessage[] = []
+
+  if (!clipboardImg) {
+    // only clipboard text
+    messages.push(new HumanMessage({ content: prompt }))
+  } else {
+    // clipboard image
+    messages.push(
+      new HumanMessage({
+        content: [
+          {
+            type: 'text',
+            text: prompt
+          },
+          {
+            type: 'image_url',
+            image_url: {
+              url: clipboardImg
+            }
+          }
+        ]
+      })
+    )
+  }
+
+  return messages
 }
 
 export const cleanupSmartPasteRunnables = async () => {
@@ -125,41 +199,39 @@ export const handleSmartPaste = async () => {
 
   // ai
   const modelProvider = await createModelProvider()
-  const aiRunnableAbortController = new AbortController()
-  const aiRunnable = await modelProvider.createRunnable({
-    signal: aiRunnableAbortController.signal
+  const aiModelAbortController = new AbortController()
+  const aiModel = (await modelProvider.getModel()).bind({
+    signal: aiModelAbortController.signal
   })
+
   const sessionId = `smartPaste:${currentFilePath}}`
-  const aiRunnableConfig: RunnableConfig = {
-    configurable: {
-      sessionId
-    }
-  }
   const sessionIdHistoriesMap = await getCurrentSessionIdHistoriesMap()
+
+  // TODO: remove and support continue generate in the future
   delete sessionIdHistoriesMap[sessionId]
 
   await streamingCompletionWriter({
     editor: activeEditor,
     onCancel() {
-      aiRunnableAbortController.abort()
+      aiModelAbortController.abort()
     },
     buildAiStream: async () => {
-      const prompt = await buildConvertPrompt({
+      const convertMessages = await buildConvertChatMessages({
         workspaceFolder,
         currentFilePath,
         selection: activeEditor.selection
       })
 
-      const aiStream = aiRunnable.stream(
-        {
-          input: prompt
-        },
-        aiRunnableConfig
-      )
+      const history = await modelProvider.getHistory(sessionId)
+      const historyMessages = await history.getMessages()
+      const currentMessages: BaseMessage[] = convertMessages
+      const aiStream = aiModel.stream([...historyMessages, ...currentMessages])
+      history.addMessages(currentMessages)
 
       return aiStream
     }
   })
 
+  // TODO: remove and support continue generate in the future
   delete sessionIdHistoriesMap[sessionId]
 }

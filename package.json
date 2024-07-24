@@ -153,6 +153,7 @@
         },
         "aide.codeViewerHelperPrompt": {
           "type": "string",
+          "editPresentation": "multilineText",
           "default": "You are a programming language commentator.\nYou need to help me add comments to #{sourceLanguage} code as much as possible to make it readable for beginners.\nDo not change the original code, just add as detailed comments as possible,\nbecause my purpose is only to understand and read. Please use my native language #{locale} as the commenting language.\nPlease do not reply with any text other than the code, and do not use markdown syntax.\nHere is the code you need to comment on:\n\n#{content}",
           "scope": "resource",
           "markdownDescription": "%config.codeViewerHelperPrompt.description%"
@@ -168,8 +169,14 @@
           "default": true,
           "markdownDescription": "%config.autoRememberConvertLanguagePairs.description%"
         },
+        "aide.readClipboardImage": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "%config.readClipboardImage.description%"
+        },
         "aide.aiPrompt": {
           "type": "string",
+          "editPresentation": "multilineText",
           "default": "#{content}",
           "scope": "resource",
           "markdownDescription": "%config.aiPrompt.description%"

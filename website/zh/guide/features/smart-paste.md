@@ -2,7 +2,7 @@
 
 命令名称：`aide.smartPaste`
 
-使用 AI 智能识别剪贴板里的代码并进行格式转换，然后粘贴到当前编辑器中。此功能可以显著提高开发效率，特别是在处理跨语言或跨框架的代码转换时。
+使用 AI 智能识别剪贴板里的`代码或者图片`并进行格式转换，然后粘贴到当前编辑器中。此功能可以显著提高开发效率，特别是在处理跨语言或跨框架的代码转换时。
 
 **使用方法：**
 
@@ -12,11 +12,19 @@
 
 ::: warning 警告
 该功能需要 AI 模型支持 `function_call` 功能
+
+读图功能需要打开 [`aide.readClipboardImage`](../configuration/read-clipboard-image.md) 配置
 :::
+
+<Video src="/videos/aide-smart-paste.mp4"/>
 
 ::: tip 提示
 
 `Aide` 会智能洞察你的内心，自动识别并进行转换，无需额外配置。例如：
+
+- 如果你复制了一个设计稿截图，然后智能粘贴到 `vue/react/flutter` 代码中，`Aide` 会自动将其转换成对应的 `UI` 代码。(此功能需要打开 [`aide.readClipboardImage`](../configuration/read-clipboard-image.md) 配置)
+
+- 如果你复制了一个数据库设计图，然后智能粘贴到 `SQL` 文件中，`Aide` 会自动将其转换成对应的 `SQL` 代码。
 
 - 如果你复制了一个 `JSON` 粘贴到 `TypeScript` 文件里，`Aide` 会自动将其转换成 `TypeScript` 类型定义。
 
@@ -27,8 +35,6 @@
 当然，它功能远不止于此，你可以自行探索更多的用途。
 
 :::
-
-<Video src="/videos/aide-smart-paste.mp4"/>
 
 **使用示例：**
 

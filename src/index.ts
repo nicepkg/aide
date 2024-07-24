@@ -8,7 +8,7 @@ import { enableGlobalProxy, enableLogFetch } from './enable-global-proxy'
 import { initializeLocalization } from './i18n'
 import { logger } from './logger'
 import { enablePolyfill } from './polyfill'
-import { stateStorage } from './storage'
+import { redisStorage, stateStorage } from './storage'
 
 export const activate = async (context: vscode.ExtensionContext) => {
   try {
@@ -35,4 +35,7 @@ export const deactivate = () => {
 
   // Clear the state storage
   stateStorage.clear()
+
+  // Clear the redis storage
+  redisStorage.clear()
 }

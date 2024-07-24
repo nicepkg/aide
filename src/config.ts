@@ -34,6 +34,10 @@ type ConfigKeyInfoMap = {
 }
 
 const configKey = {
+  readClipboardImage: {
+    ...pkgConfig['aide.readClipboardImage'],
+    type: 'boolean'
+  },
   respectGitIgnore: {
     ...pkgConfig['aide.respectGitIgnore'],
     type: 'boolean'
