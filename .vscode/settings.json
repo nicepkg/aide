@@ -1,8 +1,13 @@
 {
   "i18n-ally.pathMatcher": "package.nls.{locale}.json",
   "i18n-ally.keystyle": "flat",
-  "i18n-ally.localesPaths": ["."],
-  "i18n-ally.enabledFrameworks": ["vscode", "react"],
+  "i18n-ally.localesPaths": [
+    "."
+  ],
+  "i18n-ally.enabledFrameworks": [
+    "vscode",
+    "react"
+  ],
   "i18n-ally.dirStructure": "file",
   // Enable eslint for all supported languages
   "eslint.validate": [
@@ -29,6 +34,7 @@
   "typescript.enablePromptUseWorkspaceTsdk": true, // For security reasons it's require that users opt into using the workspace version of typescript
   "typescript.preferences.preferTypeOnlyAutoImports": true, // Prefer type-only imports
   "testing.openTesting": "neverOpen", // Don't open the testing view automatically when running tests
+  "prettier.enable": true, // enable prettier for those who disabled it for some reason
   "prettier.ignorePath": ".gitignore", // Don't run prettier for files listed in .gitignore
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnPaste": false,
@@ -40,7 +46,6 @@
   // "typescript.inlayHints.propertyDeclarationTypes.enabled": true,
   "typescript.inlayHints.parameterTypes.enabled": true,
   // "typescript.inlayHints.functionLikeReturnTypes.enabled": true,
-
   "workbench.colorCustomizations": {
     "activityBar.background": "#0E3140",
     "titleBar.activeBackground": "#14455A",
