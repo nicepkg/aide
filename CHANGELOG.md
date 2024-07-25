@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.15.1](https://github.com/nicepkg/aide/compare/aide-v1.15.0...aide-v1.15.1) (2024-07-25)
+
+
+### Bug Fixes
+
+* fix read image from clipboard not working on windows ([cb99d2d](https://github.com/nicepkg/aide/commit/cb99d2dbe9c762cee20c6419352a13c8934c250e))
+
 ## [1.15.0](https://github.com/nicepkg/aide/compare/aide-v1.14.0...aide-v1.15.0) (2024-07-25)
 
 
