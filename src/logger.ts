@@ -1,3 +1,5 @@
+import * as vscode from 'vscode'
+
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 const isServer = typeof window === 'undefined'
@@ -53,6 +55,7 @@ const hslToRgb = (
 }
 
 export interface LoggerOptions {
+  vscodeOutputName: string
   label?: string
   enableDebug?: boolean
   logStorageFlagName?: string
@@ -67,6 +70,8 @@ export class Logger {
   label: string | undefined
 
   color: string | undefined
+
+  vscodeOutputChannel: vscode.OutputChannel
 
   private _enableDebug!: boolean
 
@@ -83,14 +88,18 @@ export class Logger {
     this._enableDebug = value
   }
 
-  constructor(optionsOrLabel?: LoggerOptions | string) {
+  constructor(optionsOrLabel: LoggerOptions | string) {
     const options: LoggerOptions =
       (typeof optionsOrLabel === 'string'
-        ? { label: optionsOrLabel }
+        ? { label: optionsOrLabel, vscodeOutputName: optionsOrLabel }
         : optionsOrLabel) || {}
 
-    const { enableDebug, label } = options
+    const { enableDebug, label, vscodeOutputName } = options
 
+    this.vscodeOutputChannel = vscode.window.createOutputChannel(
+      vscodeOutputName,
+      'log'
+    )
     this.label = label
     this.color = this.calculateColor(label)
     this.enableDebug = enableDebug as boolean
@@ -124,10 +133,30 @@ export class Logger {
     return `[${this.label}]`
   }
 
-  private logWithColor = (
-    method: 'log' | 'warn' | 'error' | 'debug',
-    ...args: any[]
+  private formatDate(date: Date): string {
+    return date.toISOString().replace('T', ' ').replace('Z', '')
+  }
+
+  private logToVscodeOutputChannel: typeof this.logWithColor = (
+    method,
+    ...args
   ) => {
+    const level = method === 'log' ? 'info' : method
+    const vscodeLogContent = [
+      this.formatDate(new Date()),
+      `[${level}]`,
+      ...args
+    ]
+    this.vscodeOutputChannel.appendLine(
+      vscodeLogContent
+        .map(arg =>
+          typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+        )
+        .join(' ')
+    )
+  }
+
+  private logToConsole: typeof this.logWithColor = (method, ...args) => {
     if (!this.label) {
       ;(console as any)[method](...args)
       return
@@ -145,6 +174,14 @@ export class Logger {
         ...args
       )
     }
+  }
+
+  private logWithColor = (
+    method: 'log' | 'warn' | 'error' | 'debug',
+    ...args: any[]
+  ) => {
+    this.logToVscodeOutputChannel(method, ...args)
+    this.logToConsole(method, ...args)
   }
 
   // Check if logging should occur
@@ -181,4 +218,4 @@ export class Logger {
   }
 }
 
-export const logger = new Logger('aide')
+export const logger = new Logger('Aide')
