@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.16.0](https://github.com/nicepkg/aide/compare/aide-v1.15.1...aide-v1.16.0) (2024-07-25)
+
+
+### Features
+
+* output logs to vscode output channel ([94c549a](https://github.com/nicepkg/aide/commit/94c549a2e92f1884ca26f65e0ec79196dd522ef3))
+
 ## [1.15.1](https://github.com/nicepkg/aide/compare/aide-v1.15.0...aide-v1.15.1) (2024-07-25)
 
 
