@@ -20,8 +20,8 @@ const getClipboardImageAsBase64Url = async (): Promise<string | null> => {
 
   switch (osPlatform) {
     case 'win32':
-      fileExtension = '.bmp'
-      mimeType = 'image/bmp'
+      fileExtension = '.png'
+      mimeType = 'image/png'
       filePath = path.win32.join(
         tempDir,
         `clipboard_image_${randomString}${fileExtension}`
@@ -30,14 +30,14 @@ const getClipboardImageAsBase64Url = async (): Promise<string | null> => {
       args = [
         '-command',
         `Add-Type -AssemblyName System.Windows.Forms;
-         Add-Type -AssemblyName System.Drawing;
-         $img = [System.Windows.Forms.Clipboard]::GetImage();
-         if ($img -ne $null) {
-           $img.Save('${filePath}', [System.Drawing.Imaging.ImageFormat]::Bmp);
-           $img.Dispose();
-         } else {
-           Write-Error "No image found in clipboard"
-         }`
+     Add-Type -AssemblyName System.Drawing;
+     $img = [System.Windows.Forms.Clipboard]::GetImage();
+     if ($img -ne $null) {
+       $img.Save('${filePath}', [System.Drawing.Imaging.ImageFormat]::Png);
+       $img.Dispose();
+     } else {
+       Write-Error "No image found in clipboard"
+     }`
       ]
       break
     case 'darwin':
