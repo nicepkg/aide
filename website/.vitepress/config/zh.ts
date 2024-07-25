@@ -187,6 +187,7 @@ function sidebar(): DefaultTheme.Sidebar {
           { text: 'Azure', link: '/azure' },
           { text: 'DeepSeek', link: '/deepseek' },
           { text: '谷歌', link: '/google' },
+          { text: '讯飞', link: '/iflytek' },
           { text: 'LocalAI', link: '/local-ai' },
           { text: 'Ollama', link: '/ollama' },
           { text: 'OpenAI', link: '/openai' },
