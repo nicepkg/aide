@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.15.0](https://github.com/nicepkg/aide/compare/aide-v1.14.0...aide-v1.15.0) (2024-07-25)
+
+
+### Features
+
+* add read image from clipboard for smart-paste ([a5bb916](https://github.com/nicepkg/aide/commit/a5bb916cf598fafae25ff6f9242a047f177cd3a7))
+
 ## [1.14.0](https://github.com/nicepkg/aide/compare/aide-v1.13.0...aide-v1.14.0) (2024-07-23)
 
 
