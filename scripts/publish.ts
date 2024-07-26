@@ -34,12 +34,13 @@ const publish = async () => {
       ],
       { cwd: root, stdio: 'inherit' }
     )
-    // console.log('\nPublish to OVSE...\n')
-    // await execa(
-    //   'npx',
-    //   ['ovsx', 'publish', '--no-dependencies', '-p', process.env.OVSX_TOKEN!],
-    //   { cwd: root, stdio: 'inherit' }
-    // )
+
+    console.log('\nPublish to OVSE...\n')
+    await execa(
+      'npx',
+      ['ovsx', 'publish', '--no-dependencies', '-p', process.env.OVSX_TOKEN!],
+      { cwd: root, stdio: 'inherit' }
+    )
   } finally {
     await fs.writeFile(pkgPath, rawJSON, 'utf-8')
   }
