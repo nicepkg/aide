@@ -72,3 +72,9 @@ export const languageIdExtMap = {
 }
 
 export const languageIds = Object.keys(languageIdExtMap)
+export const languageIdExts = Object.values(languageIdExtMap).flat()
+export const languageExtIdMap = Object.fromEntries(
+  Object.entries(languageIdExtMap).flatMap(([id, exts]) =>
+    exts.map(ext => [ext, id])
+  )
+)

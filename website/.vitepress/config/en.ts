@@ -114,6 +114,10 @@ function sidebar(): DefaultTheme.Sidebar {
             link: '/openai-base-url'
           },
           {
+            text: 'aide.useSystemProxy',
+            link: '/use-system-proxy'
+          },
+          {
             text: 'aide.codeViewerHelperPrompt',
             link: '/code-viewer-helper-prompt'
           },
@@ -142,6 +146,10 @@ function sidebar(): DefaultTheme.Sidebar {
           {
             text: 'aide.aiCommandCopyBeforeRun',
             link: '/ai-command-copy-before-run'
+          },
+          {
+            text: 'aide.aiCommandAutoRun',
+            link: '/ai-command-auto-run'
           }
         ]
       },

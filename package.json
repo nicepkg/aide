@@ -151,6 +151,11 @@
           "default": "https://api.openai.com/v1",
           "markdownDescription": "%config.openaiBaseUrl.description%"
         },
+        "aide.useSystemProxy": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "%config.useSystemProxy.description%"
+        },
         "aide.codeViewerHelperPrompt": {
           "type": "string",
           "editPresentation": "multilineText",
@@ -217,6 +222,11 @@
           "default": true,
           "scope": "resource",
           "markdownDescription": "%config.aiCommandCopyBeforeRun.description%"
+        },
+        "aide.aiCommandAutoRun": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "%config.aiCommandAutoRun.description%"
         }
       }
     }

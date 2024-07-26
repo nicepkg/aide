@@ -4,7 +4,7 @@ import { BaseModelProvider } from './ai/model-providers/base'
 import { cleanup } from './cleanup'
 import { registerCommands } from './commands'
 import { setContext } from './context'
-import { enableGlobalProxy, enableLogFetch } from './enable-global-proxy'
+import { enableLogFetch, enableSystemProxy } from './enable-system-proxy'
 import { initializeLocalization } from './i18n'
 import { logger } from './logger'
 import { enablePolyfill } from './polyfill'
@@ -16,10 +16,10 @@ export const activate = async (context: vscode.ExtensionContext) => {
 
     logger.log('"aide" is now active!')
 
-    initializeLocalization()
+    await initializeLocalization()
     setContext(context)
     await enablePolyfill()
-    enableGlobalProxy()
+    await enableSystemProxy()
     isDev && enableLogFetch()
 
     registerCommands(context)
@@ -30,12 +30,15 @@ export const activate = async (context: vscode.ExtensionContext) => {
 }
 
 export const deactivate = () => {
-  // Clear the session history map
+  // clear the session history map
   BaseModelProvider.sessionIdHistoriesMap = {}
 
-  // Clear the state storage
+  // clear the state storage
   stateStorage.clear()
 
-  // Clear the redis storage
+  // clear the redis storage
   redisStorage.clear()
+
+  // destroy the logger
+  logger.destroy()
 }

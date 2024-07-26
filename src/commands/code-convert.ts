@@ -3,11 +3,12 @@ import {
   getCurrentSessionIdHistoriesMap
 } from '@/ai/helpers'
 import { getConfigKey, setConfigKey } from '@/config'
-import { languageIds } from '@/constants'
+import { languageIdExts, languageIds } from '@/constants'
 import { createTmpFileInfo } from '@/file-utils/create-tmp-file'
 import { showContinueMessage } from '@/file-utils/show-continue-message'
 import { tmpFileWriter } from '@/file-utils/tmp-file-writer'
 import { t } from '@/i18n'
+import { getLanguageId } from '@/utils'
 import type { BaseLanguageModelInput } from '@langchain/core/language_models/base'
 import type { RunnableConfig } from '@langchain/core/runnables'
 import * as vscode from 'vscode'
@@ -61,7 +62,7 @@ const getTargetLanguageInfo = async (originalFileLanguageId: string) => {
   if (!targetLanguageInfo) {
     targetLanguageInfo =
       (await vscode.window.showQuickPick(
-        [customLanguageOption, ...languageIds],
+        [customLanguageOption, ...languageIds, ...languageIdExts],
         {
           placeHolder: t('input.codeConvertTargetLanguage.prompt'),
           canPickMany: false
@@ -98,9 +99,10 @@ const getTargetLanguageInfo = async (originalFileLanguageId: string) => {
     }
   }
 
-  const [targetLanguageId, ...targetLanguageRest] =
+  const [targetLanguageIdOrExt, ...targetLanguageRest] =
     targetLanguageInfo.split(/\s+/)
   const targetLanguageDescription = targetLanguageRest.join(' ')
+  const targetLanguageId = getLanguageId(targetLanguageIdOrExt || 'plaintext')
 
   return {
     targetLanguageId: targetLanguageId || targetLanguageInfo,

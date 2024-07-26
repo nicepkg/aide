@@ -13,7 +13,7 @@ Use AI to intelligently recognize `code or images` from the clipboard and perfor
 ::: warning
 This feature requires AI model support for `function_call` capability.
 
-The image reading feature requires enabling the [`aide.readClipboardImage`](../configuration/read-clipboard-image.md) configuration.
+The image reading feature requires enabling the [`aide.readClipboardImage`](../configuration/read-clipboard-image.md) configuration. The AI model must also support image reading. We recommend using the `gpt-4o` model.
 :::
 
 <Video src="/videos/aide-smart-paste.mp4"/>

@@ -13,7 +13,7 @@
 ::: warning 警告
 该功能需要 AI 模型支持 `function_call` 功能
 
-读图功能需要打开 [`aide.readClipboardImage`](../configuration/read-clipboard-image.md) 配置
+读图功能需要打开 [`aide.readClipboardImage`](../configuration/read-clipboard-image.md) 配置，并且 AI 模型要支持读图功能，推荐用 `gpt-4o` 模型。
 :::
 
 <Video src="/videos/aide-smart-paste.mp4"/>

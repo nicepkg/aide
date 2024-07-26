@@ -1,6 +1,11 @@
 import * as vscode from 'vscode'
 
-import { languageIdExtMap } from './constants'
+import {
+  languageExtIdMap,
+  languageIdExtMap,
+  languageIdExts,
+  languageIds
+} from './constants'
 import { t } from './i18n'
 import { logger } from './logger'
 
@@ -54,6 +59,18 @@ export const commandErrorCatcher = <T extends (...args: any[]) => any>(
 
 export const getLanguageIdExt = (languageId: string): string =>
   languageIdExtMap[languageId as keyof typeof languageIdExtMap]?.[0] || ''
+
+export const getLanguageId = (languageIdORExt: string): string => {
+  if (languageIds.includes(languageIdORExt)) return languageIdORExt
+  if (languageIdExts.includes(languageIdORExt)) {
+    return (
+      languageExtIdMap[languageIdORExt as keyof typeof languageExtIdMap] ||
+      languageIdORExt
+    )
+  }
+
+  return languageIdORExt
+}
 
 export const getCurrentWorkspaceFolderEditor = <T extends boolean = true>(
   throwErrorWhenNotFound: T = true as T

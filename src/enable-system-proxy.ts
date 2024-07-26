@@ -1,6 +1,7 @@
 import { bootstrap } from 'global-agent'
 import { ProxyAgent, setGlobalDispatcher } from 'undici'
 
+import { getConfigKey } from './config'
 import { logger } from './logger'
 import { tryParseJSON } from './utils'
 
@@ -27,8 +28,11 @@ const getDefaultProxyUrl = () => {
   return proxyUrl
 }
 
-export const enableGlobalProxy = () => {
+export const enableSystemProxy = async () => {
   try {
+    const useSystemProxy = await getConfigKey('useSystemProxy')
+    if (!useSystemProxy) return
+
     const proxyUrl = getDefaultProxyUrl()
 
     bootstrap()
@@ -50,7 +54,7 @@ export const enableLogFetch = () => {
         ? tryParseJSON(init.body, true)
         : init?.body
 
-    logger.log('fetching...', {
+    logger.dev.log('fetching...', {
       input,
       init,
       url: input.toString(),

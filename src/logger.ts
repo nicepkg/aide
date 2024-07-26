@@ -1,5 +1,7 @@
 import * as vscode from 'vscode'
 
+import { getContext } from './context'
+
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 const isServer = typeof window === 'undefined'
@@ -54,11 +56,19 @@ const hslToRgb = (
   return [r, g, b]
 }
 
+interface HSLColor {
+  h: number
+  s: number
+  l: number
+}
+
 export interface LoggerOptions {
   vscodeOutputName: string
   label?: string
   enableDebug?: boolean
   logStorageFlagName?: string
+  isDevLogger?: boolean
+  hslColor?: HSLColor
 }
 /**
  * Logger class to log messages with a label and color
@@ -69,23 +79,27 @@ export interface LoggerOptions {
 export class Logger {
   label: string | undefined
 
+  hslColor: HSLColor | undefined
+
   color: string | undefined
 
   vscodeOutputChannel: vscode.OutputChannel
 
-  private _enableDebug!: boolean
+  protected enableDebug: boolean
 
-  protected get enableDebug() {
-    if (this._enableDebug !== undefined) {
-      return this._enableDebug
+  protected isDevLogger: boolean
+
+  private _isDev!: boolean
+
+  protected getIsDev() {
+    if (this._isDev === undefined) {
+      const context = getContext()
+      this._isDev = context
+        ? context.extensionMode !== vscode.ExtensionMode.Production
+        : (undefined as any)
     }
 
-    this._enableDebug = true
-    return this._enableDebug
-  }
-
-  protected set enableDebug(value: boolean) {
-    this._enableDebug = value
+    return this._isDev
   }
 
   constructor(optionsOrLabel: LoggerOptions | string) {
@@ -94,18 +108,26 @@ export class Logger {
         ? { label: optionsOrLabel, vscodeOutputName: optionsOrLabel }
         : optionsOrLabel) || {}
 
-    const { enableDebug, label, vscodeOutputName } = options
+    const { enableDebug, label, vscodeOutputName, isDevLogger, hslColor } =
+      options
 
     this.vscodeOutputChannel = vscode.window.createOutputChannel(
       vscodeOutputName,
-      'log'
+      {
+        log: true
+      }
     )
     this.label = label
-    this.color = this.calculateColor(label)
-    this.enableDebug = enableDebug as boolean
+    this.color = this.calculateColor(label, hslColor)
+    this.hslColor = hslColor
+    this.enableDebug = enableDebug ?? true
+    this.isDevLogger = isDevLogger ?? false
   }
 
-  private calculateColor = (label?: string): string | undefined => {
+  private calculateColor = (
+    label?: string,
+    hslConfig?: HSLColor
+  ): string | undefined => {
     if (!label) return undefined
 
     let hash = 0
@@ -114,9 +136,9 @@ export class Logger {
       hash |= 0 // Convert to 32bit integer
     }
 
-    const hue = hash % 360
-    const saturation = 50
-    const lightness = 50
+    const hue = hslConfig?.h ?? hash % 360
+    const saturation = hslConfig?.s ?? 50
+    const lightness = hslConfig?.l ?? 50
 
     if (isServer) {
       // For Node.js, return ANSI color code
@@ -133,22 +155,12 @@ export class Logger {
     return `[${this.label}]`
   }
 
-  private formatDate(date: Date): string {
-    return date.toISOString().replace('T', ' ').replace('Z', '')
-  }
-
   private logToVscodeOutputChannel: typeof this.logWithColor = (
     method,
     ...args
   ) => {
-    const level = method === 'log' ? 'info' : method
-    const vscodeLogContent = [
-      this.formatDate(new Date()),
-      `[${level}]`,
-      ...args
-    ]
     this.vscodeOutputChannel.appendLine(
-      vscodeLogContent
+      args
         .map(arg =>
           typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
         )
@@ -176,16 +188,8 @@ export class Logger {
     }
   }
 
-  private logWithColor = (
-    method: 'log' | 'warn' | 'error' | 'debug',
-    ...args: any[]
-  ) => {
-    this.logToVscodeOutputChannel(method, ...args)
-    this.logToConsole(method, ...args)
-  }
-
   // Check if logging should occur
-  shouldLog = () => this.enableDebug
+  shouldLog = () => this.enableDebug && (!this.isDevLogger || this.getIsDev())
 
   // Enable logging
   enable = () => {
@@ -197,25 +201,50 @@ export class Logger {
     this.enableDebug = false
   }
 
-  log = (...args: any[]) => {
+  private logWithColor = (
+    method: 'log' | 'warn' | 'error' | 'debug',
+    ...args: any[]
+  ) => {
     if (!this.shouldLog()) return
+    this.logToVscodeOutputChannel(method, ...args)
+    this.logToConsole(method, ...args)
+  }
+
+  log = (...args: any[]) => {
     this.logWithColor('log', ...args)
   }
 
   warn = (...args: any[]) => {
-    if (!this.shouldLog()) return
     this.logWithColor('warn', ...args)
   }
 
   error = (...args: any[]) => {
-    if (!this.shouldLog()) return
     this.logWithColor('error', ...args)
   }
 
   verbose = (...args: any[]) => {
-    if (!this.shouldLog()) return
     this.logWithColor('debug', ...args)
+  }
+
+  get dev(): Logger {
+    if (this.isDevLogger) return this
+    return new Logger({
+      label: this.label ? `${this.label}:dev` : 'dev',
+      vscodeOutputName: this.vscodeOutputChannel.name,
+      enableDebug: this.enableDebug,
+      isDevLogger: true,
+      hslColor: this.hslColor
+    })
+  }
+
+  destroy = () => {
+    this.vscodeOutputChannel.dispose()
+    this.dev.vscodeOutputChannel.dispose()
   }
 }
 
-export const logger = new Logger('Aide')
+export const logger = new Logger({
+  label: 'Aide',
+  vscodeOutputName: 'Aide',
+  hslColor: { h: 260, s: 80, l: 68 }
+})

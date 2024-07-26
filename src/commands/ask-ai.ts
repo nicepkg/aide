@@ -45,6 +45,7 @@ export const handleAskAI = async (
 
   const aiCommand = await getConfigKey('aiCommand')
   const aiCommandCopyBeforeRun = await getConfigKey('aiCommandCopyBeforeRun')
+  const aiCommandAutoRun = await getConfigKey('aiCommandAutoRun')
   let userInput = ''
 
   if (aiCommand.includes('#{question}')) {
@@ -63,7 +64,16 @@ export const handleAskAI = async (
 
   if (aiCommandCopyBeforeRun) {
     await vscode.env.clipboard.writeText(finalCommand)
+
+    // Show info message only if the command is not set to auto-run
+    if (!aiCommandAutoRun) {
+      await vscode.window.showInformationMessage(
+        t('info.commandCopiedToClipboard')
+      )
+    }
   }
 
-  await executeCommand(finalCommand, workspaceFolder.uri.fsPath)
+  if (aiCommandAutoRun) {
+    await executeCommand(finalCommand, workspaceFolder.uri.fsPath)
+  }
 }

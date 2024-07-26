@@ -1,6 +1,6 @@
 # aide.aiCommand
 
-此配置允许你自定义 AI 命令执行的模板。模板可以包括一些占位符：
+此配置允许你自定义 `✨ Aide: 问 AI` 命令执行的模板。模板可以包括一些占位符：
 
 **模板参数：**
 
@@ -19,8 +19,18 @@
 
 - **示例：**
 
-  推荐使用 [aider (一个广受好评的命令行 AI 工具)](https://github.com/paul-gauthier/aider) 命令来询问 AI 关于所选文件的问题：
+  推荐使用 [`aider (一个广受好评的命令行 AI 工具)`](https://github.com/paul-gauthier/aider) 命令来询问 AI 关于所选文件的问题。
 
-  ```plaintext
-  aider #{filesRelativePath}
-  ```
+  - 如果你想每次都打开一个新的终端窗口向 [`aider`](https://github.com/paul-gauthier/aider) 提问，你可以使用以下模板：
+
+    ```plaintext
+    aider #{filesRelativePath}
+    ```
+
+  - 如果你想自己手动启动 [`aider`](https://github.com/paul-gauthier/aider)，然后手动添加文件，可以设置 [`aide.aiCommandCopyBeforeRun`](./ai-command-copy-before-run.md) 为 `true`，[`aide.aiCommandAutoRun`](./ai-command-auto-run.md) 为 `false`，然后使用以下模板：
+
+    ```plaintext
+    /add #{filesRelativePath}
+    ```
+
+    这样你每次就能复制类似 `/add ./src/aaa.ts ./src/bbb.ts` 的命令，然后粘贴到 [`aider`](https://github.com/paul-gauthier/aider) 终端窗口中。
