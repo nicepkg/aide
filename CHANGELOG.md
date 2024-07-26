@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.16.0](https://github.com/nicepkg/aide/compare/aide-v1.15.1...aide-v1.16.0) (2024-07-26)
+
+
+### Features
+
+* add aide.useSystemProxy and aide.aiCommandAutoRun configuration and enhance languageId select ([2a3b4ed](https://github.com/nicepkg/aide/commit/2a3b4edf1181201181cd6d636f40f81662929b86))
+* output logs to vscode output channel ([94c549a](https://github.com/nicepkg/aide/commit/94c549a2e92f1884ca26f65e0ec79196dd522ef3))
+
 ## [1.15.1](https://github.com/nicepkg/aide/compare/aide-v1.15.0...aide-v1.15.1) (2024-07-25)
 
 
