@@ -8,6 +8,7 @@ import { enableLogFetch, enableSystemProxy } from './enable-system-proxy'
 import { initializeLocalization } from './i18n'
 import { logger } from './logger'
 import { enablePolyfill } from './polyfill'
+import { registerProviders } from './providers'
 import { redisStorage, stateStorage } from './storage'
 
 export const activate = async (context: vscode.ExtensionContext) => {
@@ -22,7 +23,8 @@ export const activate = async (context: vscode.ExtensionContext) => {
     await enableSystemProxy()
     isDev && enableLogFetch()
 
-    registerCommands(context)
+    await registerCommands(context)
+    await registerProviders(context)
     await cleanup(context)
   } catch (err) {
     logger.warn('Failed to activate extension', err)

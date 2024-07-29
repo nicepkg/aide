@@ -2,6 +2,15 @@ import * as vscode from 'vscode'
 
 import { VsCodeFS } from './vscode-fs'
 
+/**
+ * Inserts text at the specified selection in a file.
+ *
+ * @param params - The parameters object.
+ * @param params.filePath - The path to the file.
+ * @param params.selection - The selection where the text should be inserted.
+ * @param params.textToInsert - The text to insert.
+ * @returns A promise that resolves to the file content after the text has been inserted.
+ */
 export const insertTextAtSelection = async ({
   filePath,
   selection,

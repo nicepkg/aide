@@ -1,6 +1,14 @@
 # aide.readClipboardImage
 
-此配置允许您自定义是否允许某些场景读取剪贴板图片作为 AI 上下文。默认为 `false`。
+此配置允许您自定义是否允许某些场景读取剪贴板图片作为 AI 上下文。
+
+- **默认值:**
+
+  ```json
+  {
+    "aide.readClipboardImage": false
+  }
+  ```
 
 ::: warning 警告
 需要 AI 模型支持图片读取，否则开了可能会出错。

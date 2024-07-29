@@ -5,12 +5,32 @@ import * as vscode from 'vscode'
 import { getAllValidFiles } from './ignore-patterns'
 import { VsCodeFS } from './vscode-fs'
 
+/**
+ * Represents information about a file.
+ */
 export interface FileInfo {
+  /**
+   * The content of the file.
+   */
   content: string
+
+  /**
+   * The relative path of the file.
+   */
   relativePath: string
+
+  /**
+   * The full path of the file.
+   */
   fullPath: string
 }
 
+/**
+ * Retrieves information about a file.
+ * @param filePath - The path of the file.
+ * @param workspacePath - The path of the workspace.
+ * @returns A Promise that resolves to the file information, or null if the file does not exist.
+ */
 const getFileInfo = async (
   filePath: string,
   workspacePath: string
@@ -28,6 +48,15 @@ const getFileInfo = async (
   }
 }
 
+/**
+ * Traverses through an array of file or folder paths and performs a callback function on each file.
+ * Returns an array of results from the callback function.
+ *
+ * @param filesOrFolders - An array of file or folder paths.
+ * @param workspacePath - The path of the workspace.
+ * @param fileCallback - The callback function to be performed on each file.
+ * @returns An array of results from the callback function.
+ */
 export const traverseFileOrFolders = async <T>(
   filesOrFolders: string[],
   workspacePath: string,

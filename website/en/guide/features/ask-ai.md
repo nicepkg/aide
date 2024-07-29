@@ -18,6 +18,8 @@ Prepare and execute a custom AI command based on the selected file and user inpu
 
 - You can control whether to copy the AI command before execution by modifying the [`aide.aiCommandCopyBeforeRun`](../configuration/ai-command-copy-before-run.md) configuration.
 
+- You can control whether to automatically run the AI command by modifying the [`aide.aiCommandAutoRun`](../configuration/ai-command-auto-run.md) configuration.
+
 - You can ignore specific files or folders by modifying the [`aide.ignorePatterns`](../configuration/ignore-patterns.md) configuration.
 
 - You can control whether to ignore files or folders specified in the `.gitignore` file by modifying the [`aide.respectGitIgnore`](../configuration/respect-git-ignore.md) configuration.

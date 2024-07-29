@@ -18,6 +18,8 @@
 
 - 你可以通过修改 [`aide.aiCommandCopyBeforeRun`](../configuration/ai-command-copy-before-run.md) 配置来控制是否在执行之前复制 AI 命令。
 
+- 你可以通过配置 [`aide.aiCommandAutoRun`](../configuration/ai-command-auto-run.md) 来控制是否自动运行 AI 命令。
+
 - 你可以通过修改 [`aide.ignorePatterns`](../configuration/ignore-patterns.md) 配置来忽略特定文件或文件夹。
 
 - 你可以通过修改 [`aide.respectGitIgnore`](../configuration/respect-git-ignore.md) 配置来控制是否忽略 `.gitignore` 文件中指定的文件或文件夹。

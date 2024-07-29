@@ -80,3 +80,7 @@ Container(
   ),
 )
 ```
+
+**Related Configuration:**
+
+- You can customize whether certain scenarios can read clipboard images as AI context by configuring [`aide.readClipboardImage`](../configuration/read-clipboard-image.md).

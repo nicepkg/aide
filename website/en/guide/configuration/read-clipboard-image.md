@@ -1,6 +1,14 @@
 # aide.readClipboardImage
 
-This configuration allows you to customize whether certain scenarios can read clipboard images as AI context. The default is `false`.
+This configuration allows you to customize whether certain scenarios can read clipboard images as AI context.
+
+- **Default Value:**
+
+  ```json
+  {
+    "aide.readClipboardImage": false
+  }
+  ```
 
 ::: warning
 The AI model needs to support image reading; otherwise, enabling this feature might cause errors.

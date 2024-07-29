@@ -9,6 +9,12 @@ import * as vscode from 'vscode'
 
 import { VsCodeFS } from './vscode-fs'
 
+/**
+ * Creates a function that determines whether a file should be ignored based on the provided ignore patterns.
+ * @param fullDirPath - The full directory path of the file.
+ * @returns A function that takes a full file path as input and returns a boolean indicating whether the file should be ignored.
+ * @throws An error if the workspace path cannot be determined.
+ */
 export const createShouldIgnore = async (fullDirPath: string) => {
   const dirUri = vscode.Uri.file(fullDirPath)
   const workspacePath = vscode.workspace.getWorkspaceFolder(dirUri)?.uri.fsPath
@@ -39,6 +45,11 @@ export const createShouldIgnore = async (fullDirPath: string) => {
       })
   )
 
+  /**
+   * Determines whether a file should be ignored based on the ignore patterns.
+   * @param fullFilePath - The full path of the file.
+   * @returns A boolean indicating whether the file should be ignored.
+   */
   const shouldIgnore = (fullFilePath: string) => {
     const relativePath = path.relative(workspacePath, fullFilePath)
     const unixRelativePath = relativePath.replace(/\\/g, '/')
@@ -53,6 +64,11 @@ export const createShouldIgnore = async (fullDirPath: string) => {
   return shouldIgnore
 }
 
+/**
+ * Retrieves all valid files in the specified directory path.
+ * @param fullDirPath - The full path of the directory.
+ * @returns A promise that resolves to an array of strings representing the absolute paths of the valid files.
+ */
 export const getAllValidFiles = async (
   fullDirPath: string
 ): Promise<string[]> => {

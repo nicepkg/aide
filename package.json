@@ -89,6 +89,21 @@
       {
         "command": "aide.smartPaste",
         "title": "%command.smartPaste%"
+      },
+      {
+        "command": "aide.copyFileText",
+        "title": "%command.copyFileText%",
+        "enablement": "false"
+      },
+      {
+        "command": "aide.quickCloseFileWithoutSave",
+        "title": "%command.quickCloseFileWithoutSave%",
+        "enablement": "false"
+      },
+      {
+        "command": "aide.replaceFile",
+        "title": "%command.replaceFile%",
+        "enablement": "false"
       }
     ],
     "menus": {

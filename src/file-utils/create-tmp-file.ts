@@ -4,6 +4,12 @@ import { t } from '@/i18n'
 import { getLanguageIdExt } from '@/utils'
 import * as vscode from 'vscode'
 
+/**
+ * Returns a temporary file URI based on the original file URI and language ID.
+ * @param originalFileUri The URI of the original file.
+ * @param languageId The language ID of the file.
+ * @returns The temporary file URI.
+ */
 export const getTmpFileUri = (
   originalFileUri: vscode.Uri,
   languageId: string
@@ -19,39 +25,105 @@ export const getTmpFileUri = (
   )
 }
 
-export const getOriginalFileUri = () => {
+const aideTmpFileRegExp = /\.aide(\.[^.]+)?$/
+export const isTmpFileUri = (uri: vscode.Uri) =>
+  uri.scheme === 'untitled' && aideTmpFileRegExp.test(uri.fsPath)
+
+/**
+ * Retrieves the original file URI based on the temporary file URI.
+ * If no temporary file URI is provided, it uses the URI of the active text editor.
+ * If the temporary file URI is an Aide-generated file, it removes the Aide-specific suffix to get the original file URI.
+ * If no original file URI is found, it throws an error.
+ * @param tmpFileUri The temporary file URI.
+ * @returns The original file URI.
+ * @throws An error if no active text editor is found or if the file is not found.
+ */
+export const getOriginalFileUri = (tmpFileUri?: vscode.Uri) => {
+  let maybeTmpFileUri = tmpFileUri
   const activeEditor = vscode.window.activeTextEditor
-  if (!activeEditor) {
-    throw new Error(t('error.noActiveEditor'))
+
+  if (!maybeTmpFileUri) {
+    if (!activeEditor) {
+      throw new Error(t('error.noActiveEditor'))
+    }
+    maybeTmpFileUri = activeEditor.document.uri
   }
 
-  const aideRegExp = /\.aide(\.[^.]+)?$/
-  const activeIsAideGenerated =
-    activeEditor.document.uri.scheme === 'untitled' &&
-    aideRegExp.test(activeEditor.document.uri.fsPath)
+  const tmpFileIsAideGenerated = isTmpFileUri(maybeTmpFileUri)
 
-  let originalFileUri = activeEditor.document.uri
+  let originalFileUri
 
-  if (activeIsAideGenerated) {
+  if (tmpFileIsAideGenerated) {
     originalFileUri = vscode.Uri.file(
-      activeEditor.document.uri.fsPath.replace(aideRegExp, '')
+      maybeTmpFileUri.fsPath.replace(aideTmpFileRegExp, '')
     )
+  } else {
+    if (!activeEditor) {
+      throw new Error(t('error.noActiveEditor'))
+    }
+    originalFileUri = activeEditor.document.uri
   }
+
+  if (!originalFileUri) throw new Error(t('error.fileNotFound'))
 
   return originalFileUri
 }
 
+/**
+ * Represents information about a temporary file.
+ */
 export interface TmpFileInfo {
+  /**
+   * The URI of the original file.
+   */
   originalFileUri: vscode.Uri
+
+  /**
+   * The text document of the original file.
+   */
   originalFileDocument: vscode.TextDocument
+
+  /**
+   * The content of the original file.
+   */
   originalFileContent: string
+
+  /**
+   * The language ID of the original file.
+   */
   originalFileLanguageId: string
+
+  /**
+   * Indicates whether the active file is the original file.
+   */
   activeIsOriginalFile: boolean
+
+  /**
+   * Indicates whether the selection is a temporary file.
+   */
   isSelection: boolean
+
+  /**
+   * The URI of the temporary file.
+   */
   tmpFileUri: vscode.Uri
+
+  /**
+   * Indicates whether the temporary file exists.
+   */
   isTmpFileExists?: boolean
+
+  /**
+   * Indicates whether the temporary file has content.
+   */
   isTmpFileHasContent?: boolean
 }
+
+/**
+ * Creates temporary file information.
+ * @returns A promise that resolves to a `TmpFileInfo` object.
+ * @throws An error if there is no active editor.
+ */
 export const createTmpFileInfo = async (): Promise<TmpFileInfo> => {
   const activeEditor = vscode.window.activeTextEditor
 
@@ -102,16 +174,55 @@ export interface CreateTmpFileOptions {
   languageId: string
 }
 
+/**
+ * Represents the result of writing a temporary file.
+ */
 export interface WriteTmpFileResult {
+  /**
+   * The original file URI.
+   */
   originalFileUri: vscode.Uri
+
+  /**
+   * The temporary file URI.
+   */
   tmpFileUri: vscode.Uri
+
+  /**
+   * The temporary document.
+   */
   tmpDocument: vscode.TextDocument
+
+  /**
+   * Writes the specified text to the temporary file.
+   * @param text The text to write.
+   */
   writeText: (text: string) => Promise<void>
+
+  /**
+   * Writes the specified text part to the temporary file.
+   * @param textPart The text part to write.
+   */
   writeTextPart: (textPart: string) => Promise<void>
+
+  /**
+   * Gets the text of the temporary file.
+   * @returns The text of the temporary file.
+   */
   getText: () => string
+
+  /**
+   * Checks if the temporary file was closed without saving.
+   * @returns A boolean indicating if the temporary file was closed without saving.
+   */
   isClosedWithoutSaving: () => boolean
 }
 
+/**
+ * Creates a temporary file and returns a writer object with various utility functions.
+ * @param options - The options for creating the temporary file.
+ * @returns A promise that resolves to a `WriteTmpFileResult` object.
+ */
 export const createTmpFileAndWriter = async (
   options: CreateTmpFileOptions
 ): Promise<WriteTmpFileResult> => {

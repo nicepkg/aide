@@ -80,3 +80,7 @@ Container(
   ),
 )
 ```
+
+**相关配置：**
+
+- 你可以通过配置 [`aide.readClipboardImage`](../configuration/read-clipboard-image.md) 来自定义某些场景是否可以读取剪贴板图像作为 AI 上下文。

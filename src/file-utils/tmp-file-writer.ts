@@ -19,6 +19,12 @@ export interface TmpFileWriterOptions extends CreateTmpFileOptions {
   onCancel?: () => void
 }
 
+/**
+ * Writes temporary file with AI-generated content.
+ *
+ * @param options - The options for writing the temporary file.
+ * @returns A promise that resolves to the result of writing the temporary file.
+ */
 export const tmpFileWriter = async (
   options: TmpFileWriterOptions
 ): Promise<WriteTmpFileResult> => {
@@ -50,31 +56,26 @@ export const tmpFileWriter = async (
 
       // remove code block syntax
       // for example, remove ```python\n and \n```
-      const currentCode = getText()
-      const removeCodeBlockStartSyntaxCode =
-        removeCodeBlockStartSyntax(currentCode)
+      const currentText = getText()
+      const cleanedText = removeCodeBlockStartSyntax(currentText)
 
-      if (removeCodeBlockStartSyntaxCode !== currentCode) {
-        await writeText(removeCodeBlockStartSyntaxCode)
+      if (cleanedText !== currentText) {
+        await writeText(cleanedText)
       }
-    }
-
-    // remove code block end syntax
-    // for example, remove \n``` at the end
-    const currentCode = getText()
-    const removeCodeBlockEndSyntaxCode = removeCodeBlockEndSyntax(currentCode)
-
-    if (removeCodeBlockEndSyntaxCode !== currentCode) {
-      await writeText(removeCodeBlockEndSyntaxCode)
     }
 
     // remove code block syntax
     // for example, remove ```python\n and \n``` at the start and end
     // just confirm the code is clean
-    const finalCode = removeCodeBlockSyntax(getText())
+    const currentText = getText()
+    const finalText = removeCodeBlockSyntax(
+      removeCodeBlockEndSyntax(currentText)
+    )
 
-    // write the final code
-    await writeText(finalCode)
+    if (finalText !== currentText) {
+      // write the final code
+      await writeText(finalText)
+    }
   } finally {
     hideProcessLoading()
   }
