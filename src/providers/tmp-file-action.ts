@@ -44,6 +44,11 @@ export class TmpFileActionCodeLensProvider implements vscode.CodeLensProvider {
         arguments: [tmpFileUri]
       },
       {
+        title: `$(diff) ${t('command.showDiff')}`,
+        command: 'aide.showDiff',
+        arguments: [originFileUri, tmpFileUri]
+      },
+      {
         title: `$(breakpoints-activate) ${t('command.replaceFile')}`,
         command: 'aide.replaceFile',
         arguments: [originFileUri, tmpFileUri]

@@ -9,6 +9,7 @@ import { handleCopyFileText } from './copy-file-text'
 import { handleQuickCloseFileWithoutSave } from './quick-close-file-without-save'
 import { handleRenameVariable } from './rename-variable'
 import { handleReplaceFile } from './replace-file'
+import { handleShowDiff } from './show-diff'
 import { handleSmartPaste } from './smart-paste'
 
 export const registerCommands = async (context: vscode.ExtensionContext) => {
@@ -59,6 +60,12 @@ export const registerCommands = async (context: vscode.ExtensionContext) => {
     commandErrorCatcher(handleReplaceFile)
   )
 
+  // private command
+  const showDiffDisposable = vscode.commands.registerCommand(
+    'aide.showDiff',
+    commandErrorCatcher(handleShowDiff)
+  )
+
   context.subscriptions.push(
     copyDisposable,
     askAIDisposable,
@@ -68,6 +75,7 @@ export const registerCommands = async (context: vscode.ExtensionContext) => {
     smartPasteDisposable,
     copyFileTextDisposable,
     quickCloseFileWithoutSaveDisposable,
-    replaceFileDisposable
+    replaceFileDisposable,
+    showDiffDisposable
   )
 }

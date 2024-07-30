@@ -26,8 +26,15 @@ export const getTmpFileUri = (
 }
 
 const aideTmpFileRegExp = /\.aide(\.[^.]+)?$/
-export const isTmpFileUri = (uri: vscode.Uri) =>
-  uri.scheme === 'untitled' && aideTmpFileRegExp.test(uri.fsPath)
+export const isTmpFileUri = (uri: vscode.Uri, needUntitled = false) => {
+  let _isTmpFileUri = aideTmpFileRegExp.test(uri.fsPath)
+
+  if (needUntitled) {
+    _isTmpFileUri = _isTmpFileUri && uri.scheme === 'untitled'
+  }
+
+  return _isTmpFileUri
+}
 
 /**
  * Retrieves the original file URI based on the temporary file URI.

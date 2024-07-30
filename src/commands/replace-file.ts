@@ -16,8 +16,23 @@ export const handleReplaceFile = async (
   if (!fromFileUri || !toFileUri) throw new Error(t('error.fileNotFound'))
 
   const toFileDocument = await vscode.workspace.openTextDocument(toFileUri)
+  const toFileContent = toFileDocument.getText()
+  const fromFileEditor = vscode.window.visibleTextEditors.find(
+    editor => editor.document.uri.toString() === fromFileUri.toString()
+  )
+  const isFromFileHasSelection =
+    fromFileEditor &&
+    fromFileEditor.document.uri.toString() === fromFileUri.toString() &&
+    !fromFileEditor.selection.isEmpty
 
-  await VsCodeFS.writeFile(fromFileUri.fsPath, toFileDocument.getText(), 'utf8')
+  if (isFromFileHasSelection) {
+    // replace the content with the toFileContent
+    await fromFileEditor.edit(editBuilder => {
+      editBuilder.replace(fromFileEditor.selection, toFileContent)
+    })
+  } else {
+    await VsCodeFS.writeFile(fromFileUri.fsPath, toFileContent, 'utf8')
+  }
 
   vscode.window.showInformationMessage(t('info.fileReplaceSuccess'))
 
@@ -26,6 +41,9 @@ export const handleReplaceFile = async (
     'aide.quickCloseFileWithoutSave',
     toFileUri
   )
+
+  // delete the toFileUri
+  await VsCodeFS.unlink(toFileUri.fsPath)
 
   // if fromFileUri is not opened, open it
   const fromFileDocument = await vscode.workspace.openTextDocument(fromFileUri)
