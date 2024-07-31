@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.17.0](https://github.com/nicepkg/aide/compare/aide-v1.16.0...aide-v1.17.0) (2024-07-31)
+
+
+### Features
+
+* add batch-processor feature ([b351230](https://github.com/nicepkg/aide/commit/b351230471d0e0383c9e40b72205f340f1b44785))
+* add diff for tmp file ([dcb2438](https://github.com/nicepkg/aide/commit/dcb243875c010f2cab0bd2d061b54340ee693e05))
+* optimize smart-paste prompt and add actions for tmp file ([9a57c03](https://github.com/nicepkg/aide/commit/9a57c038a1b1c1ebfa680670e3a00e81d5458129))
+
 ## [1.16.0](https://github.com/nicepkg/aide/compare/aide-v1.15.1...aide-v1.16.0) (2024-07-26)
 
 
