@@ -3,7 +3,7 @@
 <a href="https://aide.nicepkg.cn/zh/">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/78b89b18-0846-4885-89f2-8238fac1db49">
-    <img src="https://github.com/user-attachments/assets/66fb88a7-a462-484f-8133-4187ffcef8ef" alt="nicepkg" width="400" />
+    <img src="https://github.com/user-attachments/assets/40ed79a5-d415-4f36-907e-63753995305b" alt="nicepkg" width="400" />
   </picture>
 </a>
 
