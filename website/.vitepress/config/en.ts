@@ -8,7 +8,7 @@ const pkg = require('../../../package.json')
 export const en = defineConfig({
   lang: 'en-US',
   description:
-    'Mastering Any Code In VSCode: One-click commenting and language conversion. 💪',
+    'Conquer Any Code in VSCode: One-Click Comments, Conversions, UI-to-Code, and AI Batch Processing! 💪',
   themeConfig: {
     footer: {
       message: 'Released under the MIT License.',

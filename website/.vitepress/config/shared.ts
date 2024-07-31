@@ -35,7 +35,7 @@ export const shared = defineConfig({
       'meta',
       {
         property: 'og:title',
-        content: 'Aide | Mastering Any Code In VSCode'
+        content: 'Aide | Conquer Any Code in VSCode'
       }
     ],
     ['meta', { property: 'og:site_name', content: 'Aide' }],
