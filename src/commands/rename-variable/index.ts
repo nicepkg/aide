@@ -6,115 +6,29 @@ import {
 import { t } from '@/i18n'
 import { createLoading } from '@/loading'
 import { getCurrentWorkspaceFolderEditor } from '@/utils'
-import type { BaseLanguageModelInput } from '@langchain/core/language_models/base'
 import type { RunnableConfig } from '@langchain/core/runnables'
 import * as vscode from 'vscode'
 import { z } from 'zod'
 
-const buildRenameSuggestionPrompt = async ({
-  contextCode,
-  variableName,
-  selection,
-  fileRelativePath
-}: {
-  contextCode: string
-  variableName: string
-  selection: vscode.Selection
-  fileRelativePath: string
-}): Promise<BaseLanguageModelInput> => {
-  const lines = contextCode.split('\n')
-
-  // get the line index where the selected variable is located
-  const activeLine = selection.start.line
-
-  // calculate the range of 250 lines before and after
-  const start = Math.max(0, activeLine - 250)
-  const end = Math.min(lines.length, activeLine + 250)
-
-  // get the content of 250 lines before and after
-  const contextLines = lines.slice(start, end)
-
-  // add a comment line above the line where the variable is located
-  contextLines.splice(
-    activeLine - start,
-    0,
-    `### Here is the variable you want to change: ${variableName} ###`
-  )
-
-  const codeContextForPrompt = contextLines.join('\n')
-
-  const prompt = `
-  Please refer to the following code snippet to change the variable name \`${variableName}\` to a more reasonable name.
-  Give a few suggestions for a more reasonable name.
-  **You should always follow the naming conventions of the current code snippet to generate new variable names.**
-  current file relative path: ${fileRelativePath}
-  Here is the code snippet:
-
-  ${codeContextForPrompt}
-  `
-
-  return prompt
-}
+import { buildRenameSuggestionPrompt } from './build-rename-suggestion-prompt'
+import { submitRenameVariable } from './submit-rename-variable'
 
 const renameSuggestionZodSchema = z.object({
   suggestionVariableNameOptions: z
     .array(
       z.object({
-        variableName: z.string().describe('variable name'),
+        variableName: z.string().describe('Required! variable name'),
         description: z
           .string()
           .describe(
-            `About this variable, describe its meaning in my mother tongue ${vscode.env.language}, within 15 words`
+            `Required! About this variable, describe its meaning in my mother tongue ${vscode.env.language}, within 15 words`
           )
       })
     )
-    .describe('suggested variable names')
+    .describe('Required! suggested variable names list')
 })
 
 type RenameSuggestionZodSchema = z.infer<typeof renameSuggestionZodSchema>
-
-const renameVariable = async ({
-  newName,
-  selection
-}: {
-  newName: string
-  selection: vscode.Selection
-}) => {
-  const editor = vscode.window.activeTextEditor
-
-  if (!editor) throw new Error(t('error.noActiveEditor'))
-
-  const { document } = editor
-  const position = selection.start
-
-  // find all references
-  const references = await vscode.commands.executeCommand<vscode.Location[]>(
-    'vscode.executeReferenceProvider',
-    document.uri,
-    position
-  )
-
-  // create a workspace edit
-  const edit = new vscode.WorkspaceEdit()
-
-  if (references && references.length > 0) {
-    // if references found, change all references
-    references.forEach(reference => {
-      edit.replace(reference.uri, reference.range, newName)
-    })
-  } else {
-    // if no references found, only change the selected position
-    edit.replace(
-      document.uri,
-      new vscode.Range(selection.start, selection.end),
-      newName
-    )
-  }
-
-  // apply the workspace edit
-  await vscode.workspace.applyEdit(edit)
-  await document.save()
-}
 
 export const handleRenameVariable = async () => {
   const { workspaceFolder, activeEditor } = getCurrentWorkspaceFolderEditor()
@@ -178,7 +92,7 @@ export const handleRenameVariable = async () => {
     )
 
     if (selectedVariableNameOption) {
-      await renameVariable({
+      await submitRenameVariable({
         newName: selectedVariableNameOption.label,
         selection
       })

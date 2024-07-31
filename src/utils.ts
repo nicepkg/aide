@@ -141,3 +141,46 @@ export const tryParseJSON = (str: string, returnOriginal = false) => {
     return returnOriginal ? str : null
   }
 }
+
+type QuickPickItemType = string | vscode.QuickPickItem
+
+export interface QuickPickOptions {
+  items: QuickPickItemType[]
+  placeholder: string
+  customOption?: string
+}
+
+export const showQuickPickWithCustomInput = async (
+  options: QuickPickOptions
+): Promise<string> => {
+  const quickPick = vscode.window.createQuickPick()
+
+  quickPick.items = options.items.map(item =>
+    typeof item === 'string' ? { label: item } : item
+  )
+
+  quickPick.placeholder = options.placeholder
+
+  if (options.customOption) {
+    quickPick.items = [{ label: options.customOption }, ...quickPick.items]
+  }
+
+  return new Promise<string>(resolve => {
+    quickPick.onDidAccept(() => {
+      const selection = quickPick.selectedItems[0]
+      if (selection) {
+        resolve(selection.label)
+      } else {
+        resolve(quickPick.value)
+      }
+      quickPick.hide()
+    })
+
+    quickPick.onDidHide(() => {
+      resolve('')
+      quickPick.dispose()
+    })
+
+    quickPick.show()
+  })
+}

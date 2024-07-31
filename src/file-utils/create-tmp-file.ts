@@ -1,27 +1,38 @@
 import path from 'path'
-import { languageIds } from '@/constants'
 import { t } from '@/i18n'
-import { getLanguageIdExt } from '@/utils'
+import { getLanguageId, getLanguageIdExt } from '@/utils'
 import * as vscode from 'vscode'
 
 /**
  * Returns a temporary file URI based on the original file URI and language ID.
  * @param originalFileUri The URI of the original file.
+ * @param originalFileFullPath The full path of the original file.
  * @param languageId The language ID of the file.
+ * @param untitled Indicates whether the temporary file is untitled.
  * @returns The temporary file URI.
  */
-export const getTmpFileUri = (
-  originalFileUri: vscode.Uri,
+export const getTmpFileUri = ({
+  originalFileUri,
+  originalFileFullPath,
+  languageId,
+  untitled = true
+}: {
+  originalFileUri?: vscode.Uri
+  originalFileFullPath?: string
   languageId: string
-) => {
-  const originalFileDir = path.dirname(originalFileUri.fsPath)
-  const originalFileName = path.parse(originalFileUri.fsPath).name
-  const originalFileExt = path.parse(originalFileUri.fsPath).ext
+  untitled?: boolean
+}) => {
+  if (!originalFileUri && !originalFileFullPath)
+    throw new Error(t('error.fileNotFound'))
+  const filePath = originalFileFullPath || originalFileUri!.fsPath
 
+  const originalFileDir = path.dirname(filePath)
+  const originalFileName = path.parse(filePath).name
+  const originalFileExt = path.parse(filePath).ext
   const languageExt = getLanguageIdExt(languageId) || languageId
 
   return vscode.Uri.parse(
-    `untitled:${path.join(originalFileDir, `${originalFileName}${originalFileExt}.aide${languageExt ? `.${languageExt}` : ''}`)}`
+    `${untitled ? 'untitled:' : ''}${path.join(originalFileDir, `${originalFileName}${originalFileExt}.aide${languageExt ? `.${languageExt}` : ''}`)}`
   )
 }
 
@@ -157,7 +168,10 @@ export const createTmpFileInfo = async (): Promise<TmpFileInfo> => {
   }
 
   const originalFileLanguageId = originalFileDocument.languageId
-  const tmpFileUri = getTmpFileUri(originalFileUri, originalFileLanguageId)
+  const tmpFileUri = getTmpFileUri({
+    originalFileUri,
+    languageId: originalFileLanguageId
+  })
   const tmpFileDocument = vscode.workspace.textDocuments.find(
     document => document.uri.fsPath === tmpFileUri.fsPath
   )
@@ -178,7 +192,8 @@ export const createTmpFileInfo = async (): Promise<TmpFileInfo> => {
 }
 
 export interface CreateTmpFileOptions {
-  languageId: string
+  languageId?: string
+  tmpFileUri?: vscode.Uri
 }
 
 /**
@@ -219,6 +234,18 @@ export interface WriteTmpFileResult {
   getText: () => string
 
   /**
+   * Saves the temporary file.
+   * @returns A promise that resolves when the temporary file is saved.
+   */
+  save: () => Promise<void>
+
+  /**
+   * Closes the temporary file.
+   * @returns A promise that resolves when the temporary file is closed.
+   */
+  close: () => Promise<void>
+
+  /**
    * Checks if the temporary file was closed without saving.
    * @returns A boolean indicating if the temporary file was closed without saving.
    */
@@ -233,9 +260,21 @@ export interface WriteTmpFileResult {
 export const createTmpFileAndWriter = async (
   options: CreateTmpFileOptions
 ): Promise<WriteTmpFileResult> => {
-  const { languageId } = options
+  if (!options.languageId && !options.tmpFileUri)
+    throw new Error(
+      "createTmpFileAndWriter: Either 'languageId' or 'tmpFileUri' must be provided."
+    )
+
   const originalFileUri = getOriginalFileUri()
-  const tmpFileUri = getTmpFileUri(originalFileUri, languageId)
+
+  const languageId =
+    options.languageId ||
+    getLanguageId(path.extname(options.tmpFileUri!.fsPath).slice(1))
+
+  const tmpFileUri =
+    options.tmpFileUri ||
+    getTmpFileUri({ originalFileUri, languageId: languageId! })
+
   const tmpDocument = await vscode.workspace.openTextDocument(tmpFileUri)
   const isDocumentAlreadyShown = vscode.window.visibleTextEditors.some(
     editor => editor.document.uri.toString() === tmpDocument.uri.toString()
@@ -248,11 +287,13 @@ export const createTmpFileAndWriter = async (
     })
   }
 
-  const docLanguageId = languageIds.includes(languageId)
-    ? languageId
-    : 'plaintext'
+  if (languageId) {
+    // const docLanguageId = languageIds.includes(languageId)
+    //   ? languageId
+    //   : 'plaintext'
 
-  vscode.languages.setTextDocumentLanguage(tmpDocument, docLanguageId)
+    vscode.languages.setTextDocumentLanguage(tmpDocument, languageId)
+  }
 
   const writeText = async (text: string) => {
     const edit = new vscode.WorkspaceEdit()
@@ -278,6 +319,17 @@ export const createTmpFileAndWriter = async (
 
   const getText = () => tmpDocument.getText()
 
+  const save = async () => {
+    await tmpDocument.save()
+  }
+
+  const close = async () => {
+    await vscode.commands.executeCommand(
+      'aide.quickCloseFileWithoutSave',
+      tmpFileUri
+    )
+  }
+
   const isClosedWithoutSaving = () => {
     if (tmpDocument.isClosed) {
       return !tmpDocument.getText()
@@ -292,6 +344,8 @@ export const createTmpFileAndWriter = async (
     writeText,
     writeTextPart,
     getText,
+    save,
+    close,
     isClosedWithoutSaving
   }
 }

@@ -1,6 +1,7 @@
 import * as vscode from 'vscode'
 
 import { BaseModelProvider } from './ai/model-providers/base'
+import { autoOpenCorrespondingFiles } from './auto-open-corresponding-files'
 import { cleanup } from './cleanup'
 import { registerCommands } from './commands'
 import { setContext } from './context'
@@ -25,6 +26,7 @@ export const activate = async (context: vscode.ExtensionContext) => {
 
     await registerCommands(context)
     await registerProviders(context)
+    await autoOpenCorrespondingFiles(context)
     await cleanup(context)
   } catch (err) {
     logger.warn('Failed to activate extension', err)

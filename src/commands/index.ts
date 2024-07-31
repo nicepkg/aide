@@ -2,14 +2,15 @@ import { commandErrorCatcher } from '@/utils'
 import * as vscode from 'vscode'
 
 import { handleAskAI } from './ask-ai'
+import { handleBatchProcessor } from './batch-processor'
 import { handleCodeConvert } from './code-convert'
 import { handleCodeViewerHelper } from './code-viewer-helper'
 import { handleCopyAsPrompt } from './copy-as-prompt'
-import { handleCopyFileText } from './copy-file-text'
-import { handleQuickCloseFileWithoutSave } from './quick-close-file-without-save'
+import { handleCopyFileText } from './private/copy-file-text'
+import { handleQuickCloseFileWithoutSave } from './private/quick-close-file-without-save'
+import { handleReplaceFile } from './private/replace-file'
+import { handleShowDiff } from './private/show-diff'
 import { handleRenameVariable } from './rename-variable'
-import { handleReplaceFile } from './replace-file'
-import { handleShowDiff } from './show-diff'
 import { handleSmartPaste } from './smart-paste'
 
 export const registerCommands = async (context: vscode.ExtensionContext) => {
@@ -40,6 +41,11 @@ export const registerCommands = async (context: vscode.ExtensionContext) => {
   const smartPasteDisposable = vscode.commands.registerCommand(
     'aide.smartPaste',
     commandErrorCatcher(handleSmartPaste)
+  )
+
+  const batchProcessorDisposable = vscode.commands.registerCommand(
+    'aide.batchProcessor',
+    commandErrorCatcher(handleBatchProcessor)
   )
 
   // private command
@@ -73,6 +79,7 @@ export const registerCommands = async (context: vscode.ExtensionContext) => {
     codeViewerHelperDisposable,
     renameVariableDisposable,
     smartPasteDisposable,
+    batchProcessorDisposable,
     copyFileTextDisposable,
     quickCloseFileWithoutSaveDisposable,
     replaceFileDisposable,

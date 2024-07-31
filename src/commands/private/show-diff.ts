@@ -27,7 +27,6 @@ export const handleShowDiff = async (
     fromFileTitle = `${path.basename(fromFileUri.fsPath)} (Selection)`
     finalFromFileUri = vscode.Uri.parse(`untitled:${fromFileTitle}`)
 
-    // FIXME: 这里会在编辑器打开一个新的临时文件给用户看，这不是我期望的，希望这是偷偷打开但是不展示给用户
     // Create an in-memory document with the selected content
     const selectedContent = fromFileEditor.document.getText(
       fromFileEditor.selection

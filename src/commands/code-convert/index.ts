@@ -2,39 +2,25 @@ import {
   createModelProvider,
   getCurrentSessionIdHistoriesMap
 } from '@/ai/helpers'
-import { getConfigKey } from '@/config'
 import { createTmpFileInfo } from '@/file-utils/create-tmp-file'
 import { showContinueMessage } from '@/file-utils/show-continue-message'
 import { tmpFileWriter } from '@/file-utils/tmp-file-writer'
 import { t } from '@/i18n'
-import type { BaseLanguageModelInput } from '@langchain/core/language_models/base'
 import type { RunnableConfig } from '@langchain/core/runnables'
 import * as vscode from 'vscode'
 
-const buildGeneratePrompt = async ({
-  sourceLanguage,
-  code
-}: {
-  sourceLanguage: string
-  code: string
-}): Promise<BaseLanguageModelInput> => {
-  const locale = vscode.env.language
-  const codeViewerHelperPrompt = await getConfigKey('codeViewerHelperPrompt')
-  const prompt = codeViewerHelperPrompt
-    .replace('#{sourceLanguage}', sourceLanguage)
-    .replace('#{locale}', locale)
-    .replace('#{content}', code)
-  return prompt
-}
+import { buildConvertPrompt } from './build-convert-prompt'
+import { getTargetLanguageInfo } from './get-target-language-info'
 
-export const cleanupCodeViewerHelperRunnables = async () => {
+export const cleanupCodeConvertRunnables = async () => {
   const openDocumentPaths = new Set(
     vscode.workspace.textDocuments.map(doc => doc.uri.fsPath)
   )
+
   const sessionIdHistoriesMap = await getCurrentSessionIdHistoriesMap()
 
   Object.keys(sessionIdHistoriesMap).forEach(sessionId => {
-    const path = sessionId.match(/^codeViewerHelper:(.*)$/)?.[1]
+    const path = sessionId.match(/^codeConvert:(.*)$/)?.[1]
 
     if (path && !openDocumentPaths.has(path)) {
       delete sessionIdHistoriesMap[sessionId]
@@ -42,7 +28,7 @@ export const cleanupCodeViewerHelperRunnables = async () => {
   })
 }
 
-export const handleCodeViewerHelper = async () => {
+export const handleCodeConvert = async () => {
   const {
     originalFileContent,
     originalFileLanguageId,
@@ -50,29 +36,35 @@ export const handleCodeViewerHelper = async () => {
     isTmpFileHasContent
   } = await createTmpFileInfo()
 
+  const { targetLanguageId, targetLanguageDescription } =
+    await getTargetLanguageInfo(originalFileLanguageId)
+
   // ai
   const modelProvider = await createModelProvider()
   const aiRunnableAbortController = new AbortController()
   const aiRunnable = await modelProvider.createRunnable({
     signal: aiRunnableAbortController.signal
   })
-  const sessionId = `codeViewerHelper:${tmpFileUri.fsPath}}`
+  const sessionId = `codeConvert:${tmpFileUri.fsPath}}`
   const aiRunnableConfig: RunnableConfig = {
     configurable: {
       sessionId
     }
   }
+
   const sessionIdHistoriesMap = await getCurrentSessionIdHistoriesMap()
   const isSessionHistoryExists = !!sessionIdHistoriesMap[sessionId]
   const isContinue = isTmpFileHasContent && isSessionHistoryExists
 
-  const prompt = await buildGeneratePrompt({
-    sourceLanguage: originalFileLanguageId,
-    code: originalFileContent
+  const prompt = await buildConvertPrompt({
+    sourceLanguageId: originalFileLanguageId,
+    targetLanguageId,
+    targetLanguageDescription,
+    sourceCode: originalFileContent
   })
 
   const tmpFileWriterReturns = await tmpFileWriter({
-    languageId: originalFileLanguageId,
+    languageId: targetLanguageId,
     onCancel() {
       aiRunnableAbortController.abort()
     },
@@ -104,11 +96,11 @@ export const handleCodeViewerHelper = async () => {
   })
 
   await showContinueMessage({
-    tmpFileUri: tmpFileWriterReturns?.tmpFileUri,
+    tmpFileUri: tmpFileWriterReturns.tmpFileUri,
     originalFileContentLineCount: originalFileContent.split('\n').length,
     continueMessage: t('info.continueMessage') + t('info.iconContinueMessage'),
     onContinue: async () => {
-      await handleCodeViewerHelper()
+      await handleCodeConvert()
     }
   })
 }

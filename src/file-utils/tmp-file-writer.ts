@@ -15,6 +15,10 @@ import {
 } from './create-tmp-file'
 
 export interface TmpFileWriterOptions extends CreateTmpFileOptions {
+  stopWriteWhenClosed?: boolean
+  enableProcessLoading?: boolean
+  autoSaveWhenDone?: boolean
+  autoCloseWhenDone?: boolean
   buildAiStream: () => Promise<IterableReadableStream<AIMessageChunk>>
   onCancel?: () => void
 }
@@ -28,25 +32,41 @@ export interface TmpFileWriterOptions extends CreateTmpFileOptions {
 export const tmpFileWriter = async (
   options: TmpFileWriterOptions
 ): Promise<WriteTmpFileResult> => {
-  const { buildAiStream, onCancel, ...createTmpFileOptions } = options
+  const {
+    buildAiStream,
+    onCancel,
+    stopWriteWhenClosed = true,
+    enableProcessLoading = true,
+    autoSaveWhenDone = false,
+    autoCloseWhenDone = false,
+    ...createTmpFileOptions
+  } = options
 
   const createTmpFileAndWriterReturns =
     await createTmpFileAndWriter(createTmpFileOptions)
-  const { writeTextPart, getText, writeText, isClosedWithoutSaving } =
-    createTmpFileAndWriterReturns
+  const {
+    writeTextPart,
+    getText,
+    writeText,
+    save,
+    close,
+    isClosedWithoutSaving
+  } = createTmpFileAndWriterReturns
 
   const ModelProvider = await getCurrentModelProvider()
   const { showProcessLoading, hideProcessLoading } = createLoading()
 
   try {
-    showProcessLoading({
-      onCancel
-    })
+    enableProcessLoading &&
+      showProcessLoading({
+        onCancel
+      })
+
     const aiStream = await buildAiStream()
 
     for await (const chunk of aiStream) {
-      if (isClosedWithoutSaving()) {
-        hideProcessLoading()
+      if (stopWriteWhenClosed && isClosedWithoutSaving()) {
+        enableProcessLoading && hideProcessLoading()
         return createTmpFileAndWriterReturns
       }
 
@@ -76,8 +96,12 @@ export const tmpFileWriter = async (
       // write the final code
       await writeText(finalText)
     }
+
+    if (autoSaveWhenDone) save()
+
+    if (autoCloseWhenDone) close()
   } finally {
-    hideProcessLoading()
+    enableProcessLoading && hideProcessLoading()
   }
 
   return createTmpFileAndWriterReturns

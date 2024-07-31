@@ -84,6 +84,10 @@ const configKey = {
     ...pkgConfig['aide.useSystemProxy'],
     type: 'boolean'
   },
+  apiConcurrency: {
+    ...pkgConfig['aide.apiConcurrency'],
+    type: 'number'
+  },
   openaiKey: {
     ...pkgConfig['aide.openaiKey'],
     type: 'string'

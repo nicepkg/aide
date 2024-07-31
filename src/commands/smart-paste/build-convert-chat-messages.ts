@@ -1,16 +1,10 @@
 import { getReferenceFilePaths } from '@/ai/get-reference-file-paths'
-import {
-  createModelProvider,
-  getCurrentSessionIdHistoriesMap
-} from '@/ai/helpers'
 import { safeReadClipboard } from '@/clipboard'
 import { getConfigKey } from '@/config'
 import { getFileOrFoldersPromptInfo } from '@/file-utils/get-fs-prompt-info'
 import { insertTextAtSelection } from '@/file-utils/insert-text-at-selection'
-import { streamingCompletionWriter } from '@/file-utils/stream-completion-writer'
 import { t } from '@/i18n'
 import { cacheFn } from '@/storage'
-import { getCurrentWorkspaceFolderEditor } from '@/utils'
 import { HumanMessage, type BaseMessage } from '@langchain/core/messages'
 import * as vscode from 'vscode'
 
@@ -30,7 +24,7 @@ const getClipboardContent = async () => {
   return { clipboardImg, clipboardContent }
 }
 
-const buildConvertChatMessages = async ({
+export const buildConvertChatMessages = async ({
   workspaceFolder,
   currentFilePath,
   selection
@@ -167,63 +161,4 @@ Convert the clipboard content to match the programming language and context of t
   }
 
   return messages
-}
-
-export const cleanupSmartPasteRunnables = async () => {
-  const openDocumentPaths = new Set(
-    vscode.workspace.textDocuments.map(doc => doc.uri.fsPath)
-  )
-  const sessionIdHistoriesMap = await getCurrentSessionIdHistoriesMap()
-
-  Object.keys(sessionIdHistoriesMap).forEach(sessionId => {
-    const path = sessionId.match(/^smartPaste:(.*)$/)?.[1]
-
-    if (path && !openDocumentPaths.has(path)) {
-      delete sessionIdHistoriesMap[sessionId]
-    }
-  })
-}
-
-export const handleSmartPaste = async () => {
-  const { workspaceFolder, activeEditor } =
-    await getCurrentWorkspaceFolderEditor()
-  const currentFilePath = activeEditor.document.uri.fsPath
-
-  // ai
-  const modelProvider = await createModelProvider()
-  const aiModelAbortController = new AbortController()
-  const aiModel = (await modelProvider.getModel()).bind({
-    signal: aiModelAbortController.signal
-  })
-
-  const sessionId = `smartPaste:${currentFilePath}}`
-  const sessionIdHistoriesMap = await getCurrentSessionIdHistoriesMap()
-
-  // TODO: remove and support continue generate in the future
-  delete sessionIdHistoriesMap[sessionId]
-
-  await streamingCompletionWriter({
-    editor: activeEditor,
-    onCancel() {
-      aiModelAbortController.abort()
-    },
-    buildAiStream: async () => {
-      const convertMessages = await buildConvertChatMessages({
-        workspaceFolder,
-        currentFilePath,
-        selection: activeEditor.selection
-      })
-
-      const history = await modelProvider.getHistory(sessionId)
-      const historyMessages = await history.getMessages()
-      const currentMessages: BaseMessage[] = convertMessages
-      const aiStream = aiModel.stream([...historyMessages, ...currentMessages])
-      history.addMessages(currentMessages)
-
-      return aiStream
-    }
-  })
-
-  // TODO: remove and support continue generate in the future
-  delete sessionIdHistoriesMap[sessionId]
 }

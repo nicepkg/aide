@@ -23,7 +23,7 @@ export class AnthropicModelProvider extends BaseModelProvider<ChatAnthropic> {
       },
       model: openaiModel,
       temperature: 0.95, // never use 1.0, some models do not support it
-      maxRetries: 3,
+      maxRetries: 6,
       verbose: isDev
     })
 

@@ -34,10 +34,10 @@ export const getReferenceFilePaths = async ({
     useHistory: false,
     zodSchema: z.object({
       referenceFileRelativePaths: z.array(z.string()).min(0).max(3).describe(`
-        The relative paths of the up to three most useful files related to the currently edited file. This can include 0 to 3 files.
+        Required! The relative paths of the up to three most useful files related to the currently edited file. This can include 0 to 3 files.
       `),
       dependenceFileRelativePath: z.string().describe(`
-        The relative path of the dependency file for the current file. If the dependency file is not found, return an empty string.
+        Required! The relative path of the dependency file for the current file. If the dependency file is not found, return an empty string.
         `)
     })
   })

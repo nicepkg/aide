@@ -94,6 +94,10 @@
         "title": "%command.smartPaste%"
       },
       {
+        "command": "aide.batchProcessor",
+        "title": "%command.batchProcessor%"
+      },
+      {
         "command": "aide.copyFileText",
         "title": "%command.copyFileText%",
         "enablement": "false"
@@ -125,6 +129,11 @@
           "when": "explorerResourceIsFolder || selectedFilesCount > 0 || resourceLangId",
           "command": "aide.askAI",
           "group": "0_aide@1"
+        },
+        {
+          "when": "explorerResourceIsFolder || selectedFilesCount > 0 || resourceLangId",
+          "command": "aide.batchProcessor",
+          "group": "0_aide@2"
         }
       ],
       "editor/context": [
@@ -173,6 +182,11 @@
           "type": "string",
           "default": "https://api.openai.com/v1",
           "markdownDescription": "%config.openaiBaseUrl.description%"
+        },
+        "aide.apiConcurrency": {
+          "type": "number",
+          "default": 1,
+          "markdownDescription": "%config.apiConcurrency.description%"
         },
         "aide.useSystemProxy": {
           "type": "boolean",
@@ -311,6 +325,7 @@
     "langchain": "^0.2.10",
     "lint-staged": "^15.2.7",
     "minimatch": "^9.0.5",
+    "p-limit": "^6.1.0",
     "pnpm": "^9.6.0",
     "prettier": "^3.3.3",
     "rimraf": "^6.0.1",

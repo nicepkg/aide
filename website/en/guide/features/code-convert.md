@@ -4,6 +4,8 @@ Command Name: `aide.codeConvert`
 
 Use AI to convert an entire file or selected code from one programming language to another. Supports any language. Most languages support highlighting.
 
+You can enter any language or file extension. If it is not in the [`language list`](https://code.visualstudio.com/docs/languages/identifiers#_known-language-identifiers), it might not support syntax highlighting, but it can still be converted.
+
 **Usage:**
 
 - Select the code in the editor.
@@ -15,19 +17,19 @@ If the output is interrupted, you can click the original paper icon or right-cli
 
 <Video src="/videos/aide-code-convert.mp4"/>
 
-::: tip Custom Language + Additional Description Support
+::: tip Language + Additional Description Support
 
-When selecting a custom language, you can add an additional description after the language. For example, if you want to migrate a `Vue2` project to `Vue3 setup`, you can choose `Custom language` in the input box and then enter:
+After entering the language, you can add a space and then a supplementary description. For example, if you want to migrate a `Vue2` project to `Vue3 setup`, you can enter:
 
-`vue migrate from vue2 to vue3 <script setup> syntax`
+`vue vue2 to vue3 <script setup> syntax`
 
 This will be parsed as:
 
-Target language: `vue`
+Target Language: `vue`
 
-Additional description: `migrate from vue2 to vue3 <script setup> syntax`
+Additional Description: `vue2 to vue3 <script setup> syntax`
 
-This rule is: target language + space + additional description
+The rule is: Target Language + Space + Additional Description
 :::
 
 **Related Configuration:**
