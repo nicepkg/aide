@@ -8,7 +8,7 @@ hero:
   name: Aide
   image: /logo.svg
   text: 'Conquer Any Code in VSCode 💪'
-  tagline: 'One-Click Comments, Conversions, UI-to-Code, and AI Batch Processing!'
+  tagline: 'One-Click Comments, Conversions, UI-to-Code, and AI Batch Processing of Files!'
   actions:
     - theme: brand
       text: Get Started

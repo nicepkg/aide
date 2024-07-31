@@ -61,6 +61,8 @@ export const handleBatchProcessor = async (
 
     logger.log('handleBatchProcessor', preProcessInfo)
 
+    if (abortController.signal.aborted) return
+
     const apiConcurrency = (await getConfigKey('apiConcurrency')) || 1
     const limit = pLimit(apiConcurrency)
     const promises = preProcessInfo.processFilePathInfo.map(info =>

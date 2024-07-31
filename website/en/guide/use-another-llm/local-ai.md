@@ -1,14 +1,14 @@
 # LocalAI
 
-[LocalAI](https://localai.io) is an open-source `Docker` image that allows running open-source models locally, supporting most open-source models. Compared to [Ollama](./ollama.md), it is more suitable for deployment on LAN servers for small groups.
+[==LocalAI==](https://localai.io) is an open-source `Docker` image that allows running open-source models locally, supporting most open-source models. Compared to [==Ollama==](./ollama.md), it is more suitable for deployment on LAN servers for small groups.
 
-This guide introduces how to configure and use the `LocalAI` model in `Aide`.
+This guide introduces how to configure and use the ==LocalAI== model in ==Aide==.
 
-You can find more detailed information in the [LocalAI Official Documentation](https://localai.io).
+You can find more detailed information in the [==LocalAI== Official Documentation](https://localai.io).
 
 ### Installing LocalAI
 
-Before using `LocalAI`, please ensure you have referred to the [LocalAI Official Documentation](https://localai.io) to install and run the `Docker` image.
+Before using ==LocalAI==, please ensure you have referred to the [==LocalAI== Official Documentation](https://localai.io) to install and run the `Docker` image.
 
 ### API Base URL Configuration
 
@@ -20,7 +20,7 @@ You can configure [`aide.openaiKey`](../configuration/openai-key.md) with any va
 
 ### Model Configuration
 
-You need to configure [`aide.openaiModel`](../configuration/openai-model.md) to the `LocalAI` model. We recommend using the `llama3-instruct` model. For more models, please refer to the [Supported Models List](https://localai.io/models/#list-models).
+You need to configure [`aide.openaiModel`](../configuration/openai-model.md) to the ==LocalAI== model. We recommend using the `llama3-instruct` model. For more models, please refer to the [Supported Models List](https://localai.io/models/#list-models).
 
 ### Example Configuration File
 

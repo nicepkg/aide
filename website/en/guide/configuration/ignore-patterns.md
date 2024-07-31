@@ -1,6 +1,6 @@
 # aide.ignorePatterns
 
-This configuration allows you to customize file exclusion rules. It supports [glob](https://github.com/isaacs/node-glob) patterns.
+This configuration allows you to customize ==file exclusion rules==. It supports [glob](https://github.com/isaacs/node-glob) patterns.
 
 - **Default value:**
 

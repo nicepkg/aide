@@ -21,7 +21,7 @@ Use AI to process the code of multiple selected files according to your needs.
 - Specific business requirements
 - Split one file into multiple files
 
-**Rest assured! Processing will not modify the `source file`:**
+**==Rest assured! Processing will not modify the source file==:**
 
 - It will generate an additional `file copy`. For example, `app/index.py` -> `app/index.py.aide.py`.
 - You can click the `file copy`, review it, and then decide whether to replace the `source file`.

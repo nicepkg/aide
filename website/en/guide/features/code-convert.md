@@ -4,7 +4,7 @@ Command Name: `aide.codeConvert`
 
 Use AI to convert an entire file or selected code from one programming language to another. Supports any language. Most languages support highlighting.
 
-You can enter any language or file extension. If it is not in the [`language list`](https://code.visualstudio.com/docs/languages/identifiers#_known-language-identifiers), it might not support syntax highlighting, but it can still be converted.
+You can enter any language or file extension. If it is not in the [==language list==](https://code.visualstudio.com/docs/languages/identifiers#_known-language-identifiers), it might not support syntax highlighting, but it can still be converted.
 
 **Usage:**
 

@@ -21,7 +21,7 @@ You can customize the keyboard shortcuts for the commands of this extension to s
 
 4. Press the desired key combination for your new shortcut.
 
-5. If there is a conflict with an existing shortcut, `VSCode` will notify you. You can choose to overwrite the existing shortcut or try another combination.
+5. If there is a conflict with an existing shortcut, ==VSCode== will notify you. You can choose to overwrite the existing shortcut or try another combination.
 
 Here are the default commands you can customize:
 
@@ -60,4 +60,4 @@ Note: If you prefer to edit the `keybindings.json` file directly, you can add th
 
 Replace `"ctrl+shift+a"` with your desired key combination and `"aide.askAI"` with the command you want to assign.
 
-By customizing these shortcuts, you can quickly access the features of the extension and boost your productivity in `VSCode`.
+By customizing these shortcuts, you can quickly access the features of the extension and boost your productivity in ==VSCode==.

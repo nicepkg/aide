@@ -1,8 +1,8 @@
 # Deepseek
 
-This guide introduces how to configure and use the `Deepseek` model in `Aide`.
+This guide introduces how to configure and use the ==Deepseek== model in ==Aide==.
 
-You can find more detailed information in the [Deepseek Official Reference Documentation](https://platform.deepseek.com/api-docs/).
+You can find more detailed information in the [==Deepseek== Official Reference Documentation](https://platform.deepseek.com/api-docs/).
 
 ### API Base URL Configuration
 
@@ -10,11 +10,11 @@ You need to configure [`aide.openaiBaseUrl`](../configuration/openai-base-url.md
 
 ### API Key Configuration
 
-You need to configure [`aide.openaiKey`](../configuration/openai-key.md) as your `Deepseek` API Key.
+You need to configure [`aide.openaiKey`](../configuration/openai-key.md) as your ==Deepseek== API Key.
 
 ### Model Configuration
 
-You need to configure [`aide.openaiModel`](../configuration/openai-model.md) to the `Deepseek` model. We recommend using the `deepseek-coder` model. For more models, please refer to the official reference documentation above.
+You need to configure [`aide.openaiModel`](../configuration/openai-model.md) to the ==Deepseek== model. We recommend using the `deepseek-coder` model. For more models, please refer to the official reference documentation above.
 
 ### Example Configuration File
 

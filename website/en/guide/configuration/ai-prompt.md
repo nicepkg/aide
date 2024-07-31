@@ -1,6 +1,6 @@
 # aide.aiPrompt
 
-This configuration allows you to customize the template for AI prompts when batch copying files. The template can include some placeholders:
+This configuration allows you to customize ==the template for AI prompts when batch copying files==. The template can include some placeholders:
 
 **Template Parameters:**
 

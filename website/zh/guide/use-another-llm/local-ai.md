@@ -1,14 +1,14 @@
 # LocalAI
 
-[LocalAI](https://localai.io) 是一个本地运行开源模型的开源 `Docker` 镜像，支持大部份开源模型。相对于 [Ollama](./ollama.md)，它更适合部署到局域网服务器供小团体使用。
+[==LocalAI==](https://localai.io) 是一个本地运行开源模型的开源 `Docker` 镜像，支持大部份开源模型。相对于 [==Ollama==](./ollama.md)，它更适合部署到局域网服务器供小团体使用。
 
-本指南介绍如何在 `Aide` 中配置和使用 `LocalAI` 模型。
+本指南介绍如何在 ==Aide== 中配置和使用 ==LocalAI== 模型。
 
-您可以在 [LocalAI 官网文档](https://localai.io) 获取更多详细信息。
+您可以在 [==LocalAI== 官网文档](https://localai.io) 获取更多详细信息。
 
 ### 安装 LocalAI
 
-在使用 `LocalAI` 之前，请确保已参考 [LocalAI 官网文档](https://localai.io) 安装并运行 `Docker` 镜像。
+在使用 ==LocalAI== 之前，请确保已参考 [==LocalAI== 官网文档](https://localai.io) 安装并运行 `Docker` 镜像。
 
 ### API Base URL 配置
 
@@ -20,7 +20,7 @@
 
 ### 模型配置
 
-您需要配置 [`aide.openaiModel`](../configuration/openai-model.md) 为 `LocalAI` 模型，我们推荐使用 `llama3-instruct` 模型。更多模型请参考 [支持的模型列表](https://localai.io/models/#list-models)。
+您需要配置 [`aide.openaiModel`](../configuration/openai-model.md) 为 ==LocalAI== 模型，我们推荐使用 `llama3-instruct` 模型。更多模型请参考 [支持的模型列表](https://localai.io/models/#list-models)。
 
 ### 示例配置文件
 

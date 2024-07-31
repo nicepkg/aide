@@ -32,6 +32,8 @@ export const writeAndSaveTmpFile = async ({
     signal: abortController?.signal
   })
 
+  if (abortController?.signal.aborted) return
+
   const getContentFromRelativePath = async (relativePath: string) => {
     if (!relativePath) return ''
     const fileFullPath = path.join(workspacePath, relativePath)
@@ -62,6 +64,8 @@ export const writeAndSaveTmpFile = async ({
   const dependenceFileContent = await getContentFromRelativePath(
     dependenceFileRelativePath || ''
   )
+
+  if (abortController?.signal.aborted) return
 
   await tmpFileWriter({
     stopWriteWhenClosed: true,

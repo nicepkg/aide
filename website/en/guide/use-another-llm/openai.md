@@ -1,10 +1,10 @@
 # OpenAI
 
-[OpenAI](https://platform.openai.com) provides a variety of advanced AI models that can be applied to various natural language processing tasks.
+[==OpenAI==](https://platform.openai.com) provides a variety of advanced AI models that can be applied to various natural language processing tasks.
 
-This guide introduces how to configure and use the `OpenAI` model in `Aide`.
+This guide introduces how to configure and use the ==OpenAI== model in ==Aide==.
 
-You can find more detailed information in the [official documentation](https://platform.openai.com/docs/quickstart).
+You can find more detailed information in the [==OpenAI== official documentation](https://platform.openai.com/docs/quickstart).
 
 ### API Base URL Configuration
 
@@ -12,17 +12,17 @@ You need to configure [`aide.openaiBaseUrl`](../configuration/openai-base-url.md
 
 ### API Key Configuration
 
-You need to configure [`aide.openaiKey`](../configuration/openai-key.md) as your `OpenAI` API Key. You can [create a key on the official website](https://platform.openai.com/account/api-keys)
+You need to configure [`aide.openaiKey`](../configuration/openai-key.md) as your ==OpenAI== API Key. You can [create a key on the ==OpenAI== official website](https://platform.openai.com/account/api-keys)
 
 ::: tip
 
-Obtaining an `OpenAI` key requires binding a foreign credit card, and any model usage comes with a fee. If you are unable to obtain one, we recommend using other large language models or third-party proxies.
+Obtaining an ==OpenAI== key requires binding a foreign credit card, and any model usage comes with a fee. If you are unable to obtain one, we recommend using other large language models or third-party proxies.
 
 :::
 
 ### Model Configuration
 
-You need to configure [`aide.openaiModel`](../configuration/openai-model.md) to the `OpenAI` model. We recommend using the `gpt-4o` model. For more models, please refer to the [Supported Models List](https://platform.openai.com/docs/models).
+You need to configure [`aide.openaiModel`](../configuration/openai-model.md) to the ==OpenAI== model. We recommend using the `gpt-4o` model. For more models, please refer to the [==OpenAI== Supported Models List](https://platform.openai.com/docs/models).
 
 ### Example Configuration File
 

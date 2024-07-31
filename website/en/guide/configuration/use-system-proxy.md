@@ -1,6 +1,6 @@
 # aide.useSystemProxy
 
-This configuration allows you to customize whether to use the system proxy (`HTTP_PROXY`, `HTTPS_PROXY`, `ALL_PROXY`) for network requests. Changes to this setting require restarting `VSCode` to take effect.
+This configuration allows you to customize ==whether to use the system proxy== (`HTTP_PROXY`, `HTTPS_PROXY`, `ALL_PROXY`) for network requests. Changes to this setting require restarting ==VSCode== to take effect.
 
 - **Default Value:**
 

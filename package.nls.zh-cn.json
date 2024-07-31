@@ -5,7 +5,7 @@
   "command.codeViewerHelper": "✨ Aide: 代码查看器助手",
   "command.renameVariable": "✨ Aide: 重命名变量",
   "command.smartPaste": "✨ Aide: 智能粘贴",
-  "command.batchProcessor": "✨ Aide: AI 批量处理",
+  "command.batchProcessor": "✨ Aide: AI 批量处理文件",
   "command.copyFileText": "复制全文",
   "command.quickCloseFileWithoutSave": "快速关闭",
   "command.replaceFile": "替换原文",

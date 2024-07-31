@@ -1,6 +1,6 @@
 # aide.convertLanguagePairs
 
-This configuration allows you to customize the language mapping for code conversion. The mapping should be in the form of `sourceLanguage: targetLanguage`.
+This configuration allows you to customize ==the language mapping for code conversion==. The mapping should be in the form of `sourceLanguage: targetLanguage`.
 
 By default, the editor will remember your language mapping in the current project's `.vscode/settings.json` file, under the `aide.convertLanguagePairs` configuration. You can modify or add new language mappings here, for example:
 
@@ -19,7 +19,7 @@ By default, the editor will remember your language mapping in the current projec
 }
 ```
 
-Your language names should follow the [VSCode Language Identifiers](https://code.visualstudio.com/docs/languages/identifiers#_known-language-identifiers). Here are some VSCode language identifiers you might need:
+Your language names should follow the [==VSCode Language Identifiers==](https://code.visualstudio.com/docs/languages/identifiers#_known-language-identifiers). Here are some VSCode language identifiers you might need:
 
 ::: details List of VSCode Language Identifiers
 

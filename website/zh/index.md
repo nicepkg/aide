@@ -8,7 +8,7 @@ hero:
   name: Aide
   image: /logo.svg
   text: '在 VSCode 中征服任何代码 💪'
-  tagline: '一键注释、转换、UI 图生成代码、AI 批量处理！'
+  tagline: '一键注释、转换、UI 图生成代码、AI 批量处理文件！'
   actions:
     - theme: brand
       text: 快速开始

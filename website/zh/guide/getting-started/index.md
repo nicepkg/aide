@@ -3,9 +3,9 @@
 <br/>
 <Video src="/videos/aide-intro.mp4" />
 
-## 为什么选择 `Aide`？
+## 为什么选择 ==Aide==？
 
-`Aide` 是一个强大的 AI 辅助开发 `VSCode` 扩展，旨在提升您的编码体验。以下是您应该选择 `Aide` 的原因：
+==Aide== 是一个强大的 AI 辅助开发 ==VSCode== 扩展，旨在提升您的编码体验。以下是您应该选择 ==Aide== 的原因：
 
 - **📚 提高代码可读性**：一键为您的代码添加详细注释，提高可读性，而无需修改原始文件。
 
@@ -27,7 +27,7 @@
 
 3. **[智能粘贴](../features/smart-paste.md)**：粘贴到不同文件类型时，智能转换剪贴板内容。
 
-4. **[AI批量处理](../features/batch-processor.md)**：根据您的特定需求，使用 AI 处理多个文件。
+4. **[AI批量处理文件](../features/batch-processor.md)**：根据您的特定需求，使用 AI 处理多个文件。
 
 5. **[批量复制文件为 AI 提示词](../features/copy-as-prompt.md)**：一键将多个文件格式化为 AI 交互提示。
 
@@ -35,7 +35,7 @@
 
 7. **[自定义命令提问 AI](../features/ask-ai.md)**：在选定的文件或文件夹上执行自定义 AI 命令。
 
-## `Aide` 与 `Copilot/Codeium/AmazonQ` 的区别
+## ==Aide== 与 ==Copilot/Codeium/AmazonQ== 的区别
 
 - **🚫 无冗余功能**：我们专注于独特的、互补的功能，而不是复制现有工具。
 

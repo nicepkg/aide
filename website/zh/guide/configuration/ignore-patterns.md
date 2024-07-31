@@ -1,6 +1,6 @@
 # aide.ignorePatterns
 
-此配置允许你自定义文件排除规则。支持 [glob](https://github.com/isaacs/node-glob) 规则。
+此配置允许你自定义==文件排除规则==。支持 [glob](https://github.com/isaacs/node-glob) 规则。
 
 - **默认值：**
 

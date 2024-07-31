@@ -3,9 +3,9 @@
 <br/>
 <Video src="/videos/aide-intro.mp4" />
 
-## Why Choose `Aide`?
+## Why Choose ==Aide==?
 
-`Aide` is a powerful AI-assisted development `VSCode` extensions designed to enhance your coding experience. Here's why you should choose `Aide`:
+==Aide== is a powerful AI-assisted development ==VSCode== extensions designed to enhance your coding experience. Here's why you should choose ==Aide==:
 
 - **📚 Improved Code Readability**: Add detailed comments to your code with one click, improving readability without modifying the original file.
 
@@ -35,7 +35,7 @@
 
 7. **[Ask AI With Custom Command](../features/ask-ai.md)**: Execute customized AI commands on selected files or folders.
 
-## Differences Between `Aide` and `Copilot/Codeium/AmazonQ`
+## Differences Between ==Aide== and ==Copilot/Codeium/AmazonQ==
 
 - **🚫 No Redundant Features**: We focus on unique, complementary features rather than replicating existing tools.
 

@@ -113,7 +113,7 @@ function sidebar(): DefaultTheme.Sidebar {
             link: '/smart-paste'
           },
           {
-            text: 'AI 批量处理',
+            text: 'AI 批量处理文件',
             link: '/batch-processor'
           },
           {

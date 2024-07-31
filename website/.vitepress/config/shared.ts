@@ -1,3 +1,5 @@
+import { InlineLinkPreviewElementTransform } from '@nolebase/vitepress-plugin-inline-link-preview/markdown-it'
+import Mark from 'markdown-it-mark'
 import Unocss from 'unocss/vite'
 import { defineConfig } from 'vitepress'
 
@@ -15,7 +17,11 @@ export const shared = defineConfig({
   metaChunk: true,
 
   markdown: {
-    lineNumbers: false
+    lineNumbers: false,
+    config(md) {
+      md.use(InlineLinkPreviewElementTransform)
+      md.use(Mark)
+    }
   },
 
   sitemap: {

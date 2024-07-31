@@ -1,6 +1,6 @@
 # aide.apiConcurrency
 
-This configuration allows you to customize the AI request concurrency, which is `1` by default. It is recommended not to change it when using local models.
+This configuration allows you to customize the ==AI request concurrency==, which is `1` by default. It is recommended not to change it when using local models.
 
 - **Default Value:**
 

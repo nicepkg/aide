@@ -1,6 +1,6 @@
 # aide.aiCommand
 
-This configuration allows you to customize the template for executing AI commands. Templates can include several placeholders:
+This configuration allows you to customize ==the template used== for the `✨ Aide: Ask AI` command execution. The template can include some placeholders:
 
 **Template Parameters:**
 

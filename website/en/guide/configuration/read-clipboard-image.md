@@ -1,6 +1,6 @@
 # aide.readClipboardImage
 
-This configuration allows you to customize whether certain scenarios can read clipboard images as AI context.
+This configuration allows you to customize ==whether certain scenarios can read clipboard images== as AI context.
 
 - **Default Value:**
 

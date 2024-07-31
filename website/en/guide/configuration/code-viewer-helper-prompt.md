@@ -1,6 +1,6 @@
 # aide.codeViewerHelperPrompt
 
-This configuration allows you to customize the AI prompt template for the code viewer assistant. The template can include some placeholders:
+This configuration allows you to customize ==the AI prompt template for the code viewer assistant==. The template can include some placeholders:
 
 **Template Parameters:**
 
