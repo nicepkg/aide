@@ -72,6 +72,9 @@
     transparent 50%
   );
 }
+.dark .vp-doc mark {
+  --vp-nolebase-mark-bg-color: #8c6befaa;
+}
 
 @keyframes mark-highlight-animation {
   from {
