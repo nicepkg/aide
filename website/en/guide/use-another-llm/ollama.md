@@ -20,7 +20,7 @@ You can configure [`aide.openaiKey`](../configuration/openai-key.md) with any va
 
 ### Model Configuration
 
-You need to configure [`aide.openaiModel`](../configuration/openai-model.md) to the `Ollama` model. We recommend using the `gemma2` model. For more models, please refer to the [Supported Models List](https://ollama.com/library).
+You need to configure [`aide.openaiModel`](../configuration/openai-model.md) to the `Ollama` model. We recommend using the `llama3.1` model. For more models, please refer to the [Supported Models List](https://ollama.com/library).
 
 ### Example Configuration File
 
@@ -30,7 +30,7 @@ Below is a complete configuration example:
 {
   "aide.openaiBaseUrl": "http://localhost:11434/v1",
   "aide.openaiKey": "sk-ollama",
-  "aide.openaiModel": "gemma2"
+  "aide.openaiModel": "llama3.1"
 }
 ```
 

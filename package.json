@@ -2,7 +2,7 @@
   "publisher": "nicepkg",
   "name": "aide-pro",
   "displayName": "Aide",
-  "description": "Master Any Code: One-Click Comments and Language Conversion. 掌握任何屎山代码：一键注释和语言转换。💪",
+  "description": "Conquer Any Code in VSCode: One-Click Comments, Conversions, UI-to-Code, and AI Batch Processing! 在 VSCode 中征服任何代码：一键注释、转换、UI 图生成代码、AI 批量处理！💪",
   "version": "1.16.0",
   "private": true,
   "packageManager": "pnpm@9.3.0",

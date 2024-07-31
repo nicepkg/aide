@@ -6,7 +6,7 @@ Prepare and execute a custom AI command based on the selected file and user inpu
 
 **Usage:**
 
-- Select a file or folder in the explorer.
+- Select a file or folder in the explorer. (Multi-select: hold `Ctrl` or `Cmd` and click on files or folders)
 - Right-click and select `✨ Aide: Ask AI`.
 - Follow the prompt to enter your question.
 

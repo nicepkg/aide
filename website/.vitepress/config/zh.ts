@@ -113,6 +113,10 @@ function sidebar(): DefaultTheme.Sidebar {
             link: '/smart-paste'
           },
           {
+            text: 'AI 批量处理',
+            link: '/batch-processor'
+          },
+          {
             text: '批量复制文件为 AI 提示词',
             link: '/copy-as-prompt'
           },
@@ -142,6 +146,10 @@ function sidebar(): DefaultTheme.Sidebar {
           {
             text: 'aide.openaiBaseUrl',
             link: '/openai-base-url'
+          },
+          {
+            text: 'aide.apiConcurrency',
+            link: '/api-concurrency'
           },
           {
             text: 'aide.useSystemProxy',

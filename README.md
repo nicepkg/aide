@@ -1,12 +1,12 @@
 <div align="center">
 
-<h1 align="center">Aide</h1>
+<h1 align="center">AIDE</h1>
 
 English / [简体中文 🌏](https://github.com/nicepkg/aide/tree/master/README_CN.md)
 
-Mastering Any Code In VSCode: One-click commenting and language conversion. 💪
+Conquer Any Code in VSCode: One-Click Comments, Conversions, UI-to-Code, and AI Batch Processing! 💪
 
-在 VSCode 里掌握任何屎山代码：一键注释和语言转换。💪
+在 VSCode 中征服任何代码：一键注释、转换、UI 图生成代码、AI 批量处理！💪
 
 [![Version](https://img.shields.io/visual-studio-marketplace/v/nicepkg.aide-pro)](https://marketplace.visualstudio.com/items?itemName=nicepkg.aide-pro)
 [![Downloads](https://img.shields.io/visual-studio-marketplace/d/nicepkg.aide-pro)](https://marketplace.visualstudio.com/items?itemName=nicepkg.aide-pro)
@@ -25,15 +25,13 @@ https://github.com/user-attachments/assets/55f85f8e-7515-4da3-b850-9c078b3440d5
 
 ## Features ✨
 
-- 🔄 **Code Conversion**: One-click code transformation between languages.
-- 📖 **Code Annotation**: One-click detailed comments for better readability.
-- 📋 **Quick Copy**: Batch copy files/folders as AI prompts.
-- 💬 **Custom Commands**: Execute custom AI commands on selected files.
-- 🔀 **Variable Rename**: Rename variables using AI-suggested variable names.
-- 🎛 **Prompt Templates**: Define flexible AI prompt templates.
-- 📁 **Multi-File Support**: Select multiple files/folders for AI prompts or commands.
-- 🚫 **Ignore Patterns**: Exclude files/folders using custom glob rules.
-- ⌨ **Keyboard Shortcuts**: Set your preferred shortcuts for features.
+- 🔄 **[Code Convert](https://aide.nicepkg.cn/guide/features/code-convert)**: Transform code between any programming languages with one click.
+- 📖 **[Code Viewer Helper](https://aide.nicepkg.cn/guide/features/code-viewer-helper)**: Add detailed comments to enhance code readability.
+- 🔀 **[Smart Paste](https://aide.nicepkg.cn/guide/features/smart-paste)**: Intelligently convert clipboard content (code or images) when pasting.
+- 🤖 **[AI Batch Processor](https://aide.nicepkg.cn/guide/features/batch-processor)**: Process multiple files using AI according to custom requirements.
+- 🏷 **[Rename Variable](https://aide.nicepkg.cn/guide/features/rename-variable)**: Get AI-suggested variable names with explanations.
+- 💬 **[Ask AI](https://aide.nicepkg.cn/guide/features/ask-ai)**: Execute custom AI commands on selected files or folders.
+- 📋 **[Copy as AI Prompt](https://aide.nicepkg.cn/guide/features/copy-as-prompt)**: Easily copy files/folders content as AI prompts.
 
 ## Installation 📦
 

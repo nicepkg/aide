@@ -20,7 +20,7 @@
 
 ### 模型配置
 
-你需要配置 [`aide.openaiModel`](../configuration/openai-model.md) 为 `Ollama` 模型，我们推荐使用 `gemma2` 模型。更多模型请参考 [支持的模型列表](https://ollama.com/library)。
+你需要配置 [`aide.openaiModel`](../configuration/openai-model.md) 为 `Ollama` 模型，我们推荐使用 `llama3.1` 模型。更多模型请参考 [支持的模型列表](https://ollama.com/library)。
 
 ### 示例配置文件
 
@@ -30,7 +30,7 @@
 {
   "aide.openaiBaseUrl": "http://localhost:11434/v1",
   "aide.openaiKey": "sk-ollama",
-  "aide.openaiModel": "gemma2"
+  "aide.openaiModel": "llama3.1"
 }
 ```
 

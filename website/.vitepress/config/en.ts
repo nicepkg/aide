@@ -89,6 +89,10 @@ function sidebar(): DefaultTheme.Sidebar {
             link: '/smart-paste'
           },
           {
+            text: 'AI Batch Processor',
+            link: '/batch-processor'
+          },
+          {
             text: 'Copy Multiple Files As Prompt',
             link: '/copy-as-prompt'
           },
@@ -112,6 +116,10 @@ function sidebar(): DefaultTheme.Sidebar {
           {
             text: 'aide.openaiBaseUrl',
             link: '/openai-base-url'
+          },
+          {
+            text: 'aide.apiConcurrency',
+            link: '/api-concurrency'
           },
           {
             text: 'aide.useSystemProxy',

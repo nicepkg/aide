@@ -20,4 +20,4 @@
 
 目前支持以下场景：
 
-- [`智能粘贴`](../features//smart-paste.md)
+- [`智能粘贴`](../features/smart-paste.md)

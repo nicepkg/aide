@@ -2,13 +2,13 @@
 layout: home
 
 title: Aide
-titleTemplate: 在 VSCode 里掌握任何屎山代码
+titleTemplate: 在 VSCode 中征服任何代码
 
 hero:
   name: Aide
   image: /logo.svg
-  text: '在 VSCode 里掌握任何屎山代码 💪'
-  tagline: '一键注释和语言转换。'
+  text: '在 VSCode 中征服任何代码 💪'
+  tagline: '一键注释、转换、UI 图生成代码、AI 批量处理！'
   actions:
     - theme: brand
       text: 快速开始

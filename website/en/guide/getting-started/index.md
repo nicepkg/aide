@@ -5,41 +5,47 @@
 
 ## Why Choose `Aide`?
 
-- **😩 Are you suffering from reading through the messy code left by your predecessors?**
+`Aide` is a powerful AI-assisted development `VSCode` extensions designed to enhance your coding experience. Here's why you should choose `Aide`:
 
-  ✅ `Aide` can add detailed comments to your code with one click, outputting to a temporary file for you to review, thereby improving code readability.
+- **📚 Improved Code Readability**: Add detailed comments to your code with one click, improving readability without modifying the original file.
 
-- **🆕 Are you learning a new language or reading a project in an unfamiliar language and wish to understand the new code in a familiar language?**
+- **🔄 Effortless Code Conversion**: Convert code between languages or frameworks instantly, making it easier to understand unfamiliar code or migrate projects.
 
-  ✅ `Aide` can convert code into a familiar language with one click, outputting to a temporary file so you can immediately understand its logic.
+- **🔮 Magical Smart Paste**: Intelligently convert clipboard content when pasting, including transforming design screenshots into UI code. Streamlines cross-language, cross-framework development, and design-to-code workflows.
 
-- **📋 Do you have to manually copy multiple file codes and paste them into an AI website for questions every time?**
+- **📋 Efficient Batch Processing**: Easily process multiple files or folders with AI, significantly boosting your productivity.
 
-  ✅ `Aide` allows you to batch copy multiple files or folders with one click, saving you a lot of time.
+- **🏷️ Intelligent Variable Renaming**: Get AI-powered variable name suggestions with explanations, helping you choose the best names for your code.
 
-- **🤔 Are you always dissatisfied with your variable names?**
+- **🤖 Customizable AI Commands**: Create and execute custom AI commands, allowing for flexible interaction with your codebase.
 
-  ✅ `Aide` can use AI to provide variable name suggestions and explanations, allowing you to choose the best practice variable names and make your code more standardized.
+## Key Features
 
-- **🔄 Do you often need to convert code from one format to another before pasting it into your project?**
+1. **[Code Viewer Helper](../features/code-viewer-helper.md)**: Add AI-generated comments to make your code easier to understand.
 
-  ✅ `Aide` can intelligently recognize code in the clipboard and guess your intent for smart pasting. For example, if you copy a `JSON` and paste it into a `TypeScript` file, it will automatically convert it to a `TypeScript` type. Or if you copy `Tailwind CSS` code and paste it into a `Flutter Dart` file, it will automatically convert it to a `Flutter Widget`, saving you a lot of time.
+2. **[Code Convert](../features/code-convert.md)**: Transform code from one programming language to another with AI assistance.
 
-- **⌨️ When using command line tools similar to [`aider`](https://github.com/paul-gauthier/aider), do you dislike entering file paths one by one?**
+3. **[Smart Paste](../features/smart-paste.md)**: Intelligently convert clipboard content when pasting into different file types.
 
-  ✅ `Aide` allows you to customize AI command execution templates, passing selected file paths to the AI command, significantly saving your time.
+4. **[AI Batch Processor](../features/batch-processor.md)**: Process multiple files with AI according to your specific requirements
+
+5. **[Copy Multiple Files As AI Prompt](../features/copy-as-prompt.md)**: Format multiple files as AI interaction prompts with a single click.
+
+6. **[Rename Variable](../features/rename-variable.md)**: Get AI suggestions for variable names to improve code clarity.
+
+7. **[Ask AI With Custom Command](../features/ask-ai.md)**: Execute customized AI commands on selected files or folders.
 
 ## Differences Between `Aide` and `Copilot/Codeium/AmazonQ`
 
-- **🚫 No Redundant Features**: We won't create a sidebar for AI chat, nor will we provide AI auto-completion features, because these are already offered by other tools. We only provide features that we can do better. `Aide` is a supplement, not a replacement.
+- **🚫 No Redundant Features**: We focus on unique, complementary features rather than replicating existing tools.
 
-- **⚡ Focus on Efficiency and Practicality**: `Aide` focuses on providing more efficient AI features and more practical interaction methods. Each feature is deeply thought out and designed by the author to ensure a good user experience.
+- **⚡ Efficiency-Focused**: Each feature is carefully designed for optimal user experience and practical utility.
 
-- **❌ No Poor-Performing Features**: `Aide` will not offer features with poor performance, such as embedding an entire project into an AI and asking it questions. Such features usually perform poorly, so we won't offer them.
+- **💪 Quality Over Quantity**: We prioritize high-performing features, avoiding those with poor real-world results.
 
-- **🔓 Open Source**: `Aide` is open source, allowing you to freely view the source code.
+- **🔓 Open Source**: Freely view and contribute to our source code.
 
-- **🛠️ Customizable**: `Aide` allows you to customize the AI model and even use local models.
+- **🛠️ Customizable**: Use your preferred AI model, including local options.
 
 ## Quick Navigation
 

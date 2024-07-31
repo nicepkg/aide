@@ -2,13 +2,13 @@
 layout: home
 
 title: Aide
-titleTemplate: Mastering Any Code In VSCode
+titleTemplate: Conquer Any Code in VSCode
 
 hero:
   name: Aide
   image: /logo.svg
-  text: 'Mastering Any Code In VSCode 💪'
-  tagline: 'One-click commenting and language conversion.'
+  text: 'Conquer Any Code in VSCode 💪'
+  tagline: 'One-Click Comments, Conversions, UI-to-Code, and AI Batch Processing!'
   actions:
     - theme: brand
       text: Get Started

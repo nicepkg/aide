@@ -1,10 +1,10 @@
 <div align="center">
 
-<h1 align="center">Aide</h1>
+<h1 align="center">AIDE</h1>
 
 [English 🌏](https://github.com/nicepkg/aide/tree/master/README.md) / 简体中文
 
-在 VSCode 里掌握任何屎山代码：一键注释和语言转换。💪
+在 VSCode 中征服任何代码：一键注释、转换、UI 图生成代码、AI 批量处理！💪
 
 [![Version](https://img.shields.io/visual-studio-marketplace/v/nicepkg.aide-pro)](https://marketplace.visualstudio.com/items?itemName=nicepkg.aide-pro)
 [![Downloads](https://img.shields.io/visual-studio-marketplace/d/nicepkg.aide-pro)](https://marketplace.visualstudio.com/items?itemName=nicepkg.aide-pro)
@@ -23,15 +23,13 @@ https://github.com/user-attachments/assets/55f85f8e-7515-4da3-b850-9c078b3440d5
 
 ## 功能 ✨
 
-- 🔄 **代码转换**：一键代码语言转换。
-- 📖 **代码注释**：一键添加详细注释，提升可读性。
-- 📋 **快速复制**：批量复制文件/文件夹为 AI 提示。
-- 💬 **自定义命令**：对选定文件执行自定义 AI 命令。
-- 🔀 **变量重命名**：使用 AI 给出的变量名建议重命名变量。
-- 🎛 **提示模板**：定义灵活的 AI 提示模板。
-- 📁 **多文件支持**：选择多个文件/文件夹进行 AI 提示或命令。
-- 🚫 **忽略模式**：使用自定义 glob 规则排除文件/文件夹。
-- ⌨ **快捷键**：设置你偏好的功能快捷键。
+- 🔄 **[代码转换](https://aide.nicepkg.cn/zh/guide/features/code-convert)**: 一键在任何编程语言之间转换代码。
+- 📖 **[代码查看器助手](https://aide.nicepkg.cn/zh/guide/features/code-viewer-helper)**: 添加详细注释以提高代码可读性。
+- 🔀 **[智能粘贴](https://aide.nicepkg.cn/zh/guide/features/smart-paste)**: 粘贴时智能转换剪贴板内容（代码或图片）。
+- 🤖 **[AI 批量处理](https://aide.nicepkg.cn/zh/guide/features/batch-processor)**: 根据自定义要求使用 AI 处理多个文件。
+- 🏷 **[重命名变量](https://aide.nicepkg.cn/zh/guide/features/rename-variable)**: 获取 AI 建议的变量名及解释。
+- 💬 **[问 AI](https://aide.nicepkg.cn/zh/guide/features/ask-ai)**: 对选定的文件或文件夹执行自定义 AI 命令。
+- 📋 **[复制为 AI 提示词](https://aide.nicepkg.cn/zh/guide/features/copy-as-prompt)**: 轻松复制文件/文件夹内容作为 AI 提示。
 
 ## 安装 📦
 
