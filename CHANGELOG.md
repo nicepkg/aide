@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.17.1](https://github.com/nicepkg/aide/compare/aide-v1.17.0...aide-v1.17.1) (2024-07-31)
+
+
+### Bug Fixes
+
+* fix cancel batch-processor bug and update docs ([24a5443](https://github.com/nicepkg/aide/commit/24a544384bc90e23c07b1351bbece81591110c47))
+
 ## [1.17.0](https://github.com/nicepkg/aide/compare/aide-v1.16.0...aide-v1.17.0) (2024-07-31)
 
 
