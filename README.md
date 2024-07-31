@@ -1,6 +1,11 @@
 <div align="center">
 
-<h1 align="center">AIDE</h1>
+<a href="https://aide.nicepkg.cn">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/78b89b18-0846-4885-89f2-8238fac1db49">
+    <img src="https://github.com/user-attachments/assets/66fb88a7-a462-484f-8133-4187ffcef8ef" alt="nicepkg" width="400" />
+  </picture>
+</a>
 
 English / [简体中文 🌏](https://github.com/nicepkg/aide/tree/master/README_CN.md)
 
