@@ -82,6 +82,12 @@ export const shared = defineConfig({
       Unocss({
         configFile: '../../uno.config.ts'
       })
-    ]
+    ],
+    optimizeDeps: {
+      exclude: ['@nolebase/vitepress-plugin-inline-link-preview/markdown-it']
+    },
+    ssr: {
+      noExternal: ['@nolebase/*']
+    }
   }
 })
