@@ -7,7 +7,7 @@
   </picture>
 </a>
 
-[English 🌏](https://github.com/nicepkg/aide/tree/master/README.md) / 简体中文
+[English](https://github.com/nicepkg/aide/tree/master/README.md) / 简体中文 / [日本語](https://github.com/nicepkg/aide/tree/master/README_JP.md)
 
 在 VSCode 中征服任何代码：一键注释、转换、UI 图生成代码、AI 批量处理文件！💪
 
