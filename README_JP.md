@@ -7,11 +7,9 @@
   </picture>
 </a>
 
-English / [简体中文 🌏](https://github.com/nicepkg/aide/tree/master/README_CN.md) / 日本語
+[English](https://github.com/nicepkg/aide/tree/master/README.md) / [简体中文 🌏](https://github.com/nicepkg/aide/tree/master/README_CN.md) / 日本語
 
-Conquer Any Code in VSCode: One-Click Comments, Conversions, UI-to-Code, and AI Batch Processing! 💪
-
-在 VSCode 中征服任何代码：一键注释、转换、UI 图生成代码、AI 批量处理！💪
+VSCode　でどんなコードも制覇： ワンクリックコメント、変換、UI-to-Code、AI　バッチ処理！ 💪
 
 [![Version](https://img.shields.io/visual-studio-marketplace/v/nicepkg.aide-pro)](https://marketplace.visualstudio.com/items?itemName=nicepkg.aide-pro)
 [![Downloads](https://img.shields.io/visual-studio-marketplace/d/nicepkg.aide-pro)](https://marketplace.visualstudio.com/items?itemName=nicepkg.aide-pro)
@@ -33,10 +31,10 @@ https://github.com/user-attachments/assets/55f85f8e-7515-4da3-b850-9c078b3440d5
 - 🔄 **[コード変換](https://aide.nicepkg.cn/guide/features/code-convert)**: ワンクリックで任意のプログラミング言語間でコードを変換します。
 - 📖 **[コードビューアヘルパー](https://aide.nicepkg.cn/guide/features/code-viewer-helper)**: 詳細なコメントを追加してコードの可読性を向上させます。
 - 🔀 **[スマートペースト](https://aide.nicepkg.cn/guide/features/smart-paste)**: クリップボードの内容（コードや画像）を貼り付け時にインテリジェントに変換します。
-- 🤖 **[AIバッチプロセッサ](https://aide.nicepkg.cn/guide/features/batch-processor)**: カスタム要件に従ってAIを使用して複数のファイルを処理します。
+- 🤖 **[AI　バッチプロセッサ](https://aide.nicepkg.cn/guide/features/batch-processor)**: カスタム要件に従ってAIを使用して複数のファイルを処理します。
 - 🏷 **[変数のリネーム](https://aide.nicepkg.cn/guide/features/rename-variable)**: 説明付きのAI提案の変数名を取得します。
-- 💬 **[AIに質問](https://aide.nicepkg.cn/guide/features/ask-ai)**: 選択したファイルやフォルダにカスタムAIコマンドを実行します。
-- 📋 **[AIプロンプトとしてコピー](https://aide.nicepkg.cn/guide/features/copy-as-prompt)**: ファイル/フォルダの内容をAIプロンプトとして簡単にコピーします。
+- 💬 **[AI　に質問](https://aide.nicepkg.cn/guide/features/ask-ai)**: 選択したファイルやフォルダにカスタムAIコマンドを実行します。
+- 📋 **[AI　プロンプトとしてコピー](https://aide.nicepkg.cn/guide/features/copy-as-prompt)**: ファイル/フォルダの内容をAIプロンプトとして簡単にコピーします。
 
 ## インストール 📦
 
