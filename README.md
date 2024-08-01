@@ -7,7 +7,7 @@
   </picture>
 </a>
 
-English / [简体中文 🌏](https://github.com/nicepkg/aide/tree/master/README_CN.md)
+English / [简体中文 🌏](https://github.com/nicepkg/aide/tree/master/README_CN.md) / [日本語](https://github.com/nicepkg/aide/tree/master/README_JP.md)
 
 Conquer Any Code in VSCode: One-Click Comments, Conversions, UI-to-Code, and AI Batch Processing! 💪
 
