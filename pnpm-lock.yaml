@@ -5,7 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  '@langchain/core': 0.2.18
+  '@langchain/core': 0.2.20
 
 importers:
 
@@ -16,25 +16,25 @@ importers:
         version: 0.1.9
       '@commitlint/cli':
         specifier: ^19.3.0
-        version: 19.3.0(@types/node@22.0.2)(typescript@5.4.5)
+        version: 19.3.0(@types/node@22.1.0)(typescript@5.4.5)
       '@commitlint/config-conventional':
         specifier: ^19.2.2
         version: 19.2.2
       '@commitlint/cz-commitlint':
         specifier: ^19.2.0
-        version: 19.2.0(@types/node@22.0.2)(commitizen@4.3.0(@types/node@22.0.2)(typescript@5.4.5))(inquirer@9.3.4)(typescript@5.4.5)
+        version: 19.2.0(@types/node@22.1.0)(commitizen@4.3.0(@types/node@22.1.0)(typescript@5.4.5))(inquirer@9.3.4)(typescript@5.4.5)
       '@ianvs/prettier-plugin-sort-imports':
         specifier: ^4.3.1
         version: 4.3.1(@vue/compiler-sfc@3.4.35)(prettier@3.3.3)
       '@langchain/anthropic':
-        specifier: ^0.2.11
-        version: 0.2.11(langchain@0.2.12)(openai@4.52.3)
+        specifier: ^0.2.12
+        version: 0.2.12(langchain@0.2.12)(openai@4.52.3)
       '@langchain/core':
-        specifier: 0.2.18
-        version: 0.2.18(langchain@0.2.12(@langchain/anthropic@0.2.11)(fast-xml-parser@4.4.0)(ignore@5.3.1)(openai@4.52.3)(playwright@1.45.1))(openai@4.52.3)
+        specifier: 0.2.20
+        version: 0.2.20(langchain@0.2.12(@langchain/anthropic@0.2.12)(fast-xml-parser@4.4.0)(ignore@5.3.1)(openai@4.52.3)(playwright@1.45.1))(openai@4.52.3)
       '@langchain/openai':
         specifier: ^0.2.5
-        version: 0.2.5(langchain@0.2.12(@langchain/anthropic@0.2.11)(fast-xml-parser@4.4.0)(ignore@5.3.1)(openai@4.52.3)(playwright@1.45.1))
+        version: 0.2.5(langchain@0.2.12(@langchain/anthropic@0.2.12)(fast-xml-parser@4.4.0)(ignore@5.3.1)(openai@4.52.3)(playwright@1.45.1))
       '@types/fs-extra':
         specifier: ^11.0.4
         version: 11.0.4
@@ -42,8 +42,8 @@ importers:
         specifier: ^2.1.3
         version: 2.1.3
       '@types/node':
-        specifier: ^22.0.2
-        version: 22.0.2
+        specifier: ^22.1.0
+        version: 22.1.0
       '@types/shell-quote':
         specifier: ^1.7.5
         version: 1.7.5
@@ -61,7 +61,7 @@ importers:
         version: 2.31.1
       commitizen:
         specifier: ^4.3.0
-        version: 4.3.0(@types/node@22.0.2)(typescript@5.4.5)
+        version: 4.3.0(@types/node@22.1.0)(typescript@5.4.5)
       dotenv:
         specifier: ^16.4.5
         version: 16.4.5
@@ -104,6 +104,9 @@ importers:
       execa:
         specifier: ^9.3.0
         version: 9.3.0
+      form-data:
+        specifier: ^4.0.0
+        version: 4.0.0
       fs-extra:
         specifier: ^11.2.0
         version: 11.2.0
@@ -114,8 +117,8 @@ importers:
         specifier: ^3.0.0
         version: 3.0.0
       husky:
-        specifier: ^9.1.1
-        version: 9.1.1
+        specifier: ^9.1.4
+        version: 9.1.4
       ignore:
         specifier: ^5.3.1
         version: 5.3.1
@@ -124,16 +127,19 @@ importers:
         version: 9.3.4
       knip:
         specifier: ^5.27.0
-        version: 5.27.0(@types/node@22.0.2)(typescript@5.4.5)
+        version: 5.27.0(@types/node@22.1.0)(typescript@5.4.5)
       langchain:
         specifier: ^0.2.12
-        version: 0.2.12(@langchain/anthropic@0.2.11)(fast-xml-parser@4.4.0)(ignore@5.3.1)(openai@4.52.3)(playwright@1.45.1)
+        version: 0.2.12(@langchain/anthropic@0.2.12)(fast-xml-parser@4.4.0)(ignore@5.3.1)(openai@4.52.3)(playwright@1.45.1)
       lint-staged:
         specifier: ^15.2.7
-        version: 15.2.7
+        version: 15.2.8
       minimatch:
         specifier: ^9.0.5
         version: 9.0.5
+      node-fetch:
+        specifier: ^3.3.2
+        version: 3.3.2
       p-limit:
         specifier: ^6.1.0
         version: 6.1.0
@@ -150,8 +156,8 @@ importers:
         specifier: ^1.8.1
         version: 1.8.1
       tsup:
-        specifier: ^8.2.3
-        version: 8.2.3(jiti@1.21.6)(postcss@8.4.40)(tsx@4.16.3)(typescript@5.4.5)(yaml@2.4.5)
+        specifier: ^8.2.4
+        version: 8.2.4(jiti@1.21.6)(postcss@8.4.40)(tsx@4.16.3)(typescript@5.4.5)(yaml@2.5.0)
       typescript:
         specifier: 5.4.5
         version: 5.4.5
@@ -160,10 +166,10 @@ importers:
         version: 6.19.5
       vite:
         specifier: ^5.3.5
-        version: 5.3.5(@types/node@22.0.2)(less@4.2.0)
+        version: 5.3.5(@types/node@22.1.0)(less@4.2.0)
       vitest:
         specifier: ^2.0.5
-        version: 2.0.5(@types/node@22.0.2)(less@4.2.0)
+        version: 2.0.5(@types/node@22.1.0)(less@4.2.0)
       zod:
         specifier: ^3.23.8
         version: 3.23.8
@@ -187,8 +193,8 @@ importers:
         specifier: ^1.1.43
         version: 1.1.43
       '@nolebase/vitepress-plugin-inline-link-preview':
-        specifier: ^2.3.0
-        version: 2.3.0(@algolia/client-search@4.24.0)(@types/node@22.0.2)(postcss@8.4.40)(search-insights@2.15.0)(typescript@5.4.5)
+        specifier: ^2.4.0
+        version: 2.4.0(@algolia/client-search@4.24.0)(@types/node@22.1.0)(postcss@8.4.40)(search-insights@2.15.0)(typescript@5.4.5)
       '@unocss/preset-icons':
         specifier: ^0.61.9
         version: 0.61.9
@@ -206,10 +212,10 @@ importers:
         version: 4.0.0
       unocss:
         specifier: ^0.61.9
-        version: 0.61.9(postcss@8.4.40)(rollup@4.19.0)(vite@5.3.4(@types/node@22.0.2)(less@4.2.0))
+        version: 0.61.9(postcss@8.4.40)(rollup@4.19.0)(vite@5.3.4(@types/node@22.1.0)(less@4.2.0))
       vitepress:
         specifier: 1.3.1
-        version: 1.3.1(@algolia/client-search@4.24.0)(@types/node@22.0.2)(less@4.2.0)(postcss@8.4.40)(search-insights@2.15.0)(typescript@5.4.5)
+        version: 1.3.1(@algolia/client-search@4.24.0)(@types/node@22.1.0)(less@4.2.0)(postcss@8.4.40)(search-insights@2.15.0)(typescript@5.4.5)
       zod:
         specifier: 3.23.8
         version: 3.23.8
@@ -1194,12 +1200,12 @@ packages:
   '@jridgewell/trace-mapping@0.3.25':
     resolution: {integrity: sha512-vNk6aEwybGtawWmy/PzwnGDOjCkLWSD2wqvjGGAgOAwCGWySYXfYoxt00IJkTF+8Lb57DwOb3Aa0o9CApepiYQ==}
 
-  '@langchain/anthropic@0.2.11':
-    resolution: {integrity: sha512-NSKoxV+rZUp5F8BG9puMlls6R1VrPjETZhKQHlFRMuuasAykMDc68SfmbAreIdbJpzXSEJGhimLAZ9m94uj5cQ==}
+  '@langchain/anthropic@0.2.12':
+    resolution: {integrity: sha512-F74kgQiHHLMSc1CYB3wAPh6ou+ql8ExOqeOMe/NPwK8MuMqC6By/44lAtuV/hOSE/pUmQCNfJmnYwuwteXCXRA==}
     engines: {node: '>=18'}
 
-  '@langchain/core@0.2.18':
-    resolution: {integrity: sha512-ru542BwNcsnDfjTeDbIkFIchwa54ctHZR+kVrC8U9NPS9/36iM8p8ruprOV7Zccj/oxtLE5UpEhV+9MZhVcFlA==}
+  '@langchain/core@0.2.20':
+    resolution: {integrity: sha512-WPBjrzOj79/yqjloDUIw1GDhuRQfHis07TyyDj+qS81nHh0svSasetKcqAZ3L5JoPcBmEL7rRBtM+OcyC3mLVg==}
     engines: {node: '>=18'}
 
   '@langchain/openai@0.2.5':
@@ -1222,16 +1228,16 @@ packages:
     resolution: {integrity: sha512-oGB+UxlgWcgQkgwo8GcEGwemoTFt3FIO9ababBmaGwXIoBKZ+GTy0pP185beGg7Llih/NSHSV2XAs1lnznocSg==}
     engines: {node: '>= 8'}
 
-  '@nolebase/markdown-it-element-transform@2.3.0':
-    resolution: {integrity: sha512-BQtajtGezNMliwHj3MyTxtuHjd3ys5vyLdlzyvLi+AnlVflqyejOA09z1gFN8i2uDG/rIO0fzWxEvZ1Xr0CX5Q==}
+  '@nolebase/markdown-it-element-transform@2.4.0':
+    resolution: {integrity: sha512-/rcKdvKgy7HKEqSZGDPHUHsOW5QtBfzAYaFm8Qywohp7cwRCrkhCXICRtLjnJNn3ZEPAtOyKHn96pAWKZzEfTg==}
     peerDependencies:
       markdown-it: '>=14.0.0'
 
-  '@nolebase/ui@2.3.0':
-    resolution: {integrity: sha512-bRr4btjjKhmFfbFVzf545cXEu0i+Ggen/QoQOxrbakeuCW6tx9lHClXj4ssIcwjDqsGgx01DCeKpKasPRPCvdA==}
+  '@nolebase/ui@2.4.0':
+    resolution: {integrity: sha512-xkcPq6G1E94PStNQtBQnfDNHqMNRLJLpLNuQA85k8ZazHWu7MiUodrKFYObOkS7NRhQT0bH2jk/Vbi+vskJuZQ==}
 
-  '@nolebase/vitepress-plugin-inline-link-preview@2.3.0':
-    resolution: {integrity: sha512-egcXqJPC3ipBXnHXUaG6/wD0uzl0Kr1TmRqgKxB42rpfo+gM5GzL3KPvdsDiZntm/JYg4xRle1qfc54xyW2EHw==}
+  '@nolebase/vitepress-plugin-inline-link-preview@2.4.0':
+    resolution: {integrity: sha512-NpWHyCVzM+NtHE0WIrQcLpyN5uBtRKH3YlMqVN9jWyNCJrRzLr4c6CzPWOBIuOZ0gMWEQ4GwAvF8fjBrNfd7xg==}
 
   '@pkgjs/parseargs@0.11.0':
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
@@ -1473,8 +1479,8 @@ packages:
   '@types/node@18.19.39':
     resolution: {integrity: sha512-nPwTRDKUctxw3di5b4TfT3I0sWDiWoPQCZjXhvdkINntwr8lcoVCKsTgnXeRubKIlfnV+eN/HYk6Jb40tbcEAQ==}
 
-  '@types/node@22.0.2':
-    resolution: {integrity: sha512-yPL6DyFwY5PiMVEwymNeqUTKsDczQBJ/5T7W/46RwLU/VH+AA8aT5TZkvBviLKLbbm0hlfftEkGrNzfRk/fofQ==}
+  '@types/node@22.1.0':
+    resolution: {integrity: sha512-AOmuRF0R2/5j1knA3c6G3HOk523Ga+l+ZXltX8SF1+5oqcXijjfTd8fY3XRZqSihEu9XhtQnKYLmkFaoxgsJHw==}
 
   '@types/retry@0.12.0':
     resolution: {integrity: sha512-wWKOClTTiizcZhXnPY4wikVAwmdYHp8q6DmC+EJUzAMsycb7HB32Kh9RN4+0gExjmPmZSAQjgURXIGATPegAvA==}
@@ -1857,9 +1863,9 @@ packages:
     resolution: {integrity: sha512-5GFMVX8HqE/TB+FuBJGuO5XG0WrsA6ptUqoODaT/n9mmUaZFkqnBueB4leqGBCmrUHnCnC4PCZTCd0E7QQ83bA==}
     engines: {node: '>=12'}
 
-  ansi-escapes@6.2.1:
-    resolution: {integrity: sha512-4nJ3yixlEthEJ9Rk4vPcdBRkZvQZlYyu8j4/Mqz5sgIkddmEnH2Yj2ZrnP9S3tQOvSNRUIgVNF/1yPpRAGNRig==}
-    engines: {node: '>=14.16'}
+  ansi-escapes@7.0.0:
+    resolution: {integrity: sha512-GdYO7a61mR0fOlAsvC9/rIHf7L96sBc6dEWzeOu+KAea5bZyQRPIpojrVoI4AXGJS/ycu/fBTdLrUkA4ODrvjw==}
+    engines: {node: '>=18'}
 
   ansi-regex@5.0.1:
     resolution: {integrity: sha512-quJQXlTSUGL2LH9SUXo8VwsY4soanhgo6LNSm84E1LBcE8s3O0wpdiRzyR9z/ZZJMlMWv37qOOb9pdJlMUEKFQ==}
@@ -2088,9 +2094,9 @@ packages:
     resolution: {integrity: sha512-I/zHAwsKf9FqGoXM4WWRACob9+SNukZTd94DWF57E4toouRulbCxcUh6RKUEOQlYTHJnzkPMySvPNaaSLNfLZw==}
     engines: {node: '>=8'}
 
-  cli-cursor@4.0.0:
-    resolution: {integrity: sha512-VGtlMu3x/4DOtIUwEkRezxUZ2lBacNJCHash0N0WeZDBS+7Ux1dm3XWAgWYxLJFMMdOeXMHXorshEFhbMSGelg==}
-    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
+  cli-cursor@5.0.0:
+    resolution: {integrity: sha512-aCj4O5wKyszjMmDT4tZj93kxyydN/K5zPWSCe6/0AV/AA1pqe5ZBIw0a2ZfPQV7lL5/yb5HsUreJ6UFAF1tEQw==}
+    engines: {node: '>=18'}
 
   cli-spinners@2.9.2:
     resolution: {integrity: sha512-ywqV+5MmyL4E7ybXgKys4DugZbX0FC6LnwrhjuykIjnK9k8OQacQ7axGKnjDXWNhns0xot3bZI5h55H8yo9cJg==}
@@ -2248,6 +2254,10 @@ packages:
   dargs@8.1.0:
     resolution: {integrity: sha512-wAV9QHOsNbwnWdNW2FYvE1P56wtgSbM+3SZcdGiWQILwVjACCXDCI3Ai8QlCjMDB8YK5zySiXZYBiwGmNY3lnw==}
     engines: {node: '>=12'}
+
+  data-uri-to-buffer@4.0.1:
+    resolution: {integrity: sha512-0R9ikRb668HB7QDxT1vkpuUBtqc53YyAwMwGeUFKRojY/NWKvdZ+9UYtRfGmhqNbRkTSVpMbmyhXipFFv2cb/A==}
+    engines: {node: '>= 12'}
 
   data-view-buffer@1.0.1:
     resolution: {integrity: sha512-0lht7OugA5x3iJLOWFhWK/5ehONdprk0ISXqVFn/NFrDu+cuc8iADFrGQz5BnRK7LLU3JmkbXSxaqX+/mXYtUA==}
@@ -2439,6 +2449,10 @@ packages:
   env-paths@2.2.1:
     resolution: {integrity: sha512-+h1lkLKhZMTYjog1VEpJNG7NZJWcuc2DDk/qsqSTRRCOXiLjeQ1d1/udrUGhqMxUgAlwKNZ0cf2uqan5GLuS2A==}
     engines: {node: '>=6'}
+
+  environment@1.1.0:
+    resolution: {integrity: sha512-xUtoPkMggbz0MPyPiIWr1Kp4aeWJjDZ6SMvURhimjdZgsRuDplF5/s9hcgGhyXMhs+6vpnuoiZ2kFiu3FMnS8Q==}
+    engines: {node: '>=18'}
 
   errno@0.1.8:
     resolution: {integrity: sha512-dJ6oBr5SQ1VSd9qkk7ByRgb/1SH4JZjCHSW/mr63/QcXO9zLVxvJ6Oy13nio03rxpSnVDDjFor75SjVeZWPW/A==}
@@ -2715,6 +2729,10 @@ packages:
   fd-slicer@1.1.0:
     resolution: {integrity: sha512-cE1qsB/VwyQozZ+q1dGxR8LBYNZeofhEdUNGSMbQD3Gw2lAzX9Zb3uIU6Ebc/Fmyjo9AWWfnn0AUCHqtevs/8g==}
 
+  fetch-blob@3.2.0:
+    resolution: {integrity: sha512-7yAQpD2UMJzLi1Dqv7qFYnPbaPx7ZfFK6PiIxQ4PfkGPyNyl2Ugx+a/umUonmKqjhM4DnfbMvdX6otXq83soQQ==}
+    engines: {node: ^12.20 || >= 14.13}
+
   figures@3.2.0:
     resolution: {integrity: sha512-yaduQFRKLXYOGgEn6AZau90j3ggSOyiqXU0F9JZfeXYhNa+Jk4X+s45A2zg5jns87GAFa34BBm2kXw4XpNcbdg==}
     engines: {node: '>=8'}
@@ -2780,6 +2798,10 @@ packages:
   formdata-node@4.4.1:
     resolution: {integrity: sha512-0iirZp3uVDjVGt9p49aTaqjk84TrglENEDuqfdlZQ1roC9CWlPk6Avf8EEnZNcAqPonwkG35x4n3ww/1THYAeQ==}
     engines: {node: '>= 12.20'}
+
+  formdata-polyfill@4.0.10:
+    resolution: {integrity: sha512-buewHzMvYL29jdeQTVILecSaZKnt/RJWjoZCF5OW60Z67/GmSLBkOFM7qh1PI3zFNtJbaZL5eQu1vLfazOwj4g==}
+    engines: {node: '>=12.20.0'}
 
   fs-constants@1.0.0:
     resolution: {integrity: sha512-y6OAwoSIf7FyjMIv94u+b5rdheZEjzR63GTyZJm5qh4Bi+2YgwLCcI/fPFZkL5PSixOt6ZNKm+w+Hfp/Bciwow==}
@@ -3009,8 +3031,8 @@ packages:
   humanize-ms@1.2.1:
     resolution: {integrity: sha512-Fl70vYtsAFb/C06PTS9dZBo7ihau+Tu/DNCk/OyHhea07S+aeMWpFFkUaXRa8fI+ScZbEI8dfSxwY7gxZ9SAVQ==}
 
-  husky@9.1.1:
-    resolution: {integrity: sha512-fCqlqLXcBnXa/TJXmT93/A36tJsjdJkibQ1MuIiFyCCYUlpYpIaj2mv1w+3KR6Rzu1IC3slFTje5f6DUp2A2rg==}
+  husky@9.1.4:
+    resolution: {integrity: sha512-bho94YyReb4JV7LYWRWxZ/xr6TtOTt8cMfmQ39MQYJ7f/YE268s3GdghGwi+y4zAeqewE5zYLvuhV0M0ijsDEA==}
     engines: {node: '>=18'}
     hasBin: true
 
@@ -3536,7 +3558,7 @@ packages:
   langsmith@0.1.39:
     resolution: {integrity: sha512-K2/qbc96JhrZbSL74RbZ0DBOpTB9Mxicu8RQrZ88Xsp1bH2O3+y5EdcvC0g/1YzQWQhcQ4peknCA24c3VTNiNA==}
     peerDependencies:
-      '@langchain/core': 0.2.18
+      '@langchain/core': 0.2.20
       langchain: '*'
       openai: '*'
     peerDependenciesMeta:
@@ -3573,13 +3595,13 @@ packages:
   linkify-it@5.0.0:
     resolution: {integrity: sha512-5aHCbzQRADcdP+ATqnDuhhJ/MRIqDkZX5pyjFHRRysS8vZ5AbqGEoFIb6pYHPZ+L/OC2Lc+xT8uHVVR5CAK/wQ==}
 
-  lint-staged@15.2.7:
-    resolution: {integrity: sha512-+FdVbbCZ+yoh7E/RosSdqKJyUM2OEjTciH0TFNkawKgvFp1zbGlEC39RADg+xKBG1R4mhoH2j85myBQZ5wR+lw==}
+  lint-staged@15.2.8:
+    resolution: {integrity: sha512-PUWFf2zQzsd9EFU+kM1d7UP+AZDbKFKuj+9JNVTBkhUFhbg4MAt6WfyMMwBfM4lYqd4D2Jwac5iuTu9rVj4zCQ==}
     engines: {node: '>=18.12.0'}
     hasBin: true
 
-  listr2@8.2.3:
-    resolution: {integrity: sha512-Lllokma2mtoniUOS94CcOErHWAug5iu7HOmDrvWgpw8jyQH2fomgB+7lZS4HWZxytUuQwkGOwe49FvwVaA85Xw==}
+  listr2@8.2.4:
+    resolution: {integrity: sha512-opevsywziHd3zHCVQGAj8zu+Z3yHNkkoYhWIGnq54RrCVwLz0MozotJEDnKsIBLvkfLGN6BLOyAeRrYI0pKA4g==}
     engines: {node: '>=18.0.0'}
 
   load-tsconfig@0.2.5:
@@ -3656,8 +3678,8 @@ packages:
     resolution: {integrity: sha512-8XPvpAA8uyhfteu8pIvQxpJZ7SYYdpUivZpGy6sFsBuKRY/7rQGavedeB8aK+Zkyq6upMFVL/9AW6vOYzfRyLg==}
     engines: {node: '>=10'}
 
-  log-update@6.0.0:
-    resolution: {integrity: sha512-niTvB4gqvtof056rRIrTZvjNYE4rCUzO6X/X+kYjd7WFxXeJ0NwEFnRxX6ehkvv3jTwrXnNdtAak5XYZuIyPFw==}
+  log-update@6.1.0:
+    resolution: {integrity: sha512-9ie8ItPR6tjY5uYJh8K/Zrv/RMZ5VOlOWvtZdEHYSTFKZfIBPQa9tOAEeAWhd+AnIneLJ22w5fjOYtoutpWq5w==}
     engines: {node: '>=18'}
 
   longest@2.0.1:
@@ -3770,6 +3792,10 @@ packages:
   mimic-fn@4.0.0:
     resolution: {integrity: sha512-vqiC06CuhBTUdZH+RYl8sFrL096vA45Ok5ISO6sE/Mr1jRbGH4Csnhi8f3wKVl7x8mO4Au7Ir9D3Oyv1VYMFJw==}
     engines: {node: '>=12'}
+
+  mimic-function@5.0.1:
+    resolution: {integrity: sha512-VP79XUPxV2CigYP3jWwAUFSku2aKqBH7uTAapFWCBqutsbmDo96KY5o8uh6U+/YSIn5OxJnXp73beVkpqMIGhA==}
+    engines: {node: '>=18'}
 
   mimic-response@3.1.0:
     resolution: {integrity: sha512-z0yWI+4FDrrweS8Zmt4Ej5HdJmky15+L2e6Wgn3+iK5fWzb6T3fhNFq2+MeTRb064c6Wr4N/wv0DzQTjNzHNGQ==}
@@ -3886,6 +3912,10 @@ packages:
       encoding:
         optional: true
 
+  node-fetch@3.3.2:
+    resolution: {integrity: sha512-dRB78srN/l6gqWulah9SrxeYnxeddIG30+GOqK/9OlLVyLg3HPnr6SqOWTWOXKRwC2eGYCkZ59NNuSgvSrpgOA==}
+    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
+
   node-releases@2.0.14:
     resolution: {integrity: sha512-y10wOWt8yZpqXmOgRo77WaHEmhYQYGNA6y421PKsKYWEK8aW+cqAphborZDhqfyKrbZEN92CN1X2KbafY2s7Yw==}
 
@@ -3956,6 +3986,10 @@ packages:
   onetime@6.0.0:
     resolution: {integrity: sha512-1FlR+gjXK7X+AsAHso35MnyN5KqGwJRi/31ft6x0M194ht7S+rWAvd7PHss9xSKMzE0asv1pyIHaJYq+BbacAQ==}
     engines: {node: '>=12'}
+
+  onetime@7.0.0:
+    resolution: {integrity: sha512-VXJjc87FScF88uafS3JllDgvAm+c/Slfz06lorj2uAY34rlUu0Nt+v8wreiImcrgAjjIHp1rXpTDlLOGw29WwQ==}
+    engines: {node: '>=18'}
 
   open@8.4.2:
     resolution: {integrity: sha512-7x81NCL719oNbsq/3mh+hVrAWmFuEYUqrq/Iw3kUzH8ReypT9QQ0BLoJS7/G9k6N81XjW4qHWtjWwe/9eLy1EQ==}
@@ -4275,9 +4309,9 @@ packages:
     resolution: {integrity: sha512-l+sSefzHpj5qimhFSE5a8nufZYAM3sBSVMAPtYkmC+4EH2anSGaEMXSD0izRQbu9nfyQ9y5JrVmp7E8oZrUjvA==}
     engines: {node: '>=8'}
 
-  restore-cursor@4.0.0:
-    resolution: {integrity: sha512-I9fPXU9geO9bHOt9pHHOhOkYerIMsmVaWB0rA2AI9ERh/+x/i7MV5HKBNrg+ljO5eoPVgCcnFuRjJ9uH6I/3eg==}
-    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
+  restore-cursor@5.1.0:
+    resolution: {integrity: sha512-oMA2dcrw6u0YfxJQXm342bFKX/E4sG9rbTzO9ptUcR/e8A33cHuvStiYOwH7fszkZlZ1z/ta9AAoPk2F4qIOHA==}
+    engines: {node: '>=18'}
 
   retry@0.13.1:
     resolution: {integrity: sha512-XQBQ3I8W1Cge0Seh+6gjj03LbmRFWuoszgK9ooCpwYIrhhoO80pfq4cUkU5DkknwfOfFteRwlZ56PYOGYyFWdg==}
@@ -4669,8 +4703,8 @@ packages:
   tslib@2.6.2:
     resolution: {integrity: sha512-AEYxH93jGFPn/a2iVAwW87VuUIkR1FVUKB77NwMF7nBTDkDrrT/Hpt/IrCJ0QXhW27jTBDcf5ZY7w6RiqTMw2Q==}
 
-  tsup@8.2.3:
-    resolution: {integrity: sha512-6YNT44oUfXRbZuSMNmN36GzwPPIlD2wBccY7looM2fkTcxkf2NEmwr3OZuDZoySklnrIG4hoEtzy8yUXYOqNcg==}
+  tsup@8.2.4:
+    resolution: {integrity: sha512-akpCPePnBnC/CXgRrcy72ZSntgIEUa1jN0oJbbvpALWKNOz1B7aM+UVDWGRGIO/T/PZugAESWDJUAb5FD48o8Q==}
     engines: {node: '>=18'}
     hasBin: true
     peerDependencies:
@@ -4770,8 +4804,8 @@ packages:
   undici-types@5.26.5:
     resolution: {integrity: sha512-JlCMO+ehdEIKqlFxk6IfVoAUVmgz7cU7zD/h9XZ0qzeosSHmUJVOzSQvvYSYWXkFXC+IfLKSIffhv0sVZup6pA==}
 
-  undici-types@6.11.1:
-    resolution: {integrity: sha512-mIDEX2ek50x0OlRgxryxsenE5XaQD4on5U2inY7RApK3SOJpofyw7uW2AyfMKkhAxXIceo2DeWGVGwyvng1GNQ==}
+  undici-types@6.13.0:
+    resolution: {integrity: sha512-xtFJHudx8S2DSoujjMd1WeWvn7KKWFRESZTMeL1RptAYERu29D6jphMjjY+vn96jvN3kVPDNxU/E13VTaXj6jg==}
 
   undici@6.19.5:
     resolution: {integrity: sha512-LryC15SWzqQsREHIOUybavaIHF5IoL0dJ9aWWxL/PgT1KfqAW5225FZpDUFlt9xiDMS2/S7DOKhFWA7RLksWdg==}
@@ -5049,6 +5083,11 @@ packages:
 
   yaml@2.4.5:
     resolution: {integrity: sha512-aBx2bnqDzVOyNKfsysjA2ms5ZlnjSAW2eG3/L5G/CSujfjLJTJsEw1bGw8kCf04KodQWk1pxlGnZ56CRxiawmg==}
+    engines: {node: '>= 14'}
+    hasBin: true
+
+  yaml@2.5.0:
+    resolution: {integrity: sha512-2wWLbGbYDiSqqIKoPjar3MPgB94ErzCtrNE1FdqGuaO0pi2JGjmE8aW8TDZwzU7vuxcGRdL/4gPQwQ7hD5AMSw==}
     engines: {node: '>= 14'}
     hasBin: true
 
@@ -5684,11 +5723,11 @@ snapshots:
       '@babel/helper-validator-identifier': 7.24.7
       to-fast-properties: 2.0.0
 
-  '@commitlint/cli@19.3.0(@types/node@22.0.2)(typescript@5.4.5)':
+  '@commitlint/cli@19.3.0(@types/node@22.1.0)(typescript@5.4.5)':
     dependencies:
       '@commitlint/format': 19.3.0
       '@commitlint/lint': 19.2.2
-      '@commitlint/load': 19.2.0(@types/node@22.0.2)(typescript@5.4.5)
+      '@commitlint/load': 19.2.0(@types/node@22.1.0)(typescript@5.4.5)
       '@commitlint/read': 19.2.1
       '@commitlint/types': 19.0.3
       execa: 8.0.1
@@ -5707,13 +5746,13 @@ snapshots:
       '@commitlint/types': 19.0.3
       ajv: 8.16.0
 
-  '@commitlint/cz-commitlint@19.2.0(@types/node@22.0.2)(commitizen@4.3.0(@types/node@22.0.2)(typescript@5.4.5))(inquirer@9.3.4)(typescript@5.4.5)':
+  '@commitlint/cz-commitlint@19.2.0(@types/node@22.1.0)(commitizen@4.3.0(@types/node@22.1.0)(typescript@5.4.5))(inquirer@9.3.4)(typescript@5.4.5)':
     dependencies:
       '@commitlint/ensure': 19.0.3
-      '@commitlint/load': 19.2.0(@types/node@22.0.2)(typescript@5.4.5)
+      '@commitlint/load': 19.2.0(@types/node@22.1.0)(typescript@5.4.5)
       '@commitlint/types': 19.0.3
       chalk: 5.3.0
-      commitizen: 4.3.0(@types/node@22.0.2)(typescript@5.4.5)
+      commitizen: 4.3.0(@types/node@22.1.0)(typescript@5.4.5)
       inquirer: 9.3.4
       lodash.isplainobject: 4.0.6
       word-wrap: 1.2.5
@@ -5749,7 +5788,7 @@ snapshots:
       '@commitlint/rules': 19.0.3
       '@commitlint/types': 19.0.3
 
-  '@commitlint/load@19.2.0(@types/node@22.0.2)(typescript@5.4.5)':
+  '@commitlint/load@19.2.0(@types/node@22.1.0)(typescript@5.4.5)':
     dependencies:
       '@commitlint/config-validator': 19.0.3
       '@commitlint/execute-rule': 19.0.0
@@ -5757,7 +5796,7 @@ snapshots:
       '@commitlint/types': 19.0.3
       chalk: 5.3.0
       cosmiconfig: 9.0.0(typescript@5.4.5)
-      cosmiconfig-typescript-loader: 5.0.0(@types/node@22.0.2)(cosmiconfig@9.0.0(typescript@5.4.5))(typescript@5.4.5)
+      cosmiconfig-typescript-loader: 5.0.0(@types/node@22.1.0)(cosmiconfig@9.0.0(typescript@5.4.5))(typescript@5.4.5)
       lodash.isplainobject: 4.0.6
       lodash.merge: 4.6.2
       lodash.uniq: 4.5.0
@@ -6160,10 +6199,10 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.1
       '@jridgewell/sourcemap-codec': 1.4.15
 
-  '@langchain/anthropic@0.2.11(langchain@0.2.12)(openai@4.52.3)':
+  '@langchain/anthropic@0.2.12(langchain@0.2.12)(openai@4.52.3)':
     dependencies:
       '@anthropic-ai/sdk': 0.22.0
-      '@langchain/core': 0.2.18(langchain@0.2.12(@langchain/anthropic@0.2.11)(fast-xml-parser@4.4.0)(ignore@5.3.1)(openai@4.52.3)(playwright@1.45.1))(openai@4.52.3)
+      '@langchain/core': 0.2.20(langchain@0.2.12(@langchain/anthropic@0.2.12)(fast-xml-parser@4.4.0)(ignore@5.3.1)(openai@4.52.3)(playwright@1.45.1))(openai@4.52.3)
       fast-xml-parser: 4.4.0
       zod: 3.23.8
       zod-to-json-schema: 3.22.5(zod@3.23.8)
@@ -6172,14 +6211,13 @@ snapshots:
       - langchain
       - openai
 
-  '@langchain/core@0.2.18(langchain@0.2.12(@langchain/anthropic@0.2.11)(fast-xml-parser@4.4.0)(ignore@5.3.1)(openai@4.52.3)(playwright@1.45.1))(openai@4.52.3)':
+  '@langchain/core@0.2.20(langchain@0.2.12(@langchain/anthropic@0.2.12)(fast-xml-parser@4.4.0)(ignore@5.3.1)(openai@4.52.3)(playwright@1.45.1))(openai@4.52.3)':
     dependencies:
       ansi-styles: 5.2.0
       camelcase: 6.3.0
       decamelize: 1.2.0
       js-tiktoken: 1.0.12
-      langsmith: 0.1.39(@langchain/core@0.2.18(langchain@0.2.12(@langchain/anthropic@0.2.11)(fast-xml-parser@4.4.0)(ignore@5.3.1)(openai@4.52.3)(playwright@1.45.1))(openai@4.52.3))(langchain@0.2.12(@langchain/anthropic@0.2.11)(fast-xml-parser@4.4.0)(ignore@5.3.1)(openai@4.52.3)(playwright@1.45.1))(openai@4.52.3)
-      ml-distance: 4.0.1
+      langsmith: 0.1.39(@langchain/core@0.2.20(langchain@0.2.12(@langchain/anthropic@0.2.12)(fast-xml-parser@4.4.0)(ignore@5.3.1)(openai@4.52.3)(playwright@1.45.1))(openai@4.52.3))(langchain@0.2.12(@langchain/anthropic@0.2.12)(fast-xml-parser@4.4.0)(ignore@5.3.1)(openai@4.52.3)(playwright@1.45.1))(openai@4.52.3)
       mustache: 4.2.0
       p-queue: 6.6.2
       p-retry: 4.6.2
@@ -6190,9 +6228,9 @@ snapshots:
       - langchain
       - openai
 
-  '@langchain/openai@0.2.5(langchain@0.2.12(@langchain/anthropic@0.2.11)(fast-xml-parser@4.4.0)(ignore@5.3.1)(openai@4.52.3)(playwright@1.45.1))':
+  '@langchain/openai@0.2.5(langchain@0.2.12(@langchain/anthropic@0.2.12)(fast-xml-parser@4.4.0)(ignore@5.3.1)(openai@4.52.3)(playwright@1.45.1))':
     dependencies:
-      '@langchain/core': 0.2.18(langchain@0.2.12(@langchain/anthropic@0.2.11)(fast-xml-parser@4.4.0)(ignore@5.3.1)(openai@4.52.3)(playwright@1.45.1))(openai@4.52.3)
+      '@langchain/core': 0.2.20(langchain@0.2.12(@langchain/anthropic@0.2.12)(fast-xml-parser@4.4.0)(ignore@5.3.1)(openai@4.52.3)(playwright@1.45.1))(openai@4.52.3)
       js-tiktoken: 1.0.12
       openai: 4.52.3
       zod: 3.23.8
@@ -6201,9 +6239,9 @@ snapshots:
       - encoding
       - langchain
 
-  '@langchain/textsplitters@0.0.3(langchain@0.2.12(@langchain/anthropic@0.2.11)(fast-xml-parser@4.4.0)(ignore@5.3.1)(openai@4.52.3)(playwright@1.45.1))(openai@4.52.3)':
+  '@langchain/textsplitters@0.0.3(langchain@0.2.12(@langchain/anthropic@0.2.12)(fast-xml-parser@4.4.0)(ignore@5.3.1)(openai@4.52.3)(playwright@1.45.1))(openai@4.52.3)':
     dependencies:
-      '@langchain/core': 0.2.18(langchain@0.2.12(@langchain/anthropic@0.2.11)(fast-xml-parser@4.4.0)(ignore@5.3.1)(openai@4.52.3)(playwright@1.45.1))(openai@4.52.3)
+      '@langchain/core': 0.2.20(langchain@0.2.12(@langchain/anthropic@0.2.12)(fast-xml-parser@4.4.0)(ignore@5.3.1)(openai@4.52.3)(playwright@1.45.1))(openai@4.52.3)
       js-tiktoken: 1.0.12
     transitivePeerDependencies:
       - langchain
@@ -6221,15 +6259,15 @@ snapshots:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.15.0
 
-  '@nolebase/markdown-it-element-transform@2.3.0(markdown-it@14.1.0)':
+  '@nolebase/markdown-it-element-transform@2.4.0(markdown-it@14.1.0)':
     dependencies:
       markdown-it: 14.1.0
 
-  '@nolebase/ui@2.3.0(@algolia/client-search@4.24.0)(@types/node@22.0.2)(postcss@8.4.40)(search-insights@2.15.0)(typescript@5.4.5)':
+  '@nolebase/ui@2.4.0(@algolia/client-search@4.24.0)(@types/node@22.1.0)(postcss@8.4.40)(search-insights@2.15.0)(typescript@5.4.5)':
     dependencies:
       '@iconify-json/octicon': 1.1.56
       less: 4.2.0
-      vitepress: 1.3.1(@algolia/client-search@4.24.0)(@types/node@22.0.2)(less@4.2.0)(postcss@8.4.40)(search-insights@2.15.0)(typescript@5.4.5)
+      vitepress: 1.3.1(@algolia/client-search@4.24.0)(@types/node@22.1.0)(less@4.2.0)(postcss@8.4.40)(search-insights@2.15.0)(typescript@5.4.5)
       vue: 3.4.35(typescript@5.4.5)
     transitivePeerDependencies:
       - '@algolia/client-search'
@@ -6259,17 +6297,17 @@ snapshots:
       - typescript
       - universal-cookie
 
-  '@nolebase/vitepress-plugin-inline-link-preview@2.3.0(@algolia/client-search@4.24.0)(@types/node@22.0.2)(postcss@8.4.40)(search-insights@2.15.0)(typescript@5.4.5)':
+  '@nolebase/vitepress-plugin-inline-link-preview@2.4.0(@algolia/client-search@4.24.0)(@types/node@22.1.0)(postcss@8.4.40)(search-insights@2.15.0)(typescript@5.4.5)':
     dependencies:
       '@iconify-json/icon-park-outline': 1.1.15
       '@iconify-json/octicon': 1.1.56
       '@iconify-json/svg-spinners': 1.1.2
-      '@nolebase/markdown-it-element-transform': 2.3.0(markdown-it@14.1.0)
-      '@nolebase/ui': 2.3.0(@algolia/client-search@4.24.0)(@types/node@22.0.2)(postcss@8.4.40)(search-insights@2.15.0)(typescript@5.4.5)
+      '@nolebase/markdown-it-element-transform': 2.4.0(markdown-it@14.1.0)
+      '@nolebase/ui': 2.4.0(@algolia/client-search@4.24.0)(@types/node@22.1.0)(postcss@8.4.40)(search-insights@2.15.0)(typescript@5.4.5)
       less: 4.2.0
       markdown-it: 14.1.0
       markdown-it-attrs: 4.1.6(markdown-it@14.1.0)
-      vitepress: 1.3.1(@algolia/client-search@4.24.0)(@types/node@22.0.2)(less@4.2.0)(postcss@8.4.40)(search-insights@2.15.0)(typescript@5.4.5)
+      vitepress: 1.3.1(@algolia/client-search@4.24.0)(@types/node@22.1.0)(less@4.2.0)(postcss@8.4.40)(search-insights@2.15.0)(typescript@5.4.5)
     transitivePeerDependencies:
       - '@algolia/client-search'
       - '@types/node'
@@ -6429,7 +6467,7 @@ snapshots:
 
   '@types/conventional-commits-parser@5.0.0':
     dependencies:
-      '@types/node': 22.0.2
+      '@types/node': 22.1.0
 
   '@types/eslint@8.56.10':
     dependencies:
@@ -6442,7 +6480,7 @@ snapshots:
   '@types/fs-extra@11.0.4':
     dependencies:
       '@types/jsonfile': 6.1.4
-      '@types/node': 22.0.2
+      '@types/node': 22.1.0
 
   '@types/global-agent@2.1.3': {}
 
@@ -6457,7 +6495,7 @@ snapshots:
 
   '@types/jsonfile@6.1.4':
     dependencies:
-      '@types/node': 22.0.2
+      '@types/node': 22.1.0
 
   '@types/linkify-it@5.0.0': {}
 
@@ -6470,16 +6508,16 @@ snapshots:
 
   '@types/node-fetch@2.6.11':
     dependencies:
-      '@types/node': 22.0.2
+      '@types/node': 22.1.0
       form-data: 4.0.0
 
   '@types/node@18.19.39':
     dependencies:
       undici-types: 5.26.5
 
-  '@types/node@22.0.2':
+  '@types/node@22.1.0':
     dependencies:
-      undici-types: 6.11.1
+      undici-types: 6.13.0
 
   '@types/retry@0.12.0': {}
 
@@ -6576,13 +6614,13 @@ snapshots:
 
   '@ungap/structured-clone@1.2.0': {}
 
-  '@unocss/astro@0.61.9(rollup@4.19.0)(vite@5.3.4(@types/node@22.0.2)(less@4.2.0))':
+  '@unocss/astro@0.61.9(rollup@4.19.0)(vite@5.3.4(@types/node@22.1.0)(less@4.2.0))':
     dependencies:
       '@unocss/core': 0.61.9
       '@unocss/reset': 0.61.9
-      '@unocss/vite': 0.61.9(rollup@4.19.0)(vite@5.3.4(@types/node@22.0.2)(less@4.2.0))
+      '@unocss/vite': 0.61.9(rollup@4.19.0)(vite@5.3.4(@types/node@22.1.0)(less@4.2.0))
     optionalDependencies:
-      vite: 5.3.4(@types/node@22.0.2)(less@4.2.0)
+      vite: 5.3.4(@types/node@22.1.0)(less@4.2.0)
     transitivePeerDependencies:
       - rollup
       - supports-color
@@ -6719,7 +6757,7 @@ snapshots:
     dependencies:
       '@unocss/core': 0.61.9
 
-  '@unocss/vite@0.61.9(rollup@4.19.0)(vite@5.3.4(@types/node@22.0.2)(less@4.2.0))':
+  '@unocss/vite@0.61.9(rollup@4.19.0)(vite@5.3.4(@types/node@22.1.0)(less@4.2.0))':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@rollup/pluginutils': 5.1.0(rollup@4.19.0)
@@ -6731,14 +6769,14 @@ snapshots:
       chokidar: 3.6.0
       fast-glob: 3.3.2
       magic-string: 0.30.11
-      vite: 5.3.4(@types/node@22.0.2)(less@4.2.0)
+      vite: 5.3.4(@types/node@22.1.0)(less@4.2.0)
     transitivePeerDependencies:
       - rollup
       - supports-color
 
-  '@vitejs/plugin-vue@5.0.5(vite@5.3.4(@types/node@22.0.2)(less@4.2.0))(vue@3.4.35(typescript@5.4.5))':
+  '@vitejs/plugin-vue@5.0.5(vite@5.3.4(@types/node@22.1.0)(less@4.2.0))(vue@3.4.35(typescript@5.4.5))':
     dependencies:
-      vite: 5.3.4(@types/node@22.0.2)(less@4.2.0)
+      vite: 5.3.4(@types/node@22.1.0)(less@4.2.0)
       vue: 3.4.35(typescript@5.4.5)
 
   '@vitest/expect@2.0.5':
@@ -7018,7 +7056,9 @@ snapshots:
     dependencies:
       type-fest: 1.4.0
 
-  ansi-escapes@6.2.1: {}
+  ansi-escapes@7.0.0:
+    dependencies:
+      environment: 1.1.0
 
   ansi-regex@5.0.1: {}
 
@@ -7272,9 +7312,9 @@ snapshots:
     dependencies:
       restore-cursor: 3.1.0
 
-  cli-cursor@4.0.0:
+  cli-cursor@5.0.0:
     dependencies:
-      restore-cursor: 4.0.0
+      restore-cursor: 5.1.0
 
   cli-spinners@2.9.2: {}
 
@@ -7323,10 +7363,10 @@ snapshots:
 
   commander@6.2.1: {}
 
-  commitizen@4.3.0(@types/node@22.0.2)(typescript@5.4.5):
+  commitizen@4.3.0(@types/node@22.1.0)(typescript@5.4.5):
     dependencies:
       cachedir: 2.3.0
-      cz-conventional-changelog: 3.3.0(@types/node@22.0.2)(typescript@5.4.5)
+      cz-conventional-changelog: 3.3.0(@types/node@22.1.0)(typescript@5.4.5)
       dedent: 0.7.0
       detect-indent: 6.1.0
       find-node-modules: 2.1.3
@@ -7385,9 +7425,9 @@ snapshots:
 
   core-js@3.37.1: {}
 
-  cosmiconfig-typescript-loader@5.0.0(@types/node@22.0.2)(cosmiconfig@9.0.0(typescript@5.4.5))(typescript@5.4.5):
+  cosmiconfig-typescript-loader@5.0.0(@types/node@22.1.0)(cosmiconfig@9.0.0(typescript@5.4.5))(typescript@5.4.5):
     dependencies:
-      '@types/node': 22.0.2
+      '@types/node': 22.1.0
       cosmiconfig: 9.0.0(typescript@5.4.5)
       jiti: 1.21.6
       typescript: 5.4.5
@@ -7424,21 +7464,23 @@ snapshots:
 
   csstype@3.1.3: {}
 
-  cz-conventional-changelog@3.3.0(@types/node@22.0.2)(typescript@5.4.5):
+  cz-conventional-changelog@3.3.0(@types/node@22.1.0)(typescript@5.4.5):
     dependencies:
       chalk: 2.4.2
-      commitizen: 4.3.0(@types/node@22.0.2)(typescript@5.4.5)
+      commitizen: 4.3.0(@types/node@22.1.0)(typescript@5.4.5)
       conventional-commit-types: 3.0.0
       lodash.map: 4.6.0
       longest: 2.0.1
       word-wrap: 1.2.5
     optionalDependencies:
-      '@commitlint/load': 19.2.0(@types/node@22.0.2)(typescript@5.4.5)
+      '@commitlint/load': 19.2.0(@types/node@22.1.0)(typescript@5.4.5)
     transitivePeerDependencies:
       - '@types/node'
       - typescript
 
   dargs@8.1.0: {}
+
+  data-uri-to-buffer@4.0.1: {}
 
   data-view-buffer@1.0.1:
     dependencies:
@@ -7604,6 +7646,8 @@ snapshots:
   entities@4.5.0: {}
 
   env-paths@2.2.1: {}
+
+  environment@1.1.0: {}
 
   errno@0.1.8:
     dependencies:
@@ -8059,6 +8103,11 @@ snapshots:
     dependencies:
       pend: 1.2.0
 
+  fetch-blob@3.2.0:
+    dependencies:
+      node-domexception: 1.0.0
+      web-streams-polyfill: 3.3.3
+
   figures@3.2.0:
     dependencies:
       escape-string-regexp: 1.0.5
@@ -8101,7 +8150,7 @@ snapshots:
     dependencies:
       detect-file: 1.0.0
       is-glob: 4.0.3
-      micromatch: 4.0.5
+      micromatch: 4.0.7
       resolve-dir: 1.0.1
 
   flat-cache@3.2.0:
@@ -8137,6 +8186,10 @@ snapshots:
     dependencies:
       node-domexception: 1.0.0
       web-streams-polyfill: 4.0.0-beta.3
+
+  formdata-polyfill@4.0.10:
+    dependencies:
+      fetch-blob: 3.2.0
 
   fs-constants@1.0.0:
     optional: true
@@ -8391,7 +8444,7 @@ snapshots:
     dependencies:
       ms: 2.1.3
 
-  husky@9.1.1: {}
+  husky@9.1.4: {}
 
   iconv-lite@0.4.24:
     dependencies:
@@ -8711,11 +8764,11 @@ snapshots:
     dependencies:
       json-buffer: 3.0.1
 
-  knip@5.27.0(@types/node@22.0.2)(typescript@5.4.5):
+  knip@5.27.0(@types/node@22.1.0)(typescript@5.4.5):
     dependencies:
       '@nodelib/fs.walk': 1.2.8
       '@snyk/github-codeowners': 1.1.0
-      '@types/node': 22.0.2
+      '@types/node': 22.1.0
       easy-table: 1.2.0
       fast-glob: 3.3.2
       jiti: 1.21.6
@@ -8734,17 +8787,17 @@ snapshots:
 
   kolorist@1.8.0: {}
 
-  langchain@0.2.12(@langchain/anthropic@0.2.11)(fast-xml-parser@4.4.0)(ignore@5.3.1)(openai@4.52.3)(playwright@1.45.1):
+  langchain@0.2.12(@langchain/anthropic@0.2.12)(fast-xml-parser@4.4.0)(ignore@5.3.1)(openai@4.52.3)(playwright@1.45.1):
     dependencies:
-      '@langchain/core': 0.2.18(langchain@0.2.12(@langchain/anthropic@0.2.11)(fast-xml-parser@4.4.0)(ignore@5.3.1)(openai@4.52.3)(playwright@1.45.1))(openai@4.52.3)
-      '@langchain/openai': 0.2.5(langchain@0.2.12(@langchain/anthropic@0.2.11)(fast-xml-parser@4.4.0)(ignore@5.3.1)(openai@4.52.3)(playwright@1.45.1))
-      '@langchain/textsplitters': 0.0.3(langchain@0.2.12(@langchain/anthropic@0.2.11)(fast-xml-parser@4.4.0)(ignore@5.3.1)(openai@4.52.3)(playwright@1.45.1))(openai@4.52.3)
+      '@langchain/core': 0.2.20(langchain@0.2.12(@langchain/anthropic@0.2.12)(fast-xml-parser@4.4.0)(ignore@5.3.1)(openai@4.52.3)(playwright@1.45.1))(openai@4.52.3)
+      '@langchain/openai': 0.2.5(langchain@0.2.12(@langchain/anthropic@0.2.12)(fast-xml-parser@4.4.0)(ignore@5.3.1)(openai@4.52.3)(playwright@1.45.1))
+      '@langchain/textsplitters': 0.0.3(langchain@0.2.12(@langchain/anthropic@0.2.12)(fast-xml-parser@4.4.0)(ignore@5.3.1)(openai@4.52.3)(playwright@1.45.1))(openai@4.52.3)
       binary-extensions: 2.2.0
       js-tiktoken: 1.0.12
       js-yaml: 4.1.0
       jsonpointer: 5.0.1
       langchainhub: 0.0.11
-      langsmith: 0.1.39(@langchain/core@0.2.18(langchain@0.2.12(@langchain/anthropic@0.2.11)(fast-xml-parser@4.4.0)(ignore@5.3.1)(openai@4.52.3)(playwright@1.45.1))(openai@4.52.3))(langchain@0.2.12(@langchain/anthropic@0.2.11)(fast-xml-parser@4.4.0)(ignore@5.3.1)(openai@4.52.3)(playwright@1.45.1))(openai@4.52.3)
+      langsmith: 0.1.39(@langchain/core@0.2.20(langchain@0.2.12(@langchain/anthropic@0.2.12)(fast-xml-parser@4.4.0)(ignore@5.3.1)(openai@4.52.3)(playwright@1.45.1))(openai@4.52.3))(langchain@0.2.12(@langchain/anthropic@0.2.12)(fast-xml-parser@4.4.0)(ignore@5.3.1)(openai@4.52.3)(playwright@1.45.1))(openai@4.52.3)
       ml-distance: 4.0.1
       openapi-types: 12.1.3
       p-retry: 4.6.2
@@ -8753,7 +8806,7 @@ snapshots:
       zod: 3.23.8
       zod-to-json-schema: 3.22.5(zod@3.23.8)
     optionalDependencies:
-      '@langchain/anthropic': 0.2.11(langchain@0.2.12)(openai@4.52.3)
+      '@langchain/anthropic': 0.2.12(langchain@0.2.12)(openai@4.52.3)
       fast-xml-parser: 4.4.0
       ignore: 5.3.1
       playwright: 1.45.1
@@ -8763,7 +8816,7 @@ snapshots:
 
   langchainhub@0.0.11: {}
 
-  langsmith@0.1.39(@langchain/core@0.2.18(langchain@0.2.12(@langchain/anthropic@0.2.11)(fast-xml-parser@4.4.0)(ignore@5.3.1)(openai@4.52.3)(playwright@1.45.1))(openai@4.52.3))(langchain@0.2.12(@langchain/anthropic@0.2.11)(fast-xml-parser@4.4.0)(ignore@5.3.1)(openai@4.52.3)(playwright@1.45.1))(openai@4.52.3):
+  langsmith@0.1.39(@langchain/core@0.2.20(langchain@0.2.12(@langchain/anthropic@0.2.12)(fast-xml-parser@4.4.0)(ignore@5.3.1)(openai@4.52.3)(playwright@1.45.1))(openai@4.52.3))(langchain@0.2.12(@langchain/anthropic@0.2.12)(fast-xml-parser@4.4.0)(ignore@5.3.1)(openai@4.52.3)(playwright@1.45.1))(openai@4.52.3):
     dependencies:
       '@types/uuid': 9.0.8
       commander: 10.0.1
@@ -8771,8 +8824,8 @@ snapshots:
       p-retry: 4.6.2
       uuid: 9.0.1
     optionalDependencies:
-      '@langchain/core': 0.2.18(langchain@0.2.12(@langchain/anthropic@0.2.11)(fast-xml-parser@4.4.0)(ignore@5.3.1)(openai@4.52.3)(playwright@1.45.1))(openai@4.52.3)
-      langchain: 0.2.12(@langchain/anthropic@0.2.11)(fast-xml-parser@4.4.0)(ignore@5.3.1)(openai@4.52.3)(playwright@1.45.1)
+      '@langchain/core': 0.2.20(langchain@0.2.12(@langchain/anthropic@0.2.12)(fast-xml-parser@4.4.0)(ignore@5.3.1)(openai@4.52.3)(playwright@1.45.1))(openai@4.52.3)
+      langchain: 0.2.12(@langchain/anthropic@0.2.12)(fast-xml-parser@4.4.0)(ignore@5.3.1)(openai@4.52.3)(playwright@1.45.1)
       openai: 4.52.3
 
   less@4.2.0:
@@ -8808,27 +8861,27 @@ snapshots:
     dependencies:
       uc.micro: 2.1.0
 
-  lint-staged@15.2.7:
+  lint-staged@15.2.8:
     dependencies:
       chalk: 5.3.0
       commander: 12.1.0
-      debug: 4.3.4
+      debug: 4.3.6
       execa: 8.0.1
       lilconfig: 3.1.2
-      listr2: 8.2.3
+      listr2: 8.2.4
       micromatch: 4.0.7
       pidtree: 0.6.0
       string-argv: 0.3.2
-      yaml: 2.4.5
+      yaml: 2.5.0
     transitivePeerDependencies:
       - supports-color
 
-  listr2@8.2.3:
+  listr2@8.2.4:
     dependencies:
       cli-truncate: 4.0.0
       colorette: 2.0.20
       eventemitter3: 5.0.1
-      log-update: 6.0.0
+      log-update: 6.1.0
       rfdc: 1.4.1
       wrap-ansi: 9.0.0
 
@@ -8888,10 +8941,10 @@ snapshots:
       chalk: 4.1.2
       is-unicode-supported: 0.1.0
 
-  log-update@6.0.0:
+  log-update@6.1.0:
     dependencies:
-      ansi-escapes: 6.2.1
-      cli-cursor: 4.0.0
+      ansi-escapes: 7.0.0
+      cli-cursor: 5.0.0
       slice-ansi: 7.1.0
       strip-ansi: 7.1.0
       wrap-ansi: 9.0.0
@@ -8994,6 +9047,8 @@ snapshots:
   mimic-fn@2.1.0: {}
 
   mimic-fn@4.0.0: {}
+
+  mimic-function@5.0.1: {}
 
   mimic-response@3.1.0:
     optional: true
@@ -9098,6 +9153,12 @@ snapshots:
     dependencies:
       whatwg-url: 5.0.0
 
+  node-fetch@3.3.2:
+    dependencies:
+      data-uri-to-buffer: 4.0.1
+      fetch-blob: 3.2.0
+      formdata-polyfill: 4.0.10
+
   node-releases@2.0.14: {}
 
   normalize-path@3.0.0: {}
@@ -9175,6 +9236,10 @@ snapshots:
   onetime@6.0.0:
     dependencies:
       mimic-fn: 4.0.0
+
+  onetime@7.0.0:
+    dependencies:
+      mimic-function: 5.0.1
 
   open@8.4.2:
     dependencies:
@@ -9357,14 +9422,14 @@ snapshots:
 
   possible-typed-array-names@1.0.0: {}
 
-  postcss-load-config@6.0.1(jiti@1.21.6)(postcss@8.4.40)(tsx@4.16.3)(yaml@2.4.5):
+  postcss-load-config@6.0.1(jiti@1.21.6)(postcss@8.4.40)(tsx@4.16.3)(yaml@2.5.0):
     dependencies:
       lilconfig: 3.1.2
     optionalDependencies:
       jiti: 1.21.6
       postcss: 8.4.40
       tsx: 4.16.3
-      yaml: 2.4.5
+      yaml: 2.5.0
 
   postcss@8.4.39:
     dependencies:
@@ -9486,10 +9551,10 @@ snapshots:
       onetime: 5.1.2
       signal-exit: 3.0.7
 
-  restore-cursor@4.0.0:
+  restore-cursor@5.1.0:
     dependencies:
-      onetime: 5.1.2
-      signal-exit: 3.0.7
+      onetime: 7.0.0
+      signal-exit: 4.1.0
 
   retry@0.13.1: {}
 
@@ -9898,19 +9963,19 @@ snapshots:
 
   tslib@2.6.2: {}
 
-  tsup@8.2.3(jiti@1.21.6)(postcss@8.4.40)(tsx@4.16.3)(typescript@5.4.5)(yaml@2.4.5):
+  tsup@8.2.4(jiti@1.21.6)(postcss@8.4.40)(tsx@4.16.3)(typescript@5.4.5)(yaml@2.5.0):
     dependencies:
       bundle-require: 5.0.0(esbuild@0.23.0)
       cac: 6.7.14
       chokidar: 3.6.0
       consola: 3.2.3
-      debug: 4.3.5
+      debug: 4.3.6
       esbuild: 0.23.0
       execa: 5.1.1
       globby: 11.1.0
       joycon: 3.1.1
       picocolors: 1.0.1
-      postcss-load-config: 6.0.1(jiti@1.21.6)(postcss@8.4.40)(tsx@4.16.3)(yaml@2.4.5)
+      postcss-load-config: 6.0.1(jiti@1.21.6)(postcss@8.4.40)(tsx@4.16.3)(yaml@2.5.0)
       resolve-from: 5.0.0
       rollup: 4.19.0
       source-map: 0.8.0-beta.0
@@ -10023,7 +10088,7 @@ snapshots:
 
   undici-types@5.26.5: {}
 
-  undici-types@6.11.1: {}
+  undici-types@6.13.0: {}
 
   undici@6.19.5: {}
 
@@ -10031,9 +10096,9 @@ snapshots:
 
   universalify@2.0.1: {}
 
-  unocss@0.61.9(postcss@8.4.40)(rollup@4.19.0)(vite@5.3.4(@types/node@22.0.2)(less@4.2.0)):
+  unocss@0.61.9(postcss@8.4.40)(rollup@4.19.0)(vite@5.3.4(@types/node@22.1.0)(less@4.2.0)):
     dependencies:
-      '@unocss/astro': 0.61.9(rollup@4.19.0)(vite@5.3.4(@types/node@22.0.2)(less@4.2.0))
+      '@unocss/astro': 0.61.9(rollup@4.19.0)(vite@5.3.4(@types/node@22.1.0)(less@4.2.0))
       '@unocss/cli': 0.61.9(rollup@4.19.0)
       '@unocss/core': 0.61.9
       '@unocss/extractor-arbitrary-variants': 0.61.9
@@ -10052,9 +10117,9 @@ snapshots:
       '@unocss/transformer-compile-class': 0.61.9
       '@unocss/transformer-directives': 0.61.9
       '@unocss/transformer-variant-group': 0.61.9
-      '@unocss/vite': 0.61.9(rollup@4.19.0)(vite@5.3.4(@types/node@22.0.2)(less@4.2.0))
+      '@unocss/vite': 0.61.9(rollup@4.19.0)(vite@5.3.4(@types/node@22.1.0)(less@4.2.0))
     optionalDependencies:
-      vite: 5.3.4(@types/node@22.0.2)(less@4.2.0)
+      vite: 5.3.4(@types/node@22.1.0)(less@4.2.0)
     transitivePeerDependencies:
       - postcss
       - rollup
@@ -10086,13 +10151,13 @@ snapshots:
 
   uuid@9.0.1: {}
 
-  vite-node@2.0.5(@types/node@22.0.2)(less@4.2.0):
+  vite-node@2.0.5(@types/node@22.1.0)(less@4.2.0):
     dependencies:
       cac: 6.7.14
       debug: 4.3.6
       pathe: 1.1.2
       tinyrainbow: 1.2.0
-      vite: 5.3.5(@types/node@22.0.2)(less@4.2.0)
+      vite: 5.3.5(@types/node@22.1.0)(less@4.2.0)
     transitivePeerDependencies:
       - '@types/node'
       - less
@@ -10103,34 +10168,34 @@ snapshots:
       - supports-color
       - terser
 
-  vite@5.3.4(@types/node@22.0.2)(less@4.2.0):
+  vite@5.3.4(@types/node@22.1.0)(less@4.2.0):
     dependencies:
       esbuild: 0.21.5
       postcss: 8.4.39
       rollup: 4.17.2
     optionalDependencies:
-      '@types/node': 22.0.2
+      '@types/node': 22.1.0
       fsevents: 2.3.3
       less: 4.2.0
 
-  vite@5.3.5(@types/node@22.0.2)(less@4.2.0):
+  vite@5.3.5(@types/node@22.1.0)(less@4.2.0):
     dependencies:
       esbuild: 0.21.5
       postcss: 8.4.39
       rollup: 4.19.0
     optionalDependencies:
-      '@types/node': 22.0.2
+      '@types/node': 22.1.0
       fsevents: 2.3.3
       less: 4.2.0
 
-  vitepress@1.3.1(@algolia/client-search@4.24.0)(@types/node@22.0.2)(less@4.2.0)(postcss@8.4.40)(search-insights@2.15.0)(typescript@5.4.5):
+  vitepress@1.3.1(@algolia/client-search@4.24.0)(@types/node@22.1.0)(less@4.2.0)(postcss@8.4.40)(search-insights@2.15.0)(typescript@5.4.5):
     dependencies:
       '@docsearch/css': 3.6.1
       '@docsearch/js': 3.6.1(@algolia/client-search@4.24.0)(search-insights@2.15.0)
       '@shikijs/core': 1.10.3
       '@shikijs/transformers': 1.10.3
       '@types/markdown-it': 14.1.1
-      '@vitejs/plugin-vue': 5.0.5(vite@5.3.4(@types/node@22.0.2)(less@4.2.0))(vue@3.4.35(typescript@5.4.5))
+      '@vitejs/plugin-vue': 5.0.5(vite@5.3.4(@types/node@22.1.0)(less@4.2.0))(vue@3.4.35(typescript@5.4.5))
       '@vue/devtools-api': 7.3.6
       '@vue/shared': 3.4.31
       '@vueuse/core': 10.11.0(vue@3.4.35(typescript@5.4.5))
@@ -10139,7 +10204,7 @@ snapshots:
       mark.js: 8.11.1
       minisearch: 7.0.1
       shiki: 1.10.3
-      vite: 5.3.4(@types/node@22.0.2)(less@4.2.0)
+      vite: 5.3.4(@types/node@22.1.0)(less@4.2.0)
       vue: 3.4.35(typescript@5.4.5)
     optionalDependencies:
       postcss: 8.4.40
@@ -10170,7 +10235,7 @@ snapshots:
       - typescript
       - universal-cookie
 
-  vitest@2.0.5(@types/node@22.0.2)(less@4.2.0):
+  vitest@2.0.5(@types/node@22.1.0)(less@4.2.0):
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@vitest/expect': 2.0.5
@@ -10188,11 +10253,11 @@ snapshots:
       tinybench: 2.8.0
       tinypool: 1.0.0
       tinyrainbow: 1.2.0
-      vite: 5.3.5(@types/node@22.0.2)(less@4.2.0)
-      vite-node: 2.0.5(@types/node@22.0.2)(less@4.2.0)
+      vite: 5.3.5(@types/node@22.1.0)(less@4.2.0)
+      vite-node: 2.0.5(@types/node@22.1.0)(less@4.2.0)
       why-is-node-running: 2.3.0
     optionalDependencies:
-      '@types/node': 22.0.2
+      '@types/node': 22.1.0
     transitivePeerDependencies:
       - less
       - lightningcss
@@ -10326,6 +10391,8 @@ snapshots:
   yallist@4.0.0: {}
 
   yaml@2.4.5: {}
+
+  yaml@2.5.0: {}
 
   yargs-parser@21.1.1: {}
 

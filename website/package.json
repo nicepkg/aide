@@ -18,7 +18,7 @@
     "@iconify-json/bx": "^1.1.10",
     "@iconify-json/fluent-emoji": "^1.1.18",
     "@iconify-json/logos": "^1.1.43",
-    "@nolebase/vitepress-plugin-inline-link-preview": "^2.3.0",
+    "@nolebase/vitepress-plugin-inline-link-preview": "^2.4.0",
     "@unocss/preset-icons": "^0.61.9",
     "@unocss/preset-uno": "^0.61.9",
     "markdown-it": "^14.1.0",
