@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.17.2](https://github.com/nicepkg/aide/compare/aide-v1.17.1...aide-v1.17.2) (2024-08-04)
+
+
+### Bug Fixes
+
+* fix deps version ([55d55e8](https://github.com/nicepkg/aide/commit/55d55e83f69b249c0fb126e2e4c8868bb91e3c48))
+* fix vscode 1.92.0 fetch not working ([80f8c58](https://github.com/nicepkg/aide/commit/80f8c58da437a9ecdba062f91e6663c3d0d8c12a))
+
 ## [1.17.1](https://github.com/nicepkg/aide/compare/aide-v1.17.0...aide-v1.17.1) (2024-07-31)
 
 
