@@ -132,7 +132,7 @@ importers:
         specifier: ^0.2.12
         version: 0.2.12(@langchain/anthropic@0.2.12)(fast-xml-parser@4.4.0)(ignore@5.3.1)(openai@4.52.3)(playwright@1.45.1)
       lint-staged:
-        specifier: ^15.2.7
+        specifier: ^15.2.8
         version: 15.2.8
       minimatch:
         specifier: ^9.0.5
