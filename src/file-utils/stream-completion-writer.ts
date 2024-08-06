@@ -3,7 +3,8 @@ import { createLoading } from '@/loading'
 import {
   removeCodeBlockEndSyntax,
   removeCodeBlockStartSyntax,
-  removeCodeBlockSyntax
+  removeCodeBlockSyntax,
+  sleep
 } from '@/utils'
 import type { IterableReadableStream } from '@langchain/core/dist/utils/stream'
 import type { AIMessageChunk } from '@langchain/core/messages'
@@ -43,6 +44,8 @@ export const streamingCompletionWriter = async (
       { undoStopBefore: false, undoStopAfter: false }
     )
 
+    await sleep(10)
+
     // update current position to the end of the inserted text
     currentPosition = editor.document.positionAt(
       editor.document.offsetAt(currentPosition) + text.length
@@ -70,6 +73,8 @@ export const streamingCompletionWriter = async (
       { undoStopBefore: false, undoStopAfter: false }
     )
 
+    await sleep(10)
+
     // update current position to the end of the inserted text
     currentPosition = editor.document.positionAt(
       editor.document.offsetAt(originPosition) + text.length
@@ -95,6 +100,7 @@ export const streamingCompletionWriter = async (
 
       // convert openai answer content to text
       const text = ModelProvider.answerContentToText(chunk.content)
+
       if (!text) continue
 
       fullText += text

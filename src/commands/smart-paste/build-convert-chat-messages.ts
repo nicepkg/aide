@@ -27,11 +27,13 @@ const getClipboardContent = async () => {
 export const buildConvertChatMessages = async ({
   workspaceFolder,
   currentFilePath,
-  selection
+  selection,
+  abortController
 }: {
   workspaceFolder: vscode.WorkspaceFolder
   currentFilePath: string
   selection: vscode.Selection
+  abortController?: AbortController
 }): Promise<BaseMessage[]> => {
   const { clipboardImg, clipboardContent } = await getClipboardContent()
 
@@ -49,7 +51,7 @@ export const buildConvertChatMessages = async ({
 
   // reference file content
   const { referenceFileRelativePaths, dependenceFileRelativePath } =
-    await cacheGetReferenceFilePaths({ currentFilePath })
+    await cacheGetReferenceFilePaths({ currentFilePath, abortController })
   const referencePaths = [
     ...new Set([dependenceFileRelativePath, ...referenceFileRelativePaths])
   ]

@@ -78,3 +78,5 @@ export const languageExtIdMap = Object.fromEntries(
     exts.map(ext => [ext, id])
   )
 )
+
+export const AbortError = new Error('AbortError')

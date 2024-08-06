@@ -51,7 +51,8 @@ export const handleSmartPaste = async () => {
       const convertMessages = await buildConvertChatMessages({
         workspaceFolder,
         currentFilePath,
-        selection: activeEditor.selection
+        selection: activeEditor.selection,
+        abortController: aiModelAbortController
       })
 
       const history = await modelProvider.getHistory(sessionId)

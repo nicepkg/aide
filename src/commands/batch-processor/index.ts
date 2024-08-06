@@ -1,4 +1,5 @@
 import { getConfigKey } from '@/config'
+import { AbortError } from '@/constants'
 import { isTmpFileUri } from '@/file-utils/create-tmp-file'
 import { traverseFileOrFolders } from '@/file-utils/traverse-fs'
 import { t } from '@/i18n'
@@ -56,12 +57,13 @@ export const handleBatchProcessor = async (
 
     const preProcessInfo = await getPreProcessInfo({
       prompt,
-      fileRelativePathsForProcess
+      fileRelativePathsForProcess,
+      abortController
     })
 
     logger.log('handleBatchProcessor', preProcessInfo)
 
-    if (abortController.signal.aborted) return
+    if (abortController?.signal.aborted) throw AbortError
 
     const apiConcurrency = (await getConfigKey('apiConcurrency')) || 1
     const limit = pLimit(apiConcurrency)
@@ -75,7 +77,7 @@ export const handleBatchProcessor = async (
           processedFileRelativePath: info.processedFileRelativePath,
           dependenceFileRelativePath: preProcessInfo.dependenceFileRelativePath,
           abortController
-        })
+        }).catch(err => logger.warn('writeAndSaveTmpFile error', err))
       )
     )
 

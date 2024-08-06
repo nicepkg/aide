@@ -1,5 +1,6 @@
 import path from 'path'
 import { createModelProvider } from '@/ai/helpers'
+import { AbortError } from '@/constants'
 import { getTmpFileUri } from '@/file-utils/create-tmp-file'
 import { tmpFileWriter } from '@/file-utils/tmp-file-writer'
 import { VsCodeFS } from '@/file-utils/vscode-fs'
@@ -32,7 +33,7 @@ export const writeAndSaveTmpFile = async ({
     signal: abortController?.signal
   })
 
-  if (abortController?.signal.aborted) return
+  if (abortController?.signal.aborted) throw AbortError
 
   const getContentFromRelativePath = async (relativePath: string) => {
     if (!relativePath) return ''
@@ -65,7 +66,7 @@ export const writeAndSaveTmpFile = async ({
     dependenceFileRelativePath || ''
   )
 
-  if (abortController?.signal.aborted) return
+  if (abortController?.signal.aborted) throw AbortError
 
   await tmpFileWriter({
     stopWriteWhenClosed: true,

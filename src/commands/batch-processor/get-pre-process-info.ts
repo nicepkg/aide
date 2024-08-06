@@ -1,7 +1,8 @@
 import path from 'path'
 import { createModelProvider } from '@/ai/helpers'
+import { AbortError } from '@/constants'
 import { traverseFileOrFolders } from '@/file-utils/traverse-fs'
-import { getCurrentWorkspaceFolderEditor } from '@/utils'
+import { getCurrentWorkspaceFolderEditor, toPlatformPath } from '@/utils'
 import { z } from 'zod'
 
 export interface PreProcessInfo {
@@ -16,10 +17,12 @@ export interface PreProcessInfo {
 
 export const getPreProcessInfo = async ({
   prompt,
-  fileRelativePathsForProcess
+  fileRelativePathsForProcess,
+  abortController
 }: {
   prompt: string
   fileRelativePathsForProcess: string[]
+  abortController?: AbortController
 }): Promise<
   PreProcessInfo & {
     allFileRelativePaths: string[]
@@ -38,6 +41,7 @@ export const getPreProcessInfo = async ({
 
   const modelProvider = await createModelProvider()
   const aiRunnable = await modelProvider.createStructuredOutputRunnable({
+    signal: abortController?.signal,
     useHistory: false,
     zodSchema: z.object({
       processFilePathInfo: z
@@ -115,33 +119,58 @@ Please analyze these files and provide the requested information to help streaml
     `
   })
 
+  if (abortController?.signal.aborted) throw AbortError
+
+  aiRes.dependenceFileRelativePath = toPlatformPath(
+    aiRes.dependenceFileRelativePath || ''
+  )
+  aiRes.ignoreFileRelativePaths =
+    aiRes.ignoreFileRelativePaths?.map(toPlatformPath)
+  aiRes.processFilePathInfo = aiRes.processFilePathInfo.map(info => ({
+    sourceFileRelativePath: toPlatformPath(info.sourceFileRelativePath),
+    processedFileRelativePath: toPlatformPath(info.processedFileRelativePath),
+    referenceFileRelativePaths:
+      info.referenceFileRelativePaths.map(toPlatformPath)
+  }))
+
   // data cleaning
   // Process and filter the file path information
   const finalProcessFilePathInfo: PreProcessInfo['processFilePathInfo'] =
     aiRes.processFilePathInfo
       .map(info => {
+        const {
+          sourceFileRelativePath,
+          processedFileRelativePath,
+          referenceFileRelativePaths
+        } = info
+        const { ignoreFileRelativePaths } = aiRes
+
         // Extract the base name and extension from the source file path
         const sourceBaseName = path.basename(
-          info.sourceFileRelativePath,
-          path.extname(info.sourceFileRelativePath)
+          sourceFileRelativePath,
+          path.extname(sourceFileRelativePath)
         )
         // Get the extension from the processed file path
-        const processedExtName = path.extname(info.processedFileRelativePath)
+        const processedExtName = path.extname(processedFileRelativePath)
         // Construct the full processed file path
         const fullProcessedPath = path.join(
-          path.dirname(info.sourceFileRelativePath),
+          path.dirname(sourceFileRelativePath),
           sourceBaseName + processedExtName
         )
 
         // Check if the processed file path should be ignored
         const shouldIgnore =
-          fullProcessedPath === info.sourceFileRelativePath &&
-          aiRes.ignoreFileRelativePaths?.includes(info.sourceFileRelativePath)
+          fullProcessedPath === sourceFileRelativePath &&
+          ignoreFileRelativePaths?.includes(sourceFileRelativePath)
 
         // Return the new info object or null if it should be ignored
         return shouldIgnore
           ? null
-          : { ...info, processedFileRelativePath: fullProcessedPath }
+          : {
+              sourceFileRelativePath,
+              processedFileRelativePath: toPlatformPath(fullProcessedPath),
+              referenceFileRelativePaths
+            }
       })
       // Filter out any null entries
       .filter(

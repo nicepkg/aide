@@ -31,9 +31,16 @@ export const getTmpFileUri = ({
   const originalFileExt = path.parse(filePath).ext
   const languageExt = getLanguageIdExt(languageId) || languageId
 
-  return vscode.Uri.parse(
-    `${untitled ? 'untitled:' : ''}${path.join(originalFileDir, `${originalFileName}${originalFileExt}.aide${languageExt ? `.${languageExt}` : ''}`)}`
+  const finalPath = path.join(
+    originalFileDir,
+    `${originalFileName}${originalFileExt}.aide${languageExt ? `.${languageExt}` : ''}`
   )
+
+  if (!untitled) {
+    return vscode.Uri.file(finalPath)
+  }
+
+  return vscode.Uri.parse(`untitled:${finalPath}`)
 }
 
 const aideTmpFileRegExp = /\.aide(\.[^.]+)?$/

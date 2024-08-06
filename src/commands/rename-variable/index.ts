@@ -3,6 +3,7 @@ import {
   createModelProvider,
   getCurrentSessionIdHistoriesMap
 } from '@/ai/helpers'
+import { AbortError } from '@/constants'
 import { t } from '@/i18n'
 import { createLoading } from '@/loading'
 import { getCurrentWorkspaceFolderEditor } from '@/utils'
@@ -37,7 +38,9 @@ export const handleRenameVariable = async () => {
   const modelProvider = await createModelProvider()
   const { showProcessLoading, hideProcessLoading } = createLoading()
 
+  const abortController = new AbortController()
   const aiRunnable = await modelProvider.createStructuredOutputRunnable({
+    signal: abortController.signal,
     zodSchema: renameSuggestionZodSchema
   })
   const sessionId = `renameVariable:${variableName}`
@@ -53,7 +56,11 @@ export const handleRenameVariable = async () => {
 
   let aiRes: any
   try {
-    showProcessLoading()
+    showProcessLoading({
+      onCancel: () => {
+        abortController.abort()
+      }
+    })
     const prompt = await buildRenameSuggestionPrompt({
       contextCode: activeEditor.document.getText(),
       variableName,
@@ -73,6 +80,8 @@ export const handleRenameVariable = async () => {
   } finally {
     hideProcessLoading()
   }
+
+  if (abortController?.signal.aborted) throw AbortError
 
   const suggestionVariableNameOptions = Array.from(
     aiRes?.suggestionVariableNameOptions || []

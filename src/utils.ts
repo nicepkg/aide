@@ -50,7 +50,7 @@ export const commandErrorCatcher = <T extends (...args: any[]) => any>(
     } catch (err) {
       const errMsg = getErrorMsg(err)
       // skip abort error
-      if (errMsg === 'AbortError') return
+      if (['AbortError', 'Aborted'].includes(errMsg)) return
 
       logger.warn('commandErrorCatcher', err)
       vscode.window.showErrorMessage(getErrorMsg(err))
@@ -140,6 +140,21 @@ export const tryParseJSON = (str: string, returnOriginal = false) => {
   } catch (err) {
     return returnOriginal ? str : null
   }
+}
+
+export const toPlatformPath = (path: string): string => {
+  if (process.platform === 'win32') return path.replace(/\//g, '\\')
+
+  return path.replace(/\\/g, '/')
+}
+
+export const sleep = (ms: number): Promise<void> =>
+  new Promise(resolve => setTimeout(resolve, ms))
+
+export const normalizeLineEndings = (text?: string): string => {
+  if (!text) return ''
+  if (process.platform !== 'win32') return text
+  return text.replace(/\n/g, '\r\n')
 }
 
 type QuickPickItemType = string | vscode.QuickPickItem

@@ -1,5 +1,6 @@
+import { AbortError } from '@/constants'
 import { traverseFileOrFolders } from '@/file-utils/traverse-fs'
-import { getCurrentWorkspaceFolderEditor } from '@/utils'
+import { getCurrentWorkspaceFolderEditor, toPlatformPath } from '@/utils'
 import * as vscode from 'vscode'
 import { z } from 'zod'
 
@@ -11,9 +12,11 @@ export interface ReferenceFilePaths {
 }
 
 export const getReferenceFilePaths = async ({
-  currentFilePath
+  currentFilePath,
+  abortController
 }: {
   currentFilePath: string
+  abortController?: AbortController
 }): Promise<ReferenceFilePaths> => {
   const { workspaceFolder } = await getCurrentWorkspaceFolderEditor()
   const allRelativePaths: string[] = []
@@ -31,10 +34,11 @@ export const getReferenceFilePaths = async ({
 
   const modelProvider = await createModelProvider()
   const aiRunnable = await modelProvider.createStructuredOutputRunnable({
+    signal: abortController?.signal,
     useHistory: false,
     zodSchema: z.object({
       referenceFileRelativePaths: z.array(z.string()).min(0).max(3).describe(`
-        Required! The relative paths of the up to three most useful files related to the currently edited file. This can include 0 to 3 files.
+        Required! The relative paths array of the up to three most useful files related to the currently edited file. This can include 0 to 3 files.
       `),
       dependenceFileRelativePath: z.string().describe(`
         Required! The relative path of the dependency file for the current file. If the dependency file is not found, return an empty string.
@@ -69,5 +73,11 @@ Please find and return the dependency file path for the current file and the thr
     `
   })
 
-  return aiRes
+  if (abortController?.signal.aborted) throw AbortError
+
+  return {
+    referenceFileRelativePaths:
+      aiRes.referenceFileRelativePaths.map(toPlatformPath),
+    dependenceFileRelativePath: toPlatformPath(aiRes.dependenceFileRelativePath)
+  }
 }
