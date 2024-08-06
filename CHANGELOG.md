@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.17.3](https://github.com/nicepkg/aide/compare/aide-v1.17.2...aide-v1.17.3) (2024-08-06)
+
+
+### Bug Fixes
+
+* fix batch processor do not create file on windows and smart-paste incorrect position bug ([8bb7949](https://github.com/nicepkg/aide/commit/8bb7949203b90e42be11cb04e4caa3fd09f3abd5))
+
 ## [1.17.2](https://github.com/nicepkg/aide/compare/aide-v1.17.1...aide-v1.17.2) (2024-08-04)
 
 
