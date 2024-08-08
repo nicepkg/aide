@@ -32,10 +32,10 @@ If you don't have an ==OpenAI Key==, you can obtain one in the following ways:
 
 ::: details I'm a Chinese User but Want to Use ==OpenAI==
 
-- If you're a Chinese user, you can use ==OpenAI== through the [Model Aggregation and Forwarding Service](../../../zh/guide/use-another-llm/aide-models.md) provided by ==Aide==.
+- If you're a Chinese user, you can use ==OpenAI== through the [Model Aggregation and Forwarding Service](/zh/guide/use-another-llm/aide-models.md) provided by ==Aide==.
 - It's cheaper than the official price and doesn't require a proxy.
 - You can also use models from many other providers.
-- For details, please refer to [Aide Model Aggregation](../../../zh/guide/use-another-llm/aide-models.md).
+- For details, please refer to [Aide Model Aggregation](/zh/guide/use-another-llm/aide-models.md).
 
 :::
 
@@ -43,7 +43,7 @@ If you don't have an ==OpenAI Key==, you can obtain one in the following ways:
 
 - I like using online models:
 
-  - [Aide Model Aggregation](../../../zh/guide/use-another-llm/aide-models.md)
+  - [Aide Model Aggregation](/zh/guide/use-another-llm/aide-models.md)
   - [Anthropic](../use-another-llm/anthropic.md)
   - [Azure](../use-another-llm/azure.md)
   - [DeepSeek](../use-another-llm/deepseek.md)

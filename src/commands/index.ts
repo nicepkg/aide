@@ -9,6 +9,7 @@ import { handleCopyAsPrompt } from './copy-as-prompt'
 import { handleCopyFileText } from './private/copy-file-text'
 import { handleQuickCloseFileWithoutSave } from './private/quick-close-file-without-save'
 import { handleReplaceFile } from './private/replace-file'
+import { handleShowAideKeyUsageInfo } from './private/show-aide-key-usage-info'
 import { handleShowDiff } from './private/show-diff'
 import { handleRenameVariable } from './rename-variable'
 import { handleSmartPaste } from './smart-paste'
@@ -72,6 +73,12 @@ export const registerCommands = async (context: vscode.ExtensionContext) => {
     commandErrorCatcher(handleShowDiff)
   )
 
+  // private command
+  const showAideKeyUsageInfoDisposable = vscode.commands.registerCommand(
+    'aide.showAideKeyUsageInfo',
+    commandErrorCatcher(handleShowAideKeyUsageInfo)
+  )
+
   context.subscriptions.push(
     copyDisposable,
     askAIDisposable,
@@ -83,6 +90,7 @@ export const registerCommands = async (context: vscode.ExtensionContext) => {
     copyFileTextDisposable,
     quickCloseFileWithoutSaveDisposable,
     replaceFileDisposable,
-    showDiffDisposable
+    showDiffDisposable,
+    showAideKeyUsageInfoDisposable
   )
 }

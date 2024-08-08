@@ -22,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import { ModelPrice, TokenPrice, FixedPrice } from '../types';
+import { ModelPrice, TokenPrice, FixedPrice } from './types';
 
 defineProps<{
   models: string[];

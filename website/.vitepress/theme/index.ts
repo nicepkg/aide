@@ -4,7 +4,7 @@ import type { App } from 'vue'
 
 import '@nolebase/vitepress-plugin-inline-link-preview/client/style.css'
 
-import AideModelPrice from '../../components/AideModels/AideModelPrice.vue'
+import AideModelPrice from '../../components/AideModels/AideModelPrice/index.vue'
 import AidePay from '../../components/AideModels/AidePay.vue'
 import Video from '../../components/Video.vue'
 

@@ -42,7 +42,13 @@
 
 你可以打开[这个链接](https://key.opendevelop.tech/liebiao/322FECDC5792B7AD)购买。
 
-需要售后可以加 `QQ：2530185073`
+需要售后可以加 QQ：`2530185073`
+
+## 查询余额
+
+你可以点击 ==VSCode== 底部 `Aide 消耗` 按钮随时查询调用、余额等信息。
+
+<img src="/aide-key-usage-info.zh.jpg" style="width: 100%; max-width: 1080px; border-radius: 0.5rem;" alt="Aide 消耗信息查询截图" />
 
 ## 配置
 

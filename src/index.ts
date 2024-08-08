@@ -10,6 +10,7 @@ import { initializeLocalization } from './i18n'
 import { logger } from './logger'
 import { enablePolyfill } from './polyfill'
 import { registerProviders } from './providers'
+import { initAideKeyUsageStatusBar } from './providers/aide-key-usage-statusbar'
 import { redisStorage, stateStorage } from './storage'
 
 export const activate = async (context: vscode.ExtensionContext) => {
@@ -26,6 +27,7 @@ export const activate = async (context: vscode.ExtensionContext) => {
 
     await registerCommands(context)
     await registerProviders(context)
+    await initAideKeyUsageStatusBar(context)
     await autoOpenCorrespondingFiles(context)
     await cleanup(context)
   } catch (err) {

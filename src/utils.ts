@@ -122,6 +122,11 @@ export const getCurrentWorkspaceFolderEditor = <T extends boolean = true>(
 //   }
 // }
 
+export const formatNumber = (num: number, fixed: number): string => {
+  const numString = num.toFixed(fixed)
+  return numString.replace(/\.?0+$/, '')
+}
+
 export const removeCodeBlockSyntax = (str: string): string => {
   if (!str) return ''
   return str

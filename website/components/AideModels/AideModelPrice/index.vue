@@ -40,7 +40,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import modelData from './model-price.json'
-import PriceTable from './components/PriceTable.vue'
+import PriceTable from './PriceTable.vue'
 import { ModelPrice } from './types'
 
 const groupRatio = modelData.data.GroupRatio.default
