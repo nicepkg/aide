@@ -15,11 +15,13 @@ export const getTmpFileUri = ({
   originalFileUri,
   originalFileFullPath,
   languageId,
+  ext,
   untitled = true
 }: {
   originalFileUri?: vscode.Uri
   originalFileFullPath?: string
   languageId: string
+  ext?: string
   untitled?: boolean
 }) => {
   if (!originalFileUri && !originalFileFullPath)
@@ -29,7 +31,7 @@ export const getTmpFileUri = ({
   const originalFileDir = path.dirname(filePath)
   const originalFileName = path.parse(filePath).name
   const originalFileExt = path.parse(filePath).ext
-  const languageExt = getLanguageIdExt(languageId) || languageId
+  const languageExt = ext || getLanguageIdExt(languageId) || languageId
 
   const finalPath = path.join(
     originalFileDir,
@@ -119,6 +121,11 @@ export interface TmpFileInfo {
   originalFileLanguageId: string
 
   /**
+   * The extension of the original file.
+   */
+  originalFileExt: string
+
+  /**
    * Indicates whether the active file is the original file.
    */
   activeIsOriginalFile: boolean
@@ -175,6 +182,7 @@ export const createTmpFileInfo = async (): Promise<TmpFileInfo> => {
   }
 
   const originalFileLanguageId = originalFileDocument.languageId
+  const originalFileExt = path.extname(originalFileUri.fsPath).slice(1)
   const tmpFileUri = getTmpFileUri({
     originalFileUri,
     languageId: originalFileLanguageId
@@ -190,6 +198,7 @@ export const createTmpFileInfo = async (): Promise<TmpFileInfo> => {
     originalFileDocument,
     originalFileContent,
     originalFileLanguageId,
+    originalFileExt,
     activeIsOriginalFile,
     isSelection,
     tmpFileUri,
@@ -199,6 +208,7 @@ export const createTmpFileInfo = async (): Promise<TmpFileInfo> => {
 }
 
 export interface CreateTmpFileOptions {
+  ext?: string
   languageId?: string
   tmpFileUri?: vscode.Uri
 }
@@ -280,7 +290,11 @@ export const createTmpFileAndWriter = async (
 
   const tmpFileUri =
     options.tmpFileUri ||
-    getTmpFileUri({ originalFileUri, languageId: languageId! })
+    getTmpFileUri({
+      originalFileUri,
+      languageId: languageId!,
+      ext: options.ext
+    })
 
   const tmpDocument = await vscode.workspace.openTextDocument(tmpFileUri)
   const isDocumentAlreadyShown = vscode.window.visibleTextEditors.some(
@@ -295,10 +309,6 @@ export const createTmpFileAndWriter = async (
   }
 
   if (languageId) {
-    // const docLanguageId = languageIds.includes(languageId)
-    //   ? languageId
-    //   : 'plaintext'
-
     vscode.languages.setTextDocumentLanguage(tmpDocument, languageId)
   }
 

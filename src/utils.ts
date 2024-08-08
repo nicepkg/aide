@@ -57,8 +57,14 @@ export const commandErrorCatcher = <T extends (...args: any[]) => any>(
     }
   }) as T
 
-export const getLanguageIdExt = (languageId: string): string =>
-  languageIdExtMap[languageId as keyof typeof languageIdExtMap]?.[0] || ''
+export const getLanguageIdExt = (languageIdORExt: string): string => {
+  if (languageIdExts.includes(languageIdORExt)) return languageIdORExt
+
+  return (
+    languageIdExtMap[languageIdORExt as keyof typeof languageIdExtMap]?.[0] ||
+    ''
+  )
+}
 
 export const getLanguageId = (languageIdORExt: string): string => {
   if (languageIds.includes(languageIdORExt)) return languageIdORExt
@@ -153,8 +159,16 @@ export const sleep = (ms: number): Promise<void> =>
 
 export const normalizeLineEndings = (text?: string): string => {
   if (!text) return ''
-  if (process.platform !== 'win32') return text
-  return text.replace(/\n/g, '\r\n')
+
+  const activeEditor = vscode.window.activeTextEditor
+  if (!activeEditor) return text
+
+  const { eol } = activeEditor.document
+
+  if (eol === vscode.EndOfLine.LF) return text.replace(/\r\n/g, '\n')
+  if (eol === vscode.EndOfLine.CRLF) return text.replace(/\n/g, '\r\n')
+
+  return text
 }
 
 type QuickPickItemType = string | vscode.QuickPickItem

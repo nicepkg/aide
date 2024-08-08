@@ -36,7 +36,7 @@ export const handleCodeConvert = async () => {
     isTmpFileHasContent
   } = await createTmpFileInfo()
 
-  const { targetLanguageId, targetLanguageDescription } =
+  const { targetLanguageId, targetLanguageExt, targetLanguageDescription } =
     await getTargetLanguageInfo(originalFileLanguageId)
 
   // ai
@@ -65,6 +65,7 @@ export const handleCodeConvert = async () => {
 
   const tmpFileWriterReturns = await tmpFileWriter({
     languageId: targetLanguageId,
+    ext: targetLanguageExt,
     onCancel() {
       aiRunnableAbortController.abort()
     },

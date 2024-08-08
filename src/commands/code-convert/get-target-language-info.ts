@@ -1,7 +1,11 @@
 import { getConfigKey, setConfigKey } from '@/config'
 import { languageIdExts, languageIds } from '@/constants'
 import { t } from '@/i18n'
-import { getLanguageId, showQuickPickWithCustomInput } from '@/utils'
+import {
+  getLanguageId,
+  getLanguageIdExt,
+  showQuickPickWithCustomInput
+} from '@/utils'
 import * as vscode from 'vscode'
 
 /**
@@ -43,13 +47,14 @@ export const getTargetLanguageInfo = async (originalFileLanguageId: string) => {
     }
   }
 
-  const [targetLanguageIdOrExt, ...targetLanguageRest] =
+  const [targetLanguageIdOrExt = 'plaintext', ...targetLanguageRest] =
     targetLanguageInfo.split(/\s+/)
   const targetLanguageDescription = targetLanguageRest.join(' ')
-  const targetLanguageId = getLanguageId(targetLanguageIdOrExt || 'plaintext')
+  const targetLanguageId = getLanguageId(targetLanguageIdOrExt)
 
   return {
     targetLanguageId: targetLanguageId || targetLanguageInfo,
+    targetLanguageExt: getLanguageIdExt(targetLanguageIdOrExt),
     targetLanguageDescription: targetLanguageDescription?.trim() || ''
   }
 }

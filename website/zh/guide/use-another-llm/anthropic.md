@@ -4,7 +4,7 @@
 
 您可以在 [==Anthropic Claude== 官方参考文档](https://docs.anthropic.com/en/docs/quickstart) 获取更多详细信息。
 
-### API Base URL 配置
+### 接口基础路径配置
 
 您需要配置 [`aide.openaiBaseUrl`](../configuration/openai-base-url.md) 为 `anthropic@https://api.anthropic.com`
 
@@ -14,7 +14,7 @@
 
 :::
 
-### API Key 配置
+### 密钥配置
 
 您需要配置 [`aide.openaiKey`](../configuration/openai-key.md) 为您的 ==Anthropic Claude== API Key。
 

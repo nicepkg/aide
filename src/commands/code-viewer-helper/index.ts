@@ -28,6 +28,7 @@ export const cleanupCodeViewerHelperRunnables = async () => {
 
 export const handleCodeViewerHelper = async () => {
   const {
+    originalFileExt,
     originalFileContent,
     originalFileLanguageId,
     tmpFileUri,
@@ -56,6 +57,7 @@ export const handleCodeViewerHelper = async () => {
   })
 
   const tmpFileWriterReturns = await tmpFileWriter({
+    ext: originalFileExt,
     languageId: originalFileLanguageId,
     onCancel() {
       aiRunnableAbortController.abort()

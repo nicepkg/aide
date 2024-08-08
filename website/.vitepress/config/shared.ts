@@ -3,6 +3,7 @@ import Mark from 'markdown-it-mark'
 import Unocss from 'unocss/vite'
 import { defineConfig } from 'vitepress'
 
+import { bilibiliSvg } from './svg'
 import { search as zhSearch } from './zh'
 
 export const shared = defineConfig({
@@ -58,7 +59,23 @@ export const shared = defineConfig({
   themeConfig: {
     logo: { src: '/logo-mini.svg', width: 24, height: 24 },
 
-    socialLinks: [{ icon: 'github', link: 'https://github.com/nicepkg/aide' }],
+    socialLinks: [
+      { icon: 'github', link: 'https://github.com/nicepkg/aide' },
+      {
+        icon: 'twitter',
+        link: 'https://x.com/jinmingyang666'
+      },
+      {
+        icon: 'youtube',
+        link: 'https://www.youtube.com/@jinmingyang666'
+      },
+      {
+        icon: {
+          svg: bilibiliSvg
+        },
+        link: 'https://space.bilibili.com/83540912'
+      }
+    ],
 
     // search: {
     //   provider: 'algolia',

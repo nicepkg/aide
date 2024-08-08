@@ -51,5 +51,6 @@
 
 - [功能](../features/code-viewer-helper.md)
 - [配置](../configuration/openai-key.md)
+- [如何配置 OpenAI Key](./how-to-configure-openai-key)
 - [使用其他大语言模型](../use-another-llm/anthropic.md)
 - [常见问题解答](./faq.md)

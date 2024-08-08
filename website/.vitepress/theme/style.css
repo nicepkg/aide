@@ -4,6 +4,7 @@
   --vp-c-brand-2: #7a55e8;
   --vp-c-brand-3: #6940e0;
   --vp-c-brand-soft: rgba(140, 107, 239, 0.14);
+  --vp-aide-full-width-max-width: 100%;
 
   /* We need this because menu component has 51 index which overlaps on navbar on scroll */
   /* --vp-z-index-nav: 52; */
@@ -86,4 +87,111 @@
     color: var(--vp-c-text-1);
     background-position: 0% var(--vp-nolebase-mark-bg-shift);
   }
+}
+
+/**
+  * make the content full width
+  * copy from https://github.com/nolebase/integrations/blob/main/packages/vitepress-plugin-enhanced-readabilities/src/client/components/LayoutSwitch.vue
+  */
+
+@media (min-width: 1280px) {
+  .VPNavBar.has-sidebar > .wrapper > .container > .title {
+    padding-left: max(
+      32px,
+      calc((100% - (var(--vp-aide-full-width-max-width) - 64px)) / 2)
+    ) !important;
+    width: calc(
+      (100% - (var(--vp-aide-full-width-max-width) - 64px)) / 2 +
+        var(--vp-sidebar-width) - 32px
+    ) !important;
+  }
+
+  .VPNavBar > .wrapper > .container,
+  .VPNavBar.has-sidebar > .wrapper > .container {
+    max-width: var(--vp-aide-full-width-max-width) !important;
+  }
+
+  .VPNavBar.has-sidebar > .wrapper > .container > .content {
+    padding-left: max(32px, var(--vp-sidebar-width)) !important;
+    width: 100% !important;
+    padding-right: 32px !important;
+  }
+
+  .VPSidebar {
+    padding-left: max(
+      32px,
+      calc((100% - (var(--vp-aide-full-width-max-width) - 64px)) / 2)
+    ) !important;
+    width: calc(
+      (100% - (var(--vp-aide-full-width-max-width) - 64px)) / 2 +
+        var(--vp-sidebar-width) - 32px
+    ) !important;
+  }
+
+  .VPContent.has-sidebar {
+    padding-left: calc(
+      (100vw - var(--vp-aide-full-width-max-width)) / 2 +
+        var(--vp-sidebar-width)
+    ) !important;
+    padding-right: calc(
+      (100vw - var(--vp-aide-full-width-max-width)) / 2
+    ) !important;
+  }
+
+  .VPDoc.has-aside .content-container {
+    max-width: var(--vp-aide-full-width-max-width) !important;
+  }
+
+  .VPDoc:not(.has-sidebar) .container {
+    max-width: var(--vp-aide-full-width-max-width) !important;
+  }
+
+  .VPDoc:not(.has-sidebar) .container > .content {
+    max-width: var(--vp-aide-full-width-max-width) !important;
+  }
+}
+
+@media (min-width: 1440px) {
+  .VPNavBar > .wrapper > .container {
+    max-width: var(--vp-aide-full-width-max-width) !important;
+  }
+
+  .VPNavBar.has-sidebar > .divider {
+    padding-left: calc(
+      (100vw - var(--vp-aide-full-width-max-width)) / 2 +
+        var(--vp-sidebar-width)
+    ) !important;
+  }
+}
+
+@media (min-width: 1536px) {
+  .VPNavBar > .wrapper > .container {
+    max-width: var(--vp-aide-full-width-max-width) !important;
+  }
+
+  .VPDoc .container {
+    max-width: var(--vp-aide-full-width-max-width) !important;
+  }
+}
+
+.vp-doc .custom-block,
+.vp-doc div[class*='language-'] {
+  max-width: 1080px;
+}
+
+/**
+ * components
+ */
+
+.aide-button {
+  padding: 5px 10px;
+  background-color: var(--vp-c-brand-1);
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.aide-button:hover {
+  background-color: var(--vp-c-brand-2);
 }

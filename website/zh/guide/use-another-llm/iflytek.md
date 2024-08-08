@@ -6,11 +6,11 @@
 
 您可以在 [==讯飞星火==官方参考文档](https://www.xfyun.cn/doc/spark/HTTP%E8%B0%83%E7%94%A8%E6%96%87%E6%A1%A3.html#_1-%E6%8E%A5%E5%8F%A3%E8%AF%B4%E6%98%8E) 获取更多详细信息。
 
-### API Base URL 配置
+### 接口基础路径配置
 
 您需要配置 [`aide.openaiBaseUrl`](../configuration/openai-base-url.md) 为 `https://spark-api-open.xf-yun.com/v1`
 
-### API Key 配置
+### 密钥配置
 
 您需要配置 [`aide.openaiKey`](../configuration/openai-key.md) 为您的==讯飞星火== API `key:secret`。
 

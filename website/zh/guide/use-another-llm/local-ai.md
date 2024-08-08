@@ -10,11 +10,11 @@
 
 在使用 ==LocalAI== 之前，请确保已参考 [==LocalAI== 官网文档](https://localai.io) 安装并运行 `Docker` 镜像。
 
-### API Base URL 配置
+### 接口基础路径配置
 
 您需要配置 [`aide.openaiBaseUrl`](../configuration/openai-base-url.md) 为 `http://localhost:8080/v1`（假设您的服务运行在 8080 端口）
 
-### API Key 配置
+### 密钥配置
 
 您可以随意填写以配置 [`aide.openaiKey`](../configuration/openai-key.md)。例如，填入 `sk-LocalAI`。
 

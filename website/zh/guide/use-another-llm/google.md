@@ -6,7 +6,7 @@
 
 您可以在 [==Google Gemini== 官方参考文档](https://cloud.google.com/vertex-ai/generative-ai/docs/multimodal/call-gemini-using-openai-library) 获取更多详细信息。
 
-### API Base URL 配置
+### 接口基础路径配置
 
 您需要配置 [`aide.openaiBaseUrl`](../configuration/openai-base-url.md) 为 `https://{LOCATION}-aiplatform.googleapis.com/v1beta1/projects/{PROJECT}/locations/{LOCATION}/endpoints/openapi`
 
@@ -21,7 +21,7 @@
 
 :::
 
-### API Key 配置
+### 密钥配置
 
 您需要配置 [`aide.openaiKey`](../configuration/openai-key.md) 为您的 ==Google Gemini== API Key。
 

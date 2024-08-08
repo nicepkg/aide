@@ -11,7 +11,7 @@
   "command.replaceFile": "Replace original",
   "command.showDiff": "Compare original",
   "config.title": "Aide Configuration",
-  "config.openaiKey.description": "OpenAI Key, [click to view online documentation](https://aide.nicepkg.cn/guide/configuration/openai-key)",
+  "config.openaiKey.description": "OpenAI Key, [click to view online documentation](https://aide.nicepkg.cn/guide/getting-started/how-to-configure-openai-key) or [I Don't Have an OpenAI Key](https://aide.nicepkg.cn/guide/getting-started/how-to-configure-openai-key#i-don-t-have-an-openai-key)",
   "config.openaiModel.description": "OpenAI Model, [click to view online documentation](https://aide.nicepkg.cn/guide/configuration/openai-model)",
   "config.openaiBaseUrl.description": "OpenAI Base URL, [click to view online documentation](https://aide.nicepkg.cn/guide/configuration/openai-base-url)",
   "config.apiConcurrency.description": "API request concurrency, [click to view online documentation](https://aide.nicepkg.cn/guide/configuration/api-concurrency)",

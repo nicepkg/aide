@@ -10,11 +10,11 @@
 
 在使用 ==Ollama== 之前，请确保已从 [==Ollama== 官方网站](https://ollama.com) 下载并安装客户端。您可以从[此链接](https://ollama.com/download)进行下载。更多信息请参考[==Ollama== 开源地址](https://github.com/ollama/ollama)。
 
-### API Base URL 配置
+### 接口基础路径配置
 
 您需要配置 [`aide.openaiBaseUrl`](../configuration/openai-base-url.md) 为 `http://localhost:11434/v1`
 
-### API Key 配置
+### 密钥配置
 
 你可以随便填以配置 [`aide.openaiKey`](../configuration/openai-key.md)。比如填个 `sk-ollama`。
 

@@ -4,11 +4,11 @@
 
 您可以在 [==通义千问==官方参考文档](https://help.aliyun.com/zh/dashscope/developer-reference/compatibility-of-openai-with-dashscope) 获取更多详细信息
 
-### API Base URL 配置
+### 接口基础路径配置
 
 您需要配置 [`aide.openaiBaseUrl`](../configuration/openai-base-url.md) 为 `https://dashscope.aliyuncs.com/compatible-mode/v1`
 
-### API Key 配置
+### 密钥配置
 
 您需要配置 [`aide.openaiKey`](../configuration/openai-key.md) 为您的==通义千问== API Key。
 

@@ -61,6 +61,10 @@ function sidebar(): DefaultTheme.Sidebar {
           { text: 'Introduction', link: '/' },
           { text: 'Installation', link: '/installation' },
           {
+            text: 'How to Configure OpenAI Key',
+            link: '/how-to-configure-openai-key'
+          },
+          {
             text: 'Customize Shortcuts',
             link: '/customize-shortcuts'
           },

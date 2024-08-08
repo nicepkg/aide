@@ -30,6 +30,7 @@ const enableControls = () => {
 <style scoped>
 .video-container {
   width: 100%;
+  max-width: 1080px;
   position: relative;
   padding: 0.5rem;
   overflow: hidden;

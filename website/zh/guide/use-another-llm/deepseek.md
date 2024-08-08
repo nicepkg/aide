@@ -4,11 +4,11 @@
 
 您可以在 [==Deepseek== 官方参考文档](https://platform.deepseek.com/api-docs/) 获取更多详细信息。
 
-### API Base URL 配置
+### 接口基础路径配置
 
 您需要配置 [`aide.openaiBaseUrl`](../configuration/openai-base-url.md) 为 `https://api.deepseek.com/v1`
 
-### API Key 配置
+### 密钥配置
 
 您需要配置 [`aide.openaiKey`](../configuration/openai-key.md) 为您的 ==Deepseek== API Key。
 

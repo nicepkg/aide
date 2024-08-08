@@ -51,5 +51,6 @@
 
 - [Features](../features/code-viewer-helper.md)
 - [Configuration](../configuration/openai-key.md)
+- [How to Configure OpenAI Key](./how-to-configure-openai-key)
 - [Using Other Large Language Models](../use-another-llm/anthropic.md)
 - [FAQ](./faq.md)

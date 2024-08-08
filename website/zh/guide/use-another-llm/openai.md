@@ -6,11 +6,11 @@
 
 您可以在[==OpenAI== 官网文档](https://platform.openai.com/docs/quickstart)获取更多详细信息。
 
-### API Base URL 配置
+### 接口基础路径配置
 
 您需要配置 [`aide.openaiBaseUrl`](../configuration/openai-base-url.md) 为 `https://api.openai.com/v1`
 
-### API Key 配置
+### 密钥配置
 
 您需要配置 [`aide.openaiKey`](../configuration/openai-key.md) 为您的 ==OpenAI== API Key。你可以在 [==OpenAI== 官网创建 Key](https://platform.openai.com/account/api-keys)
 

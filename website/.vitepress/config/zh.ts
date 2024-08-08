@@ -85,6 +85,10 @@ function sidebar(): DefaultTheme.Sidebar {
             link: '/installation'
           },
           {
+            text: '如何配置 OpenAI Key',
+            link: '/how-to-configure-openai-key'
+          },
+          {
             text: '自定义快捷键',
             link: '/customize-shortcuts'
           },
@@ -92,7 +96,8 @@ function sidebar(): DefaultTheme.Sidebar {
             text: '自定义配置',
             link: '/customize-configuration'
           },
-          { text: '常见问题解答', link: '/faq' }
+          { text: '常见问题解答', link: '/faq' },
+          { text: '社区', link: '/community' }
         ]
       },
       {
@@ -199,6 +204,7 @@ function sidebar(): DefaultTheme.Sidebar {
         collapsed: true,
         base: '/zh/guide/use-another-llm',
         items: [
+          { text: 'Aide 模型聚合(便宜)', link: '/aide-models' },
           { text: 'Anthropic', link: '/anthropic' },
           { text: 'Azure', link: '/azure' },
           { text: 'DeepSeek', link: '/deepseek' },
