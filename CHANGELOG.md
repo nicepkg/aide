@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.18.0](https://github.com/nicepkg/aide/compare/aide-v1.17.3...aide-v1.18.0) (2024-08-08)
+
+
+### Features
+
+* support query Aide key usage info when click vscode statusbar aide item ([b580fcd](https://github.com/nicepkg/aide/commit/b580fcd2377a6022fc7545562065a485762b5988))
+
+
+### Bug Fixes
+
+* fix windows endline bug and code viewer helper file ext incorrect bug ([43a8049](https://github.com/nicepkg/aide/commit/43a8049e4c091c378b8445ff61a067c34e85f1e2))
+
 ## [1.17.3](https://github.com/nicepkg/aide/compare/aide-v1.17.2...aide-v1.17.3) (2024-08-06)
 
 
