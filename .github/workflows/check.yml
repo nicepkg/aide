@@ -36,4 +36,4 @@ jobs:
         run: pnpm run test
 
       - name: Build
-        run: pnpm run build:minify
+        run: pnpm run build
