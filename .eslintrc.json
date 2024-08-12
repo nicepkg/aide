@@ -1,6 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/eslintrc",
-  "extends": ["airbnb-base", "prettier"],
+  "extends": ["airbnb", "prettier"],
   "plugins": ["json", "prettier"],
   "env": {
     "es2020": true
@@ -35,13 +35,13 @@
   },
   "overrides": [
     {
-      "files": ["**/*.ts", "**/*.mts"],
+      "files": ["**/*.ts", "**/*.mts", "**/*.tsx"],
       "parser": "@typescript-eslint/parser",
       "extends": [
         "eslint:recommended",
         "plugin:@typescript-eslint/recommended",
-        "airbnb-base",
-        "airbnb-typescript/base",
+        "airbnb",
+        "airbnb-typescript",
         "prettier"
       ],
       "parserOptions": {
@@ -92,7 +92,9 @@
         "@typescript-eslint/naming-convention": "off",
         "no-alert": "off",
         "@typescript-eslint/ban-types": "off",
-        "import/no-extraneous-dependencies": "off"
+        "import/no-extraneous-dependencies": "off",
+        "react/jsx-no-bind": "off",
+        "react/react-in-jsx-scope": "off"
       }
     }
   ]

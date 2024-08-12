@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "lib": ["esnext"],
+    "lib": ["DOM", "DOM.Iterable", "esnext"],
     "module": "esnext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
@@ -10,6 +10,7 @@
     "alwaysStrict": true,
     "strictNullChecks": true,
     "noUncheckedIndexedAccess": true,
+    "jsx": "react-jsx",
 
     "noImplicitAny": true,
     "noImplicitReturns": true,
@@ -37,18 +38,23 @@
     "useDefineForClassFields": true,
 
     "baseUrl": ".",
+    "types": ["vite/client", "@types/vscode-webview"],
     "paths": {
-      "@/*": ["./src/*"]
+      "@extension/*": ["src/extension/*"],
+      "@webview/*": ["./src/webview/*"],
+      "@shared/*": ["./src/shared/*"]
     }
   },
   "include": [
     "**/*.ts",
+    "**/*.tsx",
     "src/**/*.json",
     "*.json",
     "*.ts",
     "*.js",
     "*.cjs",
-    "*.mjs"
+    "*.mjs",
+    "vite.config.mts"
   ],
   "exclude": ["**/dist/**", "**/node_modules/**", "cz-adapter.cjs"]
 }

@@ -57,7 +57,7 @@
     "Formatters",
     "Education"
   ],
-  "main": "./dist/node/index.js",
+  "main": "./dist/extension/index.js",
   "icon": "res/icon.png",
   "engines": {
     "vscode": "^1.82.0"
@@ -66,6 +66,24 @@
     "onStartupFinished"
   ],
   "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "aide",
+          "title": "Aide",
+          "icon": "res/icon-mask.png"
+        }
+      ]
+    },
+    "views": {
+      "aide": [
+        {
+          "type": "webview",
+          "id": "aide.webview",
+          "name": "Aide"
+        }
+      ]
+    },
     "commands": [
       {
         "command": "aide.copyAsPrompt",
@@ -271,9 +289,9 @@
   "scripts": {
     "copyFiles": "fse copy ./package.nls.en.json ./package.nls.json",
     "dev": "code --extensionDevelopmentPath=$PWD --disable-extensions &&pnpm run watch",
-    "build": "tsc --noEmit &&pnpm run copyFiles &&tsup",
-    "build:minify": "pnpm run build --minify",
-    "build:pack": "pnpm run build:minify &&vsce package -o dist/aide.vsix --no-dependencies",
+    "dev:ui": "vite serve dev",
+    "build": "tsc &&pnpm run copyFiles &&vite build",
+    "build:pack": "pnpm run build &&vsce package -o dist/aide.vsix --no-dependencies",
     "commit": "git add . && cz",
     "knip": "knip",
     "lint": "eslint .",
@@ -281,35 +299,41 @@
     "publish": "esno ./scripts/publish.ts",
     "prepare": "husky",
     "test": "tsc --noEmit &&vitest --run",
-    "watch": "pnpm run build --watch --sourcemap"
+    "watch": "vite"
   },
   "devDependencies": {
     "@atao60/fse-cli": "^0.1.9",
-    "@commitlint/cli": "^19.3.0",
+    "@commitlint/cli": "^19.4.0",
     "@commitlint/config-conventional": "^19.2.2",
-    "@commitlint/cz-commitlint": "^19.2.0",
+    "@commitlint/cz-commitlint": "^19.4.0",
     "@ianvs/prettier-plugin-sort-imports": "^4.3.1",
-    "@langchain/anthropic": "^0.2.12",
-    "@langchain/core": "0.2.20",
-    "@langchain/openai": "^0.2.5",
+    "@langchain/anthropic": "^0.2.14",
+    "@langchain/core": "0.2.23",
+    "@langchain/openai": "^0.2.6",
+    "@tomjs/vite-plugin-vscode": "^2.5.5",
     "@types/fs-extra": "^11.0.4",
     "@types/global-agent": "^2.1.3",
-    "@types/node": "^22.1.0",
+    "@types/node": "^22.2.0",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
     "@types/shell-quote": "^1.7.5",
     "@types/vscode": "1.82.0",
+    "@types/vscode-webview": "^1.57.5",
     "@typescript-eslint/eslint-plugin": "^7.17.0",
     "@typescript-eslint/parser": "^7.17.0",
+    "@vitejs/plugin-react-swc": "^3.7.0",
     "@vscode/vsce": "^2.31.1",
+    "@vscode/webview-ui-toolkit": "^1.4.0",
     "commitizen": "^4.3.0",
     "dotenv": "^16.4.5",
     "eslint": "^8.57.0",
-    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-airbnb": "^19.0.4",
     "eslint-config-airbnb-typescript": "^18.0.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-import-resolver-alias": "^1.1.2",
     "eslint-import-resolver-typescript": "^3.6.1",
     "eslint-plugin-import": "^2.29.1",
-    "eslint-plugin-json": "^4.0.0",
+    "eslint-plugin-json": "^4.0.1",
     "eslint-plugin-prettier": "^5.2.1",
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "eslint-plugin-unused-imports": "^3.2.0",
@@ -320,28 +344,31 @@
     "glob": "^10.4.3",
     "global-agent": "^3.0.0",
     "husky": "^9.1.4",
-    "ignore": "^5.3.1",
+    "ignore": "^5.3.2",
     "inquirer": "^9.3.4",
-    "knip": "^5.27.0",
-    "langchain": "^0.2.12",
+    "knip": "^5.27.2",
+    "langchain": "^0.2.15",
     "lint-staged": "^15.2.8",
     "minimatch": "^9.0.5",
     "node-fetch": "^3.3.2",
     "p-limit": "^6.1.0",
-    "pnpm": "^9.6.0",
+    "pnpm": "^9.7.0",
     "prettier": "^3.3.3",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "rimraf": "^6.0.1",
     "shell-quote": "^1.8.1",
     "tsup": "^8.2.4",
     "typescript": "5.4.5",
-    "undici": "^6.19.5",
-    "vite": "^5.3.5",
+    "undici": "^6.19.7",
+    "vite": "^5.4.0",
+    "vite-tsconfig-paths": "^5.0.1",
     "vitest": "^2.0.5",
     "zod": "^3.23.8"
   },
   "pnpm": {
     "overrides": {
-      "@langchain/core": "0.2.20"
+      "@langchain/core": "0.2.23"
     }
   },
   "commitlint": {
