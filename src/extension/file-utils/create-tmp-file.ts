@@ -116,6 +116,11 @@ export interface TmpFileInfo {
   originalFileContent: string
 
   /**
+   * Indicates whether the original file content is from selection.
+   */
+  originalFileContentIsFromSelection: boolean
+
+  /**
    * The language ID of the original file.
    */
   originalFileLanguageId: string
@@ -167,6 +172,7 @@ export const createTmpFileInfo = async (): Promise<TmpFileInfo> => {
   let originalFileContent = ''
   let isSelection = false
   let originalFileDocument: vscode.TextDocument
+  let originalFileContentIsFromSelection = false
 
   if (activeIsOriginalFile) {
     const { selection } = activeEditor
@@ -175,6 +181,7 @@ export const createTmpFileInfo = async (): Promise<TmpFileInfo> => {
       ? activeEditor.document.getText(selection)
       : activeEditor.document.getText()
     originalFileDocument = activeEditor.document
+    originalFileContentIsFromSelection = isSelection
   } else {
     originalFileDocument =
       await vscode.workspace.openTextDocument(originalFileUri)
@@ -197,6 +204,7 @@ export const createTmpFileInfo = async (): Promise<TmpFileInfo> => {
     originalFileUri,
     originalFileDocument,
     originalFileContent,
+    originalFileContentIsFromSelection,
     originalFileLanguageId,
     originalFileExt,
     activeIsOriginalFile,

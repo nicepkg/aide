@@ -76,6 +76,10 @@ const configKey = {
     type: 'object',
     optional: true
   },
+  expertCodeEnhancerPromptList: {
+    ...pkgConfig['aide.expertCodeEnhancerPromptList'],
+    type: 'array'
+  },
   codeViewerHelperPrompt: {
     ...pkgConfig['aide.codeViewerHelperPrompt'],
     type: 'string'

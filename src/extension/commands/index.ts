@@ -6,6 +6,7 @@ import { handleBatchProcessor } from './batch-processor'
 import { handleCodeConvert } from './code-convert'
 import { handleCodeViewerHelper } from './code-viewer-helper'
 import { handleCopyAsPrompt } from './copy-as-prompt'
+import { handleExpertCodeEnhancer } from './expert-code-enhancer'
 import { handleCopyFileText } from './private/copy-file-text'
 import { handleQuickCloseFileWithoutSave } from './private/quick-close-file-without-save'
 import { handleReplaceFile } from './private/replace-file'
@@ -32,6 +33,11 @@ export const registerCommands = async (context: vscode.ExtensionContext) => {
   const codeViewerHelperDisposable = vscode.commands.registerCommand(
     'aide.codeViewerHelper',
     commandErrorCatcher(handleCodeViewerHelper)
+  )
+
+  const expertCodeEnhancerDisposable = vscode.commands.registerCommand(
+    'aide.expertCodeEnhancer',
+    commandErrorCatcher(handleExpertCodeEnhancer)
   )
 
   const renameVariableDisposable = vscode.commands.registerCommand(
@@ -84,6 +90,7 @@ export const registerCommands = async (context: vscode.ExtensionContext) => {
     askAIDisposable,
     codeConvertDisposable,
     codeViewerHelperDisposable,
+    expertCodeEnhancerDisposable,
     renameVariableDisposable,
     smartPasteDisposable,
     batchProcessorDisposable,

@@ -104,6 +104,11 @@
         "icon": "$(open-editors-view-icon)"
       },
       {
+        "command": "aide.expertCodeEnhancer",
+        "title": "%command.expertCodeEnhancer%",
+        "icon": "$(extensions-configure-recommended)"
+      },
+      {
         "command": "aide.renameVariable",
         "title": "%command.renameVariable%"
       },
@@ -170,6 +175,10 @@
         {
           "command": "aide.codeConvert",
           "group": "0_aide@121"
+        },
+        {
+          "command": "aide.expertCodeEnhancer",
+          "group": "0_aide@122"
         }
       ],
       "editor/title": [
@@ -180,6 +189,10 @@
         {
           "command": "aide.codeConvert",
           "group": "navigation@2"
+        },
+        {
+          "command": "aide.expertCodeEnhancer",
+          "group": "navigation@3"
         }
       ]
     },
@@ -217,6 +230,96 @@
           "default": "You are a programming language commentator.\nYou need to help me add comments to #{sourceLanguage} code as much as possible to make it readable for beginners.\nDo not change the original code, just add as detailed comments as possible,\nbecause my purpose is only to understand and read. Please use my native language #{locale} as the commenting language.\nPlease do not reply with any text other than the code, and do not use markdown syntax.\nHere is the code you need to comment on:\n\n#{content}",
           "scope": "resource",
           "markdownDescription": "%config.codeViewerHelperPrompt.description%"
+        },
+        "aide.expertCodeEnhancerPromptList": {
+          "type": "array",
+          "default": [
+            {
+              "match": "**/*",
+              "title": "%config.expertCodeEnhancerPromptList.solid%",
+              "prompt": "Please refactor the following code to better adhere to SOLID principles. Focus on Single Responsibility, Open-Closed, Liskov Substitution, Interface Segregation, and Dependency Inversion where applicable. Explain your changes briefly in comments.",
+              "sort": 150,
+              "autoContext": false
+            },
+            {
+              "match": "**/*",
+              "title": "%config.expertCodeEnhancerPromptList.dry%",
+              "prompt": "Refactor the following code to eliminate redundancy and improve maintainability by applying the DRY (Don't Repeat Yourself) principle. Identify repeated code patterns and abstract them into reusable functions or classes as appropriate.",
+              "sort": 160,
+              "autoContext": false
+            },
+            {
+              "match": "**/*",
+              "title": "%config.expertCodeEnhancerPromptList.designPatterns%",
+              "prompt": "Analyze the following code and suggest refactoring using appropriate design patterns. Consider creational, structural, and behavioral patterns that could improve the code's flexibility, maintainability, and scalability.",
+              "sort": 170,
+              "autoContext": false
+            },
+            {
+              "match": [
+                "**/*.vue",
+                "**/*.tsx",
+                "**/*.jsx"
+              ],
+              "title": "%config.expertCodeEnhancerPromptList.splitComponents%",
+              "prompt": "Analyze the following code and split it into smaller, more manageable components. Focus on identifying reusable parts, separating concerns, and improving overall component structure. Provide the refactored code with new component files clearly separated.",
+              "sort": 140,
+              "autoContext": true
+            },
+            {
+              "match": "**/*",
+              "title": "%config.expertCodeEnhancerPromptList.cleanliness%",
+              "prompt": "Refactor the following code to improve its cleanliness and readability. Focus on consistent naming conventions, appropriate comments, logical code organization, and reducing complexity. Ensure the code follows best practices for the given language.",
+              "sort": 180,
+              "autoContext": false
+            },
+            {
+              "match": "**/*",
+              "title": "%config.expertCodeEnhancerPromptList.performance%",
+              "prompt": "Review the following code and optimize it for better performance. Focus on algorithmic efficiency, reducing unnecessary computations, and improving data structure usage. If applicable, consider asynchronous operations and memory management.",
+              "sort": 190,
+              "autoContext": true
+            },
+            {
+              "match": [
+                "**/*.sql",
+                "**/*Repository.{java,kt,scala,cs,py,js,ts}",
+                "**/*Dao.{java,kt,scala,cs,py,js,ts}",
+                "**/*Mapper.{java,kt,scala,cs,py,js,ts}",
+                "**/*Query.{java,kt,scala,cs,py,js,ts}",
+                "**/*.orm.{py,rb}",
+                "**/*.entity.{ts,js}",
+                "**/*Service.{java,kt,scala,cs,py,js,ts}"
+              ],
+              "title": "%config.expertCodeEnhancerPromptList.databaseQueries%",
+              "prompt": "Analyze and optimize the database queries in the following code. Focus on improving query performance, reducing unnecessary joins, optimizing indexing suggestions, and ensuring efficient data retrieval patterns.",
+              "sort": 130,
+              "autoContext": true
+            },
+            {
+              "match": "**/*",
+              "title": "%config.expertCodeEnhancerPromptList.security%",
+              "prompt": "Review the following code and enhance its security measures. Focus on identifying and mitigating common vulnerabilities such as SQL injection, XSS, CSRF, and insecure data handling. Provide safer alternatives and explain the security improvements.",
+              "sort": 200,
+              "autoContext": true
+            },
+            {
+              "match": [
+                "**/*.{java,kt,scala,cs,go,cpp,c,rs,py}",
+                "**/*Async*.{java,kt,scala,cs,go,cpp,c,rs,py}",
+                "**/*Parallel*.{java,kt,scala,cs,go,cpp,c,rs,py}",
+                "**/*Concurrent*.{java,kt,scala,cs,go,cpp,c,rs,py}",
+                "**/*Thread*.{java,kt,scala,cs,go,cpp,c,rs,py}",
+                "**/*Worker*.{java,kt,scala,cs,go,cpp,c,rs,py}"
+              ],
+              "title": "%config.expertCodeEnhancerPromptList.concurrency%",
+              "prompt": "Refactor the following  code to improve its concurrency and multithreading capabilities. Focus on efficient resource sharing, preventing race conditions, and enhancing overall parallel processing performance.",
+              "sort": 180,
+              "autoContext": true
+            }
+          ],
+          "scope": "resource",
+          "markdownDescription": "%config.expertCodeEnhancerPromptList.description%"
         },
         "aide.convertLanguagePairs": {
           "type": "object",
@@ -347,8 +450,8 @@
     "ignore": "^5.3.2",
     "inquirer": "^9.3.4",
     "knip": "^5.27.2",
-    "langchain": "^0.2.15",
-    "lint-staged": "^15.2.8",
+    "langchain": "^0.2.16",
+    "lint-staged": "^15.2.9",
     "minimatch": "^9.0.5",
     "node-fetch": "^3.3.2",
     "p-limit": "^6.1.0",

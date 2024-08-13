@@ -32,5 +32,7 @@ export const t: LocalizeFunction = (key: string, ...args: any[]) => {
  * @example
  * translateVscodeJsonText("%config.key%") === t('config.key')
  */
-export const translateVscodeJsonText = (text: string): string =>
-  text.replace(/%([^%]+)%/g, (_, key) => t(key))
+export const translateVscodeJsonText = (text: string): string => {
+  if (!text.match(/%[^%]+%/)) return text
+  return text.replace(/%([^%]+)%/g, (_, key) => t(key))
+}
