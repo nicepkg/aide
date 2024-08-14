@@ -1,15 +1,15 @@
 # aide.aiCommand
 
-此配置允许你自定义 `✨ Aide: 问 AI` ==命令执行的模板==。模板可以包括一些占位符：
+此配置允许你自定义 `✨ Aide: 问 AI` ==命令执行的模板==。模板可以包括一些变量：
 
 **模板参数：**
 
-| 参数                   | 描述                 | 输出示例                                                                                                              |
-| ---------------------- | -------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| `#{filesRelativePath}` | 文件相对路径占位符   | `"./src/index.ts" "./src/utils.ts"`                                                                                   |
-| `#{filesFullPath}`     | 文件完整路径占位符   | `"/project/src/index.ts" "/project/src/utils.ts"`                                                                     |
-| `#{question}`          | 用户输入问题的占位符 | `"What is the purpose of this code?" `                                                                                |
-| `#{content}`           | 文件的完整内容占位符 | <pre><code>File: example.js<br/>\`\`\`js<br/>const bar = "hello, aide";<br/>console.log(bar);<br/>\`\`\`</code></pre> |
+| 参数                   | 描述               | 输出示例                                                                                                              |
+| ---------------------- | ------------------ | --------------------------------------------------------------------------------------------------------------------- |
+| `#{filesRelativePath}` | 文件相对路径变量   | `"./src/index.ts" "./src/utils.ts"`                                                                                   |
+| `#{filesFullPath}`     | 文件完整路径变量   | `"/project/src/index.ts" "/project/src/utils.ts"`                                                                     |
+| `#{question}`          | 用户输入问题的变量 | `"What is the purpose of this code?" `                                                                                |
+| `#{content}`           | 文件的完整内容变量 | <pre><code>File: example.js<br/>\`\`\`js<br/>const bar = "hello, aide";<br/>console.log(bar);<br/>\`\`\`</code></pre> |
 
 **使用示例：**
 

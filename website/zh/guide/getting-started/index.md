@@ -35,7 +35,9 @@
 
 7. **[自定义命令提问 AI](../features/ask-ai.md)**：在选定的文件或文件夹上执行自定义 AI 命令。
 
-## ==Aide== 与 ==Copilot/Codeium/AmazonQ== 的区别
+## ==Aide== 与 ==Copilot/Cursor/Codeium/AmazonQ== 的区别
+
+<Image src="/aide-difference-with-other-ai-tools.jpg"/>
 
 - **🚫 无冗余功能**：我们专注于独特的、互补的功能，而不是复制现有工具。
 

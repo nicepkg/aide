@@ -8,7 +8,7 @@
 
 :::
 
-<img src="/wechat.jpg" alt="我的微信" width="250" style="border-radius: 0.5rem"/>
+<Image src="/wechat.jpg" :style="{borderRadius: '0.5rem', width: '250px'}"/>
 
 ### 👍 微信群欢迎的行为：
 

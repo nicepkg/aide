@@ -1,16 +1,18 @@
 <template>
   <div>
-    <h3>
-      推荐使用模型（单位：{{ currency }}）
-      <button class="aide-button" @click="toggleCurrency">
-        切换单位到 -> {{ currency === '虚拟美元' ? '现实人民币' : '虚拟美元' }}
-      </button>
-    </h3>
+    <template v-if="!onlyShowAllModels">
+      <h3>
+        推荐使用模型（单位：{{ currency }}）
+        <button class="aide-button" @click="toggleCurrency">
+          切换单位到 -> {{ currency === '虚拟美元' ? '现实人民币' : '虚拟美元' }}
+        </button>
+      </h3>
 
-    <PriceTable :models="recommendedModels" :model-price-data="modelPriceData" :currency="currency"
-      :format-currency="formatCurrency" :model-recommend="modelRecommend" />
+      <PriceTable :models="recommendedModels" :model-price-data="modelPriceData" :currency="currency"
+        :format-currency="formatCurrency" :model-recommend="modelRecommend" />
+    </template>
 
-    <h3>浏览所有支持的模型</h3>
+    <h3 v-if="!onlyShowAllModels">浏览所有支持的模型</h3>
     <details class="details custom-block">
       <summary>所有支持的模型价格列表</summary>
 
@@ -42,6 +44,13 @@ import { ref, computed } from 'vue'
 import modelData from './model-price.json'
 import PriceTable from './PriceTable.vue'
 import { ModelPrice } from './types'
+
+defineProps({
+  onlyShowAllModels: {
+    'type': Boolean,
+    'default': false,
+  },
+})
 
 const groupRatio = modelData.data.GroupRatio.default
 const currency = ref('虚拟美元')

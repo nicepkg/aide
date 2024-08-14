@@ -48,7 +48,7 @@
 
 你可以点击 ==VSCode== 底部 `Aide 消耗` 按钮随时查询调用、余额等信息。
 
-<img src="/aide-key-usage-info.zh.jpg" style="width: 100%; max-width: 1080px; border-radius: 0.5rem;" alt="Aide 消耗信息查询截图" />
+<Image src="/aide-key-usage-info.zh.jpg" />
 
 ## 配置
 
@@ -62,7 +62,9 @@
 
 ### 模型配置
 
-你可以配置 `openAI` 的模型，我们推荐使用 `gpt-4o` 模型。更多模型请参考 [支持的模型列表](https://api.zyai.online/v1/models)
+你可以配置 `openAI` 的模型，我们推荐使用 `gpt-4o` 模型。更多模型请参考
+
+<AideModelPrice onlyShowAllModels />
 
 ### 示例配置文件
 

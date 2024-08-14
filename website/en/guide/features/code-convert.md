@@ -6,6 +6,15 @@ Use AI to convert an entire file or selected code from one programming language 
 
 You can enter any language or file extension. If it is not in the [==language list==](https://code.visualstudio.com/docs/languages/identifiers#_known-language-identifiers), it might not support syntax highlighting, but it can still be converted.
 
+**Scenarios:**
+
+- You can understand unfamiliar project code using a language you are familiar with.
+- By mastering just one language, you can understand all code and get references for code migration.
+- You can convert `Python` code to `JavaScript` code.
+- You can convert `C/C++` code to `Rust` code.
+- You can convert `Vue2` code to `Vue3` code.
+- More features await your imagination...
+
 **Usage:**
 
 - Select the code in the editor.

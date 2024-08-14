@@ -35,7 +35,9 @@
 
 7. **[Ask AI With Custom Command](../features/ask-ai.md)**: Execute customized AI commands on selected files or folders.
 
-## Differences Between ==Aide== and ==Copilot/Codeium/AmazonQ==
+## Differences Between ==Aide== and ==Copilot/Cursor/Codeium/AmazonQ==
+
+<Image src="/aide-difference-with-other-ai-tools.jpg"/>
 
 - **🚫 No Redundant Features**: We focus on unique, complementary features rather than replicating existing tools.
 

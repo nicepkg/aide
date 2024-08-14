@@ -2,20 +2,18 @@ import { getReferenceFilePaths } from '@extension/ai/get-reference-file-paths'
 import { getConfigKey } from '@extension/config'
 import { AbortError } from '@extension/constants'
 import { getFileOrFoldersPromptInfo } from '@extension/file-utils/get-fs-prompt-info'
-import { t, translateVscodeJsonText } from '@extension/i18n'
+import { t } from '@extension/i18n'
+import { createLoading } from '@extension/loading'
 import { cacheFn } from '@extension/storage'
 import { showQuickPickWithCustomInput } from '@extension/utils'
 import type { BaseLanguageModelInput } from '@langchain/core/language_models/base'
 import { Minimatch, type MinimatchOptions } from 'minimatch'
 import * as vscode from 'vscode'
 
-interface ExpertCodeEnhancerPromptItem {
-  match?: string | string[]
-  title?: string
-  prompt: string
-  sort?: number
-  autoContext?: boolean // need function_call, default is false
-}
+import {
+  getDefaultExpertCodeEnhancerPromptList,
+  type ExpertCodeEnhancerPromptItem
+} from './default-prompt-list'
 
 const isMatched = (
   item: ExpertCodeEnhancerPromptItem,
@@ -62,13 +60,15 @@ export const buildGeneratePrompt = async ({
 
   const currentFileRelativePath =
     vscode.workspace.asRelativePath(currentFilePath)
+
   const currentFileFullContent = codeIsFromSelection
 
+  const defaultPromptList = getDefaultExpertCodeEnhancerPromptList()
+
   const matchedPrompts = expertCodeEnhancerPromptList
+    .concat(defaultPromptList)
     .map(item => {
-      const title = item.title
-        ? translateVscodeJsonText(item.title)
-        : item.prompt.split('\n')[0]!
+      const title = item.title ? item.title : item.prompt.split('\n')[0]!
       const match = item.match ?? '**/*'
 
       return {
@@ -107,24 +107,25 @@ export const buildGeneratePrompt = async ({
 
   const baseInstructions = [
     '1. Focus solely on generating optimized code. Do not include any explanations, comments, or markdown formatting in your output.',
-    '2. Always provide a complete and fully functional code solution. Do not omit or abbreviate any part of the code.',
-    "3. Strictly adhere to the user's prompt and requirements specified below.",
-    '4. Maintain the original functionality of the code while improving its efficiency, readability, or structure as requested.',
-    '5. If the prompt asks for specific optimizations or changes, prioritize those requirements.',
-    "6. Ensure that the optimized code is compatible with the original codebase and doesn't introduce new dependencies unless explicitly requested."
+    `2. The language of your code comments should match the language used in the existing code comments. If there are no existing comments in the original code to reference, you should use ${vscode.env.language} language for your comments.`,
+    '3. Always provide a complete and fully functional code solution. Do not omit or abbreviate any part of the code.',
+    "4. Strictly adhere to the user's prompt and requirements specified below.",
+    '5. Maintain the original functionality of the code while improving its efficiency, readability, or structure as requested.',
+    '6. If the prompt asks for specific optimizations or changes, prioritize those requirements.',
+    "7. Ensure that the optimized code is compatible with the original codebase and doesn't introduce new dependencies unless explicitly requested."
   ]
 
   const selectionInstructions = codeIsFromSelection
     ? [
-        '7. The provided code is a selection from a larger file. Ensure your optimizations fit seamlessly into the larger context.'
+        '8. The provided code is a selection from a larger file. Ensure your optimizations fit seamlessly into the larger context.'
       ]
     : []
 
   const contextInstructions = selectedPrompt.autoContext
     ? [
-        '7. Use the provided context from related files to inform your optimization decisions. This may include understanding shared functions, data structures, or coding patterns used in the project.',
-        '8. If the context reveals project-specific conventions or patterns, apply them consistently in your optimized code.',
-        '9. Be cautious not to introduce conflicts with the existing codebase or break dependencies based on the provided context.'
+        '8. Use the provided context from related files to inform your optimization decisions. This may include understanding shared functions, data structures, or coding patterns used in the project.',
+        '9. If the context reveals project-specific conventions or patterns, apply them consistently in your optimized code.',
+        '10. Be cautious not to introduce conflicts with the existing codebase or break dependencies based on the provided context.'
       ]
     : []
 
@@ -137,29 +138,21 @@ export const buildGeneratePrompt = async ({
   let prompt = `
   You are an AI assistant specialized in code optimization and refactoring${selectedPrompt.autoContext ? ', with access to additional context from related files' : ''}. Your task is to analyze and improve the provided code based on the following instructions:
 
+  **Important Instructions**:
   ${allInstructions.join('\n')}
 
-  Here's the user's prompt:
-  ${customPrompt}
-
-  Here's the code you need to optimize:
-  ${code}
-
-  ${
-    codeIsFromSelection
-      ? `
-  Full file content:
-  ${currentFileFullContent}
-
-  File path: ${currentFileRelativePath}
-
-  The code to be optimized is a selection from the above file.
-  `
-      : ''
-  }
+  **Input Details**:
   `
 
   if (selectedPrompt.autoContext) {
+    const { showProcessLoading, hideProcessLoading } = createLoading()
+
+    showProcessLoading({
+      onCancel() {
+        abortController?.abort()
+      }
+    })
+
     const { referenceFileRelativePaths, dependenceFileRelativePath } =
       await cacheGetReferenceFilePaths({ currentFilePath, abortController })
 
@@ -172,15 +165,37 @@ export const buildGeneratePrompt = async ({
         workspaceFolder.uri.fsPath
       )
 
+    hideProcessLoading()
+
     prompt += `
-    Context from related files:
-    ${referenceFileContent}
+  0. Reference Files:
+  ${referenceFileContent}
     `
   }
 
   prompt += `
+  ${
+    codeIsFromSelection
+      ? `
+  1. Current File, the code to be optimized is a selection from this file.:
+  File: ${currentFileRelativePath}
+  \`\`\`
+  ${currentFileFullContent}
+  \`\`\`
+  `
+      : ''
+  }
+
+  2. Here's the code you need to optimize:
+  ${code}
+
+  **Important! User's prompt**:
+  ${customPrompt}
+
+  **Final Reminder**:
+  The language of your code comments should match the language used in the existing code comments. If there are no existing comments in the original code to reference, you should use ${vscode.env.language} language for your comments.
   Please provide the optimized code based on these instructions${selectedPrompt.autoContext ? ", the user's prompt, and the given context" : " and the user's prompt"}.
-  Please do not reply with any text other than the code, and do not use markdown syntax.
+  Please do not reply with any text other than the code or code comments, and do not use markdown syntax.
   `
 
   return prompt

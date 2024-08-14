@@ -4,6 +4,11 @@ Command Name: `aide.askAI`
 
 Prepare and execute a custom AI command based on the selected file and user input.
 
+**Scenarios:**
+
+- ==Aide== itself does not provide AI Q&A services, but you can achieve this through custom AI commands.
+- If you use third-party AI terminal tools, such as [`aider`](https://github.com/paul-gauthier/aider), you can configure commands for quick access to these tools.
+
 **Usage:**
 
 - Select a file or folder in the explorer. (Multi-select: hold `Ctrl` or `Cmd` and click on files or folders)

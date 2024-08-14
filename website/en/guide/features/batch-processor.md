@@ -4,41 +4,44 @@ Command Name: `aide.batchProcessor`
 
 Use AI to process the code of multiple selected files according to your needs.
 
-**What it can do:**
+::: warning
 
-- Batch add detailed comments
-- Batch optimize code
-- Batch convert `vue2` code to `vue3` code
-- Batch convert `vue` code to `react` code
-- Batch convert `react` code to `flutter` code
-- Batch convert `react class component` code to `react function component` code
-- Batch convert `rust` code to `js` code
-- Batch convert `json` code to `yaml` code
-- Use your imagination...
+This feature requires the AI model to support the `function_call` capability.
 
-**What it cannot do:**
+:::
 
-- Specific business requirements
-- Split one file into multiple files
+**Scenarios:**
 
-**==Rest assured! Processing will not modify the source file==:**
+- **What it can do:**
 
-- It will generate an additional `file copy`. For example, `app/index.py` -> `app/index.py.aide.py`.
-- You can click the `file copy`, review it, and then decide whether to replace the `source file`.
-- When opening the `file copy`, the `source file` will be opened simultaneously, allowing you to compare at any time.
-- You can click the `Replace Original` button on the first line of the `file copy` to replace the `source file`.
+  - When your manager requests a project code migration, AI can handle it in bulk, giving you time to grab a coffee.
+  - Add detailed comments in bulk.
+  - Optimize code in bulk.
+  - Convert `C/C++` code to `Rust` code in bulk.
+  - Convert `Vue2` code to `Vue3` code in bulk.
+  - Convert `Vue` code to `React` code in bulk.
+  - Convert `React` code to `Flutter` code in bulk.
+  - Convert `React class components` to `React function components` in bulk.
+  - Convert `JSON` to `YAML` in bulk.
+  - More features await your imagination...
+
+- **What it can‘t do:**
+
+  - Handle specific business logic requirements.
+  - Split a file into multiple files.
+
+- **==Rest assured! Processing will not modify the original files==:**
+
+  - It will generate a `file copy`, such as `app/index.py` -> `app/index.py.aide.py`.
+  - You can click on the `file copy` and review it before deciding whether to replace the `original file`.
+  - When opening the `file copy`, the `original file` will also open simultaneously for easy comparison.
+  - You can click the `Replace Original` button in the `file copy` to replace the `original file`.
 
 **Usage:**
 
 - Select files or folders in the file explorer. (Multi-select: hold `Ctrl` or `Cmd` and click on files or folders)
 - Right-click and select `✨ Aide: AI Batch Processor`.
 - Enter your code processing requirements.
-
-::: warning
-
-This feature requires the AI model to support the `function_call` feature.
-
-:::
 
 <Video src="/videos/aide-batch-processor.mp4"/>
 

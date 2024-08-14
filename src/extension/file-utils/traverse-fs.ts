@@ -62,6 +62,7 @@ export const traverseFileOrFolders = async <T>(
   workspacePath: string,
   fileCallback: (fileInfo: FileInfo) => MaybePromise<T>
 ): Promise<T[]> => {
+  const filePathSet = new Set<string>()
   const results: T[] = []
 
   await Promise.allSettled(
@@ -77,6 +78,9 @@ export const traverseFileOrFolders = async <T>(
 
         await Promise.allSettled(
           allFiles.map(async filePath => {
+            if (filePathSet.has(filePath)) return
+            filePathSet.add(filePath)
+
             const fileInfo = await getFileInfo(filePath, workspacePath)
             if (fileInfo) {
               results.push(await fileCallback(fileInfo))
@@ -86,6 +90,9 @@ export const traverseFileOrFolders = async <T>(
       }
 
       if (stat.type === vscode.FileType.File) {
+        if (filePathSet.has(absolutePath)) return
+        filePathSet.add(absolutePath)
+
         const fileInfo = await getFileInfo(absolutePath, workspacePath)
 
         if (fileInfo) {

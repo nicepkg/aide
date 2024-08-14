@@ -1,14 +1,14 @@
 # aide.codeViewerHelperPrompt
 
-This configuration allows you to customize ==the AI prompt template for the code viewer assistant==. The template can include some placeholders:
+This configuration allows you to customize ==the AI prompt template for the code viewer assistant==. The template can include some variables:
 
 **Template Parameters:**
 
-| Parameter           | Description              | Output Example                                                                             |
-| ------------------- | ------------------------ | ------------------------------------------------------------------------------------------ |
-| `#{sourceLanguage}` | Source code language     | `javascript`                                                                               |
-| `#{locale}`         | User's language/locale   | `en`                                                                                       |
-| `#{content}`        | Full content of the file | <pre lang="javascript"><code>const bar = "hello, aide";<br/>console.log(bar);</code></pre> |
+| Parameter           | Description                           | Output Example                                                                             |
+| ------------------- | ------------------------------------- | ------------------------------------------------------------------------------------------ |
+| `#{sourceLanguage}` | Variable for source code language     | `javascript`                                                                               |
+| `#{locale}`         | Variable for user's language/locale   | `en`                                                                                       |
+| `#{content}`        | Variable for full content of the file | <pre lang="javascript"><code>const bar = "hello, aide";<br/>console.log(bar);</code></pre> |
 
 **Usage Examples:**
 

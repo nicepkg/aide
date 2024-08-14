@@ -6,6 +6,7 @@ import '@nolebase/vitepress-plugin-inline-link-preview/client/style.css'
 
 import AideModelPrice from '../../components/AideModels/AideModelPrice/index.vue'
 import AidePay from '../../components/AideModels/AidePay.vue'
+import Image from '../../components/Image.vue'
 import Video from '../../components/Video.vue'
 
 import 'virtual:uno.css'
@@ -14,6 +15,7 @@ import './style.css'
 export default {
   extends: DefaultTheme,
   enhanceApp({ app }: { app: App }) {
+    app.component('Image', Image)
     app.component('Video', Video)
     app.component('AidePay', AidePay)
     app.component('AideModelPrice', AideModelPrice)

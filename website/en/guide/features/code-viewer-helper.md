@@ -4,6 +4,12 @@ Command Name: `aide.codeViewerHelper`
 
 Use AI to add comments to the entire file or selected code to make it easier to read.
 
+**Scenarios:**
+
+- You can use it to understand unfamiliar code.
+- You want to quickly grasp complex legacy code.
+- You want to add detailed comments to your code with a single click.
+
 **Usage:**
 
 - Select the code in the editor.

@@ -1,15 +1,15 @@
 # aide.aiCommand
 
-This configuration allows you to customize ==the template used== for the `✨ Aide: Ask AI` command execution. The template can include some placeholders:
+This configuration allows you to customize ==the template used== for the `✨ Aide: Ask AI` command execution. The template can include some variables:
 
 **Template Parameters:**
 
-| Parameter              | Description                  | Output Example                                                                                                        |
-| ---------------------- | ---------------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| `#{filesRelativePath}` | Placeholder for file paths   | `"./src/index.ts" "./src/utils.ts"`                                                                                   |
-| `#{filesFullPath}`     | Placeholder for full paths   | `"/project/src/index.ts" "/project/src/utils.ts"`                                                                     |
-| `#{question}`          | Placeholder for user query   | `"What is the purpose of this code?" `                                                                                |
-| `#{content}`           | Placeholder for file content | <pre><code>File: example.js<br/>\`\`\`js<br/>const bar = "hello, aide";<br/>console.log(bar);<br/>\`\`\`</code></pre> |
+| Parameter              | Description               | Output Example                                                                                                        |
+| ---------------------- | ------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `#{filesRelativePath}` | Variable for file paths   | `"./src/index.ts" "./src/utils.ts"`                                                                                   |
+| `#{filesFullPath}`     | Variable for full paths   | `"/project/src/index.ts" "/project/src/utils.ts"`                                                                     |
+| `#{question}`          | Variable for user query   | `"What is the purpose of this code?" `                                                                                |
+| `#{content}`           | Variable for file content | <pre><code>File: example.js<br/>\`\`\`js<br/>const bar = "hello, aide";<br/>console.log(bar);<br/>\`\`\`</code></pre> |
 
 **Usage Example:**
 

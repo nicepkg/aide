@@ -2,13 +2,9 @@
 
 Command Name: `aide.smartPaste`
 
-Use AI to intelligently recognize ==code or images== from the clipboard and perform format conversion, then paste it into the current editor. This feature can significantly enhance development efficiency, especially when dealing with cross-language or cross-framework code conversions.
+Use AI to intelligently recognize ==code or images== from the clipboard and perform format conversion, then paste it into the current editor.
 
-**Usage:**
-
-- Copy code from somewhere else to the clipboard.
-- Place the cursor at the desired location in the editor. (This position will affect the paste result)
-- Right-click and select `✨ Aide: Smart Paste`.
+This feature can significantly enhance development efficiency, especially when dealing with cross-language or cross-framework code conversions.
 
 ::: warning
 This feature requires AI model support for `function_call` capability.
@@ -16,25 +12,24 @@ This feature requires AI model support for `function_call` capability.
 The image reading feature requires enabling the [`aide.readClipboardImage`](../configuration/read-clipboard-image.md) configuration. The AI model must also support image reading. We recommend using the `gpt-4o` model.
 :::
 
+**Scenarios:**
+
+- As a `CV` engineer not satisfied with the status quo, you desire a smarter paste function.
+- ==Smart Paste== will intelligently recognize clipboard content and automatically convert it.
+- Copying `JSON` and pasting into a `TypeScript` file will automatically generate type definitions.
+- Copying `HTML` and pasting into a `Flutter` file will automatically convert it into a `Flutter Widget`.
+- Copying a `Python` function and pasting into a `Rust` file will automatically generate the corresponding `Rust` function.
+- Copying a design draft screenshot and pasting into `Vue/React/Flutter` code will automatically generate the corresponding `UI` code.
+- Copying a database design diagram and pasting into an `SQL` file will automatically generate the relevant `SQL` code.
+- More features await your imagination...
+
+**Usage:**
+
+- Copy code from somewhere else to the clipboard.
+- Place the cursor at the desired location in the editor. (This position will affect the paste result)
+- Right-click and select `✨ Aide: Smart Paste`.
+
 <Video src="/videos/aide-smart-paste.mp4"/>
-
-::: tip
-
-==Aide== will intelligently interpret your intention, automatically recognizing and converting the content without additional configuration. For example:
-
-- If you copy a design screenshot and paste it into `vue/react/flutter` code, ==Aide== will automatically convert it into the corresponding `UI` code. (This feature requires enabling the [`aide.readClipboardImage`](../configuration/read-clipboard-image.md) configuration)
-
-- If you copy a database design diagram and paste it into an `SQL` file, ==Aide== will automatically convert it into the corresponding `SQL` code.
-
-- If you copy a `JSON` and paste it into a `TypeScript` file, ==Aide== will automatically convert it into a `TypeScript` type definition.
-
-- If you copy some `Tailwind CSS` code and paste it into a `Flutter Dart` file, it will automatically convert it into a `Flutter Widget`.
-
-- You can also copy a `Python` function and paste it into a `Rust` file, and ==Aide== will automatically convert it into a `Rust` function.
-
-Of course, its functionalities are not limited to these examples. Feel free to explore more use cases.
-
-:::
 
 **Examples:**
 
@@ -60,15 +55,15 @@ type User = {
 }
 ```
 
-- **From `Tailwind CSS` to `Flutter Widget`**
+- **From `TailwindCSS HTML` to `Flutter Widget`**
 
-Suppose you have the following `Tailwind CSS` code:
+Suppose you have the following `TailwindCSS HTML` code:
 
 ```html
 <div class="bg-blue-500 text-white p-4">Hello, World!</div>
 ```
 
-Copy it to the clipboard, then use the `Smart Paste` feature in a `Flutter Dart` file, and ==Aide== will automatically convert it into a `Flutter Widget`:
+Copy it to the clipboard, then use the `Smart Paste` feature in a `Flutter` file, and ==Aide== will automatically convert it into a `Flutter Widget`:
 
 ```dart
 Container(
