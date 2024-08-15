@@ -213,9 +213,6 @@ importers:
       '@iconify-json/bx':
         specifier: ^1.1.11
         version: 1.1.11
-      '@iconify-json/fluent-emoji':
-        specifier: ^1.1.19
-        version: 1.1.19
       '@iconify-json/logos':
         specifier: ^1.1.44
         version: 1.1.44
@@ -1307,9 +1304,6 @@ packages:
 
   '@iconify-json/bx@1.1.11':
     resolution: {integrity: sha512-kK8wAKKURF3vannfh7FrsTOY44W+9qgngXSV5X+cr/pe6uUpOg1xAajHhNCO/W+/6JUYE2t+KRD2NFnkOoK7rQ==}
-
-  '@iconify-json/fluent-emoji@1.1.19':
-    resolution: {integrity: sha512-NdrMN6ooYZP2jDUPG7r3u6dogYQ+iY1rUAqwLtUTFG8nRSFXtMN0CbmGczr2jXokWQbuVxFl+qj280LlpTUtog==}
 
   '@iconify-json/icon-park-outline@1.1.15':
     resolution: {integrity: sha512-jQbk/ETARyYPjX6HolkdjSLJHsNCfSBfYUqcUQLXYK/1tfuVnQsUdWG2IM2a7VBpxJtrK7r4n1iwPOFaZ5T46g==}
@@ -6657,10 +6651,6 @@ snapshots:
       - supports-color
 
   '@iconify-json/bx@1.1.11':
-    dependencies:
-      '@iconify/types': 2.0.0
-
-  '@iconify-json/fluent-emoji@1.1.19':
     dependencies:
       '@iconify/types': 2.0.0
 
