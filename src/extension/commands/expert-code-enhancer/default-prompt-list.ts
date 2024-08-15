@@ -37,16 +37,16 @@ export const getDefaultExpertCodeEnhancerPromptList =
         },
         {
           match: '**/*',
-          title: t('config.expertCodeEnhancerPromptList.solid'),
+          title: t('config.expertCodeEnhancerPromptList.dry'),
           prompt:
-            'Please refactor the following code to better adhere to SOLID principles. Focus on Single Responsibility, Open-Closed, Liskov Substitution, Interface Segregation, and Dependency Inversion where applicable. Explain your changes briefly in comments.',
+            "Refactor the following code to eliminate redundancy and improve maintainability by applying the DRY (Don't Repeat Yourself) principle. Identify repeated code patterns and abstract them into reusable functions or classes as appropriate.",
           autoContext: false
         },
         {
           match: '**/*',
-          title: t('config.expertCodeEnhancerPromptList.dry'),
+          title: t('config.expertCodeEnhancerPromptList.solid'),
           prompt:
-            "Refactor the following code to eliminate redundancy and improve maintainability by applying the DRY (Don't Repeat Yourself) principle. Identify repeated code patterns and abstract them into reusable functions or classes as appropriate.",
+            'Please refactor the following code to better adhere to SOLID principles. Focus on Single Responsibility, Open-Closed, Liskov Substitution, Interface Segregation, and Dependency Inversion where applicable. Explain your changes briefly in comments.',
           autoContext: false
         },
         {

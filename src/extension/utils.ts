@@ -171,8 +171,12 @@ export const normalizeLineEndings = (text?: string): string => {
 
   const { eol } = activeEditor.document
 
-  if (eol === vscode.EndOfLine.LF) return text.replace(/\r\n/g, '\n')
-  if (eol === vscode.EndOfLine.CRLF) return text.replace(/\n/g, '\r\n')
+  // convert all EOL to LF
+  const unifiedText = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n')
+
+  // replace with target EOL
+  if (eol === vscode.EndOfLine.LF) return unifiedText
+  if (eol === vscode.EndOfLine.CRLF) return unifiedText.replace(/\n/g, '\r\n')
 
   return text
 }
