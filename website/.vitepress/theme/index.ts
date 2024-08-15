@@ -1,4 +1,5 @@
 import { NolebaseInlineLinkPreviewPlugin } from '@nolebase/vitepress-plugin-inline-link-preview/client'
+import { ClientOnly } from 'vitepress'
 import DefaultTheme from 'vitepress/theme'
 import type { App } from 'vue'
 import { h } from 'vue'

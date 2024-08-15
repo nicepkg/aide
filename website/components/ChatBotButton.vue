@@ -33,8 +33,8 @@ const buttonRightDistance = ref(20);
 const buttonBottomDistance = ref(20);
 
 // window size
-const windowWidth = ref(window.innerWidth);
-const windowHeight = ref(window.innerHeight);
+const windowWidth = ref(0);
+const windowHeight = ref(0);
 
 // update window size and buttonRightDistance
 const updateWindowSize = () => {
