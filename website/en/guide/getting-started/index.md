@@ -7,13 +7,15 @@
 
 ==Aide== is a powerful AI-assisted development ==VSCode== extensions designed to enhance your coding experience. Here's why you should choose ==Aide==:
 
-- **📚 Improved Code Readability**: Add detailed comments to your code with one click, improving readability without modifying the original file.
+- **📖 Improved Code Readability**: Add detailed comments to your code with one click, improving readability without modifying the original file.
 
 - **🔄 Effortless Code Conversion**: Convert code between languages or frameworks instantly, making it easier to understand unfamiliar code or migrate projects.
 
+- **🔧 Let the Expert Enhance Your Code**: Hand your code over to AI for optimization and see how an expert would write it.
+
 - **🔮 Magical Smart Paste**: Intelligently convert clipboard content when pasting, including transforming design screenshots into UI code. Streamlines cross-language, cross-framework development, and design-to-code workflows.
 
-- **📋 Efficient Batch Processing**: Easily process multiple files or folders with AI, significantly boosting your productivity.
+- **🗂️ Efficient Batch Processing**: Easily process multiple files or folders with AI, significantly boosting your productivity.
 
 - **🏷️ Intelligent Variable Renaming**: Get AI-powered variable name suggestions with explanations, helping you choose the best names for your code.
 
@@ -25,15 +27,17 @@
 
 2. **[Code Convert](../features/code-convert.md)**: Transform code from one programming language to another with AI assistance.
 
-3. **[Smart Paste](../features/smart-paste.md)**: Intelligently convert clipboard content when pasting into different file types.
+3. **[Expert Code Enhancer](../features/expert-code-enhancer.md)**: Use AI to optimize and refactor entire files or selected code, moving a step closer to senior engineering.
 
-4. **[AI Batch Processor](../features/batch-processor.md)**: Process multiple files with AI according to your specific requirements
+4. **[Smart Paste](../features/smart-paste.md)**: Intelligently convert clipboard content when pasting into different file types.
 
-5. **[Copy Multiple Files As AI Prompt](../features/copy-as-prompt.md)**: Format multiple files as AI interaction prompts with a single click.
+5. **[AI Batch Processor](../features/batch-processor.md)**: Process multiple files with AI according to your specific requirements
 
-6. **[Rename Variable](../features/rename-variable.md)**: Get AI suggestions for variable names to improve code clarity.
+6. **[Copy Multiple Files As AI Prompt](../features/copy-as-prompt.md)**: Format multiple files as AI interaction prompts with a single click.
 
-7. **[Ask AI With Custom Command](../features/ask-ai.md)**: Execute customized AI commands on selected files or folders.
+7. **[Rename Variable](../features/rename-variable.md)**: Get AI suggestions for variable names to improve code clarity.
+
+8. **[Ask AI With Custom Command](../features/ask-ai.md)**: Execute customized AI commands on selected files or folders.
 
 ## Differences Between ==Aide== and ==Copilot/Cursor/Codeium/AmazonQ==
 

@@ -114,6 +114,10 @@ function sidebar(): DefaultTheme.Sidebar {
             link: '/code-convert'
           },
           {
+            text: '让大师帮你改代码',
+            link: '/expert-code-enhancer'
+          },
+          {
             text: '智能粘贴',
             link: '/smart-paste'
           },
@@ -171,6 +175,10 @@ function sidebar(): DefaultTheme.Sidebar {
           {
             text: 'aide.autoRememberConvertLanguagePairs',
             link: '/auto-remember-convert-language-pairs'
+          },
+          {
+            text: 'aide.expertCodeEnhancerPromptList',
+            link: '/expert-code-enhancer-prompt-list'
           },
           {
             text: 'aide.readClipboardImage',

@@ -2,6 +2,26 @@ import { saveImage, setupHtml } from '@extension/utils'
 import type { WebviewToExtensionsMsg } from '@shared/types/msg'
 import * as vscode from 'vscode'
 
+// {
+//   "viewsContainers": {
+//       "activitybar": [
+//         {
+//           "id": "aide",
+//           "title": "Aide",
+//           "icon": "res/icon-mask.png"
+//         }
+//       ]
+//     },
+//     "views": {
+//       "aide": [
+//         {
+//           "type": "webview",
+//           "id": "aide.webview",
+//           "name": "Aide"
+//         }
+//       ]
+//     },
+// }
 class AideWebViewProvider implements vscode.WebviewViewProvider {
   public static readonly viewType = 'aide.webview'
 

@@ -89,6 +89,10 @@ function sidebar(): DefaultTheme.Sidebar {
             link: '/code-convert'
           },
           {
+            text: 'Expert Code Enhancer',
+            link: '/expert-code-enhancer'
+          },
+          {
             text: 'Smart Paste',
             link: '/smart-paste'
           },
@@ -140,6 +144,10 @@ function sidebar(): DefaultTheme.Sidebar {
           {
             text: 'aide.autoRememberConvertLanguagePairs',
             link: '/auto-remember-convert-language-pairs'
+          },
+          {
+            text: 'aide.expertCodeEnhancerPromptList',
+            link: '/expert-code-enhancer-prompt-list'
           },
           {
             text: 'aide.readClipboardImage',

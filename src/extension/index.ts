@@ -11,7 +11,6 @@ import { logger } from './logger'
 import { enablePolyfill } from './polyfill'
 import { registerProviders } from './providers'
 import { initAideKeyUsageStatusBar } from './providers/aide-key-usage-statusbar'
-import { renderWebview } from './providers/webview'
 import { redisStorage, stateStorage } from './storage'
 
 export const activate = async (context: vscode.ExtensionContext) => {
@@ -31,7 +30,7 @@ export const activate = async (context: vscode.ExtensionContext) => {
     await initAideKeyUsageStatusBar(context)
     await autoOpenCorrespondingFiles(context)
     await cleanup(context)
-    await renderWebview(context)
+    // await renderWebview(context)
   } catch (err) {
     logger.warn('Failed to activate extension', err)
   }

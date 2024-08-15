@@ -32,11 +32,12 @@ https://github.com/user-attachments/assets/55f85f8e-7515-4da3-b850-9c078b3440d5
 
 - 🔄 **[Code Convert](https://aide.nicepkg.cn/guide/features/code-convert)**: Transform code between any programming languages with one click.
 - 📖 **[Code Viewer Helper](https://aide.nicepkg.cn/guide/features/code-viewer-helper)**: Add detailed comments to enhance code readability.
-- 🔀 **[Smart Paste](https://aide.nicepkg.cn/guide/features/smart-paste)**: Intelligently convert clipboard content (code or images) when pasting.
-- 🤖 **[AI Batch Processor](https://aide.nicepkg.cn/guide/features/batch-processor)**: Process multiple files using AI according to custom requirements.
+- 🔧 **[Expert Code Enhancer](https://aide.nicepkg.cn/guide/features/expert-code-enhancer)**: Hand your code over to AI for optimization and see how an expert would write it.
+- 📋 **[Smart Paste](https://aide.nicepkg.cn/guide/features/smart-paste)**: Intelligently convert clipboard content (code or images) when pasting.
+- 🗂️ **[AI Batch Processor](https://aide.nicepkg.cn/guide/features/batch-processor)**: Process multiple files using AI according to custom requirements.
 - 🏷 **[Rename Variable](https://aide.nicepkg.cn/guide/features/rename-variable)**: Get AI-suggested variable names with explanations.
 - 💬 **[Ask AI](https://aide.nicepkg.cn/guide/features/ask-ai)**: Execute custom AI commands on selected files or folders.
-- 📋 **[Copy as AI Prompt](https://aide.nicepkg.cn/guide/features/copy-as-prompt)**: Easily copy files/folders content as AI prompts.
+- 📝 **[Copy as AI Prompt](https://aide.nicepkg.cn/guide/features/copy-as-prompt)**: Easily copy files/folders content as AI prompts.
 
 ## Installation 📦
 

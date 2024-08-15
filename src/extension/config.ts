@@ -63,6 +63,10 @@ const configKey = {
     ...pkgConfig['aide.aiCommandAutoRun'],
     type: 'boolean'
   },
+  expertCodeEnhancerPromptList: {
+    ...pkgConfig['aide.expertCodeEnhancerPromptList'],
+    type: 'array'
+  },
   autoRememberConvertLanguagePairs: {
     ...pkgConfig['aide.autoRememberConvertLanguagePairs'],
     type: 'boolean'
@@ -75,10 +79,6 @@ const configKey = {
     >,
     type: 'object',
     optional: true
-  },
-  expertCodeEnhancerPromptList: {
-    ...pkgConfig['aide.expertCodeEnhancerPromptList'],
-    type: 'array'
   },
   codeViewerHelperPrompt: {
     ...pkgConfig['aide.codeViewerHelperPrompt'],
