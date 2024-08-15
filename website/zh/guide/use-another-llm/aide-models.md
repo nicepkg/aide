@@ -23,6 +23,8 @@
 
 ## 价格
 
+### 按需付费
+
 你购买的密钥就是 ==key（密钥）==， 你可以用==密钥==调用以下所有模型， ==密钥==的余额将在你调用模型时扣除。
 
 ::: tip 提示
@@ -37,6 +39,15 @@
 :::
 
 <AideModelPrice />
+
+### 包月无忧
+
+有些人对于按需付费有焦虑感，所以我们推出了==包月无忧==服务，你现在可以购买月卡套餐了，无限调用 ==OpenAI/Claude/Gemini== 的语言模型。虽然模型有限，但是你可以无限调用。
+
+- **对于极少数人，达到一定次数会降速，所以请勿用于商业高并发需求。**
+- **不支持包年，后期如果亏本，可能会涨价，且用且珍惜。**
+
+<AideModelPrice onlyShowMonthlyModels />
 
 ## 购买
 
@@ -65,6 +76,7 @@
 你可以配置 `openAI` 的模型，我们推荐使用 `gpt-4o` 模型。更多模型请参考
 
 <AideModelPrice onlyShowAllModels />
+<AideModelPrice onlyShowMonthlyModels />
 
 ### 示例配置文件
 

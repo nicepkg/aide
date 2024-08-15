@@ -96,6 +96,14 @@ Your language names should follow the [==VSCode Language Identifiers==](https://
 
 :::
 
+::: warning
+
+==VSCode== has two settings.json files: one for global settings, located in the user folder, and another for project settings, located in the .vscode/settings.json file within the project folder.
+
+The current configuration by default is stored in the .vscode/settings.json file in your project folder, so be sure to change the correct location.
+
+:::
+
 ::: tip
 If you can't find your language in the list, you can freely customize your language identifier. However, this means you might not get syntax highlighting, that's all.
 :::

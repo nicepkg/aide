@@ -76,3 +76,53 @@
 
    - 请尝试重启 ==VSCode==。
    - 如果问题仍然存在，请尝试重新安装 ==Aide==。
+
+## ==智能代码转换==无法弹出语言选择框，代码转换总是使用上次的设置
+
+**问题描述**：第一次使用[智能代码转换](../features/code-convert.md)功能时，选择将 `C` 语言转换为 `C++` 语言。再次点击转换 `C` 语言文件时仍默认转换为 `C++`。我想尝试新的转换设置，但无法弹出语言选择框。
+
+**解决方案**：
+
+1. **关闭记忆功能**：在当前项目下 `.vscode/settings.json` 中设置 [`aide.autoRememberConvertLanguagePairs`](../configuration/auto-remember-convert-language-pairs.md) 为 `false`。
+2. **清除已有的转换映射记忆**：在当前项目下 `.vscode/settings.json` 中删除 [`aide.convertLanguagePairs`](../configuration/convert-language-pairs.md) 配置。
+3. **确保你的设置是正确的**：==VSCode== 有全局和项目级两个 `settings.json` 配置文件，默认记忆保存在项目级配置中。仔细检查项目文件夹中的 `.vscode/settings.json` 文件。
+
+详细信息请参阅 [GitHub Issue #92](https://github.com/nicepkg/aide/issues/92)。
+
+## ==智能粘贴==图片时提示剪贴板为空
+
+**问题描述**：在使用[智能粘贴](../features/smart-paste.md)功能时，提示 `剪贴板为空`。
+
+**解决方案**：
+
+1. [**打开 VSCode 设置界面**](./customize-configuration.md)
+2. **开启剪贴板读图设置**: 在设置界面中搜索开启 [`aide.readClipboardImage`](../configuration/read-clipboard-image.md)。
+3. **报了其他错误**: 如果开启之后再次使用报其他错误，那就是你用的 AI 模型不支持读取图片，关闭即可。
+
+## ==No tools_call in message== 错误
+
+**问题描述**：在使用 ==Aide== 某些功能时，提示 `No tools_call in message` 错误。
+
+**解决方案**：
+
+1. **检查 AI 模型是否支持 `function_call` 功能**：
+
+   - 询问 AI 模型提供商是否支持 `function_call` 功能。
+   - 选择支持 `function_call` 功能的 AI 模型。
+
+2. **更换支持 `function_call` 功能的 AI 模型**：
+
+   - 国际模型建议 [OpenAI](../use-another-llm/openai.md) 的 `gpt-4o` 模型。
+   - 中国的模型建议 [deepseek](../use-another-llm/deepseek.md) 的 `deepseek-coder` 模型。
+
+## ==考虑支持其他IDE==
+
+**问题描述**: ==Aide== 是否会考虑支持其他IDE，例如 ==JetBrains== 和 ==Visual Studio==？
+
+**解决方案**:
+
+1. **对 ==Visual Studio== 的有限支持**: 由于资源有限，==Visual Studio== 可能永远不会被支持。
+
+2. **支持 ==JetBrains== 的可能性**: 社区对支持 ==JetBrains== 有强烈需求，但这需要熟悉 Kotlin 的人，因为 ==JetBrains== 插件是用 Kotlin 开发的。目前我缺乏实现此功能的必要技能。我可能会考虑在 ==Aide== 的主要功能完成后学习 Kotlin，并使用 AI 协助迁移到 ==JetBrains==。
+
+3. **欢迎社区贡献**: 如果你有能力开发 ==JetBrains== 版本，欢迎贡献。如果有兴趣，请通过[GitHub](https://github.com/nicepkg/aide/issues/91)联系我们。

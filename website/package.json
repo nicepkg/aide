@@ -16,7 +16,6 @@
   "license": "ISC",
   "devDependencies": {
     "@iconify-json/bx": "^1.1.11",
-    "@iconify-json/fluent-emoji": "^1.1.19",
     "@iconify-json/logos": "^1.1.44",
     "@nolebase/vitepress-plugin-inline-link-preview": "^2.4.0",
     "@unocss/preset-icons": "^0.61.9",
