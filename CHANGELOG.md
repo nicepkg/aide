@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.19.0](https://github.com/nicepkg/aide/compare/aide-v1.18.0...aide-v1.19.0) (2024-08-15)
+
+
+### Features
+
+* add  webview ([32d8d65](https://github.com/nicepkg/aide/commit/32d8d657ac1d4e45e17681d9a467995c2df8cfa4))
+* add expert-code-enhancer feature ([9e88d6c](https://github.com/nicepkg/aide/commit/9e88d6ce963720883f1ee355dbbfe7646d5b31df))
+
+
+### Bug Fixes
+
+* fix code generate wrap line bug in windows ([7099e3a](https://github.com/nicepkg/aide/commit/7099e3a117146f8204ee6f82ef6ecb9911f41bca))
+
 ## [1.18.0](https://github.com/nicepkg/aide/compare/aide-v1.17.3...aide-v1.18.0) (2024-08-08)
 
 
