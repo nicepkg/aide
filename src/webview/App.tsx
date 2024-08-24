@@ -1,12 +1,15 @@
-import { useState } from 'react'
 import { VSCodeButton, VSCodeTextField } from '@vscode/webview-ui-toolkit/react'
 
 import { vscode } from './helpers/vscode'
 
 import './App.css'
 
-function App() {
-  function onPostMessage() {
+import { useState } from 'react'
+
+import { api } from './api/create-webview-api'
+
+export default function App() {
+  const onPostMessage = () => {
     vscode.postMessage({
       command: 'hello',
       text: 'Hey there partner! 🤠'
@@ -22,6 +25,12 @@ function App() {
   const onGetState = async () => {
     console.log('state', await vscode.getState())
     setState((await vscode.getState()) as string)
+
+    const msg = await api.sendMessage('chat.startChat', Date.now().toString(), {
+      text: 'Hello'
+    })
+
+    console.log('api get msg:', msg)
   }
 
   return (
@@ -55,5 +64,3 @@ function App() {
     </main>
   )
 }
-
-export default App

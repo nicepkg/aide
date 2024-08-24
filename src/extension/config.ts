@@ -3,10 +3,10 @@ import * as vscode from 'vscode'
 import pkg from '../../package.json'
 import { t, translateVscodeJsonText } from './i18n'
 import { logger } from './logger'
-import { getCurrentWorkspaceFolderEditor, getErrorMsg } from './utils'
+import { getErrorMsg, getWorkspaceFolder } from './utils'
 
 const pkgConfig = pkg.contributes.configuration.properties
-type ConfigKey = keyof {
+export type ConfigKey = keyof {
   [K in keyof typeof pkgConfig as K extends `aide.${infer R}`
     ? R
     : never]: (typeof pkgConfig)[K]
@@ -127,7 +127,7 @@ export const getConfigKey = async <T extends ConfigKey>(
     required,
     allowCustomOptionValue
   } = options || {}
-  const { workspaceFolder } = getCurrentWorkspaceFolderEditor(false)
+  const workspaceFolder = getWorkspaceFolder(false)
   const config = vscode.workspace.getConfiguration('aide', workspaceFolder)
   const configKeyInfo = {
     ...configKey[key],
@@ -278,7 +278,7 @@ export const setConfigKey = async <T extends ConfigKey>(
     targetForSet = vscode.ConfigurationTarget.Global,
     allowCustomOptionValue = false
   } = options || {}
-  const { workspaceFolder } = getCurrentWorkspaceFolderEditor(false)
+  const workspaceFolder = getWorkspaceFolder(false)
   const config = vscode.workspace.getConfiguration('aide', workspaceFolder)
   const configKeyInfo = configKey[key] as ConfigKeyInfo
 

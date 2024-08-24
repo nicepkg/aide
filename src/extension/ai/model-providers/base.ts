@@ -1,5 +1,5 @@
 import type { MaybePromise } from '@extension/types/common'
-import { normalizeLineEndings } from '@extension/utils'
+import { getIsDev, normalizeLineEndings } from '@extension/utils'
 import { InMemoryChatMessageHistory } from '@langchain/core/chat_history'
 import type { BaseChatModel } from '@langchain/core/language_models/chat_models'
 import {
@@ -48,6 +48,10 @@ export abstract class BaseModelProvider<Model extends BaseChatModel> {
         })
         .join('')
     )
+  }
+
+  get isDev() {
+    return getIsDev()
   }
 
   model?: Model

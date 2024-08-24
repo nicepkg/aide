@@ -1,6 +1,6 @@
 import { getReferenceFilePaths } from '@extension/ai/get-reference-file-paths'
-import { safeReadClipboard } from '@extension/clipboard'
 import { getConfigKey } from '@extension/config'
+import { safeReadClipboard } from '@extension/file-utils/clipboard'
 import { getFileOrFoldersPromptInfo } from '@extension/file-utils/get-fs-prompt-info'
 import { insertTextAtSelection } from '@extension/file-utils/insert-text-at-selection'
 import { t } from '@extension/i18n'

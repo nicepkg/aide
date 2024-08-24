@@ -1,9 +1,6 @@
 import { AbortError } from '@extension/constants'
 import { traverseFileOrFolders } from '@extension/file-utils/traverse-fs'
-import {
-  getCurrentWorkspaceFolderEditor,
-  toPlatformPath
-} from '@extension/utils'
+import { getWorkspaceFolder, toPlatformPath } from '@extension/utils'
 import * as vscode from 'vscode'
 import { z } from 'zod'
 
@@ -21,7 +18,7 @@ export const getReferenceFilePaths = async ({
   currentFilePath: string
   abortController?: AbortController
 }): Promise<ReferenceFilePaths> => {
-  const { workspaceFolder } = await getCurrentWorkspaceFolderEditor()
+  const workspaceFolder = getWorkspaceFolder()
   const allRelativePaths: string[] = []
 
   await traverseFileOrFolders(

@@ -1,8 +1,8 @@
 import path from 'path'
 import { createModelProvider } from '@extension/ai/helpers'
 import { AbortError } from '@extension/constants'
-import { getTmpFileUri } from '@extension/file-utils/create-tmp-file'
-import { tmpFileWriter } from '@extension/file-utils/tmp-file-writer'
+import { getTmpFileUri } from '@extension/file-utils/tmp-file/get-tmp-file-uri'
+import { tmpFileWriter } from '@extension/file-utils/tmp-file/tmp-file-writer'
 import { VsCodeFS } from '@extension/file-utils/vscode-fs'
 import { logger } from '@extension/logger'
 import { getLanguageId } from '@extension/utils'
@@ -73,7 +73,9 @@ export const writeAndSaveTmpFile = async ({
     enableProcessLoading: false,
     autoSaveWhenDone: true,
     autoCloseWhenDone: true,
-    tmpFileUri: processedFileUri,
+    tmpFileOptions: {
+      tmpFileUri: processedFileUri
+    },
     onCancel() {
       abortController?.abort()
     },

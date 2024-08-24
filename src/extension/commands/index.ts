@@ -1,103 +1,37 @@
-import { commandErrorCatcher } from '@extension/utils'
-import * as vscode from 'vscode'
+import { AskAICommand } from './ask-ai/command'
+import type { BaseCommand } from './base.command'
+import { CodeConvertCommand } from './code-convert/command'
+import { CodeViewerHelperCommand } from './code-viewer-helper/command'
+import { CommandManager } from './command-manager'
+import { CopyAsPromptCommand } from './copy-as-prompt/command'
+import { ExpertCodeEnhancerCommand } from './expert-code-enhancer/command'
+import { CopyFileTextCommand } from './private/copy-file-text.command'
+import { OpenWebviewCommand } from './private/open-webview.command'
+import { QuickCloseFileWithoutSaveCommand } from './private/quick-close-file-without-save.command'
+import { ReplaceFileCommand } from './private/replace-file.command'
+import { ShowAideKeyUsageInfoCommand } from './private/show-aide-key-usage-info.command'
+import { ShowDiffCommand } from './private/show-diff.command'
+import { RenameVariableCommand } from './rename-variable/command'
+import { SmartPasteCommand } from './smart-paste/command'
 
-import { handleAskAI } from './ask-ai'
-import { handleBatchProcessor } from './batch-processor'
-import { handleCodeConvert } from './code-convert'
-import { handleCodeViewerHelper } from './code-viewer-helper'
-import { handleCopyAsPrompt } from './copy-as-prompt'
-import { handleExpertCodeEnhancer } from './expert-code-enhancer'
-import { handleCopyFileText } from './private/copy-file-text'
-import { handleQuickCloseFileWithoutSave } from './private/quick-close-file-without-save'
-import { handleReplaceFile } from './private/replace-file'
-import { handleShowAideKeyUsageInfo } from './private/show-aide-key-usage-info'
-import { handleShowDiff } from './private/show-diff'
-import { handleRenameVariable } from './rename-variable'
-import { handleSmartPaste } from './smart-paste'
+export const registerCommands = (commandManager: CommandManager) => {
+  const Commands = [
+    CopyAsPromptCommand,
+    AskAICommand,
+    CodeConvertCommand,
+    CodeViewerHelperCommand,
+    ExpertCodeEnhancerCommand,
+    RenameVariableCommand,
+    SmartPasteCommand,
 
-export const registerCommands = async (context: vscode.ExtensionContext) => {
-  const copyDisposable = vscode.commands.registerCommand(
-    'aide.copyAsPrompt',
-    commandErrorCatcher(handleCopyAsPrompt)
-  )
-  const askAIDisposable = vscode.commands.registerCommand(
-    'aide.askAI',
-    commandErrorCatcher(handleAskAI)
-  )
+    // private command
+    CopyFileTextCommand,
+    QuickCloseFileWithoutSaveCommand,
+    ReplaceFileCommand,
+    ShowDiffCommand,
+    ShowAideKeyUsageInfoCommand,
+    OpenWebviewCommand
+  ] satisfies (typeof BaseCommand)[]
 
-  const codeConvertDisposable = vscode.commands.registerCommand(
-    'aide.codeConvert',
-    commandErrorCatcher(handleCodeConvert)
-  )
-
-  const codeViewerHelperDisposable = vscode.commands.registerCommand(
-    'aide.codeViewerHelper',
-    commandErrorCatcher(handleCodeViewerHelper)
-  )
-
-  const expertCodeEnhancerDisposable = vscode.commands.registerCommand(
-    'aide.expertCodeEnhancer',
-    commandErrorCatcher(handleExpertCodeEnhancer)
-  )
-
-  const renameVariableDisposable = vscode.commands.registerCommand(
-    'aide.renameVariable',
-    commandErrorCatcher(handleRenameVariable)
-  )
-
-  const smartPasteDisposable = vscode.commands.registerCommand(
-    'aide.smartPaste',
-    commandErrorCatcher(handleSmartPaste)
-  )
-
-  const batchProcessorDisposable = vscode.commands.registerCommand(
-    'aide.batchProcessor',
-    commandErrorCatcher(handleBatchProcessor)
-  )
-
-  // private command
-  const copyFileTextDisposable = vscode.commands.registerCommand(
-    'aide.copyFileText',
-    commandErrorCatcher(handleCopyFileText)
-  )
-
-  // private command
-  const quickCloseFileWithoutSaveDisposable = vscode.commands.registerCommand(
-    'aide.quickCloseFileWithoutSave',
-    commandErrorCatcher(handleQuickCloseFileWithoutSave)
-  )
-
-  // private command
-  const replaceFileDisposable = vscode.commands.registerCommand(
-    'aide.replaceFile',
-    commandErrorCatcher(handleReplaceFile)
-  )
-
-  // private command
-  const showDiffDisposable = vscode.commands.registerCommand(
-    'aide.showDiff',
-    commandErrorCatcher(handleShowDiff)
-  )
-
-  // private command
-  const showAideKeyUsageInfoDisposable = vscode.commands.registerCommand(
-    'aide.showAideKeyUsageInfo',
-    commandErrorCatcher(handleShowAideKeyUsageInfo)
-  )
-
-  context.subscriptions.push(
-    copyDisposable,
-    askAIDisposable,
-    codeConvertDisposable,
-    codeViewerHelperDisposable,
-    expertCodeEnhancerDisposable,
-    renameVariableDisposable,
-    smartPasteDisposable,
-    batchProcessorDisposable,
-    copyFileTextDisposable,
-    quickCloseFileWithoutSaveDisposable,
-    replaceFileDisposable,
-    showDiffDisposable,
-    showAideKeyUsageInfoDisposable
-  )
+  Commands.forEach(Command => commandManager.registerCommand(Command))
 }

@@ -41,8 +41,7 @@
     "types": ["vite/client", "@types/vscode-webview"],
     "paths": {
       "@extension/*": ["src/extension/*"],
-      "@webview/*": ["./src/webview/*"],
-      "@shared/*": ["./src/shared/*"]
+      "@webview/*": ["./src/webview/*"]
     }
   },
   "include": [

@@ -94,7 +94,9 @@
         "@typescript-eslint/ban-types": "off",
         "import/no-extraneous-dependencies": "off",
         "react/jsx-no-bind": "off",
-        "react/react-in-jsx-scope": "off"
+        "react/react-in-jsx-scope": "off",
+        "react/function-component-definition": "off",
+        "react/no-array-index-key": "off"
       }
     }
   ]

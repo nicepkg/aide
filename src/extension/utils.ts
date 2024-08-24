@@ -1,4 +1,3 @@
-import type { SaveImgMsgData } from '@shared/types/msg'
 import * as vscode from 'vscode'
 
 import {
@@ -7,8 +6,15 @@ import {
   languageIdExts,
   languageIds
 } from './constants'
+import { getContext } from './context'
 import { t } from './i18n'
 import { logger } from './logger'
+
+export const getIsDev = () => {
+  const context = getContext()
+  if (!context) return false
+  return context.extensionMode !== vscode.ExtensionMode.Production
+}
 
 export const getOrCreateTerminal = async (
   name: string,
@@ -42,21 +48,43 @@ export const getErrorMsg = (err: any): string => {
   return 'An error occurred'
 }
 
-export const commandErrorCatcher = <T extends (...args: any[]) => any>(
+export const runWithCathError = async <T extends () => any>(
+  fn: T,
+  logLabel = 'runWithCathError'
+): Promise<ReturnType<T> | void> => {
+  try {
+    return await fn()
+  } catch (err) {
+    const errMsg = getErrorMsg(err)
+    // skip abort error
+    if (['AbortError', 'Aborted'].includes(errMsg)) return
+
+    logger.warn(logLabel, err)
+    vscode.window.showErrorMessage(getErrorMsg(err))
+  }
+}
+
+// export const commandErrorCatcher = <T extends (...args: any[]) => any>(
+//   commandFn: T
+// ): T =>
+//   (async (...args: any[]) => {
+//     try {
+//       return await commandFn(...args)
+//     } catch (err) {
+//       const errMsg = getErrorMsg(err)
+//       // skip abort error
+//       if (['AbortError', 'Aborted'].includes(errMsg)) return
+
+//       logger.warn('commandErrorCatcher', err)
+//       vscode.window.showErrorMessage(getErrorMsg(err))
+//     }
+//   }) as T
+
+export const commandWithCatcher = <T extends (...args: any[]) => any>(
   commandFn: T
 ): T =>
-  (async (...args: any[]) => {
-    try {
-      return await commandFn(...args)
-    } catch (err) {
-      const errMsg = getErrorMsg(err)
-      // skip abort error
-      if (['AbortError', 'Aborted'].includes(errMsg)) return
-
-      logger.warn('commandErrorCatcher', err)
-      vscode.window.showErrorMessage(getErrorMsg(err))
-    }
-  }) as T
+  (async (...args: any[]) =>
+    await runWithCathError(() => commandFn(...args))) as T
 
 export const getLanguageIdExt = (languageIdORExt: string): string => {
   if (languageIdExts.includes(languageIdORExt)) return languageIdORExt
@@ -79,49 +107,36 @@ export const getLanguageId = (languageIdORExt: string): string => {
   return languageIdORExt
 }
 
-export const getCurrentWorkspaceFolderEditor = <T extends boolean = true>(
+export const getWorkspaceFolder = <T extends boolean = true>(
   throwErrorWhenNotFound: T = true as T
 ): T extends true
-  ? { workspaceFolder: vscode.WorkspaceFolder; activeEditor: vscode.TextEditor }
-  : {
-      workspaceFolder: vscode.WorkspaceFolder | undefined
-      activeEditor: vscode.TextEditor | undefined
-    } => {
+  ? vscode.WorkspaceFolder
+  : vscode.WorkspaceFolder | undefined => {
   const activeEditor = vscode.window.activeTextEditor
-  if (!activeEditor) {
-    if (throwErrorWhenNotFound) throw new Error(t('error.noActiveEditor'))
-    return { workspaceFolder: undefined, activeEditor: undefined } as any
+
+  if (activeEditor) {
+    const workspaceFolder = vscode.workspace.getWorkspaceFolder(
+      activeEditor.document.uri
+    )
+    if (workspaceFolder) return workspaceFolder
   }
 
-  const workspaceFolder = vscode.workspace.getWorkspaceFolder(
-    activeEditor.document.uri
-  )
+  const workspaceFolder = vscode.workspace.workspaceFolders?.[0]
 
-  if (!workspaceFolder) {
-    if (throwErrorWhenNotFound) throw new Error(t('error.noWorkspace'))
-    return { workspaceFolder: undefined, activeEditor } as any
-  }
+  if (workspaceFolder) return workspaceFolder
 
-  return { workspaceFolder, activeEditor }
+  if (throwErrorWhenNotFound) throw new Error(t('error.noWorkspace'))
+
+  return undefined as any
 }
 
-// export const getActiveEditorContent = async () => {
-//   const activeEditor = vscode.window.activeTextEditor
+export const getActiveEditor = (): vscode.TextEditor => {
+  const activeEditor = vscode.window.activeTextEditor
 
-//   if (!activeEditor) throw new Error(t('error.noActiveEditor'))
+  if (!activeEditor) throw new Error(t('error.noActiveEditor'))
 
-//   const { selection } = activeEditor
-//   const isSelection = !selection.isEmpty
-//   const content = isSelection
-//     ? activeEditor.document.getText(selection)
-//     : activeEditor.document.getText()
-
-//   return {
-//     activeEditor,
-//     content,
-//     isSelection
-//   }
-// }
+  return activeEditor
+}
 
 export const formatNumber = (num: number, fixed: number): string => {
   const numString = num.toFixed(fixed)
@@ -225,33 +240,10 @@ export const showQuickPickWithCustomInput = async (
 }
 
 export const DEV_SERVER = process.env.VITE_DEV_SERVER_URL
-export function setupHtml(
+export const setupHtml = (
   webview: vscode.Webview,
   context: vscode.ExtensionContext
-) {
-  return DEV_SERVER
+) =>
+  DEV_SERVER
     ? __getWebviewHtml__(DEV_SERVER)
     : __getWebviewHtml__(webview, context)
-}
-
-let lastSaveImageDir: string | undefined
-export async function saveImage(data: SaveImgMsgData) {
-  const { workspaceFolder } = await getCurrentWorkspaceFolderEditor()
-
-  if (!lastSaveImageDir) {
-    lastSaveImageDir = workspaceFolder.uri.fsPath ?? ''
-  }
-
-  const uri = await vscode.window.showSaveDialog({
-    filters: { Images: [data.format] },
-    defaultUri: vscode.Uri.file(`${lastSaveImageDir}/${data.fileName}`)
-  })
-
-  if (!uri) return
-
-  await vscode.workspace.fs.writeFile(
-    uri,
-    Uint8Array.from(atob(data.base64), c => c.charCodeAt(0))
-  )
-  lastSaveImageDir = uri.fsPath.split('/').slice(0, -1).join('/')
-}

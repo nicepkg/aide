@@ -16,57 +16,87 @@ export interface StreamingCompletionWriterOptions {
   onCancel?: () => void
 }
 
-/**
- * Writes the completion text from an AI stream to the editor.
- * @param options - The options for the streaming completion writer.
- * @returns A promise that resolves when the writing is complete.
- */
 export const streamingCompletionWriter = async (
   options: StreamingCompletionWriterOptions
 ): Promise<void> => {
   const { editor, buildAiStream, onCancel } = options
   const ModelProvider = await getCurrentModelProvider()
   const { showProcessLoading, hideProcessLoading } = createLoading()
-  const isClosedFile = () => editor.document.isClosed
   const initialPosition = editor.selection.active
-  let currentPosition = initialPosition
+  const writer = new EditorWriter(editor, initialPosition)
 
-  const dispose = () => {
+  try {
+    showProcessLoading({ onCancel })
+    const aiStream = await buildAiStream()
+    await processAiStream(aiStream, ModelProvider, writer)
+    await finalizeEditing(editor)
+  } finally {
     hideProcessLoading()
   }
+}
 
-  const writeTextPart = async (text: string) => {
-    await editor.edit(
+export const processAiStream = async (
+  aiStream: IterableReadableStream<AIMessageChunk>,
+  ModelProvider: any,
+  writer: EditorWriter
+): Promise<void> => {
+  let fullText = ''
+  for await (const chunk of aiStream) {
+    if (writer.isDocumentClosed()) {
+      return
+    }
+
+    const text = ModelProvider.answerContentToText(chunk.content)
+    if (!text) continue
+
+    fullText += text
+    await writer.writeTextPart(text)
+
+    const cleanedText = removeCodeBlockStartSyntax(fullText)
+    if (cleanedText !== fullText) {
+      await writer.writeText(cleanedText, fullText.length)
+      fullText = cleanedText
+    }
+  }
+
+  const finalText = removeCodeBlockSyntax(removeCodeBlockEndSyntax(fullText))
+  if (finalText !== fullText) {
+    await writer.writeText(finalText, fullText.length)
+  }
+}
+
+export const finalizeEditing = async (
+  editor: vscode.TextEditor
+): Promise<void> => {
+  await editor.edit(() => {}, { undoStopBefore: true, undoStopAfter: true })
+}
+
+class EditorWriter {
+  private currentPosition: vscode.Position
+
+  constructor(
+    private editor: vscode.TextEditor,
+    private initialPosition: vscode.Position
+  ) {
+    this.currentPosition = initialPosition
+  }
+
+  async writeTextPart(text: string): Promise<void> {
+    await this.editor.edit(
       editBuilder => {
-        // only insert new text
-        editBuilder.insert(currentPosition, text)
+        editBuilder.insert(this.currentPosition, text)
       },
       { undoStopBefore: false, undoStopAfter: false }
     )
 
     await sleep(10)
-
-    // update current position to the end of the inserted text
-    currentPosition = editor.document.positionAt(
-      editor.document.offsetAt(currentPosition) + text.length
-    )
-
-    // update editor selection to the new cursor position
-    editor.selection = new vscode.Selection(currentPosition, currentPosition)
+    this.updatePosition(this.currentPosition, text.length)
   }
 
-  const writeText = async (
-    text: string,
-    originPosition: vscode.Position,
-    originText: string
-  ) => {
-    // override existing text if any
-    const startOffset = editor.document.offsetAt(originPosition)
-    const endOffset = startOffset + originText.length
-    const endPosition = editor.document.positionAt(endOffset)
-    const range = new vscode.Range(originPosition, endPosition)
+  async writeText(text: string, fullTextLength: number): Promise<void> {
+    const range = this.getReplacementRange(fullTextLength)
 
-    await editor.edit(
+    await this.editor.edit(
       editBuilder => {
         editBuilder.replace(range, text)
       },
@@ -74,64 +104,30 @@ export const streamingCompletionWriter = async (
     )
 
     await sleep(10)
-
-    // update current position to the end of the inserted text
-    currentPosition = editor.document.positionAt(
-      editor.document.offsetAt(originPosition) + text.length
-    )
-
-    // update editor selection
-    editor.selection = new vscode.Selection(currentPosition, currentPosition)
+    this.updatePosition(this.initialPosition, text.length)
   }
 
-  try {
-    showProcessLoading({
-      onCancel
-    })
+  private updatePosition(
+    startPosition: vscode.Position,
+    textLength: number
+  ): void {
+    this.currentPosition = this.editor.document.positionAt(
+      this.editor.document.offsetAt(startPosition) + textLength
+    )
+    this.editor.selection = new vscode.Selection(
+      this.currentPosition,
+      this.currentPosition
+    )
+  }
 
-    const aiStream = await buildAiStream()
+  private getReplacementRange(fullTextLength: number): vscode.Range {
+    const startOffset = this.editor.document.offsetAt(this.initialPosition)
+    const endOffset = startOffset + fullTextLength
+    const endPosition = this.editor.document.positionAt(endOffset)
+    return new vscode.Range(this.initialPosition, endPosition)
+  }
 
-    let fullText = ''
-    for await (const chunk of aiStream) {
-      if (isClosedFile()) {
-        dispose()
-        return
-      }
-
-      // convert openai answer content to text
-      const text = ModelProvider.answerContentToText(chunk.content)
-
-      if (!text) continue
-
-      fullText += text
-
-      await writeTextPart(text)
-
-      // remove code block syntax
-      // for example, remove ```python\n and \n```
-      const cleanedText = removeCodeBlockStartSyntax(fullText)
-
-      if (cleanedText !== fullText) {
-        await writeText(cleanedText, initialPosition, fullText)
-        fullText = cleanedText
-      }
-    }
-
-    // remove code block syntax
-    // for example, remove ```python\n and \n``` at the start and end
-    // just confirm the code is clean
-    const finalText = removeCodeBlockSyntax(removeCodeBlockEndSyntax(fullText))
-
-    if (finalText !== fullText) {
-      // write the final code
-      await writeText(finalText, initialPosition, fullText)
-    }
-
-    // create an undo stop point after completion
-    await editor.edit(() => {}, { undoStopBefore: true, undoStopAfter: true })
-
-    await vscode.commands.executeCommand('editor.action.inlineSuggest.commit')
-  } finally {
-    dispose()
+  isDocumentClosed(): boolean {
+    return this.editor.document.isClosed
   }
 }

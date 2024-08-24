@@ -1,7 +1,5 @@
 import { getConfigKey } from '@extension/config'
-import { getContext } from '@extension/context'
 import { ChatOpenAI, type ChatOpenAICallOptions } from '@langchain/openai'
-import * as vscode from 'vscode'
 
 import { parseModelBaseUrl } from '../parse-model-base-url'
 import { BaseModelProvider } from './base'
@@ -10,7 +8,6 @@ export class OpenAIModelProvider extends BaseModelProvider<
   ChatOpenAI<ChatOpenAICallOptions>
 > {
   async createModel() {
-    const isDev = getContext().extensionMode !== vscode.ExtensionMode.Production
     const { url: openaiBaseUrl } = await parseModelBaseUrl()
     const openaiKey = await getConfigKey('openaiKey')
     const openaiModel = await getConfigKey('openaiModel')
@@ -24,7 +21,7 @@ export class OpenAIModelProvider extends BaseModelProvider<
       model: openaiModel,
       temperature: 0.95, // never use 1.0, some models do not support it
       maxRetries: 3,
-      verbose: isDev
+      verbose: this.isDev
     })
 
     // some third-party language models are not compatible with the openAI specification,

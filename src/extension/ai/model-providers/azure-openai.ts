@@ -1,13 +1,11 @@
 /* eslint-disable no-useless-escape */
 import { getConfigKey } from '@extension/config'
-import { getContext } from '@extension/context'
 import { t } from '@extension/i18n'
 import {
   AzureChatOpenAI,
   ChatOpenAI,
   type ChatOpenAICallOptions
 } from '@langchain/openai'
-import * as vscode from 'vscode'
 
 import { parseModelBaseUrl } from '../parse-model-base-url'
 import { BaseModelProvider } from './base'
@@ -16,7 +14,6 @@ export class AzureOpenAIModelProvider extends BaseModelProvider<
   ChatOpenAI<ChatOpenAICallOptions>
 > {
   async createModel() {
-    const isDev = getContext().extensionMode !== vscode.ExtensionMode.Production
     const { url: openaiBaseUrl } = await parseModelBaseUrl()
     const openaiKey = await getConfigKey('openaiKey')
 
@@ -48,7 +45,7 @@ export class AzureOpenAIModelProvider extends BaseModelProvider<
         fetch
       },
       temperature: 0.95, // never use 1.0, some models do not support it
-      verbose: isDev,
+      verbose: this.isDev,
       maxRetries: 3
     })
     ;('https://westeurope.api.microsoft.com/openai/deployments/devName/chat/completions?api-version=AVersion')

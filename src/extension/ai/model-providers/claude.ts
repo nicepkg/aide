@@ -1,15 +1,11 @@
 import { getConfigKey } from '@extension/config'
-import { getContext } from '@extension/context'
 import { ChatAnthropic } from '@langchain/anthropic'
-import * as vscode from 'vscode'
 
 import { parseModelBaseUrl } from '../parse-model-base-url'
 import { BaseModelProvider } from './base'
 
 export class AnthropicModelProvider extends BaseModelProvider<ChatAnthropic> {
   async createModel() {
-    const isDev = getContext().extensionMode !== vscode.ExtensionMode.Production
-
     // anthropic@https://api.anthropic.com
     const { url: openaiBaseUrl } = await parseModelBaseUrl()
     const openaiKey = await getConfigKey('openaiKey')
@@ -24,7 +20,7 @@ export class AnthropicModelProvider extends BaseModelProvider<ChatAnthropic> {
       model: openaiModel,
       temperature: 0.95, // never use 1.0, some models do not support it
       maxRetries: 6,
-      verbose: isDev
+      verbose: this.isDev
     })
 
     return model

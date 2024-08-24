@@ -2,10 +2,7 @@ import path from 'path'
 import { createModelProvider } from '@extension/ai/helpers'
 import { AbortError } from '@extension/constants'
 import { traverseFileOrFolders } from '@extension/file-utils/traverse-fs'
-import {
-  getCurrentWorkspaceFolderEditor,
-  toPlatformPath
-} from '@extension/utils'
+import { getWorkspaceFolder, toPlatformPath } from '@extension/utils'
 import { z } from 'zod'
 
 export interface PreProcessInfo {
@@ -31,7 +28,7 @@ export const getPreProcessInfo = async ({
     allFileRelativePaths: string[]
   }
 > => {
-  const { workspaceFolder } = await getCurrentWorkspaceFolderEditor()
+  const workspaceFolder = getWorkspaceFolder()
   const allFileRelativePaths: string[] = []
 
   await traverseFileOrFolders(
