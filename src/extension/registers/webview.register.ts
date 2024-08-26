@@ -1,5 +1,6 @@
 import { setupHtml } from '@extension/utils'
 import { setupWebviewAPIManager } from '@extension/webview-api'
+import type { WebviewPanel } from '@extension/webview-api/types'
 import * as vscode from 'vscode'
 
 import { BaseRegister } from './base.register'
@@ -49,9 +50,7 @@ export class AideWebViewProvider {
     }
   }
 
-  private async setupWebview(
-    webview: vscode.WebviewView | vscode.WebviewPanel
-  ) {
+  private async setupWebview(webview: WebviewPanel) {
     this.cleanUp()
 
     const setupWebviewAPIManagerDispose = await setupWebviewAPIManager(

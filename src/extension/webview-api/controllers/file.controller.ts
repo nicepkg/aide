@@ -1,45 +1,47 @@
-import * as fs from 'fs/promises'
-import { logger } from '@extension/logger'
+import { VsCodeFS } from '@extension/file-utils/vscode-fs'
+import * as vscode from 'vscode'
 
-import { APIError } from '../types'
-import { BaseController } from './base.controller'
+import { Controller } from '../types'
 
-export class FileController extends BaseController {
-  name = 'file' as const
+export class FileController extends Controller {
+  readonly name = 'file'
 
-  handlers = {
-    readFile: async (sessionId: string, params: { path: string }) => {
-      try {
-        const content = await fs.readFile(params.path, 'utf-8')
-        return content
-      } catch (error) {
-        logger.warn(`Error reading file for session ${sessionId}:`, error)
-        throw new APIError(
-          'FILE_READ_ERROR',
-          'Failed to read file',
-          error instanceof Error
-            ? { message: error.message, stack: error.stack }
-            : String(error)
-        )
-      }
-    },
-    logChat: async (sessionId: string, params: { message: string }) => {
-      try {
-        await fs.appendFile(
-          'chat.log',
-          `[Session ${sessionId}] ${params.message}\n`
-        )
-        return 'Logged'
-      } catch (error) {
-        logger.warn(`Error logging chat for session ${sessionId}:`, error)
-        throw new APIError(
-          'LOG_ERROR',
-          'Failed to log chat',
-          error instanceof Error
-            ? { message: error.message, stack: error.stack }
-            : String(error)
-        )
-      }
-    }
+  async readFile(req: {
+    path: string
+    encoding?: BufferEncoding
+  }): Promise<string> {
+    return await VsCodeFS.readFileOrOpenDocumentContent(req.path, req.encoding)
+  }
+
+  async writeFile(req: {
+    path: string
+    data: string
+    encoding?: BufferEncoding
+  }): Promise<void> {
+    await VsCodeFS.writeFile(req.path, req.data, req.encoding)
+  }
+
+  async mkdir(req: { path: string; recursive?: boolean }): Promise<void> {
+    await VsCodeFS.mkdir(req.path, { recursive: req.recursive })
+  }
+
+  async rmdir(req: { path: string; recursive?: boolean }): Promise<void> {
+    await VsCodeFS.rmdir(req.path, { recursive: req.recursive })
+  }
+
+  async unlink(req: { path: string }): Promise<void> {
+    await VsCodeFS.unlink(req.path)
+  }
+
+  async rename(req: { oldPath: string; newPath: string }): Promise<void> {
+    await VsCodeFS.rename(req.oldPath, req.newPath)
+  }
+
+  async stat(req: { path: string }): Promise<vscode.FileStat> {
+    return await VsCodeFS.stat(req.path)
+  }
+
+  async readdir(req: { path: string }): Promise<string[]> {
+    return await VsCodeFS.readdir(req.path)
   }
 }

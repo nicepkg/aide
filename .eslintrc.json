@@ -96,7 +96,11 @@
         "react/jsx-no-bind": "off",
         "react/react-in-jsx-scope": "off",
         "react/function-component-definition": "off",
-        "react/no-array-index-key": "off"
+        "react/no-array-index-key": "off",
+        "react/button-has-type": "off",
+        "jsx-a11y/click-events-have-key-events": "off",
+        "jsx-a11y/no-static-element-interactions": "off",
+        "react/jsx-no-constructed-context-values": "off"
       }
     }
   ]
