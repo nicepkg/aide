@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
-import { MentionSelector } from '@webview/components/mention-selector'
+import { MentionSelector } from '@webview/components/chat/mention-selector'
 import { useMentionContext } from '@webview/hooks/use-mention-context'
 import { $getSelection, $isRangeSelection } from 'lexical'
 

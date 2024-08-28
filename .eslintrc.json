@@ -100,7 +100,13 @@
         "react/button-has-type": "off",
         "jsx-a11y/click-events-have-key-events": "off",
         "jsx-a11y/no-static-element-interactions": "off",
-        "react/jsx-no-constructed-context-values": "off"
+        "react/jsx-no-constructed-context-values": "off",
+        "react/jsx-props-no-spreading": "off",
+        "react/require-default-props": "off",
+        "react/prop-types": "off",
+        "react/no-unknown-property": "off",
+        "jsx-a11y/no-noninteractive-tabindex": "off",
+        "jsx-a11y/tabindex-no-positive": "off"
       }
     }
   ]

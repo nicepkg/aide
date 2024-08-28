@@ -36,9 +36,14 @@ export class MentionNode extends TextNode {
 
   createDOM(config: EditorConfig): HTMLElement {
     const dom = super.createDOM(config)
+    // dom.style.cssText =
+    //   'background-color: #eee; border-radius: 3px; padding: 1px 3px;'
+    // dom.className = 'mention'
+
     dom.style.cssText =
-      'background-color: #eee; border-radius: 3px; padding: 1px 3px;'
+      'background-color: #e6f3ff; border-radius: 3px; padding: 1px 3px; color: #0366d6; font-weight: 500;'
     dom.className = 'mention'
+
     return dom
   }
 

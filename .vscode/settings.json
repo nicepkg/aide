@@ -50,6 +50,7 @@
     "allowtransparency",
     "autoplay",
     "bilibili",
+    "clsx",
     "Codegee",
     "Codeium",
     "commitlint",
@@ -71,7 +72,9 @@
     "Pipfile",
     "pyproject",
     "qwen",
+    "sonner",
     "tailwindcss",
+    "tanstack",
     "tomjs",
     "treeshake",
     "tsup",
@@ -80,6 +83,7 @@
     "vitepress",
     "vsix",
     "Xclip",
-    "Zhipu"
+    "Zhipu",
+    "zustand"
   ]
 }

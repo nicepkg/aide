@@ -1,12 +1,8 @@
+import { useState } from 'react'
 import { VSCodeButton, VSCodeTextField } from '@vscode/webview-ui-toolkit/react'
 
-import { vscode } from './utils/vscode'
-
-import './App.css'
-
-import { useState } from 'react'
-
 import { api } from './api/api-client'
+import { vscode } from './utils/vscode'
 
 export default function App() {
   const onPostMessage = () => {

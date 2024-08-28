@@ -1,0 +1,41 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --radius: 0.5rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings:
+      'rlig' 1,
+      'calt' 1;
+    padding: 0 !important;
+  }
+}
+
+.editor-code {
+  background-color: #f6f8fa;
+  font-family: monospace;
+  padding: 8px;
+  margin: 8px 0;
+  border-radius: 4px;
+}
+
+.editor-text-code {
+  background-color: #f6f8fa;
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-family: monospace;
+}
