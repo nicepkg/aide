@@ -17,9 +17,9 @@ export class GitProcessor implements ContextProcessor<GitContext> {
   private processGitContext(gitContext: GitContext): LangchainMessageParams {
     let content = ''
 
-    content += this.processCommits(gitContext.commits)
-    content += this.processPullRequests(gitContext.pullRequests)
-    content += this.processDiffs(gitContext.diffs)
+    content += this.processCommits(gitContext.gitCommits)
+    content += this.processPullRequests(gitContext.gitPullRequests)
+    content += this.processDiffs(gitContext.gitDiffs)
 
     return content
   }

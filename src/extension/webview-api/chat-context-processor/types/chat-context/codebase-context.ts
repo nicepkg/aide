@@ -8,5 +8,5 @@ export interface CodeSnippet {
 }
 
 export interface CodebaseContext {
-  relevantSnippets: CodeSnippet[]
+  relevantCodeSnippets: CodeSnippet[]
 }

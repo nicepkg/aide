@@ -55,7 +55,7 @@ export interface GitPullRequest {
 }
 
 export interface GitContext {
-  commits: GitCommit[]
-  pullRequests: GitPullRequest[]
-  diffs: GitDiff[]
+  gitCommits: GitCommit[]
+  gitPullRequests: GitPullRequest[]
+  gitDiffs: GitDiff[]
 }

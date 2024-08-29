@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { TooltipProvider } from '@radix-ui/react-tooltip'
 import { QueryClientProvider, type QueryClient } from '@tanstack/react-query'
-import { createQueryClient } from '@webview/api/react-query/query-client'
+import { createQueryClient } from '@webview/services/react-query/query-client'
 import { ThemeProvider as NextThemesProvider } from 'next-themes'
 import { Toaster } from 'sonner'
 

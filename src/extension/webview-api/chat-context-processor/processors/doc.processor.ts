@@ -15,7 +15,8 @@ export class DocProcessor implements ContextProcessor<DocContext> {
   async buildAgentTools(
     attachment: DocContext
   ): Promise<Array<ToolConfig<DocContext>>> {
-    const { enableTool, allowSearchSiteUrls } = attachment
+    const { enableTool, allowSearchDocSiteUrls: allowSearchSiteUrls } =
+      attachment
     if (!enableTool || allowSearchSiteUrls?.length === 0) return []
 
     const searchDocToolConfig = await createToolConfig({

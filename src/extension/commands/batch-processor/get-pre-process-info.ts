@@ -125,13 +125,14 @@ Please analyze these files and provide the requested information to help streaml
     aiRes.dependenceFileRelativePath || ''
   )
   aiRes.ignoreFileRelativePaths =
-    aiRes.ignoreFileRelativePaths?.map(toPlatformPath)
-  aiRes.processFilePathInfo = aiRes.processFilePathInfo.map(info => ({
-    sourceFileRelativePath: toPlatformPath(info.sourceFileRelativePath),
-    processedFileRelativePath: toPlatformPath(info.processedFileRelativePath),
-    referenceFileRelativePaths:
-      info.referenceFileRelativePaths.map(toPlatformPath)
-  }))
+    aiRes.ignoreFileRelativePaths?.map(toPlatformPath) ?? []
+  aiRes.processFilePathInfo =
+    aiRes.processFilePathInfo?.map(info => ({
+      sourceFileRelativePath: toPlatformPath(info.sourceFileRelativePath),
+      processedFileRelativePath: toPlatformPath(info.processedFileRelativePath),
+      referenceFileRelativePaths:
+        info.referenceFileRelativePaths.map(toPlatformPath)
+    })) ?? []
 
   // data cleaning
   // Process and filter the file path information

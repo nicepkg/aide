@@ -1,5 +1,4 @@
 import React from 'react'
-import { Button } from '@webview/components/ui/button'
 import {
   Command,
   CommandEmpty,
@@ -13,26 +12,21 @@ import {
   PopoverContent,
   PopoverTrigger
 } from '@webview/components/ui/popover'
-
-import type { ModelOption } from './types'
+import type { ModelOption } from '@webview/types/chat'
 
 interface ModelSelectorProps {
-  selectedModel: ModelOption
-  setSelectedModel: (model: ModelOption) => void
   modelOptions: ModelOption[]
+  onSelect: (model: ModelOption) => void
+  children: React.ReactNode
 }
 
 export const ModelSelector: React.FC<ModelSelectorProps> = ({
-  selectedModel,
-  setSelectedModel,
-  modelOptions
+  modelOptions,
+  onSelect,
+  children
 }) => (
   <Popover>
-    <PopoverTrigger asChild>
-      <Button variant="ghost" size="xs">
-        {selectedModel.label}
-      </Button>
-    </PopoverTrigger>
+    <PopoverTrigger asChild>{children}</PopoverTrigger>
     <PopoverContent className="w-48">
       <Command>
         <CommandInput placeholder="Search model..." />
@@ -40,10 +34,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
           <CommandEmpty>No model found.</CommandEmpty>
           <CommandGroup heading="Models">
             {modelOptions.map(option => (
-              <CommandItem
-                key={option.value}
-                onSelect={() => setSelectedModel(option)}
-              >
+              <CommandItem key={option.value} onSelect={() => onSelect(option)}>
                 {option.label}
               </CommandItem>
             ))}

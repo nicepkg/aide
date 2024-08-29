@@ -1,26 +1,50 @@
-import type { Attachments } from '@extension/webview-api/chat-context-processor/types/chat-context/conversation'
+import type { Attachments } from '@extension/webview-api/chat-context-processor/types/chat-context'
 import type { MessageType } from '@langchain/core/messages'
 
-export interface IConversation {
+export * from '@extension/webview-api/chat-context-processor/types/chat-context'
+
+export interface Message {
   id: string
-  type: MessageType
+  createdAt: number
+  role: MessageType
   content: string
-  attachments: Attachments
+  name?: string
+  isLoading?: boolean
 }
 
-export interface IChatContext {
-  conversations: IConversation[]
-  currentAttachments: Attachments
-  addConversation: (conversation: IConversation) => void
-  updateCurrentAttachments: (newAttachments: Partial<Attachments>) => void
-  resetChat: () => void
+export interface ModelOption {
+  value: string
+  label: string
+}
+
+export interface MentionOption {
+  label: string
+  category: MentionCategory
+  mentionStrategies: IMentionStrategy[]
+}
+
+export enum MentionCategory {
+  Files = 'Files',
+  Folders = 'Folders',
+  Code = 'Code',
+  Web = 'Web',
+  Docs = 'Docs',
+  Git = 'Git',
+  Codebase = 'Codebase'
 }
 
 export interface IMentionStrategy {
-  type: string
-  getData: () => Promise<any>
-  updateAttachments: (
+  readonly category: MentionCategory
+  readonly name: string
+
+  buildLexicalNodeAfterAddMention?: (
+    data: any,
+    currentAttachments: Attachments,
+    currentConversation: Message
+  ) => Promise<string>
+
+  buildNewAttachmentsAfterAddMention: (
     data: any,
     currentAttachments: Attachments
-  ) => Partial<Attachments>
+  ) => Promise<Partial<Attachments>>
 }

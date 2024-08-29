@@ -1,8 +1,8 @@
 import { useState } from 'react'
 
-import { api } from './api/api-client'
 import { Button } from './components/ui/button'
 import { Textarea } from './components/ui/textarea'
+import { api } from './services/api-client'
 import { vscode } from './utils/vscode'
 
 export default function App() {

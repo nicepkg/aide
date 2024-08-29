@@ -17,7 +17,9 @@ export interface Attachments {
 }
 
 export interface Conversation {
-  type: MessageType
+  id: string
+  createdAt: number
+  role: MessageType
   content: string
   attachments: Attachments
 }

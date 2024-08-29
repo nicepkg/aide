@@ -2,31 +2,33 @@ import * as React from 'react'
 import { cn } from '@webview/utils/common'
 import { cva, type VariantProps } from 'class-variance-authority'
 
-import MessageLoading from './message-loading'
+import { ChatMessageLoading } from './chat-message-loading'
 
-// ChatBubble
-const chatBubbleVariant = cva('flex gap-2 max-w-[60%] items-end relative', {
-  variants: {
-    variant: {
-      received: 'self-start',
-      sent: 'self-end flex-row-reverse'
+export const chatBubbleVariant = cva(
+  'flex gap-2 max-w-[60%] items-end relative',
+  {
+    variants: {
+      variant: {
+        received: 'self-start',
+        sent: 'self-end flex-row-reverse'
+      },
+      layout: {
+        default: '',
+        ai: 'max-w-full w-full items-center'
+      }
     },
-    layout: {
-      default: '',
-      ai: 'max-w-full w-full items-center'
+    defaultVariants: {
+      variant: 'received',
+      layout: 'default'
     }
-  },
-  defaultVariants: {
-    variant: 'received',
-    layout: 'default'
   }
-})
+)
 
 interface ChatBubbleProps
   extends React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof chatBubbleVariant> {}
 
-const ChatBubble = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
+export const ChatBubble = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
   ({ className, variant, layout, children, ...props }, ref) => (
     <div
       className={cn(chatBubbleVariant({ variant, layout, className }))}
@@ -40,7 +42,7 @@ const ChatBubble = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
 ChatBubble.displayName = 'ChatBubble'
 
 // ChatBubbleMessage
-const chatBubbleMessageVariants = cva('p-4', {
+export const chatBubbleMessageVariants = cva('p-4', {
   variants: {
     variant: {
       received: 'bg-muted text-muted-foreground w-full',
@@ -63,7 +65,7 @@ interface ChatBubbleMessageProps
   isLoading?: boolean
 }
 
-const ChatBubbleMessage = React.forwardRef<
+export const ChatBubbleMessage = React.forwardRef<
   HTMLDivElement,
   ChatBubbleMessageProps
 >(
@@ -78,7 +80,7 @@ const ChatBubbleMessage = React.forwardRef<
     >
       {isLoading ? (
         <div className="flex items-center space-x-2">
-          <MessageLoading />
+          <ChatMessageLoading />
         </div>
       ) : (
         children
@@ -94,7 +96,7 @@ interface ChatBubbleTimestampProps
   timestamp: string
 }
 
-const ChatBubbleTimestamp: React.FC<ChatBubbleTimestampProps> = ({
+export const ChatBubbleTimestamp: React.FC<ChatBubbleTimestampProps> = ({
   timestamp,
   className,
   ...props
@@ -103,11 +105,3 @@ const ChatBubbleTimestamp: React.FC<ChatBubbleTimestampProps> = ({
     {timestamp}
   </div>
 )
-
-export {
-  ChatBubble,
-  ChatBubbleMessage,
-  ChatBubbleTimestamp,
-  chatBubbleVariant,
-  chatBubbleMessageVariants
-}

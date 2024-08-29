@@ -111,7 +111,7 @@ export class ChatContextProcessor {
     )
     const fullContent = processedContent + conversation.content
 
-    return MessageBuilder.createMessage(conversation.type, {
+    return MessageBuilder.createMessage(conversation.role, {
       content: fullContent
     })
   }

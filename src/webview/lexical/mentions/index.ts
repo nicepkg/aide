@@ -1,25 +1,57 @@
-import type { IMentionStrategy } from '@webview/types/chat'
+import { MentionCategory, type MentionOption } from '@webview/types/chat'
 
-import { CodeChunkMentionStrategy } from './code-chunk-mention-strategy'
-import { CodeSnippetMentionStrategy } from './code-snippet-mention-strategy'
-import { DocMentionStrategy } from './doc-mention-strategy'
-import { FileMentionStrategy } from './file-mention-strategy'
-import { FolderMentionStrategy } from './folder-mention-strategy'
-import { GitCommitMentionStrategy } from './git-commit-mention-strategy'
-import { GitDiffMentionStrategy } from './git-diff-mention-strategy'
-import { GitPullRequestMentionStrategy } from './git-pull-request-mention-strategy'
-import { ImageMentionStrategy } from './image-mention-strategy'
-import { WebSearchMentionStrategy } from './web-search-mention-strategy'
+import { CodeChunksMentionStrategy } from './code/code-chunks-mention-strategy'
+import { RelevantCodeSnippetsMentionStrategy } from './codebase/relevant-code-snippets-mention-strategy'
+import { AllowSearchDocSiteUrlsToolMentionStrategy } from './docs/allow-search-doc-site-urls-mention-strategy'
+import { SelectedFilesMentionStrategy } from './files/selected-files-mention-strategy'
+import { SelectedImagesMentionStrategy } from './files/selected-images-mention-strategy'
+import { SelectedFoldersMentionStrategy } from './folders/selected-folders-mention-strategy'
+import { GitCommitsMentionStrategy } from './git/git-commits-mention-strategy'
+import { GitDiffsMentionStrategy } from './git/git-diffs-mention-strategy'
+import { GitPullRequestsMentionStrategy } from './git/git-pull-requests-mention-strategy'
+import { EnableWebToolMentionStrategy } from './web/enable-web-tool-mention-strategy'
 
-export const allMentionStrategies: IMentionStrategy[] = [
-  new FileMentionStrategy(),
-  new FolderMentionStrategy(),
-  new ImageMentionStrategy(),
-  new CodeChunkMentionStrategy(),
-  new CodeSnippetMentionStrategy(),
-  new DocMentionStrategy(),
-  new WebSearchMentionStrategy(),
-  new GitCommitMentionStrategy(),
-  new GitPullRequestMentionStrategy(),
-  new GitDiffMentionStrategy()
+export const createMentionOptions = (): MentionOption[] => [
+  {
+    label: 'Files',
+    category: MentionCategory.Files,
+    mentionStrategies: [
+      new SelectedFilesMentionStrategy(),
+      new SelectedImagesMentionStrategy()
+    ]
+  },
+  {
+    label: 'Folders',
+    category: MentionCategory.Folders,
+    mentionStrategies: [new SelectedFoldersMentionStrategy()]
+  },
+  {
+    label: 'Code',
+    category: MentionCategory.Code,
+    mentionStrategies: [new CodeChunksMentionStrategy()]
+  },
+  {
+    label: 'Web',
+    category: MentionCategory.Web,
+    mentionStrategies: [new EnableWebToolMentionStrategy()]
+  },
+  {
+    label: 'Docs',
+    category: MentionCategory.Docs,
+    mentionStrategies: [new AllowSearchDocSiteUrlsToolMentionStrategy()]
+  },
+  {
+    label: 'Git',
+    category: MentionCategory.Git,
+    mentionStrategies: [
+      new GitCommitsMentionStrategy(),
+      new GitDiffsMentionStrategy(),
+      new GitPullRequestsMentionStrategy()
+    ]
+  },
+  {
+    label: 'Codebase',
+    category: MentionCategory.Codebase,
+    mentionStrategies: [new RelevantCodeSnippetsMentionStrategy()]
+  }
 ]

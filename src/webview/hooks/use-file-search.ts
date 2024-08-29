@@ -1,13 +1,22 @@
 import { useEffect, useState } from 'react'
-import type { FileItem } from '@webview/components/chat/editor/types'
+import type { FileInfo } from '@webview/types/chat'
 
-const initialFiles: FileItem[] = [
+const initialFiles: FileInfo[] = [
   {
-    name: 'traverse-fs.ts',
-    path: '../file-utils/traverse-fs.ts',
-    type: 'file'
+    relativePath: '../file-utils/traverse-fs.ts',
+    fullPath: '/Users/username/project/src/file-utils/traverse-fs.ts',
+    content: ''
   },
-  { name: 'App.tsx', path: 'src/webview/App.tsx', type: 'component' }
+  {
+    relativePath: 'src/webview/App.tsx',
+    fullPath: '/Users/username/project/src/webview/App.tsx',
+    content: ''
+  },
+  {
+    relativePath: 'src/webview/hooks/use-file-search.ts',
+    fullPath: '/Users/username/project/src/webview/hooks/use-file-search.ts',
+    content: ''
+  }
   // ... 其他文件
 ]
 
@@ -17,7 +26,7 @@ export const useFileSearch = () => {
 
   useEffect(() => {
     const filtered = initialFiles.filter(file =>
-      file.name.toLowerCase().includes(searchQuery.toLowerCase())
+      file.relativePath.toLowerCase().includes(searchQuery.toLowerCase())
     )
     setFilteredFiles(filtered)
   }, [searchQuery])

@@ -13,7 +13,10 @@ import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin'
 import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin'
 import { MentionNode } from '@webview/lexical/nodes/mention-node'
 import CodeHighlightPlugin from '@webview/lexical/plugins/code-highlight-plugin'
-import { MentionPlugin } from '@webview/lexical/plugins/mention-plugin'
+import {
+  MentionPlugin,
+  type MentionPluginProps
+} from '@webview/lexical/plugins/mention-plugin'
 import { cn } from '@webview/utils/common'
 import type { EditorState, LexicalEditor } from 'lexical'
 
@@ -23,7 +26,8 @@ const onError = (error: unknown) => {
 }
 
 export interface EditorProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange'> {
+  extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange'>,
+    MentionPluginProps {
   className?: string
   editorState?: InitialEditorStateType
   placeholder?: string
@@ -81,7 +85,22 @@ export const Editor = forwardRef<EditorRef, EditorProps>(
 )
 
 const EditorInner = forwardRef<EditorRef, EditorProps>(
-  ({ className, placeholder, onComplete, onChange, ...otherProps }, ref) => {
+  (
+    {
+      className,
+      placeholder,
+      onComplete,
+      onChange,
+
+      // mention plugin props
+      newConversation,
+      setNewConversation,
+
+      // div props
+      ...otherProps
+    },
+    ref
+  ) => {
     const [editor] = useLexicalComposerContext()
 
     useImperativeHandle(ref, () => ({ editor }), [editor])
@@ -114,9 +133,12 @@ const EditorInner = forwardRef<EditorRef, EditorProps>(
           ErrorBoundary={LexicalErrorBoundary}
         />
         <OnChangePlugin onChange={onChange!} />
+        <MentionPlugin
+          newConversation={newConversation}
+          setNewConversation={setNewConversation}
+        />
         <HistoryPlugin />
         <CodeHighlightPlugin />
-        <MentionPlugin />
       </div>
     )
   }

@@ -7,6 +7,6 @@ export interface DocInfo {
 }
 
 export interface DocContext extends BaseToolContext {
-  allowSearchSiteUrls: string[]
+  allowSearchDocSiteUrls: string[]
   relevantDocs: DocInfo[]
 }

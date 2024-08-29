@@ -24,7 +24,7 @@ export class CodebaseProcessor implements ContextProcessor<CodebaseContext> {
   ): LangchainMessageParams {
     let content = 'Relevant codebase snippets:\n\n'
 
-    for (const chunk of codebaseContext.relevantSnippets) {
+    for (const chunk of codebaseContext.relevantCodeSnippets) {
       content += formatCodeSnippet(
         {
           relativePath: chunk.relativePath,
