@@ -22,7 +22,7 @@ const onError = (error: unknown) => {
   console.error('Editor error:', error)
 }
 
-interface EditorProps
+export interface EditorProps
   extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange'> {
   className?: string
   editorState?: InitialEditorStateType
@@ -104,7 +104,7 @@ const EditorInner = forwardRef<EditorRef, EditorProps>(
       >
         <RichTextPlugin
           contentEditable={
-            <ContentEditable className="editor-input min-w-full p-2 outline-none" />
+            <ContentEditable className="editor-input min-h-24 min-w-full p-2 outline-none" />
           }
           placeholder={
             <div className="editor-placeholder absolute top-2 left-2 text-gray-400">

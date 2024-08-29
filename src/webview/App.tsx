@@ -9,11 +9,11 @@ import { ChatUI } from './components/chat/chat-ui'
 
 export default function App() {
   return (
-    <div>
+    <div className="h-full">
       <Toaster position="top-center" />
       <Providers>
-        <div className="flex min-h-screen flex-col">
-          <main className="bg-muted/50 flex flex-1 flex-col">
+        <div className="flex min-h-screen flex-col h-full">
+          <main className="bg-muted/50 flex flex-1 flex-col h-full">
             <ChatUI />
             {/* <ChatProvider>
               <ChatEditor />

@@ -31,7 +31,7 @@ export class AideWebViewProvider {
       this.webviewPanel = vscode.window.createWebviewPanel(
         AideWebViewProvider.viewType,
         'AIDE',
-        vscode.ViewColumn.Beside,
+        vscode.ViewColumn.Active,
         {
           enableScripts: true,
           retainContextWhenHidden: true,

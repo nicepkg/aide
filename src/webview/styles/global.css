@@ -25,6 +25,25 @@
   }
 }
 
+* {
+  outline: none;
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body,
+#app {
+  height: 100%;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none !important;
+}
+
 .editor-code {
   background-color: #f6f8fa;
   font-family: monospace;

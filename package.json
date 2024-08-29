@@ -82,6 +82,12 @@
           "id": "aide.webview",
           "name": "AIDE"
         }
+      ],
+      "explorer": [
+        {
+          "id": "aide.checkboxFileTree",
+          "name": "%view.checkboxFileTree%"
+        }
       ]
     },
     "commands": [
@@ -144,6 +150,11 @@
         "command": "aide.showDiff",
         "title": "%command.showDiff%",
         "enablement": "false"
+      },
+      {
+        "command": "aide.checkboxFileTree.refresh",
+        "title": "%command.checkboxFileTree.refresh%",
+        "icon": "$(refresh)"
       }
     ],
     "menus": {
@@ -202,6 +213,13 @@
         {
           "command": "aide.expertCodeEnhancer",
           "group": "navigation@3"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "aide.checkboxFileTree.refresh",
+          "when": "view == aide.checkboxFileTree",
+          "group": "navigation"
         }
       ]
     },
@@ -373,7 +391,6 @@
     "@typescript-eslint/parser": "^7.17.0",
     "@vitejs/plugin-react-swc": "^3.7.0",
     "@vscode/vsce": "^3.0.0",
-    "@vscode/webview-ui-toolkit": "^1.4.0",
     "autoprefixer": "^10.4.20",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",

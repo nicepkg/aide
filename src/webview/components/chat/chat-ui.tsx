@@ -1,21 +1,18 @@
 import { useEffect, useRef, useState } from 'react'
 import {
   ClipboardIcon,
-  EnterIcon,
-  Link1Icon,
-  MixerHorizontalIcon,
   ReloadIcon,
   SpeakerLoudIcon
 } from '@radix-ui/react-icons'
 import { Button } from '@webview/components/ui/button'
-import { ChatProvider } from '@webview/contexts/chat-context'
 import type { Message } from '@webview/hooks/data'
 import useChatStore from '@webview/hooks/use-chat-store'
 import { AnimatePresence, motion } from 'framer-motion'
 
 import { ChatBubble, ChatBubbleMessage } from './chat-bubble'
+import { ChatInput } from './chat-input'
 import { ChatMessageList } from './chat-message-list'
-import { Editor, type EditorRef } from './editor'
+import { type EditorRef } from './editor/editor'
 
 const ChatAiIcons = [
   {
@@ -65,6 +62,7 @@ export const ChatUI = () => {
   }
 
   const handleSendMessage = () => {
+    console.log('Sending message:', input)
     // e.preventDefault()
     if (!input) return
 
@@ -110,8 +108,8 @@ export const ChatUI = () => {
 
   return (
     <div className="h-full w-full">
-      <div className="relative flex h-full flex-col rounded-xl bg-muted/40 lg:col-span-2">
-        <ChatMessageList ref={messagesContainerRef}>
+      <div className="relative flex h-full flex-col justify-between rounded-xl lg:col-span-2">
+        <ChatMessageList ref={messagesContainerRef} className="flex-1">
           {/* Chat messages */}
           <AnimatePresence>
             {messages.map((message, index) => (
@@ -133,7 +131,10 @@ export const ChatUI = () => {
                 className="flex flex-col gap-2"
               >
                 <ChatBubble key={index} layout="ai">
-                  <ChatBubbleMessage layout="ai" isLoading={message.isLoading}>
+                  <ChatBubbleMessage
+                    variant={message.role === 'ai' ? 'received' : 'sent'}
+                    isLoading={message.isLoading}
+                  >
                     {message.message}
                     {message.role === 'ai' && (
                       <div className="flex items-center mt-1.5 gap-1">
@@ -162,46 +163,19 @@ export const ChatUI = () => {
             ))}
           </AnimatePresence>
         </ChatMessageList>
-        <div className="flex-1" />
-        <form
-          ref={formRef}
-          onSubmit={handleSendMessage}
-          className="m-4 relative rounded-lg border bg-background focus-within:ring-1 focus-within:ring-ring"
-        >
-          <ChatProvider>
-            <Editor
-              ref={editorRef}
-              onComplete={handleComplete}
-              onChange={editorState => {
-                handleInputChange(JSON.stringify(editorState.toJSON()) ?? '')
-              }}
-              placeholder="Type your message here..."
-              className="min-h-24 max-h-64 overflow-y-auto rounded-lg bg-background border-0 p-3 shadow-none focus-visible:ring-0"
-            />
-          </ChatProvider>
-
-          <div className="flex items-center p-3 pt-0">
-            <Button variant="ghost" size="icon">
-              <Link1Icon className="size-4" />
-              <span className="sr-only">Attach file</span>
-            </Button>
-
-            <Button variant="ghost" size="icon">
-              <MixerHorizontalIcon className="size-4" />
-              <span className="sr-only">Use Microphone</span>
-            </Button>
-
-            <Button
-              disabled={!input || isLoading}
-              type="submit"
-              size="sm"
-              className="ml-auto gap-1.5"
-            >
-              Send Message
-              <EnterIcon className="size-3.5" />
-            </Button>
-          </div>
-        </form>
+        <ChatInput
+          ref={editorRef}
+          sendButtonDisabled={!input || isLoading}
+          editorProps={{
+            onComplete: handleComplete,
+            onChange: editorState => {
+              handleInputChange(JSON.stringify(editorState.toJSON()) ?? '')
+            },
+            placeholder: 'Type your message here...',
+            className:
+              'min-h-24 max-h-64 overflow-y-auto rounded-lg bg-background border-0 shadow-none focus-visible:ring-0'
+          }}
+        />
       </div>
     </div>
   )

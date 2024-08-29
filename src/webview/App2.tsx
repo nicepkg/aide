@@ -1,7 +1,8 @@
 import { useState } from 'react'
-import { VSCodeButton, VSCodeTextField } from '@vscode/webview-ui-toolkit/react'
 
 import { api } from './api/api-client'
+import { Button } from './components/ui/button'
+import { Textarea } from './components/ui/textarea'
 import { vscode } from './utils/vscode'
 
 export default function App() {
@@ -31,29 +32,29 @@ export default function App() {
   return (
     <main>
       <h1>Hello React!</h1>
-      <VSCodeButton onClick={onPostMessage}>Test VSCode Message</VSCodeButton>
+      <Button onClick={onPostMessage}>Test VSCode Message</Button>
       <div>
-        <VSCodeTextField
+        <Textarea
           value={message}
           onInput={(e: any) => setMessage(e?.target?.value)}
         >
           Please enter a message
-        </VSCodeTextField>
+        </Textarea>
         <div>Message is: {message}</div>
       </div>
       <div>
-        <VSCodeTextField
+        <Textarea
           value={state}
           onInput={(e: any) => setState(e?.target?.value)}
         >
           Please enter a state
-        </VSCodeTextField>
+        </Textarea>
         <div>State is: {state}</div>
         <div>
-          <VSCodeButton onClick={onSetState}>setState</VSCodeButton>
-          <VSCodeButton style={{ marginLeft: '8px' }} onClick={onGetState}>
+          <Button onClick={onSetState}>setState</Button>
+          <Button style={{ marginLeft: '8px' }} onClick={onGetState}>
             getState
-          </VSCodeButton>
+          </Button>
         </div>
       </div>
     </main>
