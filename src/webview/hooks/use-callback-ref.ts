@@ -16,5 +16,3 @@ export const useCallbackRef = <T extends (...args: any[]) => any>(
   // https://github.com/facebook/react/issues/19240
   return useMemo(() => ((...args) => callbackRef.current?.(...args)) as T, [])
 }
-
-export default useCallbackRef

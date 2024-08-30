@@ -45,8 +45,8 @@ ChatBubble.displayName = 'ChatBubble'
 export const chatBubbleMessageVariants = cva('p-4', {
   variants: {
     variant: {
-      received: 'bg-muted text-muted-foreground w-full',
-      sent: 'w-full'
+      received: 'bg-background text-foreground w-full',
+      sent: 'bg-background text-foreground w-full'
     },
     layout: {
       default: '',

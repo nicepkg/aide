@@ -1,5 +1,4 @@
-/* eslint-disable unused-imports/no-unused-vars */
-import React, { useState } from 'react'
+import { useCallback, useEffect, useRef, type FC, type ReactNode } from 'react'
 import {
   Command,
   CommandEmpty,
@@ -13,6 +12,7 @@ import {
   PopoverContent,
   PopoverTrigger
 } from '@webview/components/ui/popover'
+import { useCallbackRef } from '@webview/hooks/use-callback-ref'
 import { useControllableState } from '@webview/hooks/use-controllable-state'
 import type { IMentionStrategy, MentionOption } from '@webview/types/chat'
 
@@ -26,45 +26,147 @@ interface MentionSelectorProps {
   onSelect: (option: SelectedMentionStrategy) => void
   open?: boolean
   onOpenChange?: (open: boolean) => void
-  children: React.ReactNode
+  lexicalMode?: boolean
+  searchQuery?: string
+  onInternalSearchQueryChange?: (searchQuery: string) => void
+  children: ReactNode
 }
 
-export const MentionSelector: React.FC<MentionSelectorProps> = ({
+export const MentionSelector: FC<MentionSelectorProps> = ({
   mentionOptions,
   onSelect,
   open,
   onOpenChange,
+  lexicalMode,
+  searchQuery,
+  onInternalSearchQueryChange,
   children
 }) => {
+  const commandRef = useRef<HTMLDivElement>(null)
+
   const [isOpen = false, setIsOpen] = useControllableState({
     prop: open,
     defaultProp: false,
     onChange: onOpenChange
   })
 
-  // TODO: implement selected strategy and data
-  const [selectedStrategy, setSelectedStrategy] = useState<IMentionStrategy>()
-  const [selectedStrategyData, setSelectedStrategyData] = useState<any>()
+  const [internalSearchQuery, setInternalSearchQuery] = useControllableState({
+    prop: searchQuery,
+    defaultProp: '',
+    onChange: onInternalSearchQueryChange
+  })
+
+  useEffect(() => {
+    if (!lexicalMode || mentionOptions.length > 0) return
+
+    setIsOpen(false)
+  }, [mentionOptions.length, setIsOpen, lexicalMode])
+
+  const handleSelect = useCallback(
+    (currentValue: string) => {
+      const selectedOption = mentionOptions.find(
+        option => option.category === currentValue
+      )
+      if (selectedOption) {
+        onSelect({
+          strategy: selectedOption.mentionStrategies[0]!,
+          strategyAddData: { label: selectedOption.label }
+        })
+      }
+      setIsOpen(false)
+    },
+    [mentionOptions, onSelect]
+  )
+
+  const filterMentions = useCallback(
+    (value: string, search: string) => {
+      const option = mentionOptions.find(opt => opt.category === value)
+      if (!option) return 0
+
+      const label = option.label.toLowerCase()
+      search = search.toLowerCase()
+
+      if (label === search) return 1
+      if (label.startsWith(search)) return 0.8
+      if (label.includes(search)) return 0.6
+
+      // Calculate a basic fuzzy match score
+      let score = 0
+      let searchIndex = 0
+      for (let i = 0; i < label.length && searchIndex < search.length; i++) {
+        if (label[i] === search[searchIndex]) {
+          score += 1
+          searchIndex++
+        }
+      }
+      return score / Math.max(label.length, search.length)
+    },
+    [mentionOptions]
+  )
+
+  const handleKeyDown = useCallbackRef((event: KeyboardEvent) => {
+    if (!lexicalMode || !isOpen) return
+
+    const commandEl = commandRef.current
+    if (!commandEl) return
+
+    if (['ArrowUp', 'ArrowDown', 'Enter'].includes(event.key)) {
+      event.preventDefault()
+
+      const syntheticEvent = new KeyboardEvent(event.type, {
+        key: event.key,
+        code: event.code,
+        isComposing: event.isComposing,
+        location: event.location,
+        repeat: event.repeat,
+        bubbles: true
+      })
+      commandEl.dispatchEvent(syntheticEvent)
+    }
+
+    if (['Escape'].includes(event.key)) {
+      event.preventDefault()
+      setIsOpen(false)
+    }
+  })
+
+  useEffect(() => {
+    if (!lexicalMode) return
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [lexicalMode, handleKeyDown, isOpen])
 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>{children}</PopoverTrigger>
-      <PopoverContent className="w-48">
-        <Command>
-          <CommandInput placeholder="Search mention..." />
+      <PopoverContent
+        className="w-[200px] p-0"
+        updatePositionStrategy="optimized"
+        side="top"
+        onOpenAutoFocus={e => lexicalMode && e.preventDefault()}
+        onCloseAutoFocus={e => lexicalMode && e.preventDefault()}
+        onKeyDown={e => e.stopPropagation()}
+      >
+        <Command ref={commandRef} filter={filterMentions}>
+          <CommandInput
+            hidden
+            placeholder="Search mention..."
+            className="h-9"
+            value={internalSearchQuery}
+            onValueChange={setInternalSearchQuery}
+          />
           <CommandList>
-            <CommandEmpty>No mention found.</CommandEmpty>
-            <CommandGroup heading="Mention Types">
+            <CommandEmpty>No mention type found.</CommandEmpty>
+            <CommandGroup>
               {mentionOptions.map(option => (
                 <CommandItem
                   key={option.category}
-                  onSelect={() => {
-                    if (!selectedStrategy) return
-                    onSelect({
-                      strategy: selectedStrategy,
-                      strategyAddData: selectedStrategyData
-                    })
-                  }}
+                  value={option.category}
+                  onSelect={handleSelect}
+                  className="px-1.5 py-1"
                 >
                   {option.label}
                 </CommandItem>

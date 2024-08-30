@@ -13,12 +13,8 @@ export default function App() {
       <Toaster position="top-center" />
       <Providers>
         <div className="flex min-h-screen flex-col h-full">
-          <main className="bg-muted/50 flex flex-1 flex-col h-full">
+          <main className="flex flex-1 flex-col h-full">
             <ChatUI />
-            {/* <ChatProvider>
-              <ChatEditor />
-            </ChatProvider>
-            <Button>Hello</Button> */}
           </main>
         </div>
         {/* <TailwindIndicator /> */}

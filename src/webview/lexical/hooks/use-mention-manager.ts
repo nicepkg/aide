@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import type {
   Attachments,
   Conversation,
@@ -12,9 +11,6 @@ export interface UseMentionManagerProps {
 
 export function useMentionManager(props: UseMentionManagerProps) {
   const { newConversation, setNewConversation } = props
-  const [activeMentionType, setActiveMentionType] = useState<string | null>(
-    null
-  )
 
   const currentAttachments = newConversation.attachments
   const updateCurrentAttachments = (attachments: Partial<Attachments>) => {
@@ -42,13 +38,9 @@ export function useMentionManager(props: UseMentionManagerProps) {
         )
       updateCurrentAttachments(updatedAttachments)
     }
-
-    setActiveMentionType(null)
   }
 
   return {
-    activeMentionType,
-    setActiveMentionType,
     addMention
   }
 }

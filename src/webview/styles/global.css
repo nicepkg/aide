@@ -35,6 +35,8 @@ html,
 body,
 #app {
   height: 100%;
+  background-color: var(--vscode-editor-background);
+  color: var(--vscode-editor-foreground);
 }
 
 a:focus,

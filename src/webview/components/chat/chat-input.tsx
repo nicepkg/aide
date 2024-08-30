@@ -49,7 +49,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   const { selectedFiles } = newConversation.attachments.fileContext
 
   return (
-    <div className="chat-input flex-shrink-0 w-full flex flex-col text-muted-foreground bg-muted py-2">
+    <div className="chat-input flex-shrink-0 w-full flex flex-col text-title-foreground bg-title py-2">
       <div className="chat-input-files-select-bar px-4 flex items-center">
         <FileSelector
           onChange={handleSelectedFiles}
@@ -64,7 +64,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
             {selectedFiles.map(file => (
               <div
                 key={file.fullPath}
-                className="bg-gray-700 py-1 px-2 rounded text-xs"
+                className="bg-accent text-accent-foreground py-1 px-2 rounded text-xs"
               >
                 {getFileNameFromPath(file.fullPath)}
               </div>

@@ -126,7 +126,7 @@ const EditorInner = forwardRef<EditorRef, EditorProps>(
             <ContentEditable className="editor-input min-h-24 min-w-full p-2 outline-none" />
           }
           placeholder={
-            <div className="editor-placeholder absolute top-2 left-2 text-gray-400">
+            <div className="editor-placeholder absolute pointer-events-none top-2 left-2 text-gray-400">
               {placeholder}
             </div>
           }

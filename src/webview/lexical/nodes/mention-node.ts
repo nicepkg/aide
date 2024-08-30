@@ -1,4 +1,11 @@
-import { EditorConfig, NodeKey, SerializedTextNode, TextNode } from 'lexical'
+import {
+  $applyNodeReplacement,
+  EditorConfig,
+  LexicalNode,
+  NodeKey,
+  SerializedTextNode,
+  TextNode
+} from 'lexical'
 
 export type SerializedMentionNode = SerializedTextNode & {
   mentionType: string
@@ -36,14 +43,12 @@ export class MentionNode extends TextNode {
 
   createDOM(config: EditorConfig): HTMLElement {
     const dom = super.createDOM(config)
-    // dom.style.cssText =
-    //   'background-color: #eee; border-radius: 3px; padding: 1px 3px;'
-    // dom.className = 'mention'
-
     dom.style.cssText =
-      'background-color: #e6f3ff; border-radius: 3px; padding: 1px 3px; color: #0366d6; font-weight: 500;'
+      'background-color: hsl(var(--primary)); font-size: 12px; border-radius: 4px; padding: 0 2px; margin: 1px 1px; color: hsl(var(--primary-foreground)); display: inline-block;'
     dom.className = 'mention'
-
+    dom.setAttribute('data-mention', 'true')
+    dom.setAttribute('spellcheck', 'false')
+    dom.setAttribute('contentEditable', 'false')
     return dom
   }
 
@@ -54,6 +59,30 @@ export class MentionNode extends TextNode {
   ): boolean {
     const isUpdated = super.updateDOM(prevNode, dom, config)
     return isUpdated
+  }
+
+  isSegmented(): boolean {
+    return true
+  }
+
+  isInline(): boolean {
+    return true
+  }
+
+  isKeyboardSelectable(): boolean {
+    return true
+  }
+
+  canInsertTextBefore(): boolean {
+    return false
+  }
+
+  canInsertTextAfter(): boolean {
+    return false
+  }
+
+  splitText(): TextNode[] {
+    return [this]
   }
 
   static importJSON(serializedNode: SerializedMentionNode): MentionNode {
@@ -78,23 +107,18 @@ export class MentionNode extends TextNode {
       version: 1
     }
   }
-
-  getMentionType(): string {
-    return this.__mentionType
-  }
-
-  getMentionData(): any {
-    return this.__mentionData
-  }
 }
 
 export function $createMentionNode(
   mentionType: string,
   mentionData: any
 ): MentionNode {
-  return new MentionNode(mentionType, mentionData)
+  const mentionNode = new MentionNode(mentionType, mentionData)
+  return $applyNodeReplacement(mentionNode)
 }
 
-export function $isMentionNode(node: any): node is MentionNode {
+export function $isMentionNode(
+  node: LexicalNode | null | undefined
+): node is MentionNode {
   return node instanceof MentionNode
 }

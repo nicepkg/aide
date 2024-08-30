@@ -18,7 +18,7 @@ export const ChatUI: React.FC = () => {
   return (
     <div className="chat-ui h-full w-full flex flex-col">
       <ChatHeader />
-      <div className="chat-body overflow-hidden flex-1 w-full flex flex-col justify-between rounded-xl lg:col-span-2">
+      <div className="chat-body overflow-hidden flex-1 w-full flex flex-col justify-between lg:col-span-2">
         <ChatMessagesContainer messages={messages} />
         <ChatInput
           context={context}
