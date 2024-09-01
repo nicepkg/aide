@@ -3,10 +3,11 @@ import type {
   Conversation,
   IMentionStrategy
 } from '@webview/types/chat'
+import type { Updater } from 'use-immer'
 
 export interface UseMentionManagerProps {
   newConversation: Conversation
-  setNewConversation: React.Dispatch<React.SetStateAction<Conversation>>
+  setNewConversation: Updater<Conversation>
 }
 
 export function useMentionManager(props: UseMentionManagerProps) {
@@ -14,13 +15,12 @@ export function useMentionManager(props: UseMentionManagerProps) {
 
   const currentAttachments = newConversation.attachments
   const updateCurrentAttachments = (attachments: Partial<Attachments>) => {
-    setNewConversation(preConversation => ({
-      ...preConversation,
-      attachments: {
-        ...preConversation.attachments,
+    setNewConversation(draft => {
+      draft.attachments = {
+        ...draft.attachments,
         ...attachments
       }
-    }))
+    })
   }
 
   const addMention = async ({

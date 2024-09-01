@@ -2,6 +2,7 @@ import React, { useRef } from 'react'
 import { EnterIcon, PlusIcon } from '@radix-ui/react-icons'
 import type { ChatContext, Conversation, FileInfo } from '@webview/types/chat'
 import { getFileNameFromPath } from '@webview/utils/common'
+import type { Updater } from 'use-immer'
 
 import { Button } from '../ui/button'
 import { Editor, type EditorRef } from './editor/editor'
@@ -10,9 +11,9 @@ import { FileSelector } from './selectors/file-selector'
 
 interface ChatInputProps {
   context: ChatContext
-  setContext: React.Dispatch<React.SetStateAction<ChatContext>>
+  setContext: Updater<ChatContext>
   newConversation: Conversation
-  setNewConversation: React.Dispatch<React.SetStateAction<Conversation>>
+  setNewConversation: Updater<Conversation>
   sendButtonDisabled: boolean
   onSend: () => void
 }
@@ -34,17 +35,12 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   }
 
   const handleSelectedFiles = (files: FileInfo[]) => {
-    setNewConversation(preConversation => ({
-      ...preConversation,
-      attachments: {
-        ...preConversation.attachments,
-        fileContext: {
-          ...preConversation.attachments.fileContext,
-          selectedFiles: files
-        }
-      }
-    }))
+    setNewConversation(draft => {
+      draft.attachments.fileContext.selectedFiles = files
+    })
   }
+
+  const focusOnEditor = () => editorRef.current?.editor.focus()
 
   const { selectedFiles } = newConversation.attachments.fileContext
 
@@ -54,9 +50,10 @@ export const ChatInput: React.FC<ChatInputProps> = ({
         <FileSelector
           onChange={handleSelectedFiles}
           selectedFiles={selectedFiles}
+          onOpenChange={isOpen => !isOpen && focusOnEditor()}
         >
-          <Button variant="outline" size="xs" className="mr-2 self-start">
-            <PlusIcon className="h-3 w-3" />
+          <Button variant="outline" size="xss" className="mr-2 self-start">
+            <PlusIcon className="h-2.5 w-2.5" />
           </Button>
         </FileSelector>
         {selectedFiles.length > 0 && (
@@ -64,7 +61,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
             {selectedFiles.map(file => (
               <div
                 key={file.fullPath}
-                className="bg-accent text-accent-foreground py-1 px-2 rounded text-xs"
+                className="cursor-pointer bg-accent text-accent-foreground px-1 py-0.5 rounded text-xs"
               >
                 {getFileNameFromPath(file.fullPath)}
               </div>
@@ -88,6 +85,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
             setContext={setContext}
             newConversation={newConversation}
             setNewConversation={setNewConversation}
+            onClose={focusOnEditor}
           />
           <Button
             variant="outline"

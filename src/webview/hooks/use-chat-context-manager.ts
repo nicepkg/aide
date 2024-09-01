@@ -1,6 +1,6 @@
-import { useState } from 'react'
 import { ChatService } from '@webview/services/chat-service'
 import type { ChatContext, Conversation } from '@webview/types/chat'
+import { useImmer } from 'use-immer'
 import { v4 as uuidv4 } from 'uuid'
 
 import { useAsyncMemo } from './use-async-memo'
@@ -117,7 +117,7 @@ const mockData = [
 ] as Conversation[]
 
 export const useChatContextManager = () => {
-  const [context, setContext] = useState<ChatContext>({
+  const [context, setContext] = useImmer<ChatContext>({
     id: uuidv4(),
     createdAt: Date.now(),
     updatedAt: Date.now(),
@@ -130,7 +130,8 @@ export const useChatContextManager = () => {
     },
     conversations: [...mockData]
   })
-  const [newConversation, setNewConversation] = useState<Conversation>({
+
+  const [newConversation, setNewConversation] = useImmer<Conversation>({
     id: uuidv4(),
     createdAt: Date.now(),
     role: 'human',

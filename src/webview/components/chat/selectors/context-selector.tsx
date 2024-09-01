@@ -8,6 +8,7 @@ import type {
   Conversation,
   ModelOption
 } from '@webview/types/chat'
+import type { Updater } from 'use-immer'
 
 import {
   MentionSelector,
@@ -17,16 +18,18 @@ import { ModelSelector } from './model-selector'
 
 interface ContextSelectorProps {
   context: ChatContext
-  setContext: React.Dispatch<React.SetStateAction<ChatContext>>
+  setContext: Updater<ChatContext>
   newConversation: Conversation
-  setNewConversation: React.Dispatch<React.SetStateAction<Conversation>>
+  setNewConversation: Updater<Conversation>
+  onClose?: () => void
 }
 
 export const ContextSelector: React.FC<ContextSelectorProps> = ({
   context,
   setContext,
   newConversation,
-  setNewConversation
+  setNewConversation,
+  onClose
 }) => {
   const [modelOptions] = useState<ModelOption[]>([
     { value: 'gpt-4', label: 'GPT-4' },
@@ -37,13 +40,9 @@ export const ContextSelector: React.FC<ContextSelectorProps> = ({
 
   const handleSelectModel = (model: ModelOption) => {
     setSelectedModel(model)
-    setContext(preContext => ({
-      ...preContext,
-      settings: {
-        ...preContext.settings,
-        model: model.value
-      }
-    }))
+    setContext(draft => {
+      draft.settings.modelName = model.value
+    })
   }
 
   const handleSelectMention = (option: SelectedMentionStrategy) => {
@@ -62,26 +61,20 @@ export const ContextSelector: React.FC<ContextSelectorProps> = ({
       }
     }
     input.click()
-    setNewConversation(preConversation => ({
-      ...preConversation,
-      attachments: {
-        ...preConversation.attachments,
-        fileContext: {
-          ...preConversation.attachments.fileContext,
-          selectedImages: [
-            ...preConversation.attachments.fileContext.selectedImages,
-            {
-              url: 'https://example.com/image.jpg'
-            }
-          ]
-        }
-      }
-    }))
+    setNewConversation(draft => {
+      draft.attachments.fileContext.selectedImages.push({
+        url: 'https://example.com/image.jpg'
+      })
+    })
   }
 
   return (
     <div className="context-selector flex items-center flex-1">
-      <ModelSelector onSelect={handleSelectModel} modelOptions={modelOptions}>
+      <ModelSelector
+        onSelect={handleSelectModel}
+        modelOptions={modelOptions}
+        onOpenChange={isOpen => !isOpen && onClose?.()}
+      >
         <Button variant="ghost" size="xs">
           {selectedModel?.label}
         </Button>
@@ -89,6 +82,7 @@ export const ContextSelector: React.FC<ContextSelectorProps> = ({
       <MentionSelector
         mentionOptions={createMentionOptions()}
         onSelect={handleSelectMention}
+        onOpenChange={isOpen => !isOpen && onClose?.()}
       >
         <Button variant="ghost" size="xs" className="ml-2">
           @ Mention
