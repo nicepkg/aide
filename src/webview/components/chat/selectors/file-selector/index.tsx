@@ -133,14 +133,14 @@ export const FileSelector: React.FC<FileSelectorProps> = ({
             ))}
           </TabsList>
           <div className="flex-grow overflow-auto">
-            <TabsContent value="list" className="h-full">
+            <TabsContent value="list" className="h-full mt-0">
               <FileListView
                 filteredFiles={filteredFiles}
                 selectedFiles={selectedFiles}
                 onSelect={handleListSelect}
               />
             </TabsContent>
-            <TabsContent value="tree" className="h-full">
+            <TabsContent value="tree" className="h-full mt-0">
               <FileTreeView
                 files={filteredFiles}
                 selectedFiles={selectedFiles}

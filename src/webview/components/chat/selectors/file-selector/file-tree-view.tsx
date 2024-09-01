@@ -22,7 +22,7 @@ export const FileTreeView: React.FC<FileTreeViewProps> = ({
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set())
   const [autoExpandedIds, setAutoExpandedIds] = useState<Set<string>>(new Set())
   const initializedRef = useRef(false)
-  const itemRefs = useRef<(HTMLInputElement | null)[]>([])
+  const visibleItemRefs = useRef<(HTMLInputElement | null)[]>([])
   const treeItems = useMemo(() => convertFilesToTreeItems(files), [files])
   const flattenedItems = useMemo(() => flattenTreeItems(treeItems), [treeItems])
 
@@ -109,11 +109,31 @@ export const FileTreeView: React.FC<FileTreeViewProps> = ({
     [expandedIds, autoExpandedIds]
   )
 
+  const getVisibleItems = useCallback(
+    () =>
+      flattenedItems.filter(item => {
+        const parentIds = getAllParentIds(treeItems, item.id)
+        return parentIds.every(id => allExpandedIds.has(id))
+      }),
+    [flattenedItems, getAllParentIds, treeItems, allExpandedIds]
+  )
+
+  const visibleItems = useMemo(() => getVisibleItems(), [getVisibleItems])
+
+  const getVisibleIndex = useCallback(
+    (index: number) => {
+      const visibleItems = getVisibleItems()
+      return visibleItems.findIndex((item, i) => i === index)
+    },
+    [getVisibleItems]
+  )
+
   const { focusedIndex, handleKeyDown } = useKeyboardNavigation({
-    itemCount: flattenedItems.length,
-    itemRefs,
-    onSpace: el => el?.parentElement?.click(),
-    onEnter: el => el?.click()
+    itemCount: visibleItems.length,
+    itemRefs: visibleItemRefs,
+    onCtrlEnter: el => el?.parentElement?.click(),
+    onEnter: el => el?.click(),
+    getVisibleIndex
   })
 
   useEvent('keydown', handleKeyDown)
@@ -129,14 +149,14 @@ export const FileTreeView: React.FC<FileTreeViewProps> = ({
       onToggleExpand,
       level
     }: TreeNodeRenderProps) => {
-      const index = flattenedItems.findIndex(
-        flatItem => flatItem.id === item.id
+      const visibleIndex = visibleItems.findIndex(
+        visibleItem => visibleItem.id === item.id
       )
       return (
         <div
           className={cn(
             'flex items-center py-1 cursor-pointer',
-            focusedIndex === index && 'bg-secondary'
+            visibleIndex === focusedIndex && 'bg-secondary'
           )}
           style={{ marginLeft: `${level * 20}px` }}
           onClick={onToggleExpand}
@@ -155,8 +175,8 @@ export const FileTreeView: React.FC<FileTreeViewProps> = ({
             type="checkbox"
             checked={isSelected}
             ref={el => {
-              if (itemRefs.current) {
-                itemRefs.current[index] = el
+              if (visibleItemRefs.current) {
+                visibleItemRefs.current[visibleIndex] = el
               }
               if (el) el.indeterminate = isIndeterminate
             }}
@@ -168,7 +188,7 @@ export const FileTreeView: React.FC<FileTreeViewProps> = ({
         </div>
       )
     },
-    [focusedIndex, flattenedItems]
+    [focusedIndex, visibleItems]
   )
 
   return (
@@ -183,7 +203,7 @@ export const FileTreeView: React.FC<FileTreeViewProps> = ({
   )
 }
 
-// Helper function to flatten tree items
+// Helper functions (flattenTreeItems and convertFilesToTreeItems) remain unchanged
 function flattenTreeItems(items: TreeItem[]): TreeItem[] {
   return items.reduce((acc: TreeItem[], item) => {
     acc.push(item)
@@ -194,7 +214,6 @@ function flattenTreeItems(items: TreeItem[]): TreeItem[] {
   }, [])
 }
 
-// Function to convert flat file structure to tree structure
 function convertFilesToTreeItems(files: FileInfo[]): TreeItem[] {
   const root: Record<string, any> = {}
 
