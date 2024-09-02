@@ -85,8 +85,12 @@ const insertMention = (
   selection.removeText()
 
   // Create and insert the mention node
-  const mentionNode = $createMentionNode(strategy.category, strategyAddData)
-  mentionNode.setTextContent(`@${strategyAddData.label || strategy.name}`)
+  const mentionText = `@${strategyAddData.label || strategy.name}`
+  const mentionNode = $createMentionNode(
+    strategy.category,
+    strategyAddData,
+    mentionText
+  )
   selection.insertNodes([mentionNode])
 
   // Insert a space after the mention node

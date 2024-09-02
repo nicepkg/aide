@@ -144,7 +144,7 @@ export const MentionSelector: FC<MentionSelectorProps> = ({
       <PopoverTrigger asChild>{children}</PopoverTrigger>
       <PopoverContent
         className="w-[200px] p-0"
-        updatePositionStrategy="optimized"
+        updatePositionStrategy="always"
         side="top"
         onOpenAutoFocus={e => lexicalMode && e.preventDefault()}
         onCloseAutoFocus={e => lexicalMode && e.preventDefault()}

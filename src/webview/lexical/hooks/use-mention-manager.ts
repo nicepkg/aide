@@ -30,14 +30,16 @@ export function useMentionManager(props: UseMentionManagerProps) {
     strategy: IMentionStrategy
     strategyAddData: any
   }) => {
-    if (strategy) {
-      const updatedAttachments =
-        await strategy.buildNewAttachmentsAfterAddMention(
-          strategyAddData,
-          currentAttachments
-        )
-      updateCurrentAttachments(updatedAttachments)
-    }
+    try {
+      if (strategy) {
+        const updatedAttachments =
+          await strategy.buildNewAttachmentsAfterAddMention(
+            strategyAddData,
+            currentAttachments
+          )
+        updateCurrentAttachments(updatedAttachments)
+      }
+    } catch (error) {}
   }
 
   return {

@@ -1,6 +1,12 @@
 import { useEffect, useState } from 'react'
-import type { LexicalEditor } from 'lexical'
-import { $getSelection, $isRangeSelection } from 'lexical'
+import {
+  $getSelection,
+  $isRangeSelection,
+  $isTextNode,
+  LexicalEditor
+} from 'lexical'
+
+import { $isMentionNode } from '../nodes/mention-node'
 
 export const useMentionSearch = (
   editor: LexicalEditor,
@@ -22,18 +28,24 @@ export const useMentionSearch = (
 
           const { anchor } = selection
           const anchorNode = anchor.getNode()
-          const textContent = anchorNode.getTextContent()
-          const focusOffset = selection.focus.offset
 
-          // Check if we're inside a mention node
-          if (anchorNode.getType() === 'mention') {
+          if ($isMentionNode(anchorNode)) {
             setIsOpen(false)
             setSearchQuery('')
             return
           }
 
-          // Look for '@' at the start of the line, after a space, or after another mention node
-          const beforeCursor = textContent.slice(0, focusOffset)
+          if (!$isTextNode(anchorNode)) {
+            setIsOpen(false)
+            setSearchQuery('')
+            return
+          }
+
+          const textContent = anchorNode.getTextContent()
+          const anchorOffset = anchor.offset
+
+          // Look for '@' anywhere in the text, but only consider the part before the cursor
+          const beforeCursor = textContent.slice(0, anchorOffset)
           const mentionMatch = beforeCursor.match(/(^|\s|@\w+\s)@(\w*)$/)
 
           if (mentionMatch) {
