@@ -123,11 +123,6 @@ export const MentionSelector: FC<MentionSelectorProps> = ({
       })
       commandEl.dispatchEvent(syntheticEvent)
     }
-
-    if (['Escape'].includes(event.key)) {
-      event.preventDefault()
-      setIsOpen(false)
-    }
   })
 
   useEffect(() => {

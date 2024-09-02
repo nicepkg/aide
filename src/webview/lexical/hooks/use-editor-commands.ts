@@ -55,9 +55,9 @@ export const useEditorCommands = (
       () => {
         if (isOpen) {
           setIsOpen(false)
-          return true
         }
-        return false
+
+        return true
       },
       COMMAND_PRIORITY_HIGH
     )

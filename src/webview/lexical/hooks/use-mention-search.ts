@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   $getSelection,
   $isRangeSelection,
   $isTextNode,
   LexicalEditor
 } from 'lexical'
+import { useKey } from 'react-use'
 
 import { $isMentionNode } from '../nodes/mention-node'
 
@@ -13,6 +14,11 @@ export const useMentionSearch = (
   setIsOpen: (open: boolean) => void
 ) => {
   const [searchQuery, setSearchQuery] = useState('')
+  const lastKeyPressRef = useRef<string>('')
+
+  useKey('@', () => {
+    lastKeyPressRef.current = '@'
+  })
 
   useEffect(() => {
     const removeUpdateListener = editor.registerUpdateListener(
@@ -48,13 +54,16 @@ export const useMentionSearch = (
           const beforeCursor = textContent.slice(0, anchorOffset)
           const mentionMatch = beforeCursor.match(/(^|\s|@\w+\s)@(\w*)$/)
 
-          if (mentionMatch) {
+          if (mentionMatch && lastKeyPressRef.current === '@') {
             setSearchQuery(mentionMatch[2] ?? '')
             setIsOpen(true)
           } else {
             setIsOpen(false)
             setSearchQuery('')
           }
+
+          // Reset lastKeyPress after processing
+          lastKeyPressRef.current = ''
         })
       }
     )

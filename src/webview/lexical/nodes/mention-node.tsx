@@ -2,6 +2,8 @@
 import React from 'react'
 import {
   $applyNodeReplacement,
+  $createTextNode,
+  $isTextNode,
   DecoratorNode,
   DOMConversionMap,
   DOMExportOutput,
@@ -11,8 +13,7 @@ import {
   NodeKey,
   SerializedLexicalNode,
   Spread,
-  type DOMConversionOutput,
-  type Point
+  type DOMConversionOutput
 } from 'lexical'
 
 export type SerializedMentionNode = Spread<
@@ -78,6 +79,10 @@ export class MentionNode extends DecoratorNode<React.ReactNode> {
     const dom = document.createElement('span')
     dom.setAttribute('data-lexical-mention', 'true')
     dom.setAttribute('data-lexical-mention-type', this.__mentionType)
+    dom.setAttribute(
+      'data-lexical-mention-data',
+      JSON.stringify(this.__mentionData)
+    )
     return dom
   }
 
@@ -153,9 +158,42 @@ export class MentionNode extends DecoratorNode<React.ReactNode> {
     return true
   }
 
-  isAtNodeEnd(point: Point): boolean {
-    const textLength = this.__text.length
-    return point.offset === textLength
+  isIsolated(): boolean {
+    return true
+  }
+
+  extractWithChild(): boolean {
+    return true
+  }
+
+  canInsertTextBefore(): boolean {
+    return false
+  }
+
+  canInsertTextAfter(): boolean {
+    return false
+  }
+
+  splitText(): never {
+    throw new Error('MentionNode: splitText is not supported')
+  }
+
+  canExtractContents(): boolean {
+    return false
+  }
+
+  canReplaceWith(replacement: LexicalNode): boolean {
+    return $isTextNode(replacement)
+  }
+
+  canMergeWith(node: LexicalNode): boolean {
+    return false
+  }
+
+  collapseAtStart(): boolean {
+    const textNode = $createTextNode(this.__text)
+    this.replace(textNode)
+    return true
   }
 }
 

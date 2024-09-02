@@ -31,7 +31,10 @@ export class AideWebViewProvider {
       this.webviewPanel = vscode.window.createWebviewPanel(
         AideWebViewProvider.viewType,
         'AIDE',
-        vscode.ViewColumn.Active,
+        {
+          viewColumn: vscode.ViewColumn.Active,
+          preserveFocus: true
+        },
         {
           enableScripts: true,
           retainContextWhenHidden: true,
@@ -96,6 +99,11 @@ export class WebviewRegister extends BaseRegister {
       {
         resolveWebviewView: webviewView =>
           this.provider!.resolveSidebarView(webviewView)
+      },
+      {
+        webviewOptions: {
+          retainContextWhenHidden: true
+        }
       }
     )
     this.context.subscriptions.push(disposable)
