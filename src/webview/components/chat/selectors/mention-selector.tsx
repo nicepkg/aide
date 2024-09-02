@@ -152,7 +152,8 @@ export const MentionSelector: FC<MentionSelectorProps> = ({
       >
         <Command ref={commandRef} filter={filterMentions}>
           <CommandInput
-            hidden
+            hidden={lexicalMode}
+            showSearchIcon={false}
             placeholder="Search mention..."
             className="h-9"
             value={internalSearchQuery}

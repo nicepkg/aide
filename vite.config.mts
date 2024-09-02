@@ -4,6 +4,7 @@ import { fileURLToPath } from 'url'
 import vscode from '@tomjs/vite-plugin-vscode'
 import react from '@vitejs/plugin-react-swc'
 import { defineConfig } from 'vite'
+import svgr from 'vite-plugin-svgr'
 import tsconfigPaths from 'vite-tsconfig-paths'
 
 import pkg from './package.json'
@@ -24,6 +25,7 @@ export default defineConfig(() => {
     plugins: [
       tsconfigPaths(),
       react(),
+      svgr(),
       vscode({
         extension: {
           entry: resolvePath('./src/extension/index.ts'),

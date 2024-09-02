@@ -1,5 +1,5 @@
 import { forwardRef, useImperativeHandle } from 'react'
-import { CodeHighlightNode, CodeNode } from '@lexical/code'
+import { AutoFocusPlugin } from '@lexical/react/LexicalAutoFocusPlugin'
 import {
   LexicalComposer,
   type InitialConfigType,
@@ -11,8 +11,8 @@ import { LexicalErrorBoundary } from '@lexical/react/LexicalErrorBoundary'
 import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin'
 import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin'
 import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin'
+import { TabIndentationPlugin } from '@lexical/react/LexicalTabIndentationPlugin'
 import { MentionNode } from '@webview/lexical/nodes/mention-node'
-import CodeHighlightPlugin from '@webview/lexical/plugins/code-highlight-plugin'
 import {
   MentionPlugin,
   type MentionPluginProps
@@ -66,7 +66,7 @@ export const Editor = forwardRef<EditorRef, EditorProps>(
       onError,
       editable: true,
       editorState,
-      nodes: [MentionNode, CodeNode, CodeHighlightNode]
+      nodes: [MentionNode]
     }
 
     return (
@@ -138,7 +138,9 @@ const EditorInner = forwardRef<EditorRef, EditorProps>(
           setNewConversation={setNewConversation}
         />
         <HistoryPlugin />
-        <CodeHighlightPlugin />
+        <AutoFocusPlugin />
+        <TabIndentationPlugin />
+        {/* <TreeViewDebugPlugin /> */}
       </div>
     )
   }

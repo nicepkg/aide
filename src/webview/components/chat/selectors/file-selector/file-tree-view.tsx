@@ -1,10 +1,21 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { ChevronRightIcon, FileIcon } from '@radix-ui/react-icons'
+import {
+  KeyboardShortcutsInfo,
+  type ShortcutInfo
+} from '@webview/components/keyboard-shortcuts-info'
 import { Tree, TreeItem, TreeNodeRenderProps } from '@webview/components/tree'
 import { useKeyboardNavigation } from '@webview/hooks/use-keyboard-navigation'
 import { FileInfo } from '@webview/types/chat'
 import { cn } from '@webview/utils/common'
+import { getIconComponent } from '@webview/utils/file-icons/utils'
 import { useEvent } from 'react-use'
+
+const keyboardShortcuts: ShortcutInfo[] = [
+  { key: ['↑', '↓'], description: 'Navigate', weight: 10 },
+  { key: '↵', description: 'Select', weight: 9 },
+  { key: '⌘↵', description: 'Expand', weight: 8 },
+  { key: 'esc', description: 'Close', weight: 7 }
+]
 
 interface FileTreeViewProps {
   files: FileInfo[]
@@ -152,6 +163,13 @@ export const FileTreeView: React.FC<FileTreeViewProps> = ({
       const visibleIndex = visibleItems.findIndex(
         visibleItem => visibleItem.id === item.id
       )
+
+      const MaterialSvgComponent = getIconComponent({
+        isFolder: hasChildren,
+        isOpen: isExpanded,
+        name: item.name
+      })
+
       return (
         <div
           className={cn(
@@ -161,16 +179,6 @@ export const FileTreeView: React.FC<FileTreeViewProps> = ({
           style={{ marginLeft: `${level * 20}px` }}
           onClick={onToggleExpand}
         >
-          {hasChildren ? (
-            <ChevronRightIcon
-              className={cn(
-                'h-4 w-4 transition-transform',
-                isExpanded && 'transform rotate-90'
-              )}
-            />
-          ) : (
-            <FileIcon className="h-4 w-4 mr-2" />
-          )}
           <input
             type="checkbox"
             checked={isSelected}
@@ -182,8 +190,12 @@ export const FileTreeView: React.FC<FileTreeViewProps> = ({
             }}
             onChange={onToggleSelect}
             onClick={e => e.stopPropagation()}
-            className="mx-1 w-4 h-4"
+            className="mx-1 custom-checkbox"
           />
+
+          {MaterialSvgComponent ? (
+            <MaterialSvgComponent className="h-4 w-4 mr-1" />
+          ) : null}
           <span>{item.name}</span>
         </div>
       )
@@ -192,14 +204,17 @@ export const FileTreeView: React.FC<FileTreeViewProps> = ({
   )
 
   return (
-    <Tree
-      items={treeItems}
-      selectedItemIds={selectedIds}
-      expandedItemIds={Array.from(allExpandedIds)}
-      onSelect={handleSelect}
-      onExpand={handleExpand}
-      renderItem={renderItem}
-    />
+    <div className="flex flex-col h-full">
+      <Tree
+        items={treeItems}
+        selectedItemIds={selectedIds}
+        expandedItemIds={Array.from(allExpandedIds)}
+        onSelect={handleSelect}
+        onExpand={handleExpand}
+        renderItem={renderItem}
+      />
+      <KeyboardShortcutsInfo shortcuts={keyboardShortcuts} />
+    </div>
   )
 }
 

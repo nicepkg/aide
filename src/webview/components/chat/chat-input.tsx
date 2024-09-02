@@ -1,5 +1,5 @@
 import React, { useRef } from 'react'
-import { EnterIcon, PlusIcon } from '@radix-ui/react-icons'
+import { PlusIcon } from '@radix-ui/react-icons'
 import type { ChatContext, Conversation, FileInfo } from '@webview/types/chat'
 import { getFileNameFromPath } from '@webview/utils/common'
 import type { Updater } from 'use-immer'
@@ -94,8 +94,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
             className="ml-auto"
             onClick={onSend}
           >
-            Send
-            <EnterIcon className="ml-2 size-3.5" />
+            ⌘↩ Send
           </Button>
         </div>
       </div>

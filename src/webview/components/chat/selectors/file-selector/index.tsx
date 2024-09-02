@@ -1,4 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import {
+  KeyboardShortcutsInfo,
+  type ShortcutInfo
+} from '@webview/components/keyboard-shortcuts-info'
 import { Input } from '@webview/components/ui/input'
 import {
   Popover,
@@ -15,9 +19,14 @@ import { useControllableState } from '@webview/hooks/use-controllable-state'
 import { useFileSearch } from '@webview/hooks/use-file-search'
 import { useKeyboardNavigation } from '@webview/hooks/use-keyboard-navigation'
 import type { FileInfo } from '@webview/types/chat'
+import { useEvent } from 'react-use'
 
 import { FileListView } from './file-list-view'
 import { FileTreeView } from './file-tree-view'
+
+const keyboardShortcuts: ShortcutInfo[] = [
+  { key: '⇥', description: 'Switch tab', weight: 10 }
+]
 
 interface FileSelectorProps {
   selectedFiles: FileInfo[]
@@ -65,11 +74,11 @@ export const FileSelector: React.FC<FileSelectorProps> = ({
     setSearchQuery(topSearchQuery)
   }, [topSearchQuery, setSearchQuery])
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (isOpen) {
-      setTimeout(() => {
-        inputRef.current?.focus()
-      }, 0)
+      inputRef.current?.focus()
+    } else {
+      setTopSearchQuery('')
     }
   }, [isOpen])
 
@@ -86,9 +95,7 @@ export const FileSelector: React.FC<FileSelectorProps> = ({
     onChange(newSelectedFiles)
   }
 
-  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    handleKeyDown(e)
-  }
+  useEvent('keydown', handleKeyDown)
 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
@@ -104,8 +111,8 @@ export const FileSelector: React.FC<FileSelectorProps> = ({
             ref={inputRef}
             value={topSearchQuery}
             onChange={e => setTopSearchQuery(e.target.value)}
-            onKeyDown={handleInputKeyDown}
             placeholder="Search files..."
+            autoFocus
           />
         </div>
         <Tabs
@@ -131,6 +138,10 @@ export const FileSelector: React.FC<FileSelectorProps> = ({
                 {tab.label}
               </TabsTrigger>
             ))}
+            <KeyboardShortcutsInfo
+              className="border-t-0 opacity-70"
+              shortcuts={keyboardShortcuts}
+            />
           </TabsList>
           <div className="flex-grow overflow-auto">
             <TabsContent value="list" className="h-full mt-0">

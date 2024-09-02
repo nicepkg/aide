@@ -1,5 +1,8 @@
 import React, { useCallback, useRef } from 'react'
-import { CheckIcon } from '@radix-ui/react-icons'
+import {
+  KeyboardShortcutsInfo,
+  type ShortcutInfo
+} from '@webview/components/keyboard-shortcuts-info'
 import {
   Command,
   CommandEmpty,
@@ -10,7 +13,14 @@ import {
 import { useKeyboardNavigation } from '@webview/hooks/use-keyboard-navigation'
 import { FileInfo } from '@webview/types/chat'
 import { cn, getFileNameFromPath } from '@webview/utils/common'
+import { getIconComponent } from '@webview/utils/file-icons/utils'
 import { useEvent } from 'react-use'
+
+const keyboardShortcuts: ShortcutInfo[] = [
+  { key: ['↑', '↓'], description: 'Navigate', weight: 10 },
+  { key: '↵', description: 'Select', weight: 9 },
+  { key: 'esc', description: 'Close', weight: 8 }
+]
 
 interface FileListViewProps {
   filteredFiles: FileInfo[]
@@ -36,6 +46,14 @@ export const FileListView: React.FC<FileListViewProps> = ({
   const renderItem = useCallback(
     (file: FileInfo, index: number) => {
       const isSelected = selectedFiles.some(f => f.fullPath === file.fullPath)
+
+      const fileName = getFileNameFromPath(file.relativePath)
+      const MaterialSvgComponent = getIconComponent({
+        isFolder: false,
+        isOpen: false,
+        name: file.relativePath
+      })
+
       return (
         <CommandItem
           key={file.fullPath}
@@ -53,8 +71,19 @@ export const FileListView: React.FC<FileListViewProps> = ({
             focusedIndex === index && 'text-accent-foreground bg-accent'
           )}
         >
-          <span>{getFileNameFromPath(file.relativePath)}</span>
-          {isSelected && <CheckIcon className="h-4 w-4 text-primary" />}
+          <div className="flex flex-1 items-center">
+            <input
+              type="checkbox"
+              checked={isSelected}
+              onChange={e => e.stopPropagation()}
+              className="mx-1 custom-checkbox"
+            />
+
+            {MaterialSvgComponent ? (
+              <MaterialSvgComponent className="h-4 w-4 mr-1" />
+            ) : null}
+            <span>{fileName}</span>
+          </div>
         </CommandItem>
       )
     },
@@ -62,13 +91,16 @@ export const FileListView: React.FC<FileListViewProps> = ({
   )
 
   return (
-    <Command shouldFilter={false}>
-      <CommandList>
-        <CommandEmpty>No files found.</CommandEmpty>
-        <CommandGroup>
-          {filteredFiles.map((file, index) => renderItem(file, index))}
-        </CommandGroup>
-      </CommandList>
-    </Command>
+    <div className="flex flex-col h-full">
+      <Command shouldFilter={false}>
+        <CommandList>
+          <CommandEmpty>No files found.</CommandEmpty>
+          <CommandGroup>
+            {filteredFiles.map((file, index) => renderItem(file, index))}
+          </CommandGroup>
+        </CommandList>
+      </Command>
+      <KeyboardShortcutsInfo shortcuts={keyboardShortcuts} />
+    </div>
   )
 }

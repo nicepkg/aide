@@ -454,6 +454,7 @@
     "use-resize-observer": "^9.1.0",
     "vaul": "^0.9.1",
     "vite": "^5.4.2",
+    "vite-plugin-svgr": "^4.2.0",
     "vite-tsconfig-paths": "^5.0.1",
     "vitest": "^2.0.5",
     "zod": "^3.23.8",

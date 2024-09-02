@@ -46,6 +46,52 @@ textarea:focus {
   outline: none !important;
 }
 
+.custom-checkbox {
+  -webkit-appearance: none;
+  outline: none;
+  appearance: none;
+  width: 1rem;
+  height: 1rem;
+  border: 1px solid hsl(var(--input));
+  border-radius: 4px;
+  background-color: hsl(var(--background));
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.custom-checkbox:checked {
+  background-color: hsl(var(--primary));
+  border-color: hsl(var(--primary));
+}
+
+.custom-checkbox:checked::after {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 1px;
+  width: 5px;
+  height: 9px;
+  border: solid hsl(var(--primary-foreground));
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.custom-checkbox:indeterminate {
+  background-color: hsl(var(--background));
+  border-color: hsl(var(--primary));
+}
+
+.custom-checkbox:indeterminate::after {
+  content: '';
+  position: absolute;
+  left: 3px;
+  top: 6px;
+  width: 8px;
+  height: 2px;
+  background-color: hsl(var(--primary));
+}
+
 .editor-code {
   background-color: #f6f8fa;
   font-family: monospace;
