@@ -22,7 +22,7 @@ const THEME_VARIABLES = {
   '--accent-foreground': '--vscode-button-foreground',
   '--destructive': '--vscode-errorForeground',
   '--destructive-foreground': '--vscode-inputValidation-errorBackground',
-  '--border': '--vscode-widget-border',
+  '--border': '--vscode-editorWidget-border',
   '--input': '--vscode-input-background',
   '--ring': '--vscode-focusBorder',
   '--radius': '0.5rem'

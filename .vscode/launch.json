@@ -19,6 +19,21 @@
       "env": {
         // "NODE_DEBUG": "http"
       }
+    },
+    {
+      "name": "HMR-Extension",
+      "type": "extensionHost",
+      "request": "launch",
+      "runtimeExecutable": "${execPath}",
+      "args": [
+        "--extensionDevelopmentPath=${workspaceFolder}",
+        "--disable-extensions"
+      ],
+      "outFiles": ["${workspaceFolder}/dist/**/*.js"],
+      "preLaunchTask": "npm: watch:hmr",
+      "env": {
+        // "NODE_DEBUG": "http"
+      }
     }
   ]
 }

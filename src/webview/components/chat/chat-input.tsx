@@ -77,7 +77,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
           placeholder="Type your message here..."
           newConversation={newConversation}
           setNewConversation={setNewConversation}
-          className="min-h-24 max-h-64 overflow-y-auto rounded-lg bg-background border-0 shadow-none focus-visible:ring-0"
+          className="min-h-24 max-h-64 border overflow-y-auto rounded-lg bg-background shadow-none focus-visible:ring-0"
         />
         <div className="chat-input-actions flex justify-between mt-2">
           <ContextSelector

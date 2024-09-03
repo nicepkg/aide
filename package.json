@@ -345,7 +345,8 @@
     "publish": "esno ./scripts/publish.ts",
     "prepare": "husky",
     "test": "tsc --noEmit &&vitest --run",
-    "watch": "vite build --watch"
+    "watch": "vite build --watch",
+    "watch:hmr": "vite"
   },
   "devDependencies": {
     "@atao60/fse-cli": "^0.1.9",
