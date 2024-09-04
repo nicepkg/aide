@@ -16,8 +16,6 @@ export const useCursorPosition = (editor: LexicalEditor) => {
     }
   }, [])
 
-  console.log('useCursorPosition', { ...cursorPosition })
-
   useEffect(() => {
     const removeTextContentListener = editor.registerUpdateListener(() => {
       updateCursorPosition()

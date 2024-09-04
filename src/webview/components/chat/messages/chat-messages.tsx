@@ -26,13 +26,11 @@ const ChatAIIcons = [
   }
 ]
 
-interface ChatMessagesContainerProps {
+interface ChatMessagesProps {
   messages: Message[]
 }
 
-export const ChatMessagesContainer: React.FC<ChatMessagesContainerProps> = ({
-  messages
-}) => {
+export const ChatMessages: React.FC<ChatMessagesProps> = ({ messages }) => {
   const messagesContainerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -67,7 +65,7 @@ export const ChatMessagesContainer: React.FC<ChatMessagesContainerProps> = ({
             style={{ originX: 0.5, originY: 0.5 }}
             className="flex flex-col gap-2"
           >
-            <ChatBubble key={index} layout="ai">
+            <ChatBubble key={index}>
               <ChatBubbleMessage
                 variant={message.role === 'ai' ? 'received' : 'sent'}
                 isLoading={message.isLoading}

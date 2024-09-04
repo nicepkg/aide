@@ -4,10 +4,11 @@ import type { ChatContext, Conversation, FileInfo } from '@webview/types/chat'
 import { getFileNameFromPath } from '@webview/utils/common'
 import type { Updater } from 'use-immer'
 
-import { Button } from '../ui/button'
-import { Editor, type EditorRef } from './editor/editor'
-import { ContextSelector } from './selectors/context-selector'
-import { FileSelector } from './selectors/file-selector'
+import { Button } from '../../ui/button'
+import { ContextSelector } from '../selectors/context-selector'
+import { FileSelector } from '../selectors/file-selector'
+import { ChatEditor, type ChatEditorRef } from './chat-editor'
+import { FileInfoPopover } from './file-info-popover'
 
 interface ChatInputProps {
   context: ChatContext
@@ -26,7 +27,9 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   sendButtonDisabled,
   onSend
 }) => {
-  const editorRef = useRef<EditorRef>(null)
+  const editorRef = useRef<ChatEditorRef>(null)
+
+  const { selectedFiles } = newConversation.attachments.fileContext
 
   const handleEditorChange = () => {}
 
@@ -42,35 +45,32 @@ export const ChatInput: React.FC<ChatInputProps> = ({
 
   const focusOnEditor = () => editorRef.current?.editor.focus()
 
-  const { selectedFiles } = newConversation.attachments.fileContext
-
   return (
-    <div className="chat-input flex-shrink-0 w-full flex flex-col text-title-foreground bg-title py-2">
-      <div className="chat-input-files-select-bar px-4 flex items-center">
+    <div className="chat-input flex-shrink-0 w-full flex flex-col border-t pb-2">
+      <div className="chat-input-files-select-bar px-4 flex flex-wrap items-center">
         <FileSelector
           onChange={handleSelectedFiles}
           selectedFiles={selectedFiles}
           onOpenChange={isOpen => !isOpen && focusOnEditor()}
         >
-          <Button variant="outline" size="xss" className="mr-2 self-start">
-            <PlusIcon className="h-2.5 w-2.5" />
+          <Button
+            variant="outline"
+            size="iconXss"
+            className="mr-2 mt-2 self-start"
+          >
+            <PlusIcon className="size-2.5" />
           </Button>
         </FileSelector>
-        {selectedFiles.length > 0 && (
-          <div className="flex flex-wrap gap-2">
-            {selectedFiles.map(file => (
-              <div
-                key={file.fullPath}
-                className="cursor-pointer bg-accent text-accent-foreground px-1 py-0.5 rounded text-xs"
-              >
-                {getFileNameFromPath(file.fullPath)}
-              </div>
-            ))}
-          </div>
-        )}
+        {selectedFiles.map(file => (
+          <FileInfoPopover key={file.fullPath} file={file}>
+            <div className="cursor-pointer bg-accent text-accent-foreground px-1 py-0.5 mr-2 mt-2 rounded text-xs">
+              {getFileNameFromPath(file.fullPath)}
+            </div>
+          </FileInfoPopover>
+        ))}
       </div>
       <div className="px-4 pt-2">
-        <Editor
+        <ChatEditor
           ref={editorRef}
           onComplete={handleEditorCompleted}
           onChange={handleEditorChange}

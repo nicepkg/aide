@@ -107,7 +107,9 @@
         "react/no-unknown-property": "off",
         "jsx-a11y/no-noninteractive-tabindex": "off",
         "jsx-a11y/tabindex-no-positive": "off",
-        "react/destructuring-assignment": "off"
+        "react/destructuring-assignment": "off",
+        "jsx-a11y/anchor-is-valid": "off",
+        "no-case-declarations": "off"
       }
     }
   ]

@@ -15,8 +15,8 @@ import {
   TabsList,
   TabsTrigger
 } from '@webview/components/ui/tabs'
+import { useFileSearch } from '@webview/hooks/chat/use-file-search'
 import { useControllableState } from '@webview/hooks/use-controllable-state'
-import { useFileSearch } from '@webview/hooks/use-file-search'
 import { useKeyboardNavigation } from '@webview/hooks/use-keyboard-navigation'
 import type { FileInfo } from '@webview/types/chat'
 import { useEvent } from 'react-use'

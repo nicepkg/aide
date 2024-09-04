@@ -3,7 +3,7 @@ import type { ChatContext, Conversation } from '@webview/types/chat'
 import { useImmer } from 'use-immer'
 import { v4 as uuidv4 } from 'uuid'
 
-import { useAsyncMemo } from './use-async-memo'
+import { useAsyncMemo } from '../use-async-memo'
 
 const mockData = [
   { id: '1', createdAt: 1625234567890, role: 'human', content: 'Hello!' },
@@ -11,7 +11,8 @@ const mockData = [
     id: '2',
     createdAt: 1625234567891,
     role: 'ai',
-    content: 'Hi there! How can I assist you today?'
+    content:
+      'Hi there! How can I assist you today? Hi there! How can I assist you today? Hi there! How can I assist you today? Hi there! How can I assist you today? Hi there! How can I assist you today?'
   },
   {
     id: '3',
@@ -31,7 +32,8 @@ const mockData = [
     id: '7',
     createdAt: 1625234567896,
     role: 'human',
-    content: 'Can you tell me a joke?'
+    content:
+      'Can you tell me a joke?Can you tell me a joke?Can you tell me a joke?Can you tell me a joke?Can you tell me a joke?Can you tell me a joke?'
   },
   {
     id: '8',

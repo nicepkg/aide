@@ -4,34 +4,15 @@ import { cva, type VariantProps } from 'class-variance-authority'
 
 import { ChatMessageLoading } from './chat-message-loading'
 
-export const chatBubbleVariant = cva(
-  'flex gap-2 max-w-[60%] items-end relative',
-  {
-    variants: {
-      variant: {
-        received: 'self-start',
-        sent: 'self-end flex-row-reverse'
-      },
-      layout: {
-        default: '',
-        ai: 'max-w-full w-full items-center'
-      }
-    },
-    defaultVariants: {
-      variant: 'received',
-      layout: 'default'
-    }
-  }
-)
-
-interface ChatBubbleProps
-  extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof chatBubbleVariant> {}
+interface ChatBubbleProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 export const ChatBubble = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
-  ({ className, variant, layout, children, ...props }, ref) => (
+  ({ className, children, ...props }, ref) => (
     <div
-      className={cn(chatBubbleVariant({ variant, layout, className }))}
+      className={cn(
+        'flex relative max-w-full w-full items-center mb-2',
+        className
+      )}
       ref={ref}
       {...props}
     >
@@ -42,11 +23,11 @@ export const ChatBubble = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
 ChatBubble.displayName = 'ChatBubble'
 
 // ChatBubbleMessage
-export const chatBubbleMessageVariants = cva('p-4', {
+export const chatBubbleMessageVariants = cva('px-4 py-2', {
   variants: {
     variant: {
       received: 'bg-background text-foreground w-full',
-      sent: 'bg-background text-foreground w-full'
+      sent: 'bg-background text-foreground border ml-auto mr-4 rounded-tl-lg rounded-bl-lg rounded-tr-lg'
     },
     layout: {
       default: '',
@@ -73,19 +54,24 @@ export const ChatBubbleMessage = React.forwardRef<
     { className, variant, layout, isLoading = false, children, ...props },
     ref
   ) => (
-    <div
-      className={cn(chatBubbleMessageVariants({ variant, layout, className }))}
-      ref={ref}
-      {...props}
-    >
-      {isLoading ? (
-        <div className="flex items-center space-x-2">
-          <ChatMessageLoading />
-        </div>
-      ) : (
-        children
-      )}
-    </div>
+    <>
+      {variant === 'sent' && <div className="w-4 shrink-0" />}
+      <div
+        className={cn(
+          chatBubbleMessageVariants({ variant, layout, className })
+        )}
+        ref={ref}
+        {...props}
+      >
+        {isLoading ? (
+          <div className="flex items-center space-x-2">
+            <ChatMessageLoading />
+          </div>
+        ) : (
+          children
+        )}
+      </div>
+    </>
   )
 )
 ChatBubbleMessage.displayName = 'ChatBubbleMessage'

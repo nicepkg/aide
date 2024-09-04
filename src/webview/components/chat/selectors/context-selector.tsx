@@ -84,16 +84,11 @@ export const ContextSelector: React.FC<ContextSelectorProps> = ({
         onSelect={handleSelectMention}
         onOpenChange={isOpen => !isOpen && onClose?.()}
       >
-        <Button variant="ghost" size="xs" className="ml-2">
+        <Button variant="ghost" size="xs">
           @ Mention
         </Button>
       </MentionSelector>
-      <Button
-        variant="ghost"
-        size="xs"
-        className="ml-2"
-        onClick={handleSelectImage}
-      >
+      <Button variant="ghost" size="xs" onClick={handleSelectImage}>
         <ImageIcon className="h-3 w-3 mr-1" />
         Image
       </Button>

@@ -8,7 +8,7 @@ export const ChatMessageList = React.forwardRef<
   ChatMessageListProps
 >(({ className, children, ...props }, ref) => (
   <div
-    className={cn('flex flex-col w-full py-4 overflow-y-auto', className)}
+    className={cn('flex flex-col w-full overflow-y-auto', className)}
     ref={ref}
     {...props}
   >

@@ -25,7 +25,7 @@ const onError = (error: unknown) => {
   console.error('Editor error:', error)
 }
 
-export interface EditorProps
+export interface ChatEditorProps
   extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange'>,
     MentionPluginProps {
   className?: string
@@ -44,11 +44,11 @@ export interface EditorProps
   ) => void
 }
 
-export interface EditorRef {
+export interface ChatEditorRef {
   editor: LexicalEditor
 }
 
-export const Editor = forwardRef<EditorRef, EditorProps>(
+export const ChatEditor = forwardRef<ChatEditorRef, ChatEditorProps>(
   (
     {
       className,
@@ -71,7 +71,7 @@ export const Editor = forwardRef<EditorRef, EditorProps>(
 
     return (
       <LexicalComposer initialConfig={initialConfig}>
-        <EditorInner
+        <ChatEditorInner
           ref={ref}
           className={className}
           placeholder={placeholder}
@@ -84,7 +84,7 @@ export const Editor = forwardRef<EditorRef, EditorProps>(
   }
 )
 
-const EditorInner = forwardRef<EditorRef, EditorProps>(
+const ChatEditorInner = forwardRef<ChatEditorRef, ChatEditorProps>(
   (
     {
       className,
@@ -105,7 +105,7 @@ const EditorInner = forwardRef<EditorRef, EditorProps>(
 
     useImperativeHandle(ref, () => ({ editor }), [editor])
 
-    const onKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
       if (e.key === 'Enter' && e.ctrlKey) {
         e.preventDefault()
         const currentState = editor.getEditorState()
@@ -117,7 +117,7 @@ const EditorInner = forwardRef<EditorRef, EditorProps>(
     return (
       <div
         className={cn('editor-container relative', className)}
-        onKeyDown={onKeyDown}
+        onKeyDown={handleKeyDown}
         tabIndex={1}
         {...otherProps}
       >
