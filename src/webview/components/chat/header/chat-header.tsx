@@ -1,14 +1,15 @@
 import React from 'react'
-import { PlusIcon, TextAlignJustifyIcon } from '@radix-ui/react-icons'
-import { Button } from '@webview/components/ui/button'
+import { PlusIcon } from '@radix-ui/react-icons'
 import { cn } from '@webview/utils/common'
 
 import { ButtonWithTooltip } from '../../button-with-tooltip'
-import { ChatLeftBarSheet } from '../left-bar/chat-left-bar-sheet'
 
-interface ChatHeaderProps extends React.HTMLAttributes<HTMLHeadElement> {}
+interface ChatHeaderProps extends React.HTMLAttributes<HTMLHeadElement> {
+  headerLeft?: React.ReactNode
+}
 export const ChatHeader: React.FC<ChatHeaderProps> = ({
   className,
+  headerLeft,
   ...props
 }) => (
   <header
@@ -18,11 +19,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
     )}
     {...props}
   >
-    <ChatLeftBarSheet>
-      <Button variant="ghost" size="iconXs" className="shrink-0">
-        <TextAlignJustifyIcon className="size-3" />
-      </Button>
-    </ChatLeftBarSheet>
+    {headerLeft}
     <ButtonWithTooltip
       variant="ghost"
       size="iconXs"

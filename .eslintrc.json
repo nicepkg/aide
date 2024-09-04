@@ -109,7 +109,8 @@
         "jsx-a11y/tabindex-no-positive": "off",
         "react/destructuring-assignment": "off",
         "jsx-a11y/anchor-is-valid": "off",
-        "no-case-declarations": "off"
+        "no-case-declarations": "off",
+        "react/no-unstable-nested-components": "off"
       }
     }
   ]
