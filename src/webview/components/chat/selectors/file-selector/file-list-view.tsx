@@ -1,4 +1,5 @@
 import React, { useCallback, useRef } from 'react'
+import { FileIcon } from '@webview/components/file-icon'
 import {
   KeyboardShortcutsInfo,
   type ShortcutInfo
@@ -13,7 +14,6 @@ import {
 import { useKeyboardNavigation } from '@webview/hooks/use-keyboard-navigation'
 import { FileInfo } from '@webview/types/chat'
 import { cn, getFileNameFromPath } from '@webview/utils/common'
-import { getIconComponent } from '@webview/utils/file-icons/utils'
 import { useEvent } from 'react-use'
 
 const keyboardShortcuts: ShortcutInfo[] = [
@@ -48,11 +48,6 @@ export const FileListView: React.FC<FileListViewProps> = ({
       const isSelected = selectedFiles.some(f => f.fullPath === file.fullPath)
 
       const fileName = getFileNameFromPath(file.relativePath)
-      const MaterialSvgComponent = getIconComponent({
-        isFolder: false,
-        isOpen: false,
-        name: file.relativePath
-      })
 
       return (
         <CommandItem
@@ -79,9 +74,7 @@ export const FileListView: React.FC<FileListViewProps> = ({
               className="mx-1 custom-checkbox"
             />
 
-            {MaterialSvgComponent ? (
-              <MaterialSvgComponent className="h-4 w-4 mr-1" />
-            ) : null}
+            <FileIcon className="size-4 mr-1" filePath={file.relativePath} />
             <span>{fileName}</span>
           </div>
         </CommandItem>

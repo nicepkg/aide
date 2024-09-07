@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { FileIcon } from '@webview/components/file-icon'
 import {
   KeyboardShortcutsInfo,
   type ShortcutInfo
@@ -7,7 +8,6 @@ import { Tree, TreeItem, TreeNodeRenderProps } from '@webview/components/tree'
 import { useKeyboardNavigation } from '@webview/hooks/use-keyboard-navigation'
 import { FileInfo } from '@webview/types/chat'
 import { cn } from '@webview/utils/common'
-import { getIconComponent } from '@webview/utils/file-icons/utils'
 import { useEvent } from 'react-use'
 
 const keyboardShortcuts: ShortcutInfo[] = [
@@ -164,12 +164,6 @@ export const FileTreeView: React.FC<FileTreeViewProps> = ({
         visibleItem => visibleItem.id === item.id
       )
 
-      const MaterialSvgComponent = getIconComponent({
-        isFolder: hasChildren,
-        isOpen: isExpanded,
-        name: item.name
-      })
-
       return (
         <div
           className={cn(
@@ -193,9 +187,13 @@ export const FileTreeView: React.FC<FileTreeViewProps> = ({
             className="mx-1 custom-checkbox"
           />
 
-          {MaterialSvgComponent ? (
-            <MaterialSvgComponent className="h-4 w-4 mr-1" />
-          ) : null}
+          <FileIcon
+            className="size-4 mr-1"
+            isFolder={hasChildren}
+            isOpen={isExpanded}
+            filePath={item.name}
+          />
+
           <span>{item.name}</span>
         </div>
       )

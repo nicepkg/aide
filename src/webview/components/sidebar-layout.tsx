@@ -2,8 +2,16 @@
 // src/webview/components/layout/sidebar-layout.tsx
 import React, { type FC } from 'react'
 import { TextAlignJustifyIcon } from '@radix-ui/react-icons'
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
 import { Button, type ButtonProps } from '@webview/components/ui/button'
-import { Sheet, SheetContent, SheetTrigger } from '@webview/components/ui/sheet'
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger
+} from '@webview/components/ui/sheet'
 import { cn } from '@webview/utils/common'
 
 interface SidebarLayoutProps {
@@ -26,7 +34,14 @@ export const SidebarLayout: React.FC<SidebarLayoutProps> = ({
           <TextAlignJustifyIcon className="size-3" />
         </Button>
       </SheetTrigger>
+
       <SheetContent side="left" className="w-[250px] sm:w-[300px] max-w-full">
+        <VisuallyHidden>
+          <SheetHeader>
+            <SheetTitle />
+            <SheetDescription />
+          </SheetHeader>
+        </VisuallyHidden>
         {sidebar}
       </SheetContent>
     </Sheet>
