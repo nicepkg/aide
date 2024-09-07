@@ -1,16 +1,7 @@
-import type { ChatContext, Conversation, Message } from '@webview/types/chat'
+import type { ChatContext, Conversation } from '@webview/types/chat'
 
 export class ChatService {
-  static async getMessages(chatContext: ChatContext): Promise<Message[]> {
-    return chatContext.conversations.map(conversation => ({
-      id: conversation.id,
-      content: conversation.content,
-      createdAt: conversation.createdAt,
-      role: conversation.role
-    }))
-  }
-
-  static async sendMessage(
+  static async sendConversation(
     chatContext: ChatContext,
     newConversation: Conversation
   ): Promise<ChatContext> {

@@ -1,9 +1,7 @@
-import { ChatService } from '@webview/services/chat-service'
+import { useCallback } from 'react'
 import type { ChatContext, Conversation } from '@webview/types/chat'
 import { useImmer } from 'use-immer'
 import { v4 as uuidv4 } from 'uuid'
-
-import { useAsyncMemo } from '../use-async-memo'
 
 const mockData = [
   { id: '1', createdAt: 1625234567890, role: 'human', content: 'Hello!' },
@@ -133,51 +131,50 @@ export const useChatContextManager = () => {
     conversations: [...mockData]
   })
 
-  const [newConversation, setNewConversation] = useImmer<Conversation>({
-    id: uuidv4(),
-    createdAt: Date.now(),
-    role: 'human',
-    content: '',
-    attachments: {
-      codeContext: {
-        codeChunks: [],
-        tmpCodeChunk: []
-      },
-      codebaseContext: {
-        relevantCodeSnippets: []
-      },
-      docContext: {
-        enableTool: false,
-        allowSearchDocSiteUrls: [],
-        relevantDocs: []
-      },
-      fileContext: {
-        selectedFiles: [],
-        selectedFolders: [],
-        selectedImages: []
-      },
-      gitContext: {
-        gitCommits: [],
-        gitDiffs: [],
-        gitPullRequests: []
-      },
-      webContext: {
-        enableTool: false,
-        webSearchResults: []
-      }
-    }
-  })
+  const getConversation = useCallback(
+    (id: string) =>
+      context.conversations.find(conversation => conversation.id === id),
+    [context.conversations]
+  )
 
-  const [messages] = useAsyncMemo(
-    async () => await ChatService.getMessages(context),
-    [context]
+  const addConversation = useCallback(
+    (conversation: Conversation) => {
+      setContext(draft => {
+        draft.conversations.push(conversation)
+      })
+    },
+    [setContext]
+  )
+
+  const updateConversation = useCallback(
+    (id: string, conversation: Conversation) => {
+      setContext(draft => {
+        const index = draft.conversations.findIndex(
+          conversation => conversation.id === id
+        )
+        draft.conversations[index] = conversation
+      })
+    },
+    [setContext]
+  )
+
+  const deleteConversation = useCallback(
+    (id: string) => {
+      setContext(draft => {
+        draft.conversations = draft.conversations.filter(
+          conversation => conversation.id !== id
+        )
+      })
+    },
+    [setContext]
   )
 
   return {
     context,
     setContext,
-    newConversation,
-    setNewConversation,
-    messages: messages || []
+    getConversation,
+    addConversation,
+    updateConversation,
+    deleteConversation
   }
 }

@@ -13,8 +13,8 @@ import { FileInfoPopover } from './file-info-popover'
 interface ChatInputProps {
   context: ChatContext
   setContext: Updater<ChatContext>
-  newConversation: Conversation
-  setNewConversation: Updater<Conversation>
+  conversation: Conversation
+  setConversation: Updater<Conversation>
   sendButtonDisabled: boolean
   onSend: () => void
 }
@@ -22,14 +22,14 @@ interface ChatInputProps {
 export const ChatInput: React.FC<ChatInputProps> = ({
   context,
   setContext,
-  newConversation,
-  setNewConversation,
+  conversation,
+  setConversation,
   sendButtonDisabled,
   onSend
 }) => {
   const editorRef = useRef<ChatEditorRef>(null)
 
-  const { selectedFiles } = newConversation.attachments.fileContext
+  const { selectedFiles } = conversation.attachments.fileContext
 
   const handleEditorChange = () => {}
 
@@ -38,7 +38,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   }
 
   const handleSelectedFiles = (files: FileInfo[]) => {
-    setNewConversation(draft => {
+    setConversation(draft => {
       draft.attachments.fileContext.selectedFiles = files
     })
   }
@@ -75,16 +75,16 @@ export const ChatInput: React.FC<ChatInputProps> = ({
           onComplete={handleEditorCompleted}
           onChange={handleEditorChange}
           placeholder="Type your message here..."
-          newConversation={newConversation}
-          setNewConversation={setNewConversation}
+          conversation={conversation}
+          setConversation={setConversation}
           className="min-h-24 max-h-64 border overflow-y-auto rounded-lg bg-background shadow-none focus-visible:ring-0"
         />
         <div className="chat-input-actions flex justify-between mt-2">
           <ContextSelector
             context={context}
             setContext={setContext}
-            newConversation={newConversation}
-            setNewConversation={setNewConversation}
+            conversation={conversation}
+            setConversation={setConversation}
             onClose={focusOnEditor}
           />
           <Button

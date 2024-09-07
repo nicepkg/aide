@@ -19,16 +19,16 @@ import { ModelSelector } from './model-selector'
 interface ContextSelectorProps {
   context: ChatContext
   setContext: Updater<ChatContext>
-  newConversation: Conversation
-  setNewConversation: Updater<Conversation>
+  conversation: Conversation
+  setConversation: Updater<Conversation>
   onClose?: () => void
 }
 
 export const ContextSelector: React.FC<ContextSelectorProps> = ({
   context,
   setContext,
-  newConversation,
-  setNewConversation,
+  conversation,
+  setConversation,
   onClose
 }) => {
   const [modelOptions] = useState<ModelOption[]>([
@@ -61,7 +61,7 @@ export const ContextSelector: React.FC<ContextSelectorProps> = ({
       }
     }
     input.click()
-    setNewConversation(draft => {
+    setConversation(draft => {
       draft.attachments.fileContext.selectedImages.push({
         url: 'https://example.com/image.jpg'
       })

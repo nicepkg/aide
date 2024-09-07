@@ -1,6 +1,7 @@
 import type { FC } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { useChatContextManager } from '@webview/hooks/chat/use-chat-context-manager'
+import { useConversation } from '@webview/hooks/chat/use-conversation'
 import { ChatService } from '@webview/services/chat-service'
 
 import { SidebarLayout } from '../sidebar-layout'
@@ -10,11 +11,12 @@ import { ChatMessages } from './messages/chat-messages'
 import { ChatSidebar } from './sidebar/chat-sidebar'
 
 export const ChatUI: FC = () => {
-  const { context, setContext, newConversation, setNewConversation, messages } =
-    useChatContextManager()
+  const { context, setContext } = useChatContextManager()
+  const { conversation: newConversation, setConversation: setNewConversation } =
+    useConversation('human')
 
   const { mutate: sendMessage, isPending: isSendingMessage } = useMutation({
-    mutationFn: () => ChatService.sendMessage(context, newConversation)
+    mutationFn: () => ChatService.sendConversation(context, newConversation)
   })
 
   return (
@@ -25,12 +27,12 @@ export const ChatUI: FC = () => {
       )}
       className="chat-ui"
     >
-      <ChatMessages messages={messages} />
+      <ChatMessages conversation={context.conversations} />
       <ChatInput
         context={context}
         setContext={setContext}
-        newConversation={newConversation}
-        setNewConversation={setNewConversation}
+        conversation={newConversation}
+        setConversation={setNewConversation}
         sendButtonDisabled={isSendingMessage}
         onSend={sendMessage}
       />

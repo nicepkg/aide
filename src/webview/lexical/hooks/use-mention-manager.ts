@@ -6,16 +6,16 @@ import type {
 import type { Updater } from 'use-immer'
 
 export interface UseMentionManagerProps {
-  newConversation: Conversation
-  setNewConversation: Updater<Conversation>
+  conversation: Conversation
+  setConversation: Updater<Conversation>
 }
 
 export function useMentionManager(props: UseMentionManagerProps) {
-  const { newConversation, setNewConversation } = props
+  const { conversation, setConversation } = props
 
-  const currentAttachments = newConversation.attachments
+  const currentAttachments = conversation.attachments
   const updateCurrentAttachments = (attachments: Partial<Attachments>) => {
-    setNewConversation(draft => {
+    setConversation(draft => {
       draft.attachments = {
         ...draft.attachments,
         ...attachments

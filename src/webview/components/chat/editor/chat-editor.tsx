@@ -93,8 +93,8 @@ const ChatEditorInner = forwardRef<ChatEditorRef, ChatEditorProps>(
       onChange,
 
       // mention plugin props
-      newConversation,
-      setNewConversation,
+      conversation,
+      setConversation,
 
       // div props
       ...otherProps
@@ -134,8 +134,8 @@ const ChatEditorInner = forwardRef<ChatEditorRef, ChatEditorProps>(
         />
         <OnChangePlugin onChange={onChange!} />
         <MentionPlugin
-          newConversation={newConversation}
-          setNewConversation={setNewConversation}
+          conversation={conversation}
+          setConversation={setConversation}
         />
         <HistoryPlugin />
         <AutoFocusPlugin />
