@@ -28,7 +28,7 @@ interface MentionSelectorProps {
   onOpenChange?: (open: boolean) => void
   lexicalMode?: boolean
   searchQuery?: string
-  onInternalSearchQueryChange?: (searchQuery: string) => void
+  onSearchQueryChange?: (searchQuery: string) => void
   children: ReactNode
 }
 
@@ -39,7 +39,7 @@ export const MentionSelector: FC<MentionSelectorProps> = ({
   onOpenChange,
   lexicalMode,
   searchQuery,
-  onInternalSearchQueryChange,
+  onSearchQueryChange,
   children
 }) => {
   const commandRef = useRef<HTMLDivElement>(null)
@@ -53,7 +53,7 @@ export const MentionSelector: FC<MentionSelectorProps> = ({
   const [internalSearchQuery, setInternalSearchQuery] = useControllableState({
     prop: searchQuery,
     defaultProp: '',
-    onChange: onInternalSearchQueryChange
+    onChange: onSearchQueryChange
   })
 
   useEffect(() => {

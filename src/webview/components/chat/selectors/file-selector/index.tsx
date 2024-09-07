@@ -25,7 +25,8 @@ import { FileListView } from './file-list-view'
 import { FileTreeView } from './file-tree-view'
 
 const keyboardShortcuts: ShortcutInfo[] = [
-  { key: '⇥', description: 'Switch tab', weight: 10 }
+  { key: '⇥', description: 'Switch tab', weight: 10 },
+  { key: 'esc', description: 'Close', weight: 9 }
 ]
 
 interface FileSelectorProps {

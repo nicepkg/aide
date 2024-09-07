@@ -13,8 +13,7 @@ import { useEvent } from 'react-use'
 const keyboardShortcuts: ShortcutInfo[] = [
   { key: ['↑', '↓'], description: 'Navigate', weight: 10 },
   { key: '↵', description: 'Select', weight: 9 },
-  { key: '⌘↵', description: 'Expand', weight: 8 },
-  { key: 'esc', description: 'Close', weight: 7 }
+  { key: '⌘↵', description: 'Expand', weight: 8 }
 ]
 
 interface FileTreeViewProps {

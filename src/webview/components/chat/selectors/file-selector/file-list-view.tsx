@@ -18,8 +18,7 @@ import { useEvent } from 'react-use'
 
 const keyboardShortcuts: ShortcutInfo[] = [
   { key: ['↑', '↓'], description: 'Navigate', weight: 10 },
-  { key: '↵', description: 'Select', weight: 9 },
-  { key: 'esc', description: 'Close', weight: 8 }
+  { key: '↵', description: 'Select', weight: 9 }
 ]
 
 interface FileListViewProps {
@@ -61,9 +60,9 @@ export const FileListView: React.FC<FileListViewProps> = ({
             }
           }}
           className={cn(
-            'px-1.5 py-1 flex items-center justify-between',
+            'cursor-pointer px-1.5 py-1 flex items-center justify-between hover:bg-secondary',
             isSelected && 'text-primary',
-            focusedIndex === index && 'text-accent-foreground bg-accent'
+            focusedIndex === index && 'bg-secondary'
           )}
         >
           <div className="flex flex-1 items-center">
