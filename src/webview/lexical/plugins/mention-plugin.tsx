@@ -12,13 +12,13 @@ import {
   type RangeSelection
 } from 'lexical'
 
-import { useCursorPosition } from '../hooks/use-cursor-position'
 import { useEditorCommands } from '../hooks/use-editor-commands'
 import {
   useMentionManager,
   type UseMentionManagerProps
 } from '../hooks/use-mention-manager'
 import { useMentionSearch } from '../hooks/use-mention-search'
+import { useNearestMentionPosition } from '../hooks/use-nearest-mention-position'
 import { createMentionOptions } from '../mentions'
 import { $createMentionNode } from '../nodes/mention-node'
 
@@ -28,10 +28,13 @@ export const MentionPlugin: FC<MentionPluginProps> = props => {
   const [editor] = useLexicalComposerContext()
   const { addMention } = useMentionManager(props)
   const [isOpen, setIsOpen] = useState(false)
-  const cursorPosition = useCursorPosition(editor)
+  const mentionPosition = useNearestMentionPosition(editor)
   const mentionOptions = createMentionOptions()
 
-  const { searchQuery, setSearchQuery } = useMentionSearch(editor, setIsOpen)
+  const { searchQuery, setSearchQuery, clearMentionInput } = useMentionSearch(
+    editor,
+    setIsOpen
+  )
 
   useEditorCommands(editor, isOpen, setIsOpen)
 
@@ -51,22 +54,31 @@ export const MentionPlugin: FC<MentionPluginProps> = props => {
     [editor, addMention, searchQuery, setSearchQuery]
   )
 
+  const handleCloseWithoutSelect = useCallback(() => {
+    setSearchQuery('')
+    clearMentionInput()
+  }, [setSearchQuery, clearMentionInput])
+
   return (
     <MentionSelector
-      lexicalMode
       open={isOpen}
+      searchQuery={searchQuery}
       onOpenChange={setIsOpen}
       onSelect={handleMentionSelect}
-      searchQuery={searchQuery}
+      onCloseWithoutSelect={handleCloseWithoutSelect}
       mentionOptions={mentionOptions}
     >
       <div
-        style={{
-          position: 'fixed',
-          top: `${cursorPosition.top - 30}px`,
-          left: `${cursorPosition.left}px`,
-          zIndex: 2
-        }}
+        style={
+          mentionPosition
+            ? {
+                position: 'fixed',
+                top: `${mentionPosition.top}px`,
+                left: `${mentionPosition.left}px`,
+                zIndex: 2
+              }
+            : {}
+        }
       />
     </MentionSelector>
   )

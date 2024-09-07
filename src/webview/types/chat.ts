@@ -14,6 +14,8 @@ export interface MentionOption {
   label: string
   category: MentionCategory
   mentionStrategies: IMentionStrategy[]
+  children?: MentionOption[]
+  data?: any
 }
 
 export enum MentionCategory {

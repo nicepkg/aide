@@ -1,9 +1,8 @@
-import { useCallback, useEffect, useRef, type FC, type ReactNode } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import {
   Command,
   CommandEmpty,
   CommandGroup,
-  CommandInput,
   CommandItem,
   CommandList
 } from '@webview/components/ui/command'
@@ -12,9 +11,11 @@ import {
   PopoverContent,
   PopoverTrigger
 } from '@webview/components/ui/popover'
-import { useCallbackRef } from '@webview/hooks/use-callback-ref'
 import { useControllableState } from '@webview/hooks/use-controllable-state'
-import type { IMentionStrategy, MentionOption } from '@webview/types/chat'
+import { useKeyboardNavigation } from '@webview/hooks/use-keyboard-navigation'
+import { IMentionStrategy, MentionOption } from '@webview/types/chat'
+import { cn } from '@webview/utils/common'
+import { useEvent } from 'react-use'
 
 export interface SelectedMentionStrategy {
   strategy: IMentionStrategy
@@ -22,27 +23,27 @@ export interface SelectedMentionStrategy {
 }
 
 interface MentionSelectorProps {
+  searchQuery?: string
   mentionOptions: MentionOption[]
   onSelect: (option: SelectedMentionStrategy) => void
   open?: boolean
   onOpenChange?: (open: boolean) => void
-  lexicalMode?: boolean
-  searchQuery?: string
-  onSearchQueryChange?: (searchQuery: string) => void
-  children: ReactNode
+  onCloseWithoutSelect?: () => void
+  children: React.ReactNode
 }
 
-export const MentionSelector: FC<MentionSelectorProps> = ({
+export const MentionSelector: React.FC<MentionSelectorProps> = ({
+  searchQuery = '',
   mentionOptions,
   onSelect,
   open,
   onOpenChange,
-  lexicalMode,
-  searchQuery,
-  onSearchQueryChange,
+  onCloseWithoutSelect,
   children
 }) => {
   const commandRef = useRef<HTMLDivElement>(null)
+  const [currentOptions, setCurrentOptions] =
+    useState<MentionOption[]>(mentionOptions)
 
   const [isOpen = false, setIsOpen] = useControllableState({
     prop: open,
@@ -50,119 +51,80 @@ export const MentionSelector: FC<MentionSelectorProps> = ({
     onChange: onOpenChange
   })
 
-  const [internalSearchQuery, setInternalSearchQuery] = useControllableState({
-    prop: searchQuery,
-    defaultProp: '',
-    onChange: onSearchQueryChange
-  })
+  useEffect(() => {
+    if (!isOpen) {
+      setCurrentOptions(mentionOptions)
+    }
+  }, [isOpen, mentionOptions])
+
+  const filteredOptions = useMemo(() => {
+    if (!searchQuery) return currentOptions
+    return currentOptions.filter(option =>
+      option.label.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+  }, [currentOptions, searchQuery])
+
+  const itemRefs = useRef<(HTMLDivElement | null)[]>([])
+  const { focusedIndex, setFocusedIndex, handleKeyDown } =
+    useKeyboardNavigation({
+      itemCount: filteredOptions.length,
+      itemRefs,
+      onEnter: el => el?.click()
+    })
+
+  useEvent('keydown', handleKeyDown)
 
   useEffect(() => {
-    if (!lexicalMode || mentionOptions.length > 0) return
+    setFocusedIndex(0)
+  }, [filteredOptions])
 
-    setIsOpen(false)
-  }, [mentionOptions.length, setIsOpen, lexicalMode])
-
-  const handleSelect = useCallback(
-    (currentValue: string) => {
-      const selectedOption = mentionOptions.find(
-        option => option.category === currentValue
-      )
-      if (selectedOption) {
-        onSelect({
-          strategy: selectedOption.mentionStrategies[0]!,
-          strategyAddData: { label: selectedOption.label }
-        })
-      }
-      setIsOpen(false)
-    },
-    [mentionOptions, onSelect]
-  )
-
-  const filterMentions = useCallback(
-    (value: string, search: string) => {
-      const option = mentionOptions.find(opt => opt.category === value)
-      if (!option) return 0
-
-      const label = option.label.toLowerCase()
-      search = search.toLowerCase()
-
-      if (label === search) return 1
-      if (label.startsWith(search)) return 0.8
-      if (label.includes(search)) return 0.6
-
-      // Calculate a basic fuzzy match score
-      let score = 0
-      let searchIndex = 0
-      for (let i = 0; i < label.length && searchIndex < search.length; i++) {
-        if (label[i] === search[searchIndex]) {
-          score += 1
-          searchIndex++
-        }
-      }
-      return score / Math.max(label.length, search.length)
-    },
-    [mentionOptions]
-  )
-
-  const handleKeyDown = useCallbackRef((event: KeyboardEvent) => {
-    if (!lexicalMode || !isOpen) return
-
-    const commandEl = commandRef.current
-    if (!commandEl) return
-
-    if (['ArrowUp', 'ArrowDown', 'Enter'].includes(event.key)) {
-      event.preventDefault()
-
-      const syntheticEvent = new KeyboardEvent(event.type, {
-        key: event.key,
-        code: event.code,
-        isComposing: event.isComposing,
-        location: event.location,
-        repeat: event.repeat,
-        bubbles: true
+  const handleSelect = (option: MentionOption) => {
+    if (option.children) {
+      setCurrentOptions(option.children)
+      onCloseWithoutSelect?.()
+    } else {
+      onSelect({
+        strategy: option.mentionStrategies[0]!,
+        strategyAddData: option.data || { label: option.label }
       })
-      commandEl.dispatchEvent(syntheticEvent)
+      setIsOpen(false)
     }
-  })
-
-  useEffect(() => {
-    if (!lexicalMode) return
-
-    document.addEventListener('keydown', handleKeyDown)
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown)
-    }
-  }, [lexicalMode, handleKeyDown, isOpen])
+  }
 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>{children}</PopoverTrigger>
       <PopoverContent
-        className="w-[200px] p-0"
+        className={cn('w-[200px] p-0', !isOpen && 'hidden')}
         updatePositionStrategy="always"
         side="top"
-        onOpenAutoFocus={e => lexicalMode && e.preventDefault()}
-        onCloseAutoFocus={e => lexicalMode && e.preventDefault()}
+        align="start"
+        onOpenAutoFocus={e => e.preventDefault()}
+        onCloseAutoFocus={e => e.preventDefault()}
         onKeyDown={e => e.stopPropagation()}
       >
-        <Command ref={commandRef} filter={filterMentions}>
-          <CommandInput
-            hidden={lexicalMode}
-            showSearchIcon={false}
-            placeholder="Search mention..."
-            className="h-9"
-            value={internalSearchQuery}
-            onValueChange={setInternalSearchQuery}
-          />
+        <Command ref={commandRef} shouldFilter={false}>
           <CommandList>
-            <CommandEmpty>No mention type found.</CommandEmpty>
-            <CommandGroup>
-              {mentionOptions.map(option => (
+            <CommandEmpty>No results found.</CommandEmpty>
+            <CommandGroup
+              className={cn(filteredOptions.length === 0 ? 'p-0' : 'p-1')}
+            >
+              {filteredOptions.map((option, index) => (
                 <CommandItem
-                  key={option.category}
-                  value={option.category}
-                  onSelect={handleSelect}
-                  className="px-1.5 py-1"
+                  key={option.label}
+                  defaultValue=""
+                  value=""
+                  onSelect={() => handleSelect(option)}
+                  className={cn(
+                    'px-1.5 py-1',
+                    focusedIndex === index &&
+                      'bg-primary text-primary-foreground'
+                  )}
+                  ref={el => {
+                    if (itemRefs.current) {
+                      itemRefs.current[index] = el
+                    }
+                  }}
                 >
                   {option.label}
                 </CommandItem>

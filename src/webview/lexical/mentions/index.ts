@@ -43,10 +43,28 @@ export const createMentionOptions = (): MentionOption[] => [
   {
     label: 'Git',
     category: MentionCategory.Git,
-    mentionStrategies: [
-      new GitCommitsMentionStrategy(),
-      new GitDiffsMentionStrategy(),
-      new GitPullRequestsMentionStrategy()
+    // mentionStrategies: [
+    //   new GitCommitsMentionStrategy(),
+    //   new GitDiffsMentionStrategy(),
+    //   new GitPullRequestsMentionStrategy()
+    // ]
+    mentionStrategies: [],
+    children: [
+      {
+        label: 'Commit',
+        category: MentionCategory.Git,
+        mentionStrategies: [new GitCommitsMentionStrategy()]
+      },
+      {
+        label: 'Diff',
+        category: MentionCategory.Git,
+        mentionStrategies: [new GitDiffsMentionStrategy()]
+      },
+      {
+        label: 'Pull Requests',
+        category: MentionCategory.Git,
+        mentionStrategies: [new GitPullRequestsMentionStrategy()]
+      }
     ]
   },
   {

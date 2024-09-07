@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import {
   $getSelection,
   $isRangeSelection,
@@ -54,7 +54,11 @@ export const useMentionSearch = (
           const beforeCursor = textContent.slice(0, anchorOffset)
           const mentionMatch = beforeCursor.match(/(^|\s|@\w+\s)@(\w*)$/)
 
-          if (mentionMatch && lastKeyPressRef.current === '@') {
+          const isFirstTimeEnterMention =
+            mentionMatch?.[0] === '@' && lastKeyPressRef.current === '@'
+          const isEnterQueryKeywords = mentionMatch && mentionMatch[0] !== '@'
+
+          if (isFirstTimeEnterMention || isEnterQueryKeywords) {
             setSearchQuery(mentionMatch[2] ?? '')
             setIsOpen(true)
           } else {
@@ -73,5 +77,33 @@ export const useMentionSearch = (
     }
   }, [editor, setIsOpen])
 
-  return { searchQuery, setSearchQuery }
+  const clearMentionInput = useCallback(() => {
+    editor.update(() => {
+      const selection = $getSelection()
+      if (!$isRangeSelection(selection)) return
+
+      const { anchor } = selection
+      const anchorNode = anchor.getNode()
+
+      if (!$isTextNode(anchorNode)) return
+
+      const textContent = anchorNode.getTextContent()
+      const anchorOffset = anchor.offset
+
+      // Find the position of the last '@' before the cursor
+      const lastAtIndex = textContent.lastIndexOf('@', anchorOffset - 1)
+      if (lastAtIndex === -1) return
+
+      // Remove the text between '@' and the cursor, but keep the '@'
+      anchorNode.spliceText(lastAtIndex + 1, anchorOffset - lastAtIndex - 1, '')
+
+      // Move the selection just after the '@'
+      const newPosition = lastAtIndex + 1
+      selection.anchor.set(anchorNode.getKey(), newPosition, 'text')
+      selection.focus.set(anchorNode.getKey(), newPosition, 'text')
+      lastKeyPressRef.current = '@'
+    })
+  }, [editor])
+
+  return { searchQuery, setSearchQuery, clearMentionInput }
 }

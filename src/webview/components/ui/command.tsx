@@ -78,7 +78,7 @@ const CommandEmpty = React.forwardRef<
 >((props, ref) => (
   <CommandPrimitive.Empty
     ref={ref}
-    className="py-6 text-center text-sm"
+    className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none"
     {...props}
   />
 ))

@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle } from 'react'
+import { forwardRef, useCallback, useImperativeHandle } from 'react'
 import { AutoFocusPlugin } from '@lexical/react/LexicalAutoFocusPlugin'
 import {
   LexicalComposer,
@@ -18,7 +18,12 @@ import {
   type MentionPluginProps
 } from '@webview/lexical/plugins/mention-plugin'
 import { cn } from '@webview/utils/common'
-import type { EditorState, LexicalEditor } from 'lexical'
+import {
+  $getSelection,
+  $isRangeSelection,
+  type EditorState,
+  type LexicalEditor
+} from 'lexical'
 
 const onError = (error: unknown) => {
   // eslint-disable-next-line no-console
@@ -46,6 +51,7 @@ export interface ChatEditorProps
 
 export interface ChatEditorRef {
   editor: LexicalEditor
+  insertSpaceAndAt: () => void
 }
 
 export const ChatEditor = forwardRef<ChatEditorRef, ChatEditorProps>(
@@ -103,7 +109,17 @@ const ChatEditorInner = forwardRef<ChatEditorRef, ChatEditorProps>(
   ) => {
     const [editor] = useLexicalComposerContext()
 
-    useImperativeHandle(ref, () => ({ editor }), [editor])
+    const insertSpaceAndAt = useCallback(() => {
+      editor.focus()
+      editor.update(() => {
+        const selection = $getSelection()
+        if ($isRangeSelection(selection)) {
+          selection.insertText(' @')
+        }
+      })
+    }, [editor])
+
+    useImperativeHandle(ref, () => ({ editor, insertSpaceAndAt }), [editor])
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
       if (e.key === 'Enter' && e.ctrlKey) {

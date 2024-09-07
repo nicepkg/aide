@@ -146,7 +146,8 @@ export class MentionNode extends DecoratorNode<React.ReactNode> {
           borderRadius: '4px',
           margin: '1px 1px',
           color: 'hsl(var(--primary-foreground))',
-          display: 'inline-block'
+          display: 'inline-block',
+          padding: '0 2px'
         }}
       >
         {this.__text}

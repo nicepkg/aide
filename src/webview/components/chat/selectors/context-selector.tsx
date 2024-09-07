@@ -2,7 +2,6 @@
 import React, { useState } from 'react'
 import { ImageIcon } from '@radix-ui/react-icons'
 import { Button } from '@webview/components/ui/button'
-import { createMentionOptions } from '@webview/lexical/mentions'
 import type {
   ChatContext,
   Conversation,
@@ -10,10 +9,6 @@ import type {
 } from '@webview/types/chat'
 import type { Updater } from 'use-immer'
 
-import {
-  MentionSelector,
-  type SelectedMentionStrategy
-} from './mention-selector'
 import { ModelSelector } from './model-selector'
 
 interface ContextSelectorProps {
@@ -22,6 +17,7 @@ interface ContextSelectorProps {
   conversation: Conversation
   setConversation: Updater<Conversation>
   onClose?: () => void
+  onClickMentionSelector?: () => void
 }
 
 export const ContextSelector: React.FC<ContextSelectorProps> = ({
@@ -29,7 +25,8 @@ export const ContextSelector: React.FC<ContextSelectorProps> = ({
   setContext,
   conversation,
   setConversation,
-  onClose
+  onClose,
+  onClickMentionSelector
 }) => {
   const [modelOptions] = useState<ModelOption[]>([
     { value: 'gpt-4', label: 'GPT-4' },
@@ -43,11 +40,6 @@ export const ContextSelector: React.FC<ContextSelectorProps> = ({
     setContext(draft => {
       draft.settings.modelName = model.value
     })
-  }
-
-  const handleSelectMention = (option: SelectedMentionStrategy) => {
-    // Handle mention selection
-    console.log('Selected mention:', option)
   }
 
   const handleSelectImage = () => {
@@ -79,15 +71,9 @@ export const ContextSelector: React.FC<ContextSelectorProps> = ({
           {selectedModel?.label}
         </Button>
       </ModelSelector>
-      <MentionSelector
-        mentionOptions={createMentionOptions()}
-        onSelect={handleSelectMention}
-        onOpenChange={isOpen => !isOpen && onClose?.()}
-      >
-        <Button variant="ghost" size="xs">
-          @ Mention
-        </Button>
-      </MentionSelector>
+      <Button variant="ghost" size="xs" onClick={onClickMentionSelector}>
+        @ Mention
+      </Button>
       <Button variant="ghost" size="xs" onClick={handleSelectImage}>
         <ImageIcon className="h-3 w-3 mr-1" />
         Image

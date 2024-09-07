@@ -65,6 +65,9 @@ export const ChatInput: React.FC<ChatInputProps> = ({
             setContext={setContext}
             conversation={conversation}
             setConversation={setConversation}
+            onClickMentionSelector={() => {
+              editorRef.current?.insertSpaceAndAt()
+            }}
             onClose={focusOnEditor}
           />
           <Button
