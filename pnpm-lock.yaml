@@ -216,6 +216,9 @@ importers:
       execa:
         specifier: ^9.3.1
         version: 9.3.1
+      flexsearch:
+        specifier: ^0.7.43
+        version: 0.7.43
       form-data:
         specifier: ^4.0.0
         version: 4.0.0
@@ -4230,6 +4233,9 @@ packages:
 
   flatted@3.2.9:
     resolution: {integrity: sha512-36yxDn5H7OFZQla0/jFJmbIKTdZAQHngCedGxiMmpNfEZM0sdEeT+WczLQrjK6D7o2aiyLYDnkw0R3JK0Qv1RQ==}
+
+  flexsearch@0.7.43:
+    resolution: {integrity: sha512-c5o/+Um8aqCSOXGcZoqZOm+NqtVwNsvVpWv6lfmSclU954O3wvQKxxK8zj74fPaSJbXpSLTs4PRhh+wnoCXnKg==}
 
   focus-trap@7.5.4:
     resolution: {integrity: sha512-N7kHdlgsO/v+iD/dMoJKtsSqs5Dz/dXZVebRgJw23LDk+jMi/974zyiOYDziY2JPp8xivq9BmUGwIJMiuSBi7w==}
@@ -11435,6 +11441,8 @@ snapshots:
 
   flatted@3.2.9: {}
 
+  flexsearch@0.7.43: {}
+
   focus-trap@7.5.4:
     dependencies:
       tabbable: 6.2.0
@@ -13053,7 +13061,7 @@ snapshots:
 
   resolve@2.0.0-next.5:
     dependencies:
-      is-core-module: 2.13.1
+      is-core-module: 2.15.1
       path-parse: 1.0.7
       supports-preserve-symlinks-flag: 1.0.0
 

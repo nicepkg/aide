@@ -1,11 +1,10 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import {
   $getSelection,
   $isRangeSelection,
   $isTextNode,
   LexicalEditor
 } from 'lexical'
-import { useKey } from 'react-use'
 
 import { $isMentionNode } from '../nodes/mention-node'
 
@@ -14,11 +13,6 @@ export const useMentionSearch = (
   setIsOpen: (open: boolean) => void
 ) => {
   const [searchQuery, setSearchQuery] = useState('')
-  const lastKeyPressRef = useRef<string>('')
-
-  useKey('@', () => {
-    lastKeyPressRef.current = '@'
-  })
 
   useEffect(() => {
     const removeUpdateListener = editor.registerUpdateListener(
@@ -52,22 +46,16 @@ export const useMentionSearch = (
 
           // Look for '@' anywhere in the text, but only consider the part before the cursor
           const beforeCursor = textContent.slice(0, anchorOffset)
-          const mentionMatch = beforeCursor.match(/(^|\s|@\w+\s)@(\w*)$/)
+          // const mentionMatch = beforeCursor.match(/(^|\s|@\w+\s)@(\w*)$/)
+          const mentionMatch = beforeCursor.match(/(^|\s|@[^\s]+\s)@([^\s]*)$/u)
 
-          const isFirstTimeEnterMention =
-            mentionMatch?.[0] === '@' && lastKeyPressRef.current === '@'
-          const isEnterQueryKeywords = mentionMatch && mentionMatch[0] !== '@'
-
-          if (isFirstTimeEnterMention || isEnterQueryKeywords) {
+          if (mentionMatch) {
             setSearchQuery(mentionMatch[2] ?? '')
             setIsOpen(true)
           } else {
             setIsOpen(false)
             setSearchQuery('')
           }
-
-          // Reset lastKeyPress after processing
-          lastKeyPressRef.current = ''
         })
       }
     )
@@ -101,7 +89,6 @@ export const useMentionSearch = (
       const newPosition = lastAtIndex + 1
       selection.anchor.set(anchorNode.getKey(), newPosition, 'text')
       selection.focus.set(anchorNode.getKey(), newPosition, 'text')
-      lastKeyPressRef.current = '@'
     })
   }, [editor])
 

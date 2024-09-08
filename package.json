@@ -417,6 +417,7 @@
     "eslint-plugin-unused-imports": "^3.2.0",
     "esno": "^4.7.0",
     "execa": "^9.3.1",
+    "flexsearch": "^0.7.43",
     "form-data": "^4.0.0",
     "framer-motion": "^11.5.4",
     "fs-extra": "^11.2.0",

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import {
   Command,
   CommandEmpty,
@@ -11,6 +11,7 @@ import {
   PopoverContent,
   PopoverTrigger
 } from '@webview/components/ui/popover'
+import { useFilteredMentionOptions } from '@webview/hooks/chat/use-filtered-mention-options'
 import { useControllableState } from '@webview/hooks/use-controllable-state'
 import { useKeyboardNavigation } from '@webview/hooks/use-keyboard-navigation'
 import { IMentionStrategy, MentionOption } from '@webview/types/chat'
@@ -43,9 +44,10 @@ export const MentionSelector: React.FC<MentionSelectorProps> = ({
   children
 }) => {
   const commandRef = useRef<HTMLDivElement>(null)
-  const [currentOptions, setCurrentOptions] =
-    useState<MentionOption[]>(mentionOptions)
   const maxItemLength = mentionOptions.length > 8 ? mentionOptions.length : 8
+  const [optionsStack, setOptionsStack] = useState<MentionOption[][]>([
+    mentionOptions
+  ])
 
   const [isOpen = false, setIsOpen] = useControllableState({
     prop: open,
@@ -53,20 +55,13 @@ export const MentionSelector: React.FC<MentionSelectorProps> = ({
     onChange: onOpenChange
   })
 
-  useEffect(() => {
-    if (!isOpen) {
-      setCurrentOptions(mentionOptions)
-    }
-  }, [isOpen, mentionOptions])
+  const currentOptions = optionsStack[optionsStack.length - 1] || []
 
-  const filteredOptions = useMemo(() => {
-    if (!searchQuery) return currentOptions.slice(0, maxItemLength)
-    return currentOptions
-      .filter(option =>
-        option.label.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-      .slice(0, maxItemLength)
-  }, [currentOptions, searchQuery, maxItemLength])
+  const { filteredOptions, isFlattened } = useFilteredMentionOptions({
+    currentOptions,
+    searchQuery,
+    maxItemLength
+  })
 
   const itemRefs = useRef<(HTMLDivElement | null)[]>([])
   const { focusedIndex, setFocusedIndex, handleKeyDown } =
@@ -82,9 +77,28 @@ export const MentionSelector: React.FC<MentionSelectorProps> = ({
     setFocusedIndex(0)
   }, [filteredOptions])
 
+  useEffect(() => {
+    if (!isOpen) {
+      setOptionsStack([mentionOptions])
+    }
+  }, [isOpen, mentionOptions])
+
   const handleSelect = (option: MentionOption) => {
+    if (isFlattened) {
+      if (option.mentionStrategy) {
+        onSelect({
+          name: option.label,
+          strategy: option.mentionStrategy,
+          strategyAddData: option.data || { label: option.label }
+        })
+      }
+      setIsOpen(false)
+      return
+    }
+
+    // not flattened
     if (option.children) {
-      setCurrentOptions(option.children)
+      setOptionsStack(prevStack => [...prevStack, option.children || []])
       onCloseWithoutSelect?.()
     } else {
       if (option.mentionStrategy) {

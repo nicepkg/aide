@@ -11,13 +11,18 @@ export interface ModelOption {
   label: string
 }
 
+export enum SearchSortStrategy {
+  Default = 'Default',
+  EndMatch = 'EndMatch'
+}
+
 export interface MentionOption {
   id: string
   label: string
   category: MentionCategory
   mentionStrategy?: IMentionStrategy
   searchKeywords?: string[]
-  searchWeight?: number
+  searchSortStrategy?: SearchSortStrategy
   children?: MentionOption[]
   data?: any
   customRender?: FC<MentionOption>

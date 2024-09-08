@@ -8,7 +8,11 @@ import { GitCommitsMentionStrategy } from '@webview/lexical/mentions/git/git-com
 import { GitDiffsMentionStrategy } from '@webview/lexical/mentions/git/git-diffs-mention-strategy'
 import { GitPullRequestsMentionStrategy } from '@webview/lexical/mentions/git/git-pull-requests-mention-strategy'
 import { EnableWebToolMentionStrategy } from '@webview/lexical/mentions/web/enable-web-tool-mention-strategy'
-import { MentionCategory, type MentionOption } from '@webview/types/chat'
+import {
+  MentionCategory,
+  SearchSortStrategy,
+  type MentionOption
+} from '@webview/types/chat'
 import { getFileNameFromPath } from '@webview/utils/common'
 
 import { useFiles } from '../api/use-files'
@@ -21,16 +25,17 @@ export const useMentionOptions = () => {
   const filesMentionOptions = useMemo<MentionOption[]>(
     () =>
       files.map(
-        file => ({
-          id: `file#${file.fullPath}`,
-          label: getFileNameFromPath(file.fullPath),
-          category: MentionCategory.Files,
-          mentionStrategy: new SelectedFilesMentionStrategy(),
-          searchKeywords: [file.relativePath],
-          searchWeight: 100,
-          data: file,
-          customRender: MentionFileItem
-        }),
+        file =>
+          ({
+            id: `file#${file.fullPath}`,
+            label: getFileNameFromPath(file.fullPath),
+            category: MentionCategory.Files,
+            mentionStrategy: new SelectedFilesMentionStrategy(),
+            searchKeywords: [file.relativePath],
+            searchSortStrategy: SearchSortStrategy.EndMatch,
+            data: file,
+            customRender: MentionFileItem
+          }) satisfies MentionOption,
         [files]
       ),
     [files]
@@ -38,16 +43,19 @@ export const useMentionOptions = () => {
 
   const foldersMentionOptions = useMemo<MentionOption[]>(
     () =>
-      folders.map(folder => ({
-        id: `folder#${folder.fullPath}`,
-        label: getFileNameFromPath(folder.fullPath),
-        category: MentionCategory.Folders,
-        mentionStrategy: new SelectedFoldersMentionStrategy(),
-        searchKeywords: [folder.relativePath],
-        searchWeight: 90,
-        data: folder,
-        customRender: MentionFolderItem
-      })),
+      folders.map(
+        folder =>
+          ({
+            id: `folder#${folder.fullPath}`,
+            label: getFileNameFromPath(folder.fullPath),
+            category: MentionCategory.Folders,
+            mentionStrategy: new SelectedFoldersMentionStrategy(),
+            searchKeywords: [folder.relativePath],
+            searchSortStrategy: SearchSortStrategy.EndMatch,
+            data: folder,
+            customRender: MentionFolderItem
+          }) satisfies MentionOption
+      ),
     [files]
   )
 

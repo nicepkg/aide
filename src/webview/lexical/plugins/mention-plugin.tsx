@@ -29,7 +29,6 @@ export const MentionPlugin: FC<MentionPluginProps> = props => {
   const { addMention } = useMentionManager(props)
   const [isOpen, setIsOpen] = useState(false)
   const mentionPosition = useNearestMentionPosition(editor)
-  // const mentionOptions = createMentionOptions()
   const mentionOptions = useMentionOptions()
 
   const { searchQuery, setSearchQuery, clearMentionInput } = useMentionSearch(
