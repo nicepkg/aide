@@ -135,6 +135,7 @@ export const FileSelector: React.FC<FileSelectorProps> = ({
                     tabRefs.current[index] = el
                   }
                 }}
+                onKeyDown={e => e.preventDefault()}
               >
                 {tab.label}
               </TabsTrigger>

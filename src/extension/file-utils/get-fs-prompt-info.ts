@@ -48,7 +48,12 @@ export const getFileOrFoldersPromptInfo = async (
     result.promptFullContent += promptFullContent
   }
 
-  await traverseFileOrFolders(fileOrFolders, workspacePath, processFile)
+  await traverseFileOrFolders({
+    type: 'file',
+    filesOrFolders: fileOrFolders,
+    workspacePath,
+    itemCallback: processFile
+  })
 
   return result
 }

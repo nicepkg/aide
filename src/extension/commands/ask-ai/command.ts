@@ -43,11 +43,12 @@ export class AskAICommand extends BaseCommand {
       filesFullPath += ` "${quote([fullPath.trim()])}" `
     }
 
-    await traverseFileOrFolders(
-      selectedFileOrFolders,
-      workspaceFolder.uri.fsPath,
-      processFile
-    )
+    await traverseFileOrFolders({
+      type: 'file',
+      filesOrFolders: selectedFileOrFolders,
+      workspacePath: workspaceFolder.uri.fsPath,
+      itemCallback: processFile
+    })
 
     const aiCommand = await getConfigKey('aiCommand')
     const aiCommandCopyBeforeRun = await getConfigKey('aiCommandCopyBeforeRun')

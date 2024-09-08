@@ -23,6 +23,9 @@ export const FileIcon: FC<FileIconProps> = props => {
   if (!MaterialSvgComponent) return null
 
   return (
-    <MaterialSvgComponent className={cn('size-4', className)} {...otherProps} />
+    <MaterialSvgComponent
+      className={cn('shrink-0 size-4 text-primary', className)}
+      {...otherProps}
+    />
   )
 }

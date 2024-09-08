@@ -2,6 +2,7 @@ import { getErrorMsg } from '@extension/utils'
 import * as vscode from 'vscode'
 
 import { ChatController } from './controllers/chat.controller'
+import { FileController } from './controllers/file.controller'
 import type {
   Controller,
   ControllerClass,
@@ -81,7 +82,7 @@ class APIManager {
   }
 }
 
-export const controllers = [ChatController] as const
+export const controllers = [ChatController, FileController] as const
 export type Controllers = typeof controllers
 
 export const setupWebviewAPIManager = (

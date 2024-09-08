@@ -21,13 +21,14 @@ export const getReferenceFilePaths = async ({
   const workspaceFolder = getWorkspaceFolder()
   const allRelativePaths: string[] = []
 
-  await traverseFileOrFolders(
-    [workspaceFolder.uri.fsPath],
-    workspaceFolder.uri.fsPath,
-    fileInfo => {
+  await traverseFileOrFolders({
+    type: 'file',
+    filesOrFolders: [workspaceFolder.uri.fsPath],
+    workspacePath: workspaceFolder.uri.fsPath,
+    itemCallback: fileInfo => {
       allRelativePaths.push(fileInfo.relativePath)
     }
-  )
+  })
 
   const currentFileRelativePath =
     vscode.workspace.asRelativePath(currentFilePath)

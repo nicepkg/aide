@@ -31,13 +31,14 @@ export const getPreProcessInfo = async ({
   const workspaceFolder = getWorkspaceFolder()
   const allFileRelativePaths: string[] = []
 
-  await traverseFileOrFolders(
-    [workspaceFolder.uri.fsPath],
-    workspaceFolder.uri.fsPath,
-    fileInfo => {
+  await traverseFileOrFolders({
+    type: 'file',
+    filesOrFolders: [workspaceFolder.uri.fsPath],
+    workspacePath: workspaceFolder.uri.fsPath,
+    itemCallback: fileInfo => {
       allFileRelativePaths.push(fileInfo.relativePath)
     }
-  )
+  })
 
   const modelProvider = await createModelProvider()
   const aiRunnable = await modelProvider.createStructuredOutputRunnable({

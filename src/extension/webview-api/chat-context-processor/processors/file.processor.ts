@@ -21,16 +21,17 @@ export class FileProcessor implements ContextProcessor<FileContext> {
     const workspacePath = getWorkspaceFolder().uri.fsPath
 
     const processFolder = async (folder: string): Promise<string> => {
-      const files = await traverseFileOrFolders(
-        [folder],
+      const files = await traverseFileOrFolders({
+        type: 'file',
+        filesOrFolders: [folder],
         workspacePath,
-        async (fileInfo: FileInfo) => {
+        itemCallback: async (fileInfo: FileInfo) => {
           const { relativePath, fullPath } = fileInfo
           const languageId = getLanguageId(path.extname(relativePath).slice(1))
           const content = await VsCodeFS.readFileOrOpenDocumentContent(fullPath)
           return `\`\`\`${languageId}:${relativePath}\n${content}\n\`\`\`\n\n`
         }
-      )
+      })
       return files.join('')
     }
 

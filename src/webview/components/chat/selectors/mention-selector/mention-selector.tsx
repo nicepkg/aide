@@ -18,6 +18,7 @@ import { cn } from '@webview/utils/common'
 import { useEvent } from 'react-use'
 
 export interface SelectedMentionStrategy {
+  name: string
   strategy: IMentionStrategy
   strategyAddData: any
 }
@@ -44,6 +45,7 @@ export const MentionSelector: React.FC<MentionSelectorProps> = ({
   const commandRef = useRef<HTMLDivElement>(null)
   const [currentOptions, setCurrentOptions] =
     useState<MentionOption[]>(mentionOptions)
+  const maxItemLength = mentionOptions.length > 8 ? mentionOptions.length : 8
 
   const [isOpen = false, setIsOpen] = useControllableState({
     prop: open,
@@ -58,11 +60,13 @@ export const MentionSelector: React.FC<MentionSelectorProps> = ({
   }, [isOpen, mentionOptions])
 
   const filteredOptions = useMemo(() => {
-    if (!searchQuery) return currentOptions
-    return currentOptions.filter(option =>
-      option.label.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-  }, [currentOptions, searchQuery])
+    if (!searchQuery) return currentOptions.slice(0, maxItemLength)
+    return currentOptions
+      .filter(option =>
+        option.label.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+      .slice(0, maxItemLength)
+  }, [currentOptions, searchQuery, maxItemLength])
 
   const itemRefs = useRef<(HTMLDivElement | null)[]>([])
   const { focusedIndex, setFocusedIndex, handleKeyDown } =
@@ -83,10 +87,13 @@ export const MentionSelector: React.FC<MentionSelectorProps> = ({
       setCurrentOptions(option.children)
       onCloseWithoutSelect?.()
     } else {
-      onSelect({
-        strategy: option.mentionStrategies[0]!,
-        strategyAddData: option.data || { label: option.label }
-      })
+      if (option.mentionStrategy) {
+        onSelect({
+          name: option.label,
+          strategy: option.mentionStrategy,
+          strategyAddData: option.data || { label: option.label }
+        })
+      }
       setIsOpen(false)
     }
   }
@@ -95,7 +102,10 @@ export const MentionSelector: React.FC<MentionSelectorProps> = ({
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>{children}</PopoverTrigger>
       <PopoverContent
-        className={cn('w-[200px] p-0', !isOpen && 'hidden')}
+        className={cn(
+          'min-w-[200px] max-w-[400px] w-screen p-0',
+          !isOpen && 'hidden'
+        )}
         updatePositionStrategy="always"
         side="top"
         align="start"
@@ -111,14 +121,13 @@ export const MentionSelector: React.FC<MentionSelectorProps> = ({
             >
               {filteredOptions.map((option, index) => (
                 <CommandItem
-                  key={option.label}
+                  key={option.id}
                   defaultValue=""
                   value=""
                   onSelect={() => handleSelect(option)}
                   className={cn(
                     'px-1.5 py-1',
-                    focusedIndex === index &&
-                      'bg-primary text-primary-foreground'
+                    focusedIndex === index && 'bg-secondary'
                   )}
                   ref={el => {
                     if (itemRefs.current) {
@@ -126,7 +135,11 @@ export const MentionSelector: React.FC<MentionSelectorProps> = ({
                     }
                   }}
                 >
-                  {option.label}
+                  {option.customRender ? (
+                    <option.customRender {...option} />
+                  ) : (
+                    option.label
+                  )}
                 </CommandItem>
               ))}
             </CommandGroup>

@@ -3,7 +3,8 @@ import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext
 import {
   MentionSelector,
   type SelectedMentionStrategy
-} from '@webview/components/chat/selectors/mention-selector'
+} from '@webview/components/chat/selectors/mention-selector/mention-selector'
+import { useMentionOptions } from '@webview/hooks/chat/use-mention-options'
 import type { IMentionStrategy } from '@webview/types/chat'
 import {
   $createTextNode,
@@ -19,7 +20,6 @@ import {
 } from '../hooks/use-mention-manager'
 import { useMentionSearch } from '../hooks/use-mention-search'
 import { useNearestMentionPosition } from '../hooks/use-nearest-mention-position'
-import { createMentionOptions } from '../mentions'
 import { $createMentionNode } from '../nodes/mention-node'
 
 export interface MentionPluginProps extends UseMentionManagerProps {}
@@ -29,7 +29,8 @@ export const MentionPlugin: FC<MentionPluginProps> = props => {
   const { addMention } = useMentionManager(props)
   const [isOpen, setIsOpen] = useState(false)
   const mentionPosition = useNearestMentionPosition(editor)
-  const mentionOptions = createMentionOptions()
+  // const mentionOptions = createMentionOptions()
+  const mentionOptions = useMentionOptions()
 
   const { searchQuery, setSearchQuery, clearMentionInput } = useMentionSearch(
     editor,
@@ -39,14 +40,20 @@ export const MentionPlugin: FC<MentionPluginProps> = props => {
   useEditorCommands(editor, isOpen, setIsOpen)
 
   const handleMentionSelect = useCallback(
-    ({ strategy, strategyAddData }: SelectedMentionStrategy) => {
+    ({ name, strategy, strategyAddData }: SelectedMentionStrategy) => {
       setIsOpen(false)
       setSearchQuery('')
 
       editor.update(() => {
         const selection = $getSelection()
         if ($isRangeSelection(selection)) {
-          insertMention(selection, strategy, strategyAddData, searchQuery)
+          insertMention({
+            name,
+            selection,
+            strategy,
+            strategyAddData,
+            searchQuery
+          })
         }
       })
       addMention({ strategy, strategyAddData })
@@ -84,12 +91,19 @@ export const MentionPlugin: FC<MentionPluginProps> = props => {
   )
 }
 
-const insertMention = (
-  selection: RangeSelection,
-  strategy: IMentionStrategy,
-  strategyAddData: any,
+const insertMention = ({
+  name,
+  selection,
+  strategy,
+  strategyAddData,
+  searchQuery
+}: {
+  name: string
+  selection: RangeSelection
+  strategy: IMentionStrategy
+  strategyAddData: any
   searchQuery: string
-) => {
+}) => {
   // Delete the @ symbol and the search query
   const anchorOffset = selection.anchor.offset
   selection.anchor.offset = anchorOffset - (searchQuery.length + 1)
@@ -97,7 +111,7 @@ const insertMention = (
   selection.removeText()
 
   // Create and insert the mention node
-  const mentionText = `@${strategyAddData.label || strategy.name}`
+  const mentionText = `@${name}`
   const mentionNode = $createMentionNode(
     strategy.category,
     strategyAddData,

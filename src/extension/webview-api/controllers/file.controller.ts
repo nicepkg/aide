@@ -1,4 +1,10 @@
+import {
+  traverseFileOrFolders,
+  type FileInfo,
+  type FolderInfo
+} from '@extension/file-utils/traverse-fs'
 import { VsCodeFS } from '@extension/file-utils/vscode-fs'
+import { getWorkspaceFolder } from '@extension/utils'
 import * as vscode from 'vscode'
 
 import { Controller } from '../types'
@@ -43,5 +49,29 @@ export class FileController extends Controller {
 
   async readdir(req: { path: string }): Promise<string[]> {
     return await VsCodeFS.readdir(req.path)
+  }
+
+  async traverseWorkspaceFiles(req: {
+    filesOrFolders: string[]
+  }): Promise<FileInfo[]> {
+    const workspaceFolder = getWorkspaceFolder()
+    return await traverseFileOrFolders({
+      type: 'file',
+      filesOrFolders: req.filesOrFolders,
+      workspacePath: workspaceFolder.uri.fsPath,
+      itemCallback: fileInfo => fileInfo
+    })
+  }
+
+  async traverseWorkspaceFolders(req: {
+    folders: string[]
+  }): Promise<FolderInfo[]> {
+    const workspaceFolder = getWorkspaceFolder()
+    return await traverseFileOrFolders({
+      type: 'folder',
+      filesOrFolders: req.folders,
+      workspacePath: workspaceFolder.uri.fsPath,
+      itemCallback: folderInfo => folderInfo
+    })
   }
 }

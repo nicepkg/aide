@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { ChevronDownIcon, ChevronRightIcon } from '@radix-ui/react-icons'
 import { FileIcon } from '@webview/components/file-icon'
 import {
   KeyboardShortcutsInfo,
@@ -91,11 +92,35 @@ export const FileTreeView: React.FC<FileTreeViewProps> = ({
     initializedRef.current = true
   }, [treeItems, selectedIds, getAllParentIds])
 
+  // useEffect(() => {
+  //   if (!initializedRef.current) return
+
+  //   const newAutoExpandedIds = new Set<string>()
+  //   const expandSearchNodes = (items: TreeItem[]) => {
+  //     items.forEach(item => {
+  //       if (
+  //         searchQuery &&
+  //         item.name.toLowerCase().includes(searchQuery.toLowerCase())
+  //       ) {
+  //         newAutoExpandedIds.add(item.id)
+  //         getAllParentIds(treeItems, item.id).forEach(id =>
+  //           newAutoExpandedIds.add(id)
+  //         )
+  //       }
+  //       if (item.children) expandSearchNodes(item.children)
+  //     })
+  //   }
+
+  //   expandSearchNodes(treeItems)
+  //   setAutoExpandedIds(newAutoExpandedIds)
+  // }, [treeItems, searchQuery, getAllParentIds])
+
   useEffect(() => {
     if (!initializedRef.current) return
 
     const newAutoExpandedIds = new Set<string>()
-    const expandSearchNodes = (items: TreeItem[]) => {
+    const expandSearchNodes = (items: TreeItem[]): boolean => {
+      let shouldExpand = false
       items.forEach(item => {
         if (
           searchQuery &&
@@ -105,9 +130,18 @@ export const FileTreeView: React.FC<FileTreeViewProps> = ({
           getAllParentIds(treeItems, item.id).forEach(id =>
             newAutoExpandedIds.add(id)
           )
+          shouldExpand = true
         }
-        if (item.children) expandSearchNodes(item.children)
+
+        if (item.children) {
+          const childrenMatch = expandSearchNodes(item.children)
+          if (childrenMatch) {
+            newAutoExpandedIds.add(item.id)
+            shouldExpand = true
+          }
+        }
       })
+      return shouldExpand
     }
 
     expandSearchNodes(treeItems)
@@ -163,10 +197,12 @@ export const FileTreeView: React.FC<FileTreeViewProps> = ({
         visibleItem => visibleItem.id === item.id
       )
 
+      const ArrowIcon = isExpanded ? ChevronDownIcon : ChevronRightIcon
+
       return (
         <div
           className={cn(
-            'flex items-center py-1 cursor-pointer',
+            'flex items-center py-1 text-sm cursor-pointer',
             visibleIndex === focusedIndex && 'bg-secondary'
           )}
           style={{ marginLeft: `${level * 20}px` }}
@@ -186,6 +222,8 @@ export const FileTreeView: React.FC<FileTreeViewProps> = ({
             className="mx-1 custom-checkbox"
           />
 
+          {hasChildren && <ArrowIcon className="size-4 mr-1" />}
+
           <FileIcon
             className="size-4 mr-1"
             isFolder={hasChildren}
@@ -202,14 +240,16 @@ export const FileTreeView: React.FC<FileTreeViewProps> = ({
 
   return (
     <div className="flex flex-col h-full">
-      <Tree
-        items={treeItems}
-        selectedItemIds={selectedIds}
-        expandedItemIds={Array.from(allExpandedIds)}
-        onSelect={handleSelect}
-        onExpand={handleExpand}
-        renderItem={renderItem}
-      />
+      <div className="flex flex-col flex-1 overflow-auto">
+        <Tree
+          items={treeItems}
+          selectedItemIds={selectedIds}
+          expandedItemIds={Array.from(allExpandedIds)}
+          onSelect={handleSelect}
+          onExpand={handleExpand}
+          renderItem={renderItem}
+        />
+      </div>
       <KeyboardShortcutsInfo shortcuts={keyboardShortcuts} />
     </div>
   )
@@ -242,6 +282,16 @@ function convertFilesToTreeItems(files: FileInfo[]): TreeItem[] {
     })
   })
 
+  const sortItems = (items: TreeItem[]): TreeItem[] =>
+    items.sort((a, b) => {
+      // Folders come before files
+      if (a.children && !b.children) return -1
+      if (!a.children && b.children) return 1
+
+      // Alphabetical sorting within each group
+      return a.name.localeCompare(b.name)
+    })
+
   const buildTreeItems = (node: any, path: string[] = []): TreeItem => {
     const name = path[path.length - 1] || 'root'
     const fullPath = path.join('/')
@@ -263,13 +313,13 @@ function convertFilesToTreeItems(files: FileInfo[]): TreeItem[] {
     return {
       id: fullPath || 'root',
       name,
-      children,
+      children: sortItems(children),
       fullPath,
       relativePath: fullPath
     }
   }
 
-  return Object.entries(root).map(([key, value]) =>
-    buildTreeItems(value, [key])
+  return sortItems(
+    Object.entries(root).map(([key, value]) => buildTreeItems(value, [key]))
   )
 }

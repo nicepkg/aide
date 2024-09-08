@@ -1,3 +1,4 @@
+import type { FC } from 'react'
 import type {
   Attachments,
   Conversation
@@ -11,11 +12,15 @@ export interface ModelOption {
 }
 
 export interface MentionOption {
+  id: string
   label: string
   category: MentionCategory
-  mentionStrategies: IMentionStrategy[]
+  mentionStrategy?: IMentionStrategy
+  searchKeywords?: string[]
+  searchWeight?: number
   children?: MentionOption[]
   data?: any
+  customRender?: FC<MentionOption>
 }
 
 export enum MentionCategory {

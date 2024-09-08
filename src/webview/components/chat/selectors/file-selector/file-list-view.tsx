@@ -4,6 +4,7 @@ import {
   KeyboardShortcutsInfo,
   type ShortcutInfo
 } from '@webview/components/keyboard-shortcuts-info'
+import { TruncateStart } from '@webview/components/truncate-start'
 import {
   Command,
   CommandEmpty,
@@ -32,9 +33,11 @@ export const FileListView: React.FC<FileListViewProps> = ({
   selectedFiles,
   onSelect
 }) => {
+  const listRef = useRef<HTMLDivElement>(null)
   const itemRefs = useRef<(HTMLDivElement | null)[]>([])
 
   const { focusedIndex, handleKeyDown } = useKeyboardNavigation({
+    listRef,
     itemCount: filteredFiles.length,
     itemRefs,
     onEnter: el => el?.click()
@@ -60,12 +63,12 @@ export const FileListView: React.FC<FileListViewProps> = ({
             }
           }}
           className={cn(
-            'cursor-pointer px-1.5 py-1 flex items-center justify-between hover:bg-secondary',
+            'cursor-pointer text-sm px-1 py-1 flex items-center hover:bg-secondary',
             isSelected && 'text-primary',
             focusedIndex === index && 'bg-secondary'
           )}
         >
-          <div className="flex flex-1 items-center">
+          <div className="flex flex-shrink-0 items-center mr-2">
             <input
               type="checkbox"
               checked={isSelected}
@@ -76,6 +79,7 @@ export const FileListView: React.FC<FileListViewProps> = ({
             <FileIcon className="size-4 mr-1" filePath={file.relativePath} />
             <span>{fileName}</span>
           </div>
+          <TruncateStart>{file.relativePath}</TruncateStart>
         </CommandItem>
       )
     },
@@ -83,9 +87,9 @@ export const FileListView: React.FC<FileListViewProps> = ({
   )
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full pt-1">
       <Command shouldFilter={false}>
-        <CommandList>
+        <CommandList ref={listRef}>
           <CommandEmpty>No files found.</CommandEmpty>
           <CommandGroup>
             {filteredFiles.map((file, index) => renderItem(file, index))}

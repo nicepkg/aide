@@ -26,11 +26,13 @@ export class BatchProcessorCommand extends BaseCommand {
     if (selectedItems.length === 0) throw new Error(t('error.noSelection'))
 
     const selectedFileOrFolders = selectedItems.map(item => item.fsPath)
-    const filesInfo = await traverseFileOrFolders(
-      selectedFileOrFolders,
-      workspaceFolder.uri.fsPath,
-      fileInfo => fileInfo
-    )
+    const filesInfo = await traverseFileOrFolders({
+      type: 'file',
+      filesOrFolders: selectedFileOrFolders,
+      workspacePath: workspaceFolder.uri.fsPath,
+      itemCallback: fileInfo => fileInfo
+    })
+
     const fileRelativePathsForProcess = filesInfo
       .filter(fileInfo => !isTmpFileUri(vscode.Uri.file(fileInfo.fullPath)))
       .map(fileInfo => fileInfo.relativePath)

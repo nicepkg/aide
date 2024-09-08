@@ -2,35 +2,33 @@ import * as path from 'path'
 import type { MaybePromise } from '@extension/types/common'
 import * as vscode from 'vscode'
 
-import { getAllValidFiles } from './ignore-patterns'
+import { getAllValidFiles, getAllValidFolders } from './ignore-patterns'
 import { VsCodeFS } from './vscode-fs'
 
-/**
- * Represents information about a file.
- */
 export interface FileInfo {
-  /**
-   * The content of the file.
-   */
+  type: 'file'
   content: string
-
-  /**
-   * The relative path of the file.
-   */
   relativePath: string
-
-  /**
-   * The full path of the file.
-   */
   fullPath: string
 }
 
-/**
- * Retrieves information about a file.
- * @param filePath - The path of the file.
- * @param workspacePath - The path of the workspace.
- * @returns A Promise that resolves to the file information, or null if the file does not exist.
- */
+export interface FolderInfo {
+  type: 'folder'
+  relativePath: string
+  fullPath: string
+}
+
+type FsType = 'file' | 'folder'
+
+interface TraverseOptions<T, Type extends FsType = 'file'> {
+  type: Type
+  filesOrFolders: string[]
+  workspacePath: string
+  itemCallback: (
+    itemInfo: Type extends 'file' ? FileInfo : FolderInfo
+  ) => MaybePromise<T>
+}
+
 const getFileInfo = async (
   filePath: string,
   workspacePath: string
@@ -42,62 +40,76 @@ const getFileInfo = async (
   const relativePath = path.relative(workspacePath, filePath)
 
   return {
+    type: 'file',
     content: fileContent,
     relativePath,
     fullPath: filePath
   }
 }
 
-/**
- * Traverses through an array of file or folder paths and performs a callback function on each file.
- * Returns an array of results from the callback function.
- *
- * @param filesOrFolders - An array of file or folder paths.
- * @param workspacePath - The path of the workspace.
- * @param fileCallback - The callback function to be performed on each file.
- * @returns An array of results from the callback function.
- */
-export const traverseFileOrFolders = async <T>(
-  filesOrFolders: string[],
-  workspacePath: string,
-  fileCallback: (fileInfo: FileInfo) => MaybePromise<T>
+const getFolderInfo = async (
+  folderPath: string,
+  workspacePath: string
+): Promise<FolderInfo> => {
+  const relativePath = path.relative(workspacePath, folderPath)
+
+  return {
+    type: 'folder',
+    relativePath,
+    fullPath: folderPath
+  }
+}
+
+export const traverseFileOrFolders = async <T, Type extends FsType>(
+  props: TraverseOptions<T, Type>
 ): Promise<T[]> => {
-  const filePathSet = new Set<string>()
+  const { type = 'file', filesOrFolders, workspacePath, itemCallback } = props
+  const itemPathSet = new Set<string>()
   const results: T[] = []
+
+  const processFolder = async (folderPath: string) => {
+    if (itemPathSet.has(folderPath)) return
+
+    itemPathSet.add(folderPath)
+    const folderInfo = await getFolderInfo(folderPath, workspacePath)
+    results.push(await itemCallback(folderInfo as any))
+  }
+
+  const processFile = async (filePath: string) => {
+    if (itemPathSet.has(filePath)) return
+
+    itemPathSet.add(filePath)
+    const fileInfo = await getFileInfo(filePath, workspacePath)
+    results.push(await itemCallback(fileInfo as any))
+  }
 
   await Promise.allSettled(
     filesOrFolders.map(async fileOrFolder => {
-      // Convert relative path to absolute path
       const absolutePath = path.isAbsolute(fileOrFolder)
         ? fileOrFolder
         : path.join(workspacePath, fileOrFolder)
       const stat = await VsCodeFS.stat(absolutePath)
 
       if (stat.type === vscode.FileType.Directory) {
-        const allFiles = await getAllValidFiles(absolutePath)
-
-        await Promise.allSettled(
-          allFiles.map(async filePath => {
-            if (filePathSet.has(filePath)) return
-            filePathSet.add(filePath)
-
-            const fileInfo = await getFileInfo(filePath, workspacePath)
-            if (fileInfo) {
-              results.push(await fileCallback(fileInfo))
-            }
-          })
-        )
+        if (type === 'folder') {
+          const allFolders = await getAllValidFolders(absolutePath)
+          await Promise.allSettled(
+            allFolders.map(async folderPath => {
+              await processFolder(folderPath)
+            })
+          )
+        } else if (type === 'file') {
+          const allFiles = await getAllValidFiles(absolutePath)
+          await Promise.allSettled(
+            allFiles.map(async filePath => {
+              await processFile(filePath)
+            })
+          )
+        }
       }
 
-      if (stat.type === vscode.FileType.File) {
-        if (filePathSet.has(absolutePath)) return
-        filePathSet.add(absolutePath)
-
-        const fileInfo = await getFileInfo(absolutePath, workspacePath)
-
-        if (fileInfo) {
-          results.push(await fileCallback(fileInfo))
-        }
+      if (stat.type === vscode.FileType.File && type === 'file') {
+        await processFile(absolutePath)
       }
     })
   )

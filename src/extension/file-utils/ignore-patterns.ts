@@ -94,3 +94,46 @@ export const getAllValidFiles = async (
     }
   })
 }
+
+/**
+ * Retrieves all valid folders in the specified directory path.
+ * @param fullDirPath - The full path of the directory.
+ * @returns A promise that resolves to an array of strings representing the absolute paths of the valid folders.
+ */
+export const getAllValidFolders = async (
+  fullDirPath: string
+): Promise<string[]> => {
+  const shouldIgnore = await createShouldIgnore(fullDirPath)
+
+  const filesOrFolders = await glob('**/*', {
+    cwd: fullDirPath,
+    nodir: false,
+    absolute: true,
+    follow: false,
+    dot: true,
+    ignore: {
+      ignored(p) {
+        return shouldIgnore(p.fullpath())
+      },
+      childrenIgnored(p) {
+        try {
+          return shouldIgnore(p.fullpath())
+        } catch {
+          return false
+        }
+      }
+    }
+  })
+
+  const folders: string[] = []
+  const promises = filesOrFolders.map(async fileOrFolder => {
+    const stat = await VsCodeFS.stat(fileOrFolder)
+    if (stat.type === vscode.FileType.Directory) {
+      folders.push(fileOrFolder)
+    }
+  })
+
+  await Promise.allSettled(promises)
+
+  return folders
+}
