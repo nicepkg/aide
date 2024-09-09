@@ -76,7 +76,7 @@ export const useKeyboardNavigation = (props: UseKeyboardNavigationProps) => {
         }
       }
     },
-    [listRef, itemRefs, itemCount, loop]
+    [itemCount, loop]
   )
 
   const handleKeyDown = useCallback(
@@ -150,5 +150,28 @@ export const useKeyboardNavigation = (props: UseKeyboardNavigationProps) => {
     ]
   )
 
-  return { focusedIndex, setFocusedIndex, handleKeyDown }
+  // for list item hover
+  const handleMouseOver = (event: React.MouseEvent) => {
+    event.stopPropagation()
+    event.preventDefault()
+
+    const target = event.relatedTarget as HTMLElement
+    const index =
+      itemRefs.current?.findIndex(
+        el => el === target || el?.contains(target)
+      ) ?? -1
+
+    if (index === -1 || index === focusedIndex) return
+
+    setFocusedIndex(index)
+  }
+
+  return {
+    focusedIndex,
+    setFocusedIndex,
+    handleKeyDown,
+    listEventHandlers: {
+      onMouseOver: handleMouseOver
+    }
+  }
 }

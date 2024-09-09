@@ -1,5 +1,15 @@
 import { useMemo } from 'react'
+import {
+  CardStackIcon,
+  CodeIcon,
+  CubeIcon,
+  FileIcon,
+  GlobeIcon,
+  IdCardIcon,
+  TransformIcon
+} from '@radix-ui/react-icons'
 import { MentionFileItem } from '@webview/components/chat/selectors/mention-selector/files/mention-file-item'
+import { MentionFilePreview } from '@webview/components/chat/selectors/mention-selector/files/mention-file-preview'
 import { MentionFolderItem } from '@webview/components/chat/selectors/mention-selector/folders/mention-folder-item'
 import { RelevantCodeSnippetsMentionStrategy } from '@webview/lexical/mentions/codebase/relevant-code-snippets-mention-strategy'
 import { SelectedFilesMentionStrategy } from '@webview/lexical/mentions/files/selected-files-mention-strategy'
@@ -13,7 +23,7 @@ import {
   SearchSortStrategy,
   type MentionOption
 } from '@webview/types/chat'
-import { getFileNameFromPath } from '@webview/utils/common'
+import { getFileNameFromPath } from '@webview/utils/path'
 
 import { useFiles } from '../api/use-files'
 import { useFolders } from '../api/use-folders'
@@ -34,7 +44,8 @@ export const useMentionOptions = () => {
             searchKeywords: [file.relativePath],
             searchSortStrategy: SearchSortStrategy.EndMatch,
             data: file,
-            customRender: MentionFileItem
+            customRenderItem: MentionFileItem,
+            customRenderPreview: MentionFilePreview
           }) satisfies MentionOption,
         [files]
       ),
@@ -53,7 +64,7 @@ export const useMentionOptions = () => {
             searchKeywords: [folder.relativePath],
             searchSortStrategy: SearchSortStrategy.EndMatch,
             data: folder,
-            customRender: MentionFolderItem
+            customRenderItem: MentionFolderItem
           }) satisfies MentionOption
       ),
     [files]
@@ -66,20 +77,23 @@ export const useMentionOptions = () => {
         label: 'Files',
         category: MentionCategory.Files,
         searchKeywords: ['files'],
-        children: filesMentionOptions
+        children: filesMentionOptions,
+        itemIcon: FileIcon
       },
       {
         id: 'folders',
         label: 'Folders',
         category: MentionCategory.Folders,
         searchKeywords: ['folders'],
-        children: foldersMentionOptions
+        children: foldersMentionOptions,
+        itemIcon: CardStackIcon
       },
       {
         id: 'code',
         label: 'Code',
         category: MentionCategory.Code,
-        searchKeywords: ['code']
+        searchKeywords: ['code'],
+        itemIcon: CodeIcon
         // mentionStrategies: [new CodeChunksMentionStrategy()]
       },
       {
@@ -87,13 +101,15 @@ export const useMentionOptions = () => {
         label: 'Web',
         category: MentionCategory.Web,
         searchKeywords: ['web'],
-        mentionStrategy: new EnableWebToolMentionStrategy()
+        mentionStrategy: new EnableWebToolMentionStrategy(),
+        itemIcon: GlobeIcon
       },
       {
         id: 'docs',
         label: 'Docs',
         category: MentionCategory.Docs,
-        searchKeywords: ['docs']
+        searchKeywords: ['docs'],
+        itemIcon: IdCardIcon
         // mentionStrategies: [new AllowSearchDocSiteUrlsToolMentionStrategy()]
       },
       {
@@ -101,6 +117,7 @@ export const useMentionOptions = () => {
         label: 'Git',
         category: MentionCategory.Git,
         searchKeywords: ['git'],
+        itemIcon: TransformIcon,
         children: [
           {
             id: 'git#commit',
@@ -130,7 +147,8 @@ export const useMentionOptions = () => {
         label: 'Codebase',
         category: MentionCategory.Codebase,
         searchKeywords: ['codebase'],
-        mentionStrategy: new RelevantCodeSnippetsMentionStrategy()
+        mentionStrategy: new RelevantCodeSnippetsMentionStrategy(),
+        itemIcon: CubeIcon
       }
     ],
     [filesMentionOptions, foldersMentionOptions]

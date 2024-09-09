@@ -35,5 +35,3 @@ export const removeDuplicates = <T>(
     return seen.has(key) ? false : seen.add(key)
   })
 }
-
-export const getFileNameFromPath = (path: string) => path.split('/').pop() || ''

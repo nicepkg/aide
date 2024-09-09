@@ -6,7 +6,7 @@ import {
 } from '@webview/components/ui/popover'
 import { useControllableState } from '@webview/hooks/use-controllable-state'
 import { FileInfo } from '@webview/types/chat'
-import { getFileNameFromPath } from '@webview/utils/common'
+import { getFileNameFromPath } from '@webview/utils/path'
 
 interface FFileInfoPopoverProps {
   file: FileInfo

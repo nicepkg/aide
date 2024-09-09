@@ -2,7 +2,7 @@ import { FileIcon } from '@webview/components/file-icon'
 import { TruncateStart } from '@webview/components/truncate-start'
 import type { MentionOption } from '@webview/types/chat'
 
-export const MentionFileItem = (mentionOption: MentionOption) => (
+export const MentionFileItem: React.FC<MentionOption> = mentionOption => (
   <div className="flex items-center w-full">
     <div className="flex-shrink-0 flex items-center mr-2">
       <FileIcon

@@ -25,7 +25,9 @@ export interface MentionOption {
   searchSortStrategy?: SearchSortStrategy
   children?: MentionOption[]
   data?: any
-  customRender?: FC<MentionOption>
+  customRenderItem?: FC<MentionOption>
+  itemIcon?: FC<{ className?: string }> // only works when customRenderItem is not provided
+  customRenderPreview?: FC<MentionOption>
 }
 
 export enum MentionCategory {

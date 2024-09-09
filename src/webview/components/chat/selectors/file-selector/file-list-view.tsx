@@ -14,7 +14,8 @@ import {
 } from '@webview/components/ui/command'
 import { useKeyboardNavigation } from '@webview/hooks/use-keyboard-navigation'
 import { FileInfo } from '@webview/types/chat'
-import { cn, getFileNameFromPath } from '@webview/utils/common'
+import { cn } from '@webview/utils/common'
+import { getFileNameFromPath } from '@webview/utils/path'
 import { useEvent } from 'react-use'
 
 const keyboardShortcuts: ShortcutInfo[] = [

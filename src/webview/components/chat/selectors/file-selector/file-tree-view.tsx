@@ -6,6 +6,7 @@ import {
   type ShortcutInfo
 } from '@webview/components/keyboard-shortcuts-info'
 import { Tree, TreeItem, TreeNodeRenderProps } from '@webview/components/tree'
+import { useFilesTreeItems } from '@webview/hooks/chat/use-files-tree-items'
 import { useKeyboardNavigation } from '@webview/hooks/use-keyboard-navigation'
 import { FileInfo } from '@webview/types/chat'
 import { cn } from '@webview/utils/common'
@@ -34,8 +35,7 @@ export const FileTreeView: React.FC<FileTreeViewProps> = ({
   const [autoExpandedIds, setAutoExpandedIds] = useState<Set<string>>(new Set())
   const initializedRef = useRef(false)
   const visibleItemRefs = useRef<(HTMLInputElement | null)[]>([])
-  const treeItems = useMemo(() => convertFilesToTreeItems(files), [files])
-  const flattenedItems = useMemo(() => flattenTreeItems(treeItems), [treeItems])
+  const { treeItems, flattenedItems } = useFilesTreeItems({ files })
 
   const selectedIds = useMemo(
     () => selectedFiles.map(file => file.fullPath),
@@ -91,29 +91,6 @@ export const FileTreeView: React.FC<FileTreeViewProps> = ({
     setAutoExpandedIds(newAutoExpandedIds)
     initializedRef.current = true
   }, [treeItems, selectedIds, getAllParentIds])
-
-  // useEffect(() => {
-  //   if (!initializedRef.current) return
-
-  //   const newAutoExpandedIds = new Set<string>()
-  //   const expandSearchNodes = (items: TreeItem[]) => {
-  //     items.forEach(item => {
-  //       if (
-  //         searchQuery &&
-  //         item.name.toLowerCase().includes(searchQuery.toLowerCase())
-  //       ) {
-  //         newAutoExpandedIds.add(item.id)
-  //         getAllParentIds(treeItems, item.id).forEach(id =>
-  //           newAutoExpandedIds.add(id)
-  //         )
-  //       }
-  //       if (item.children) expandSearchNodes(item.children)
-  //     })
-  //   }
-
-  //   expandSearchNodes(treeItems)
-  //   setAutoExpandedIds(newAutoExpandedIds)
-  // }, [treeItems, searchQuery, getAllParentIds])
 
   useEffect(() => {
     if (!initializedRef.current) return
@@ -252,74 +229,5 @@ export const FileTreeView: React.FC<FileTreeViewProps> = ({
       </div>
       <KeyboardShortcutsInfo shortcuts={keyboardShortcuts} />
     </div>
-  )
-}
-
-// Helper functions (flattenTreeItems and convertFilesToTreeItems) remain unchanged
-function flattenTreeItems(items: TreeItem[]): TreeItem[] {
-  return items.reduce((acc: TreeItem[], item) => {
-    acc.push(item)
-    if (item.children) {
-      acc.push(...flattenTreeItems(item.children))
-    }
-    return acc
-  }, [])
-}
-
-function convertFilesToTreeItems(files: FileInfo[]): TreeItem[] {
-  const root: Record<string, any> = {}
-
-  files.forEach(file => {
-    const parts = file.relativePath.split('/')
-    let current = root
-
-    parts.forEach((part, index) => {
-      if (!current[part]) {
-        current[part] =
-          index === parts.length - 1 ? { ...file, isLeaf: true } : {}
-      }
-      if (index < parts.length - 1) current = current[part]
-    })
-  })
-
-  const sortItems = (items: TreeItem[]): TreeItem[] =>
-    items.sort((a, b) => {
-      // Folders come before files
-      if (a.children && !b.children) return -1
-      if (!a.children && b.children) return 1
-
-      // Alphabetical sorting within each group
-      return a.name.localeCompare(b.name)
-    })
-
-  const buildTreeItems = (node: any, path: string[] = []): TreeItem => {
-    const name = path[path.length - 1] || 'root'
-    const fullPath = path.join('/')
-
-    if (node.isLeaf) {
-      return {
-        id: node.fullPath,
-        name,
-        isLeaf: true,
-        fullPath: node.fullPath,
-        relativePath: node.relativePath
-      }
-    }
-
-    const children = Object.entries(node).map(([key, value]) =>
-      buildTreeItems(value, [...path, key])
-    )
-
-    return {
-      id: fullPath || 'root',
-      name,
-      children: sortItems(children),
-      fullPath,
-      relativePath: fullPath
-    }
-  }
-
-  return sortItems(
-    Object.entries(root).map(([key, value]) => buildTreeItems(value, [key]))
   )
 }

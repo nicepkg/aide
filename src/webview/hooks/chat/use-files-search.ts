@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { getFileNameFromPath } from '@webview/utils/common'
+import { getFileNameFromPath } from '@webview/utils/path'
 
 import { useFiles } from '../api/use-files'
 
@@ -41,7 +41,7 @@ import { useFiles } from '../api/use-files'
 //   }
 // ] as FileInfo[]
 
-export const useFileSearch = () => {
+export const useFilesSearch = () => {
   const [searchQuery, setSearchQuery] = useState('')
   const { data: workspaceFiles = [] } = useFiles()
 

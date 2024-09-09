@@ -15,7 +15,7 @@ import {
   TabsList,
   TabsTrigger
 } from '@webview/components/ui/tabs'
-import { useFileSearch } from '@webview/hooks/chat/use-file-search'
+import { useFilesSearch } from '@webview/hooks/chat/use-files-search'
 import { useControllableState } from '@webview/hooks/use-controllable-state'
 import { useKeyboardNavigation } from '@webview/hooks/use-keyboard-navigation'
 import type { FileInfo } from '@webview/types/chat'
@@ -57,7 +57,7 @@ export const FileSelector: React.FC<FileSelectorProps> = ({
     onChange: onOpenChange
   })
 
-  const { searchQuery, setSearchQuery, filteredFiles } = useFileSearch()
+  const { searchQuery, setSearchQuery, filteredFiles } = useFilesSearch()
   const [activeTab, setActiveTab] = useState<TabOption>('list')
   const [topSearchQuery, setTopSearchQuery] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)

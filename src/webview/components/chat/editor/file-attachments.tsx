@@ -2,7 +2,7 @@ import React from 'react'
 import { Cross1Icon, PlusIcon } from '@radix-ui/react-icons'
 import { FileIcon } from '@webview/components/file-icon'
 import type { FileInfo } from '@webview/types/chat'
-import { getFileNameFromPath } from '@webview/utils/common'
+import { getFileNameFromPath } from '@webview/utils/path'
 
 import { Button } from '../../ui/button'
 import { FileSelector } from '../selectors/file-selector'

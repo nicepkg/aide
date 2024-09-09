@@ -64,7 +64,7 @@ export const MentionSelector: React.FC<MentionSelectorProps> = ({
   })
 
   const itemRefs = useRef<(HTMLDivElement | null)[]>([])
-  const { focusedIndex, setFocusedIndex, handleKeyDown } =
+  const { focusedIndex, setFocusedIndex, handleKeyDown, listEventHandlers } =
     useKeyboardNavigation({
       itemCount: filteredOptions.length,
       itemRefs,
@@ -72,6 +72,8 @@ export const MentionSelector: React.FC<MentionSelectorProps> = ({
     })
 
   useEvent('keydown', handleKeyDown)
+
+  const focusedOption = filteredOptions[focusedIndex]
 
   useEffect(() => {
     setFocusedIndex(0)
@@ -127,38 +129,64 @@ export const MentionSelector: React.FC<MentionSelectorProps> = ({
         onCloseAutoFocus={e => e.preventDefault()}
         onKeyDown={e => e.stopPropagation()}
       >
-        <Command ref={commandRef} shouldFilter={false}>
-          <CommandList>
-            <CommandEmpty>No results found.</CommandEmpty>
-            <CommandGroup
-              className={cn(filteredOptions.length === 0 ? 'p-0' : 'p-1')}
+        <div>
+          <Popover open={isOpen && Boolean(focusedOption?.customRenderPreview)}>
+            <PopoverTrigger asChild>
+              <div />
+            </PopoverTrigger>
+            <PopoverContent
+              side="top"
+              align="start"
+              sideOffset={16}
+              className="min-w-[200px] max-w-[400px] w-screen p-0 z-99"
+              onOpenAutoFocus={e => e.preventDefault()}
+              onCloseAutoFocus={e => e.preventDefault()}
+              onKeyDown={e => e.stopPropagation()}
             >
-              {filteredOptions.map((option, index) => (
-                <CommandItem
-                  key={option.id}
-                  defaultValue=""
-                  value=""
-                  onSelect={() => handleSelect(option)}
-                  className={cn(
-                    'px-1.5 py-1',
-                    focusedIndex === index && 'bg-secondary'
-                  )}
-                  ref={el => {
-                    if (itemRefs.current) {
-                      itemRefs.current[index] = el
-                    }
-                  }}
-                >
-                  {option.customRender ? (
-                    <option.customRender {...option} />
-                  ) : (
-                    option.label
-                  )}
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          </CommandList>
-        </Command>
+              {focusedOption?.customRenderPreview && (
+                <focusedOption.customRenderPreview {...focusedOption} />
+              )}
+            </PopoverContent>
+          </Popover>
+
+          <Command ref={commandRef} shouldFilter={false}>
+            <CommandList {...listEventHandlers}>
+              <CommandEmpty>No results found.</CommandEmpty>
+              <CommandGroup
+                className={cn(filteredOptions.length === 0 ? 'p-0' : 'p-1')}
+              >
+                {filteredOptions.map((option, index) => (
+                  <CommandItem
+                    key={option.id}
+                    defaultValue=""
+                    value=""
+                    onSelect={() => handleSelect(option)}
+                    className={cn(
+                      'px-1.5 py-1',
+                      focusedIndex === index && 'bg-secondary'
+                    )}
+                    ref={el => {
+                      if (itemRefs.current) {
+                        itemRefs.current[index] = el
+                      }
+                    }}
+                  >
+                    {option.customRenderItem ? (
+                      <option.customRenderItem {...option} />
+                    ) : (
+                      <div className="flex items-center w-full">
+                        {option.itemIcon && (
+                          <option.itemIcon className="size-4 mr-1 shrink-0" />
+                        )}
+                        {option.label}
+                      </div>
+                    )}
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            </CommandList>
+          </Command>
+        </div>
       </PopoverContent>
     </Popover>
   )
