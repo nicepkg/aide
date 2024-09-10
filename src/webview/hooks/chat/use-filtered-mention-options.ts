@@ -56,7 +56,7 @@ export const useFilteredMentionOptions = (props: UseFilteredMentionOptions) => {
     return []
   }, [searchQuery, currentOptions, maxItemLength])
 
-  return { filteredOptions, isFlattened }
+  return { filteredOptions, isFlattened, setIsFlattened }
 }
 
 class SearchService {

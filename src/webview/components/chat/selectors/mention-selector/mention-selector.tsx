@@ -61,11 +61,12 @@ export const MentionSelector: React.FC<MentionSelectorProps> = ({
 
   const currentOptions = optionsStack[optionsStack.length - 1] || []
 
-  const { filteredOptions, isFlattened } = useFilteredMentionOptions({
-    currentOptions,
-    searchQuery,
-    maxItemLength
-  })
+  const { filteredOptions, isFlattened, setIsFlattened } =
+    useFilteredMentionOptions({
+      currentOptions,
+      searchQuery,
+      maxItemLength
+    })
 
   const itemRefs = useRef<(HTMLDivElement | null)[]>([])
   const { focusedIndex, setFocusedIndex, handleKeyDown, listEventHandlers } =
@@ -107,6 +108,7 @@ export const MentionSelector: React.FC<MentionSelectorProps> = ({
           strategyAddData: option.data || { label: option.label }
         })
       }
+      setIsFlattened(false)
       setIsOpen(false)
       return
     }
