@@ -442,6 +442,7 @@
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.53.0",
     "react-resizable-panels": "^2.1.2",
+    "react-shiki": "^0.1.2",
     "react-use": "^17.5.1",
     "rimraf": "^6.0.1",
     "shell-quote": "^1.8.1",

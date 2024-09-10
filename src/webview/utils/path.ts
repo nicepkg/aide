@@ -11,6 +11,12 @@ export const getFileNameFromPath = (path: string) => {
   return normalizedPath.split('/').pop() || ''
 }
 
+export const getExtFromPath = (path: string) => {
+  const fileName = getFileNameFromPath(path)
+  const parts = fileName.split('.')
+  return parts.length > 1 ? parts.pop() : ''
+}
+
 const getPathSep = () => (window.isWin ? '\\' : '/')
 const pathSplitRegexp = /[/\\]/
 

@@ -46,6 +46,20 @@ textarea:focus {
   outline: none !important;
 }
 
+pre.shiki {
+  background-color: hsl(var(--background)) !important;
+}
+
+pre.shiki > code {
+  border-radius: 0;
+  background-color: transparent;
+}
+
+span.languageLabel {
+  top: 0;
+  right: 0;
+}
+
 .custom-checkbox {
   -webkit-appearance: none;
   outline: none;

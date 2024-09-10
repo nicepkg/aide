@@ -74,6 +74,7 @@
     "Pipfile",
     "pyproject",
     "qwen",
+    "shiki",
     "sonner",
     "Svgr",
     "tailwindcss",

@@ -54,8 +54,6 @@ export class AideWebViewProvider {
   }
 
   private async setupWebview(webview: WebviewPanel) {
-    this.cleanUp()
-
     const setupWebviewAPIManagerDispose = await setupWebviewAPIManager(
       this.context,
       webview
@@ -69,6 +67,9 @@ export class AideWebViewProvider {
       }
     }
     webview.webview.html = this.getHtmlForWebview(webview.webview)
+    webview.onDidDispose(() => {
+      setupWebviewAPIManagerDispose.dispose()
+    })
   }
 
   revealSidebar() {
@@ -106,7 +107,11 @@ export class WebviewRegister extends BaseRegister {
         }
       }
     )
-    this.context.subscriptions.push(disposable)
+    this.context.subscriptions.push(disposable, {
+      dispose: () => {
+        this.provider?.cleanUp()
+      }
+    })
 
     this.registerManager.commandManager.registerService(
       'AideWebViewProvider',
