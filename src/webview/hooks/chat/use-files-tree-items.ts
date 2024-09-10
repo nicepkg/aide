@@ -1,10 +1,10 @@
 import { useCallback, useMemo } from 'react'
 import type { TreeItem } from '@webview/components/tree'
-import type { FileInfo } from '@webview/types/chat'
+import type { FileInfo, FolderInfo } from '@webview/types/chat'
 import { pathDirname, pathJoin, toUnixPath } from '@webview/utils/path'
 
 export interface UseFilesTreeItemsOptions {
-  files: FileInfo[]
+  files: (FileInfo | FolderInfo)[]
 }
 
 export const useFilesTreeItems = (options: UseFilesTreeItemsOptions) => {
@@ -22,7 +22,22 @@ export const useFilesTreeItems = (options: UseFilesTreeItemsOptions) => {
     return ids
   }, [])
 
-  return { treeItems, flattenedItems, getAllChildrenIds }
+  const traverseTree = useCallback(
+    (callback: (item: TreeItem) => void) => {
+      const traverse = (items: TreeItem[]) => {
+        items.forEach(item => {
+          callback(item)
+          if (item.children) {
+            traverse(item.children)
+          }
+        })
+      }
+      traverse(treeItems)
+    },
+    [treeItems]
+  )
+
+  return { treeItems, flattenedItems, getAllChildrenIds, traverseTree }
 }
 
 // Helper functions (flattenTreeItems and convertFilesToTreeItems) remain unchanged
@@ -35,17 +50,21 @@ const flattenTreeItems = (items: TreeItem[]): TreeItem[] =>
     return acc
   }, [])
 
-const convertFilesToTreeItems = (files: FileInfo[]): TreeItem[] => {
+const convertFilesToTreeItems = (
+  filesOrFolders: (FileInfo | FolderInfo)[]
+): TreeItem[] => {
   const root: Record<string, any> = {}
 
-  files.forEach(file => {
-    const parts = toUnixPath(file.relativePath).split('/')
+  filesOrFolders.forEach(filesOrFolder => {
+    const parts = toUnixPath(filesOrFolder.relativePath).split('/')
     let current = root
 
     parts.forEach((part, index) => {
       if (!current[part]) {
         current[part] =
-          index === parts.length - 1 ? { ...file, isLeaf: true } : {}
+          index === parts.length - 1
+            ? { ...filesOrFolder, isLeaf: filesOrFolder.type === 'file' }
+            : {}
       }
       if (index < parts.length - 1) current = current[part]
     })
@@ -65,11 +84,11 @@ const convertFilesToTreeItems = (files: FileInfo[]): TreeItem[] => {
     const name = path[path.length - 1] || 'root'
     // const fullPath = toPlatformPath(path.join('/'))
 
-    if (node.isLeaf) {
+    if (typeof node.type === 'string') {
       return {
         id: node.fullPath,
         name,
-        isLeaf: true,
+        isLeaf: node.isLeaf,
         fullPath: node.fullPath,
         relativePath: node.relativePath
       }

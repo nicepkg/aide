@@ -1,4 +1,5 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import {
   KeyboardShortcutsInfo,
   type ShortcutInfo
@@ -97,6 +98,14 @@ export const FileSelector: React.FC<FileSelectorProps> = ({
   }
 
   useEvent('keydown', handleKeyDown)
+
+  const queryClient = useQueryClient()
+  useEffect(() => {
+    if (!isOpen) return
+    queryClient.invalidateQueries({
+      queryKey: ['realtime']
+    })
+  }, [isOpen, queryClient])
 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>

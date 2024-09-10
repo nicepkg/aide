@@ -3,6 +3,7 @@ import type {
   Attachments,
   Conversation
 } from '@extension/webview-api/chat-context-processor/types/chat-context'
+import type { MentionItemLayoutProps } from '@webview/components/chat/selectors/mention-selector/mention-item-layout'
 
 export * from '@extension/webview-api/chat-context-processor/types/chat-context'
 
@@ -25,8 +26,8 @@ export interface MentionOption {
   searchSortStrategy?: SearchSortStrategy
   children?: MentionOption[]
   data?: any
+  itemLayoutProps?: MentionItemLayoutProps
   customRenderItem?: FC<MentionOption>
-  itemIcon?: FC<{ className?: string }> // only works when customRenderItem is not provided
   customRenderPreview?: FC<MentionOption>
 }
 

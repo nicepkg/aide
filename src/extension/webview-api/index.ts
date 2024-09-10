@@ -3,6 +3,7 @@ import * as vscode from 'vscode'
 
 import { ChatController } from './controllers/chat.controller'
 import { FileController } from './controllers/file.controller'
+import { GitController } from './controllers/git.controller'
 import { SystemController } from './controllers/system.controller'
 import type {
   Controller,
@@ -86,6 +87,7 @@ class APIManager {
 export const controllers = [
   ChatController,
   FileController,
+  GitController,
   SystemController
 ] as const
 export type Controllers = typeof controllers

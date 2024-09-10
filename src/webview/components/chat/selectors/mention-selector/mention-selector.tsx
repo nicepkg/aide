@@ -1,4 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
+import { ArrowRightIcon } from '@radix-ui/react-icons'
+import { useQueryClient } from '@tanstack/react-query'
 import {
   Command,
   CommandEmpty,
@@ -17,6 +19,8 @@ import { useKeyboardNavigation } from '@webview/hooks/use-keyboard-navigation'
 import { IMentionStrategy, MentionOption } from '@webview/types/chat'
 import { cn } from '@webview/utils/common'
 import { useEvent } from 'react-use'
+
+import { MentionItemLayout } from './mention-item-layout'
 
 export interface SelectedMentionStrategy {
   name: string
@@ -82,8 +86,17 @@ export const MentionSelector: React.FC<MentionSelectorProps> = ({
   useEffect(() => {
     if (!isOpen) {
       setOptionsStack([mentionOptions])
+      setFocusedIndex(0)
     }
   }, [isOpen, mentionOptions])
+
+  const queryClient = useQueryClient()
+  useEffect(() => {
+    if (!isOpen) return
+    queryClient.invalidateQueries({
+      queryKey: ['realtime']
+    })
+  }, [isOpen, queryClient])
 
   const handleSelect = (option: MentionOption) => {
     if (isFlattened) {
@@ -174,12 +187,18 @@ export const MentionSelector: React.FC<MentionSelectorProps> = ({
                     {option.customRenderItem ? (
                       <option.customRenderItem {...option} />
                     ) : (
-                      <div className="flex items-center w-full">
-                        {option.itemIcon && (
-                          <option.itemIcon className="size-4 mr-1 shrink-0" />
-                        )}
-                        {option.label}
-                      </div>
+                      <MentionItemLayout
+                        {...option.itemLayoutProps!}
+                        details={
+                          option.itemLayoutProps?.details ? (
+                            option.itemLayoutProps.details
+                          ) : option.children?.length ? (
+                            <ArrowRightIcon className="size-4" />
+                          ) : (
+                            ''
+                          )
+                        }
+                      />
                     )}
                   </CommandItem>
                 ))}

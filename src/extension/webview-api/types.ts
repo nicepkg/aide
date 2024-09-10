@@ -13,7 +13,7 @@ export type ControllerMethod<TReq = any, TRes = any> = (
 export abstract class Controller {
   abstract readonly name: string;
 
-  [key: string]: ControllerMethod | string | undefined
+  [key: string]: ControllerMethod | string | unknown | undefined
 }
 
 export type ControllerClass = new () => Controller

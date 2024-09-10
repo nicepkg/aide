@@ -3,6 +3,6 @@ import { api } from '@webview/services/api-client'
 
 export const useFiles = () =>
   useQuery({
-    queryKey: ['files'],
+    queryKey: ['realtime', 'files'],
     queryFn: () => api.file.traverseWorkspaceFiles({ filesOrFolders: ['./'] })
   })

@@ -165,7 +165,6 @@ export const FileTreeView: React.FC<FileTreeViewProps> = ({
       isSelected,
       isIndeterminate,
       isExpanded,
-      hasChildren,
       onToggleSelect,
       onToggleExpand,
       level
@@ -179,7 +178,7 @@ export const FileTreeView: React.FC<FileTreeViewProps> = ({
       return (
         <div
           className={cn(
-            'flex items-center py-1 text-sm cursor-pointer',
+            'flex items-center py-1 text-sm cursor-pointer hover:bg-secondary rounded-sm',
             visibleIndex === focusedIndex && 'bg-secondary'
           )}
           style={{ marginLeft: `${level * 20}px` }}
@@ -199,11 +198,11 @@ export const FileTreeView: React.FC<FileTreeViewProps> = ({
             className="mx-1 custom-checkbox"
           />
 
-          {hasChildren && <ArrowIcon className="size-4 mr-1" />}
+          {!item.isLeaf && <ArrowIcon className="size-4 mr-1" />}
 
           <FileIcon
             className="size-4 mr-1"
-            isFolder={hasChildren}
+            isFolder={!item.isLeaf}
             isOpen={isExpanded}
             filePath={item.name}
           />

@@ -3,6 +3,6 @@ import { api } from '@webview/services/api-client'
 
 export const useFolders = () =>
   useQuery({
-    queryKey: ['folders'],
+    queryKey: ['realtime', 'folders'],
     queryFn: () => api.file.traverseWorkspaceFolders({ folders: ['./'] })
   })

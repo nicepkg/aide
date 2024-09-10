@@ -18,23 +18,17 @@ export const MentionFilePreview: React.FC<MentionOption> = memo(
     )
 
     const renderItem = useCallback(
-      ({
-        item,
-        isExpanded,
-        hasChildren,
-        onToggleExpand,
-        level
-      }: TreeNodeRenderProps) => (
+      ({ item, isExpanded, onToggleExpand, level }: TreeNodeRenderProps) => (
         <div
           className="flex items-center py-1 text-sm cursor-pointer"
           style={{ marginLeft: `${level * 20}px` }}
           onClick={onToggleExpand}
         >
-          {hasChildren && <ChevronDownIcon className="size-4 mr-1" />}
+          {!item.isLeaf && <ChevronDownIcon className="size-4 mr-1" />}
 
           <FileIcon
             className="size-4 mr-1"
-            isFolder={hasChildren}
+            isFolder={!item.isLeaf}
             isOpen={isExpanded}
             filePath={item.name}
           />
