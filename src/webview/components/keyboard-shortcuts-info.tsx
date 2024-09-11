@@ -54,7 +54,7 @@ export const KeyboardShortcutsInfo: React.FC<KeyboardShortcutsInfoProps> = ({
     <div
       ref={containerRef}
       className={cn(
-        'flex shrink-0 items-center p-2 text-sm text-muted-foreground border-t w-full overflow-hidden',
+        'flex shrink-0 items-center p-2 text-sm text-foreground/70 border-t w-full overflow-hidden',
         className
       )}
       {...props}

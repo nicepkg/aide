@@ -153,7 +153,7 @@ export const MentionSelector: React.FC<MentionSelectorProps> = ({
               side="top"
               align="start"
               sideOffset={16}
-              className="min-w-[200px] max-w-[400px] w-screen p-0 z-99"
+              className="min-w-[200px] max-w-[400px] w-screen p-0 z-10"
               onOpenAutoFocus={e => e.preventDefault()}
               onCloseAutoFocus={e => e.preventDefault()}
               onKeyDown={e => e.stopPropagation()}

@@ -4,14 +4,18 @@ import { hsla, parseToHsla } from 'color2k'
 const THEME_CHECK_INTERVAL = 100
 
 const THEME_VARIABLES = {
-  '--background': '--vscode-editor-background',
-  '--foreground': '--vscode-editor-foreground',
+  // '--background': '--vscode-editor-background',
+  // '--foreground': '--vscode-editor-foreground',
+  '--background': '--vscode-sideBarTitle-background',
+  '--foreground': '--vscode-sideBarTitle-foreground',
   '--title': '--vscode-sideBarTitle-background',
   '--title-foreground': '--vscode-sideBarTitle-foreground',
   '--card': '--vscode-editorWidget-background',
   '--card-foreground': '--vscode-editorWidget-foreground',
-  '--popover': '--vscode-editorHoverWidget-background',
-  '--popover-foreground': '--vscode-editorHoverWidget-foreground',
+  // '--popover': '--vscode-editorHoverWidget-background',
+  // '--popover-foreground': '--vscode-editorHoverWidget-foreground',
+  '--popover': '--vscode-sideBarTitle-background',
+  '--popover-foreground': '--vscode-sideBarTitle-foreground',
   '--primary': '--vscode-button-background',
   '--primary-foreground': '--vscode-button-foreground',
   '--secondary': '--vscode-button-secondaryBackground',

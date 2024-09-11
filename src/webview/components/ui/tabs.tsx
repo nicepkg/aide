@@ -12,7 +12,7 @@ const tabListVariants = cva(
       mode: {
         default: '',
         underlined:
-          'w-full justify-start rounded-none border-b bg-transparent p-0'
+          'w-full justify-start rounded-none border-b text-foreground bg-transparent p-0'
       }
     },
     defaultVariants: {
@@ -28,7 +28,7 @@ const tabsTriggerVariants = cva(
       mode: {
         default: '',
         underlined:
-          'relative text-md rounded-none border-b-2 border-b-transparent bg-transparent px-4 pb-1 pt-1 font-semibold text-muted-foreground shadow-none transition-none data-[state=active]:border-b-primary data-[state=active]:text-foreground data-[state=active]:shadow-none'
+          'relative text-md h-full rounded-none border-b-2 border-b-transparent bg-transparent px-4 pb-1 pt-1 font-semibold text-foreground/60 shadow-none transition-none data-[state=active]:border-b-primary data-[state=active]:text-foreground data-[state=active]:bg-background data-[state=active]:shadow-none'
       }
     },
     defaultVariants: {

@@ -111,7 +111,7 @@ export const FileSelector: React.FC<FileSelectorProps> = ({
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>{children}</PopoverTrigger>
       <PopoverContent
-        className="min-w-[200px] max-w-[400px] w-screen p-0"
+        className="min-w-[200px] max-w-[400px] w-[calc(100vw-2rem)] p-0"
         side="top"
         align="start"
         onCloseAutoFocus={e => e.preventDefault()}
