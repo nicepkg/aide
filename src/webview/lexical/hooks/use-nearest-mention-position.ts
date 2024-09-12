@@ -1,4 +1,4 @@
-import { useCallback, useLayoutEffect, useState } from 'react'
+import { useLayoutEffect, useState } from 'react'
 import type { LexicalEditor } from 'lexical'
 import { $getSelection, $isRangeSelection, $isTextNode } from 'lexical'
 
@@ -10,7 +10,7 @@ interface Position {
 export const useNearestMentionPosition = (editor: LexicalEditor) => {
   const [mentionPosition, setMentionPosition] = useState<Position | null>(null)
 
-  const updateMentionPosition = useCallback(() => {
+  const updateMentionPosition = () => {
     editor.getEditorState().read(() => {
       const selection = $getSelection()
       if (!$isRangeSelection(selection)) {
@@ -68,7 +68,7 @@ export const useNearestMentionPosition = (editor: LexicalEditor) => {
         left: rect.left + iframeOffset.left
       })
     })
-  }, [editor])
+  }
 
   useLayoutEffect(() => {
     const removeUpdateListener = editor.registerUpdateListener(() => {

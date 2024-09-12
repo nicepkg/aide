@@ -1,3 +1,4 @@
+/* eslint-disable react-compiler/react-compiler */
 import React, { useEffect, useRef, useState } from 'react'
 import { ArrowRightIcon } from '@radix-ui/react-icons'
 import { useQueryClient } from '@tanstack/react-query'

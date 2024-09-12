@@ -1,4 +1,4 @@
-import React, { useCallback, useState, type FC } from 'react'
+import React, { useState, type FC } from 'react'
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
 import {
   MentionSelector,
@@ -38,32 +38,33 @@ export const MentionPlugin: FC<MentionPluginProps> = props => {
 
   useEditorCommands(editor, isOpen, setIsOpen)
 
-  const handleMentionSelect = useCallback(
-    ({ name, strategy, strategyAddData }: SelectedMentionStrategy) => {
-      setIsOpen(false)
-      setSearchQuery('')
+  const handleMentionSelect = ({
+    name,
+    strategy,
+    strategyAddData
+  }: SelectedMentionStrategy) => {
+    setIsOpen(false)
+    setSearchQuery('')
 
-      editor.update(() => {
-        const selection = $getSelection()
-        if ($isRangeSelection(selection)) {
-          insertMention({
-            name,
-            selection,
-            strategy,
-            strategyAddData,
-            searchQuery
-          })
-        }
-      })
-      addMention({ strategy, strategyAddData })
-    },
-    [editor, addMention, searchQuery, setSearchQuery]
-  )
+    editor.update(() => {
+      const selection = $getSelection()
+      if ($isRangeSelection(selection)) {
+        insertMention({
+          name,
+          selection,
+          strategy,
+          strategyAddData,
+          searchQuery
+        })
+      }
+    })
+    addMention({ strategy, strategyAddData })
+  }
 
-  const handleCloseWithoutSelect = useCallback(() => {
+  const handleCloseWithoutSelect = () => {
     setSearchQuery('')
     clearMentionInput()
-  }, [setSearchQuery, clearMentionInput])
+  }
 
   return (
     <MentionSelector

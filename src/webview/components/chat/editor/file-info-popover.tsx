@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React from 'react'
 import {
   Popover,
   PopoverContent,
@@ -31,28 +31,25 @@ export const FileInfoPopover: React.FC<FFileInfoPopoverProps> = ({
 
   const { data: fileContent = '' } = useReadFile(file.fullPath)
 
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent<HTMLDivElement>) => {
-      const allowedKeys = [
-        'ArrowLeft',
-        'ArrowRight',
-        'ArrowUp',
-        'ArrowDown',
-        'Home',
-        'End',
-        'PageUp',
-        'PageDown'
-      ]
-      if (!allowedKeys.includes(e.key)) {
-        e.preventDefault()
-      }
-    },
-    []
-  )
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    const allowedKeys = [
+      'ArrowLeft',
+      'ArrowRight',
+      'ArrowUp',
+      'ArrowDown',
+      'Home',
+      'End',
+      'PageUp',
+      'PageDown'
+    ]
+    if (!allowedKeys.includes(e.key)) {
+      e.preventDefault()
+    }
+  }
 
-  const preventDefault = useCallback((e: React.SyntheticEvent) => {
+  const preventDefault = (e: React.SyntheticEvent) => {
     e.preventDefault()
-  }, [])
+  }
 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>

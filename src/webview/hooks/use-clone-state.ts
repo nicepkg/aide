@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { applyPatches, enablePatches, produce, produceWithPatches } from 'immer'
 import type { DraftFunction, Updater } from 'use-immer'
 
@@ -24,13 +24,13 @@ export const useCloneState = <T extends object>(
     }
   }, [state])
 
-  const updateCloneState: Updater<T> = useCallback(updater => {
+  const updateCloneState: Updater<T> = updater => {
     setCloneState(current => produce(current, updater as DraftFunction<T>))
-  }, [])
+  }
 
-  const applyClone = useCallback(() => {
+  const applyClone = () => {
     setState(cloneState)
-  }, [setState, cloneState])
+  }
 
   return [cloneState, updateCloneState, applyClone] as const
 }

@@ -1,4 +1,3 @@
-import { useCallback } from 'react'
 import type { Conversation } from '@webview/types/chat'
 import { useImmer } from 'use-immer'
 import { v4 as uuidv4 } from 'uuid'
@@ -48,9 +47,9 @@ export const useConversation = (
     initConversation ?? getDefaultConversation(role)
   )
 
-  const resetConversation = useCallback(() => {
+  const resetConversation = () => {
     setConversation(getDefaultConversation(role))
-  }, [role, setConversation])
+  }
 
   return {
     conversation,

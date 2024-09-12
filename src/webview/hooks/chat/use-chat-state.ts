@@ -1,4 +1,3 @@
-import { useCallback, useMemo } from 'react'
 import type { Conversation } from '@webview/types/chat'
 
 import { useChatContextManager } from './use-chat-context-manager'
@@ -13,10 +12,7 @@ export const useChatState = () => {
     resetConversation: resetNewConversation
   } = useConversation('human')
 
-  const allConversations = useMemo(
-    () => [...context.conversations, newConversation],
-    [context.conversations, newConversation]
-  )
+  const allConversations = [...context.conversations, newConversation]
 
   const {
     conversationsWithUIState,
@@ -27,63 +23,48 @@ export const useChatState = () => {
     conversations: allConversations
   })
 
-  const historiesConversationsWithUIState = useMemo(
-    () => conversationsWithUIState.filter(c => c.id !== newConversation.id),
-    [conversationsWithUIState, newConversation]
+  const historiesConversationsWithUIState = conversationsWithUIState.filter(
+    c => c.id !== newConversation.id
   )
 
-  const newConversationUIState = useMemo(
-    () => getConversationUIState(newConversation.id),
-    [getConversationUIState, newConversation]
-  )
+  const newConversationUIState = getConversationUIState(newConversation.id)
 
-  const replaceConversationAndTruncate = useCallback(
-    (conversation: Conversation) => {
-      setContext(draft => {
-        const index = draft.conversations.findIndex(
-          c => c.id === conversation.id
-        )
+  const replaceConversationAndTruncate = (conversation: Conversation) => {
+    setContext(draft => {
+      const index = draft.conversations.findIndex(c => c.id === conversation.id)
 
-        // delete current conversation and all conversations after it
-        index !== -1 && draft.conversations.splice(index)
+      // delete current conversation and all conversations after it
+      index !== -1 && draft.conversations.splice(index)
 
-        // add new conversation
-        draft.conversations.push(conversation)
-      })
-    },
-    [setContext]
-  )
+      // add new conversation
+      draft.conversations.push(conversation)
+    })
+  }
 
-  const setUIStateForSending = useCallback(
-    (conversationId: string) => {
-      setAllConversationsUIState({ sendButtonDisabled: true })
-      setConversationUIState(conversationId, { isLoading: true })
-    },
-    [setAllConversationsUIState, setConversationUIState]
-  )
+  const setUIStateForSending = (conversationId: string) => {
+    setAllConversationsUIState({ sendButtonDisabled: true })
+    setConversationUIState(conversationId, { isLoading: true })
+  }
 
-  const resetUIStateAfterSending = useCallback(
-    (conversationId: string) => {
-      setAllConversationsUIState({ sendButtonDisabled: false })
-      setConversationUIState(conversationId, {
-        isLoading: false,
-        isEditMode: false
-      })
-    },
-    [setAllConversationsUIState, setConversationUIState]
-  )
+  const resetUIStateAfterSending = (conversationId: string) => {
+    setAllConversationsUIState({ sendButtonDisabled: false })
+    setConversationUIState(conversationId, {
+      isLoading: false,
+      isEditMode: false
+    })
+  }
 
-  const setConversationEditMode = useCallback(
-    (conversationId: string, isEditMode: boolean) => {
-      if (!isEditMode) {
-        setConversationUIState(conversationId, { isEditMode: false })
-      } else {
-        setAllConversationsUIState({ isEditMode: false })
-        setConversationUIState(conversationId, { isEditMode: true })
-      }
-    },
-    [setConversationUIState, setAllConversationsUIState]
-  )
+  const setConversationEditMode = (
+    conversationId: string,
+    isEditMode: boolean
+  ) => {
+    if (!isEditMode) {
+      setConversationUIState(conversationId, { isEditMode: false })
+    } else {
+      setAllConversationsUIState({ isEditMode: false })
+      setConversationUIState(conversationId, { isEditMode: true })
+    }
+  }
 
   return {
     context,

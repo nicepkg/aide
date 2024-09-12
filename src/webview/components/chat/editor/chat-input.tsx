@@ -59,7 +59,8 @@ export const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(
       _conversation,
       _setConversation
     )
-    const { selectedFiles = [] } = conversation.attachments?.fileContext ?? {}
+    const selectedFiles =
+      conversation.attachments?.fileContext?.selectedFiles ?? []
 
     const handleEditorChange = (editorState: EditorState) => {
       setConversation(draft => {

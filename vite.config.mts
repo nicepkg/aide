@@ -2,7 +2,7 @@ import path from 'node:path'
 import { dirname } from 'path'
 import { fileURLToPath } from 'url'
 import vscode from '@tomjs/vite-plugin-vscode'
-import react from '@vitejs/plugin-react-swc'
+import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 import svgr from 'vite-plugin-svgr'
 import tsconfigPaths from 'vite-tsconfig-paths'
@@ -24,7 +24,12 @@ export default defineConfig(() => {
   return {
     plugins: [
       tsconfigPaths(),
-      react(),
+      // react(),
+      react({
+        babel: {
+          plugins: [['babel-plugin-react-compiler']]
+        }
+      }),
       svgr(),
       vscode({
         extension: {
@@ -39,6 +44,9 @@ export default defineConfig(() => {
           // }
         }
       })
-    ]
+    ],
+    resolve: {
+      dedupe: ['react', 'react-dom']
+    }
   }
 })

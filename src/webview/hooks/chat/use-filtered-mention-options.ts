@@ -1,3 +1,4 @@
+/* eslint-disable react-compiler/react-compiler */
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { MentionOption, SearchSortStrategy } from '@webview/types/chat'
 import Index from 'flexsearch/dist/module'

@@ -2,31 +2,29 @@ import * as React from 'react'
 import { cn } from '@webview/utils/common'
 
 interface GlowingCardProps extends React.HTMLAttributes<HTMLDivElement> {
+  ref?: React.Ref<HTMLDivElement>
   children?: React.ReactNode
   isAnimated?: boolean
   animationDuration?: number
   blurAmount?: number
 }
 
-export const GlowingCard = React.forwardRef<HTMLDivElement, GlowingCardProps>(
-  (
-    {
-      children,
-      isAnimated = false,
-      animationDuration = 0.8,
-      blurAmount = 2,
-      className,
-      ...props
-    },
-    ref
-  ) => {
-    const glowingCardClass = cn(
-      'absolute w-full h-full z-50',
-      'opacity-75',
-      isAnimated ? 'animate-rotating' : 'hidden'
-    )
+export const GlowingCard: React.FC<GlowingCardProps> = ({
+  children,
+  isAnimated = false,
+  animationDuration = 0.8,
+  blurAmount = 2,
+  className,
+  ref,
+  ...props
+}) => {
+  const glowingCardClass = cn(
+    'absolute w-full h-full z-50',
+    'opacity-75',
+    isAnimated ? 'animate-rotating' : 'hidden'
+  )
 
-    const rotatingKeyframes = `
+  const rotatingKeyframes = `
       @property --glowingCardRotateAngle {
         syntax: '<angle>';
         inherits: false;
@@ -39,7 +37,7 @@ export const GlowingCard = React.forwardRef<HTMLDivElement, GlowingCardProps>(
       }
     `
 
-    const glowingCardStyle = `
+  const glowingCardStyle = `
       .glowing-card {
         background: repeating-conic-gradient(from var(--glowingCardRotateAngle), #0f0, #ff0, #0ff, #f0f, #0ff);
         filter: blur(${blurAmount}px);
@@ -49,39 +47,30 @@ export const GlowingCard = React.forwardRef<HTMLDivElement, GlowingCardProps>(
       }
     `
 
-    return (
+  return (
+    <div
+      ref={ref}
+      className={cn('relative overflow-hidden', className)}
+      {...props}
+    >
+      <style>{rotatingKeyframes + glowingCardStyle}</style>
       <div
-        ref={ref}
-        className={cn('relative overflow-hidden', className)}
-        {...props}
-      >
-        <style>{rotatingKeyframes + glowingCardStyle}</style>
-        <div
-          className={cn(glowingCardClass, 'glowing-card', 'top-[calc(-100%)]')}
-        />
-        <div
-          className={cn(
-            glowingCardClass,
-            'glowing-card',
-            'bottom-[calc(-100%)]'
-          )}
-        />
-        <div
-          className={cn(glowingCardClass, 'glowing-card', 'left-[calc(-100%)]')}
-          style={{ animationDelay: `${animationDuration / 2}s` }}
-        />
-        <div
-          className={cn(
-            glowingCardClass,
-            'glowing-card',
-            'right-[calc(-100%)]'
-          )}
-          style={{ animationDelay: `${animationDuration / 2}s` }}
-        />
-        <div className="h-full overflow-auto">{children}</div>
-      </div>
-    )
-  }
-)
+        className={cn(glowingCardClass, 'glowing-card', 'top-[calc(-100%)]')}
+      />
+      <div
+        className={cn(glowingCardClass, 'glowing-card', 'bottom-[calc(-100%)]')}
+      />
+      <div
+        className={cn(glowingCardClass, 'glowing-card', 'left-[calc(-100%)]')}
+        style={{ animationDelay: `${animationDuration / 2}s` }}
+      />
+      <div
+        className={cn(glowingCardClass, 'glowing-card', 'right-[calc(-100%)]')}
+        style={{ animationDelay: `${animationDuration / 2}s` }}
+      />
+      <div className="h-full overflow-auto">{children}</div>
+    </div>
+  )
+}
 
 GlowingCard.displayName = 'GlowingCard'

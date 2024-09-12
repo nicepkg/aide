@@ -1,4 +1,3 @@
-import { useCallback, useMemo } from 'react'
 import type { Conversation, ConversationUIState } from '@webview/types/chat'
 import { useImmer } from 'use-immer'
 
@@ -14,49 +13,41 @@ export const useConversationsWithUIState = (
     Record<string, ConversationUIState>
   >({})
 
-  const conversationsWithUIState = useMemo(
-    () =>
-      conversations.map(conversation => ({
-        ...conversation,
-        uiState:
-          conversationIdUIStateMap[conversation.id] ||
-          ({} satisfies ConversationUIState)
-      })),
-    [conversations, conversationIdUIStateMap]
-  )
+  const conversationsWithUIState = conversations.map(conversation => ({
+    ...conversation,
+    uiState:
+      conversationIdUIStateMap[conversation.id] ||
+      ({} satisfies ConversationUIState)
+  }))
 
-  const getConversationUIState = useCallback(
-    (conversationId: string) =>
-      conversationIdUIStateMap[conversationId] ||
-      ({} satisfies ConversationUIState),
-    [conversationIdUIStateMap]
-  )
+  const getConversationUIState = (conversationId: string) =>
+    conversationIdUIStateMap[conversationId] ||
+    ({} satisfies ConversationUIState)
 
-  const setConversationUIState = useCallback(
-    (conversationId: string, uiState: Partial<ConversationUIState>) => {
-      setConversationIdUIStateMap(draft => {
-        draft[conversationId] = {
-          ...draft[conversationId],
+  const setConversationUIState = (
+    conversationId: string,
+    uiState: Partial<ConversationUIState>
+  ) => {
+    setConversationIdUIStateMap(draft => {
+      draft[conversationId] = {
+        ...draft[conversationId],
+        ...uiState
+      }
+    })
+  }
+
+  const setAllConversationsUIState = (
+    uiState: Partial<ConversationUIState>
+  ) => {
+    setConversationIdUIStateMap(draft => {
+      conversations.forEach(conversation => {
+        draft[conversation.id] = {
+          ...draft[conversation.id],
           ...uiState
         }
       })
-    },
-    [setConversationIdUIStateMap]
-  )
-
-  const setAllConversationsUIState = useCallback(
-    (uiState: Partial<ConversationUIState>) => {
-      setConversationIdUIStateMap(draft => {
-        conversations.forEach(conversation => {
-          draft[conversation.id] = {
-            ...draft[conversation.id],
-            ...uiState
-          }
-        })
-      })
-    },
-    [conversations, setConversationIdUIStateMap]
-  )
+    })
+  }
 
   return {
     conversationsWithUIState,

@@ -37,36 +37,33 @@ const tabsTriggerVariants = cva(
   }
 )
 
-const TabsList = React.forwardRef<
-  React.ElementRef<typeof TabsPrimitive.List>,
-  React.ComponentPropsWithoutRef<typeof TabsPrimitive.List> &
+const TabsList: React.FC<
+  React.ComponentPropsWithRef<typeof TabsPrimitive.List> &
     VariantProps<typeof tabListVariants>
->(({ className, mode, ...props }, ref) => (
+> = ({ ref, className, mode, ...props }) => (
   <TabsPrimitive.List
     ref={ref}
     className={cn(tabListVariants({ className, mode }))}
     {...props}
   />
-))
+)
 TabsList.displayName = TabsPrimitive.List.displayName
 
-const TabsTrigger = React.forwardRef<
-  React.ElementRef<typeof TabsPrimitive.Trigger>,
-  React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger> &
+const TabsTrigger: React.FC<
+  React.ComponentPropsWithRef<typeof TabsPrimitive.Trigger> &
     VariantProps<typeof tabsTriggerVariants>
->(({ className, mode, ...props }, ref) => (
+> = ({ ref, className, mode, ...props }) => (
   <TabsPrimitive.Trigger
     ref={ref}
     className={cn(tabsTriggerVariants({ className, mode }))}
     {...props}
   />
-))
+)
 TabsTrigger.displayName = TabsPrimitive.Trigger.displayName
 
-const TabsContent = React.forwardRef<
-  React.ElementRef<typeof TabsPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof TabsPrimitive.Content>
->(({ className, ...props }, ref) => (
+const TabsContent: React.FC<
+  React.ComponentPropsWithRef<typeof TabsPrimitive.Content>
+> = ({ ref, className, ...props }) => (
   <TabsPrimitive.Content
     ref={ref}
     className={cn(
@@ -75,7 +72,7 @@ const TabsContent = React.forwardRef<
     )}
     {...props}
   />
-))
+)
 TabsContent.displayName = TabsPrimitive.Content.displayName
 
 export { Tabs, TabsList, TabsTrigger, TabsContent }

@@ -1,3 +1,4 @@
+/* eslint-disable react-compiler/react-compiler */
 import React, { useEffect, useRef, useState } from 'react'
 import { Button } from '@webview/components/ui/button'
 import { cn } from '@webview/utils/common'

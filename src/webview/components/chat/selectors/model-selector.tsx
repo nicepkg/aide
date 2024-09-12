@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React from 'react'
 import {
   Command,
   CommandEmpty,
@@ -36,18 +36,15 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
     onChange: onOpenChange
   })
 
-  const handleSelect = useCallback(
-    (currentValue: string) => {
-      const selectedOption = modelOptions.find(
-        option => option.value === currentValue
-      )
-      if (selectedOption) {
-        onSelect(selectedOption)
-      }
-      setIsOpen(false)
-    },
-    [modelOptions, onSelect, setIsOpen]
-  )
+  const handleSelect = (currentValue: string) => {
+    const selectedOption = modelOptions.find(
+      option => option.value === currentValue
+    )
+    if (selectedOption) {
+      onSelect(selectedOption)
+    }
+    setIsOpen(false)
+  }
 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>

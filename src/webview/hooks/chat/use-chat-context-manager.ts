@@ -1,4 +1,3 @@
-import { useCallback } from 'react'
 import type { ChatContext, Conversation } from '@webview/types/chat'
 import { useImmer } from 'use-immer'
 import { v4 as uuidv4 } from 'uuid'
@@ -131,43 +130,31 @@ export const useChatContextManager = () => {
     conversations: [...mockData]
   })
 
-  const getConversation = useCallback(
-    (id: string) =>
-      context.conversations.find(conversation => conversation.id === id),
-    [context.conversations]
-  )
+  const getConversation = (id: string) =>
+    context.conversations.find(conversation => conversation.id === id)
 
-  const addConversation = useCallback(
-    (conversation: Conversation) => {
-      setContext(draft => {
-        draft.conversations.push(conversation)
-      })
-    },
-    [setContext]
-  )
+  const addConversation = (conversation: Conversation) => {
+    setContext(draft => {
+      draft.conversations.push(conversation)
+    })
+  }
 
-  const updateConversation = useCallback(
-    (id: string, conversation: Conversation) => {
-      setContext(draft => {
-        const index = draft.conversations.findIndex(
-          conversation => conversation.id === id
-        )
-        draft.conversations[index] = conversation
-      })
-    },
-    [setContext]
-  )
+  const updateConversation = (id: string, conversation: Conversation) => {
+    setContext(draft => {
+      const index = draft.conversations.findIndex(
+        conversation => conversation.id === id
+      )
+      draft.conversations[index] = conversation
+    })
+  }
 
-  const deleteConversation = useCallback(
-    (id: string) => {
-      setContext(draft => {
-        draft.conversations = draft.conversations.filter(
-          conversation => conversation.id !== id
-        )
-      })
-    },
-    [setContext]
-  )
+  const deleteConversation = (id: string) => {
+    setContext(draft => {
+      draft.conversations = draft.conversations.filter(
+        conversation => conversation.id !== id
+      )
+    })
+  }
 
   return {
     context,

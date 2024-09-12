@@ -1,11 +1,15 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { ChevronDownIcon, ChevronRightIcon } from '@radix-ui/react-icons'
 import { FileIcon } from '@webview/components/file-icon'
 import {
   KeyboardShortcutsInfo,
   type ShortcutInfo
 } from '@webview/components/keyboard-shortcuts-info'
-import { Tree, TreeItem, TreeNodeRenderProps } from '@webview/components/tree'
+import {
+  Tree,
+  TreeItem,
+  type TreeNodeRenderProps
+} from '@webview/components/tree'
 import { useFilesTreeItems } from '@webview/hooks/chat/use-files-tree-items'
 import { useKeyboardNavigation } from '@webview/hooks/use-keyboard-navigation'
 import { FileInfo } from '@webview/types/chat'
@@ -37,39 +41,34 @@ export const FileTreeView: React.FC<FileTreeViewProps> = ({
   const visibleItemRefs = useRef<(HTMLInputElement | null)[]>([])
   const { treeItems, flattenedItems } = useFilesTreeItems({ files })
 
-  const selectedIds = useMemo(
-    () => selectedFiles.map(file => file.fullPath),
-    [selectedFiles]
-  )
+  const selectedIds = selectedFiles.map(file => file.fullPath)
 
-  const handleSelect = useCallback(
-    (newSelectedIds: string[]) => {
-      const newSelectedFiles = files.filter(file =>
-        newSelectedIds.includes(file.fullPath)
-      )
-      onSelect(newSelectedFiles)
-    },
-    [files, onSelect]
-  )
+  const handleSelect = (newSelectedIds: string[]) => {
+    const newSelectedFiles = files.filter(file =>
+      newSelectedIds.includes(file.fullPath)
+    )
+    onSelect(newSelectedFiles)
+  }
 
-  const handleExpand = useCallback((newExpandedIds: string[]) => {
+  const handleExpand = (newExpandedIds: string[]) => {
     setExpandedIds(new Set(newExpandedIds))
-  }, [])
+  }
 
-  const getAllParentIds = useCallback(
-    (items: TreeItem[], targetId: string, path: string[] = []): string[] => {
-      for (const item of items) {
-        const currentPath = [...path, item.id]
-        if (item.id === targetId) return path
-        if (item.children) {
-          const result = getAllParentIds(item.children, targetId, currentPath)
-          if (result.length > 0) return result
-        }
+  const getAllParentIds = (
+    items: TreeItem[],
+    targetId: string,
+    path: string[] = []
+  ): string[] => {
+    for (const item of items) {
+      const currentPath = [...path, item.id]
+      if (item.id === targetId) return path
+      if (item.children) {
+        const result = getAllParentIds(item.children, targetId, currentPath)
+        if (result.length > 0) return result
       }
-      return []
-    },
-    []
-  )
+    }
+    return []
+  }
 
   useEffect(() => {
     if (initializedRef.current) return
@@ -121,34 +120,32 @@ export const FileTreeView: React.FC<FileTreeViewProps> = ({
       return shouldExpand
     }
 
+    console.log('newAutoExpandedIds', newAutoExpandedIds)
     expandSearchNodes(treeItems)
-    setAutoExpandedIds(newAutoExpandedIds)
+
+    // FIXME: React 19 bug
+    // setAutoExpandedIds(newAutoExpandedIds)
   }, [treeItems, searchQuery, getAllParentIds])
 
-  const allExpandedIds = useMemo(
-    () => new Set([...Array.from(expandedIds), ...Array.from(autoExpandedIds)]),
-    [expandedIds, autoExpandedIds]
-  )
+  const allExpandedIds = new Set([
+    ...Array.from(expandedIds),
+    ...Array.from(autoExpandedIds)
+  ])
 
-  const getVisibleItems = useCallback(
-    () =>
-      flattenedItems.filter(item => {
-        const parentIds = getAllParentIds(treeItems, item.id)
-        return parentIds.every(id => allExpandedIds.has(id))
-      }),
-    [flattenedItems, getAllParentIds, treeItems, allExpandedIds]
-  )
+  const getVisibleItems = () =>
+    flattenedItems.filter(item => {
+      const parentIds = getAllParentIds(treeItems, item.id)
+      return parentIds.every(id => allExpandedIds.has(id))
+    })
 
-  const visibleItems = useMemo(() => getVisibleItems(), [getVisibleItems])
+  const visibleItems = getVisibleItems()
 
-  const getVisibleIndex = useCallback(
-    (index: number) => {
-      const visibleItems = getVisibleItems()
-      return visibleItems.findIndex((item, i) => i === index)
-    },
-    [getVisibleItems]
-  )
+  const getVisibleIndex = (index: number) => {
+    const visibleItems = getVisibleItems()
+    return visibleItems.findIndex((item, i) => i === index)
+  }
 
+  // eslint-disable-next-line react-compiler/react-compiler
   const { focusedIndex, handleKeyDown } = useKeyboardNavigation({
     itemCount: visibleItems.length,
     itemRefs: visibleItemRefs,
@@ -159,60 +156,57 @@ export const FileTreeView: React.FC<FileTreeViewProps> = ({
 
   useEvent('keydown', handleKeyDown)
 
-  const renderItem = useCallback(
-    ({
-      item,
-      isSelected,
-      isIndeterminate,
-      isExpanded,
-      onToggleSelect,
-      onToggleExpand,
-      level
-    }: TreeNodeRenderProps) => {
-      const visibleIndex = visibleItems.findIndex(
-        visibleItem => visibleItem.id === item.id
-      )
+  const renderItem = ({
+    item,
+    isSelected,
+    isIndeterminate,
+    isExpanded,
+    onToggleSelect,
+    onToggleExpand,
+    level
+  }: TreeNodeRenderProps) => {
+    const visibleIndex = visibleItems.findIndex(
+      visibleItem => visibleItem.id === item.id
+    )
 
-      const ArrowIcon = isExpanded ? ChevronDownIcon : ChevronRightIcon
+    const ArrowIcon = isExpanded ? ChevronDownIcon : ChevronRightIcon
 
-      return (
-        <div
-          className={cn(
-            'flex items-center py-1 text-sm cursor-pointer hover:bg-secondary rounded-sm',
-            visibleIndex === focusedIndex && 'bg-secondary'
-          )}
-          style={{ marginLeft: `${level * 20}px` }}
-          onClick={onToggleExpand}
-        >
-          <input
-            type="checkbox"
-            checked={isSelected}
-            ref={el => {
-              if (visibleItemRefs.current) {
-                visibleItemRefs.current[visibleIndex] = el
-              }
-              if (el) el.indeterminate = isIndeterminate
-            }}
-            onChange={onToggleSelect}
-            onClick={e => e.stopPropagation()}
-            className="mx-1 custom-checkbox"
-          />
+    return (
+      <div
+        className={cn(
+          'flex items-center py-1 text-sm cursor-pointer hover:bg-secondary rounded-sm',
+          visibleIndex === focusedIndex && 'bg-secondary'
+        )}
+        style={{ marginLeft: `${level * 20}px` }}
+        onClick={onToggleExpand}
+      >
+        <input
+          type="checkbox"
+          checked={isSelected}
+          ref={el => {
+            if (visibleItemRefs.current) {
+              visibleItemRefs.current[visibleIndex] = el
+            }
+            if (el) el.indeterminate = isIndeterminate
+          }}
+          onChange={onToggleSelect}
+          onClick={e => e.stopPropagation()}
+          className="mx-1 custom-checkbox"
+        />
 
-          {!item.isLeaf && <ArrowIcon className="size-4 mr-1" />}
+        {!item.isLeaf && <ArrowIcon className="size-4 mr-1" />}
 
-          <FileIcon
-            className="size-4 mr-1"
-            isFolder={!item.isLeaf}
-            isOpen={isExpanded}
-            filePath={item.name}
-          />
+        <FileIcon
+          className="size-4 mr-1"
+          isFolder={!item.isLeaf}
+          isOpen={isExpanded}
+          filePath={item.name}
+        />
 
-          <span>{item.name}</span>
-        </div>
-      )
-    },
-    [focusedIndex, visibleItems]
-  )
+        <span>{item.name}</span>
+      </div>
+    )
+  }
 
   return (
     <div className="flex flex-col h-full">

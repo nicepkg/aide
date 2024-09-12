@@ -1,4 +1,4 @@
-import { memo, useCallback, useMemo } from 'react'
+import { memo, useMemo } from 'react'
 import { ChevronDownIcon, ChevronRightIcon } from '@radix-ui/react-icons'
 import { FileIcon } from '@webview/components/file-icon'
 import { Tree, type TreeNodeRenderProps } from '@webview/components/tree'
@@ -24,31 +24,33 @@ export const MentionFolderPreview: React.FC<MentionOption> = memo(
       return ids
     }, [traverseTree])
 
-    const renderItem = useCallback(
-      ({ item, isExpanded, onToggleExpand, level }: TreeNodeRenderProps) => {
-        const ArrowIcon = isExpanded ? ChevronDownIcon : ChevronRightIcon
+    const renderItem = ({
+      item,
+      isExpanded,
+      onToggleExpand,
+      level
+    }: TreeNodeRenderProps) => {
+      const ArrowIcon = isExpanded ? ChevronDownIcon : ChevronRightIcon
 
-        return (
-          <div
-            className="flex items-center py-1 text-sm cursor-pointer"
-            style={{ marginLeft: `${level * 20}px` }}
-            onClick={onToggleExpand}
-          >
-            {!item.isLeaf && <ArrowIcon className="size-4 mr-1" />}
+      return (
+        <div
+          className="flex items-center py-1 text-sm cursor-pointer"
+          style={{ marginLeft: `${level * 20}px` }}
+          onClick={onToggleExpand}
+        >
+          {!item.isLeaf && <ArrowIcon className="size-4 mr-1" />}
 
-            <FileIcon
-              className="size-4 mr-1"
-              isFolder={!item.isLeaf}
-              isOpen={isExpanded}
-              filePath={item.name}
-            />
+          <FileIcon
+            className="size-4 mr-1"
+            isFolder={!item.isLeaf}
+            isOpen={isExpanded}
+            filePath={item.name}
+          />
 
-            <span>{item.name}</span>
-          </div>
-        )
-      },
-      []
-    )
+          <span>{item.name}</span>
+        </div>
+      )
+    }
 
     return (
       <div className="flex flex-col h-full">

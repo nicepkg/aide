@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   $getSelection,
   $isRangeSelection,
@@ -65,7 +65,7 @@ export const useMentionSearch = (
     }
   }, [editor, setIsOpen])
 
-  const clearMentionInput = useCallback(() => {
+  const clearMentionInput = () => {
     editor.update(() => {
       const selection = $getSelection()
       if (!$isRangeSelection(selection)) return
@@ -90,7 +90,7 @@ export const useMentionSearch = (
       selection.anchor.set(anchorNode.getKey(), newPosition, 'text')
       selection.focus.set(anchorNode.getKey(), newPosition, 'text')
     })
-  }, [editor])
+  }
 
   return { searchQuery, setSearchQuery, clearMentionInput }
 }

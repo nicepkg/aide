@@ -6,6 +6,29 @@
     <title>Aide</title>
   </head>
 
+  <!-- <script>
+    // mock acquireVsCodeApi
+    function acquireVsCodeApi() {
+      return {
+        postMessage: message => {
+          console.log('send message to VS Code:', message)
+        },
+        getState: () => {
+          const state = localStorage.getItem('vscodeState')
+          return state ? JSON.parse(state) : undefined
+        },
+        setState: state => {
+          localStorage.setItem('vscodeState', JSON.stringify(state))
+        }
+      }
+    }
+
+    window.acquireVsCodeApi = acquireVsCodeApi
+
+    window.addEventListener('message', event => {
+      console.log('received:', event.data)
+    })
+  </script> -->
   <body>
     <div id="app"></div>
     <script type="module" src="./src/webview/main.tsx"></script>

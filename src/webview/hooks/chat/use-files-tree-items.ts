@@ -1,4 +1,3 @@
-import { useCallback, useMemo } from 'react'
 import type { TreeItem } from '@webview/components/tree'
 import type { FileInfo, FolderInfo } from '@webview/types/chat'
 import { pathDirname, pathJoin, toUnixPath } from '@webview/utils/path'
@@ -9,10 +8,10 @@ export interface UseFilesTreeItemsOptions {
 
 export const useFilesTreeItems = (options: UseFilesTreeItemsOptions) => {
   const { files } = options
-  const treeItems = useMemo(() => convertFilesToTreeItems(files), [files])
-  const flattenedItems = useMemo(() => flattenTreeItems(treeItems), [treeItems])
+  const treeItems = convertFilesToTreeItems(files)
+  const flattenedItems = flattenTreeItems(treeItems)
 
-  const getAllChildrenIds = useCallback((item: TreeItem): string[] => {
+  const getAllChildrenIds = (item: TreeItem): string[] => {
     const ids: string[] = [item.id]
     if (item.children) {
       item.children.forEach(child => {
@@ -20,22 +19,19 @@ export const useFilesTreeItems = (options: UseFilesTreeItemsOptions) => {
       })
     }
     return ids
-  }, [])
+  }
 
-  const traverseTree = useCallback(
-    (callback: (item: TreeItem) => void) => {
-      const traverse = (items: TreeItem[]) => {
-        items.forEach(item => {
-          callback(item)
-          if (item.children) {
-            traverse(item.children)
-          }
-        })
-      }
-      traverse(treeItems)
-    },
-    [treeItems]
-  )
+  const traverseTree = (callback: (item: TreeItem) => void) => {
+    const traverse = (items: TreeItem[]) => {
+      items.forEach(item => {
+        callback(item)
+        if (item.children) {
+          traverse(item.children)
+        }
+      })
+    }
+    traverse(treeItems)
+  }
 
   return { treeItems, flattenedItems, getAllChildrenIds, traverseTree }
 }

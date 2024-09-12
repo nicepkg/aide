@@ -1,4 +1,4 @@
-import { forwardRef, useCallback, useEffect, useImperativeHandle } from 'react'
+import { useEffect, useImperativeHandle, type FC, type Ref } from 'react'
 import { AutoFocusPlugin } from '@lexical/react/LexicalAutoFocusPlugin'
 import {
   LexicalComposer,
@@ -35,6 +35,7 @@ const onError = (error: unknown) => {
 export interface ChatEditorProps
   extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange'>,
     MentionPluginProps {
+  ref?: Ref<ChatEditorRef>
   className?: string
   contentEditableClassName?: string
   initialConfig?: Partial<InitialConfigType>
@@ -59,182 +60,172 @@ export interface ChatEditorRef {
   resetEditor: () => void
 }
 
-export const ChatEditor = forwardRef<ChatEditorRef, ChatEditorProps>(
-  (
-    {
-      className,
-      initialConfig,
-      placeholder,
-      autoFocus = false,
-      conversation,
-      onComplete,
-      onChange,
-      ...otherProps
-    },
-    ref
-  ) => {
-    const finalInitialConfig: InitialConfigType = {
-      namespace: `TextComponentEditor-${conversation.id}`,
-      // theme: normalTheme,
-      onError,
-      editable: true,
-      nodes: [MentionNode],
-      ...initialConfig
-    }
-
-    return (
-      <LexicalComposer initialConfig={finalInitialConfig}>
-        <ChatEditorInner
-          ref={ref}
-          className={className}
-          placeholder={placeholder}
-          autoFocus={autoFocus}
-          conversation={conversation}
-          onComplete={onComplete}
-          onChange={onChange}
-          {...otherProps}
-        />
-      </LexicalComposer>
-    )
+export const ChatEditor: FC<ChatEditorProps> = ({
+  ref,
+  className,
+  initialConfig,
+  placeholder,
+  autoFocus = false,
+  conversation,
+  onComplete,
+  onChange,
+  ...otherProps
+}) => {
+  const finalInitialConfig: InitialConfigType = {
+    namespace: `TextComponentEditor-${conversation.id}`,
+    // theme: normalTheme,
+    onError,
+    editable: true,
+    nodes: [MentionNode],
+    ...initialConfig
   }
-)
 
-const ChatEditorInner = forwardRef<ChatEditorRef, ChatEditorProps>(
-  (
-    {
-      className,
-      contentEditableClassName,
-      placeholder,
-      autoFocus,
-      onComplete,
-      onChange,
+  return (
+    <LexicalComposer initialConfig={finalInitialConfig}>
+      <ChatEditorInner
+        ref={ref}
+        className={className}
+        placeholder={placeholder}
+        autoFocus={autoFocus}
+        conversation={conversation}
+        onComplete={onComplete}
+        onChange={onChange}
+        {...otherProps}
+      />
+    </LexicalComposer>
+  )
+}
 
-      // mention plugin props
-      conversation,
-      setConversation,
+const ChatEditorInner: FC<ChatEditorProps> = ({
+  ref,
+  className,
+  contentEditableClassName,
+  placeholder,
+  autoFocus,
+  onComplete,
+  onChange,
 
-      // div props
-      ...otherProps
-    },
-    ref
-  ) => {
-    const [editor] = useLexicalComposerContext()
+  // mention plugin props
+  conversation,
+  setConversation,
 
-    const insertSpaceAndAt = useCallback(() => {
-      editor.focus()
-      editor.update(() => {
-        const selection = $getSelection()
-        if ($isRangeSelection(selection)) {
-          selection.insertText(' @')
-        }
-      })
-    }, [editor])
+  // div props
+  ...otherProps
+}) => {
+  const [editor] = useLexicalComposerContext()
 
-    const focusOnEditor = useCallback(
-      (autoMoveCursorToEnd = false) => {
-        const rootEl = editor.getRootElement()
+  const insertSpaceAndAt = () => {
+    editor.focus()
+    editor.update(() => {
+      const selection = $getSelection()
+      if ($isRangeSelection(selection)) {
+        selection.insertText(' @')
+      }
+    })
+  }
 
-        if (!rootEl?.children?.length) {
-          rootEl?.focus({
+  const focusOnEditor = (autoMoveCursorToEnd = false) => {
+    const rootEl = editor.getRootElement()
+
+    if (!rootEl?.children?.length) {
+      rootEl?.focus({
+        preventScroll: true
+      }) // if the editor is empty, focus on it
+    } else {
+      editor.focus(
+        () => {
+          rootEl.focus({
             preventScroll: true
-          }) // if the editor is empty, focus on it
-        } else {
-          editor.focus(
-            () => {
-              rootEl.focus({
-                preventScroll: true
-              })
-            },
-            {
-              defaultSelection: 'rootEnd'
-            }
-          )
-
-          if (autoMoveCursorToEnd) {
-            // move the cursor to the end of the editor
-            editor.update(() => {
-              const root = $getRoot()
-              const lastChild = root.getLastChild()
-              lastChild?.selectEnd()
-            })
-          }
-        }
-      },
-      [editor]
-    )
-
-    const resetEditor = useCallback(() => {
-      editor.update(() => {
-        const root = $getRoot()
-        root.clear()
-      })
-    }, [editor])
-
-    useEffect(() => {
-      if (!autoFocus) return
-      focusOnEditor()
-    }, [autoFocus, focusOnEditor])
-
-    useImperativeHandle(
-      ref,
-      () => ({ editor, insertSpaceAndAt, focusOnEditor, resetEditor }),
-      [editor]
-    )
-
-    useEffect(() => {
-      const removeKeyEnterListener = editor.registerCommand(
-        KEY_ENTER_COMMAND,
-        event => {
-          if (event && (event.ctrlKey || event.metaKey)) {
-            event.preventDefault()
-            const currentState = editor.getEditorState()
-            const tags = new Set<string>()
-            onComplete?.(currentState, editor, tags)
-            return true // prevent other Enter behaviors
-          }
-
-          return false // allow other Enter behaviors
+          })
         },
-        COMMAND_PRIORITY_CRITICAL
+        {
+          defaultSelection: 'rootEnd'
+        }
       )
 
-      return () => {
-        removeKeyEnterListener()
+      if (autoMoveCursorToEnd) {
+        // move the cursor to the end of the editor
+        editor.update(() => {
+          const root = $getRoot()
+          const lastChild = root.getLastChild()
+          lastChild?.selectEnd()
+        })
       }
-    }, [editor, onComplete])
-
-    return (
-      <div
-        className={cn('editor-container relative', className)}
-        tabIndex={1}
-        {...otherProps}
-      >
-        <RichTextPlugin
-          contentEditable={
-            <ContentEditable
-              className={cn(
-                'editor-input min-h-24 min-w-full p-2 outline-none',
-                contentEditableClassName
-              )}
-            />
-          }
-          placeholder={
-            <div className="editor-placeholder absolute pointer-events-none top-2 left-2 text-foreground/50">
-              {placeholder}
-            </div>
-          }
-          ErrorBoundary={LexicalErrorBoundary}
-        />
-        <OnChangePlugin onChange={onChange!} />
-        <MentionPlugin
-          conversation={conversation}
-          setConversation={setConversation}
-        />
-        <HistoryPlugin />
-        {autoFocus && <AutoFocusPlugin defaultSelection="rootEnd" />}
-        <TabIndentationPlugin />
-        {/* <TreeViewDebugPlugin /> */}
-      </div>
-    )
+    }
   }
-)
+
+  const resetEditor = () => {
+    editor.update(() => {
+      const root = $getRoot()
+      root.clear()
+    })
+  }
+
+  useEffect(() => {
+    if (!autoFocus) return
+    focusOnEditor()
+  }, [autoFocus, focusOnEditor])
+
+  useImperativeHandle(
+    // eslint-disable-next-line react-compiler/react-compiler
+    ref,
+    () => ({ editor, insertSpaceAndAt, focusOnEditor, resetEditor }),
+    [editor]
+  )
+
+  useEffect(() => {
+    const removeKeyEnterListener = editor.registerCommand(
+      KEY_ENTER_COMMAND,
+      event => {
+        if (event && (event.ctrlKey || event.metaKey)) {
+          event.preventDefault()
+          const currentState = editor.getEditorState()
+          const tags = new Set<string>()
+          onComplete?.(currentState, editor, tags)
+          return true // prevent other Enter behaviors
+        }
+
+        return false // allow other Enter behaviors
+      },
+      COMMAND_PRIORITY_CRITICAL
+    )
+
+    return () => {
+      removeKeyEnterListener()
+    }
+  }, [editor, onComplete])
+
+  return (
+    <div
+      className={cn('editor-container relative', className)}
+      tabIndex={1}
+      {...otherProps}
+    >
+      <RichTextPlugin
+        contentEditable={
+          <ContentEditable
+            className={cn(
+              'editor-input min-h-24 min-w-full p-2 outline-none',
+              contentEditableClassName
+            )}
+          />
+        }
+        placeholder={
+          <div className="editor-placeholder absolute pointer-events-none top-2 left-2 text-foreground/50">
+            {placeholder}
+          </div>
+        }
+        ErrorBoundary={LexicalErrorBoundary}
+      />
+      <OnChangePlugin onChange={onChange!} />
+      <MentionPlugin
+        conversation={conversation}
+        setConversation={setConversation}
+      />
+      <HistoryPlugin />
+      {autoFocus && <AutoFocusPlugin defaultSelection="rootEnd" />}
+      <TabIndentationPlugin />
+      {/* <TreeViewDebugPlugin /> */}
+    </div>
+  )
+}

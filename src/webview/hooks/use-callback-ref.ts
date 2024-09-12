@@ -1,3 +1,4 @@
+/* eslint-disable react-compiler/react-compiler */
 import { useEffect, useMemo, useRef } from 'react'
 
 /**

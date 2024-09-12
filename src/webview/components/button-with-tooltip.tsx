@@ -1,4 +1,3 @@
-import { forwardRef } from 'react'
 import type { TooltipContentProps } from '@radix-ui/react-tooltip'
 import {
   Tooltip,
@@ -9,17 +8,21 @@ import {
 
 import { Button, type ButtonProps } from './ui/button'
 
+export interface ButtonWithTooltipRef extends HTMLButtonElement {}
+
 export type ButtonWithTooltipProps = ButtonProps & {
+  ref?: React.Ref<ButtonWithTooltipRef>
   tooltip: string
   side?: TooltipContentProps['side']
 }
 
-export interface ButtonWithTooltipRef extends HTMLButtonElement {}
-
-export const ButtonWithTooltip = forwardRef<
-  ButtonWithTooltipRef,
-  ButtonWithTooltipProps
->(({ children, tooltip, side = 'top', ...rest }, ref) => (
+export const ButtonWithTooltip: React.FC<ButtonWithTooltipProps> = ({
+  ref,
+  children,
+  tooltip,
+  side = 'top',
+  ...rest
+}) => (
   <TooltipProvider>
     <Tooltip delayDuration={100}>
       <TooltipTrigger asChild>
@@ -32,4 +35,4 @@ export const ButtonWithTooltip = forwardRef<
       </TooltipContent>
     </Tooltip>
   </TooltipProvider>
-))
+)

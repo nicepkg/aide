@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useRef } from 'react'
-import { ScrollArea } from '@radix-ui/react-scroll-area'
+import React, { useEffect, useRef } from 'react'
+import { ScrollArea } from '@webview/components/ui/scroll-area'
 import { useControllableState } from '@webview/hooks/use-controllable-state'
 import { cn } from '@webview/utils/common'
 
@@ -53,93 +53,71 @@ export const Tree: React.FC<TreeProps> = ({
     onChange: newExpanded => onExpand?.(Array.from(newExpanded))
   })
 
-  const getLeafIds = useCallback((item: TreeItem): string[] => {
+  const getLeafIds = (item: TreeItem): string[] => {
     if (item.isLeaf) {
       return [item.id]
     }
     return (item.children || []).flatMap(getLeafIds)
-  }, [])
+  }
 
-  const isItemSelected = useCallback(
-    (item: TreeItem): boolean => {
-      if (item.isLeaf) {
-        return selected?.has(item.id) ?? false
-      }
-      const leafIds = getLeafIds(item)
-      return leafIds.every(id => selected?.has(id))
-    },
-    [selected, getLeafIds]
-  )
+  const isItemSelected = (item: TreeItem): boolean => {
+    if (item.isLeaf) {
+      return selected?.has(item.id) ?? false
+    }
+    const leafIds = getLeafIds(item)
+    return leafIds.every(id => selected?.has(id))
+  }
 
-  const isItemIndeterminate = useCallback(
-    (item: TreeItem): boolean => {
-      if (item.isLeaf) {
-        return false
-      }
-      const leafIds = getLeafIds(item)
-      const selectedLeafs = leafIds.filter(id => selected?.has(id))
-      return selectedLeafs.length > 0 && selectedLeafs.length < leafIds.length
-    },
-    [selected, getLeafIds]
-  )
+  const isItemIndeterminate = (item: TreeItem): boolean => {
+    if (item.isLeaf) {
+      return false
+    }
+    const leafIds = getLeafIds(item)
+    const selectedLeafs = leafIds.filter(id => selected?.has(id))
+    return selectedLeafs.length > 0 && selectedLeafs.length < leafIds.length
+  }
 
-  const handleSelect = useCallback(
-    (item: TreeItem) => {
-      const newSelected = new Set(selected)
-      const leafIds = getLeafIds(item)
+  const handleSelect = (item: TreeItem) => {
+    const newSelected = new Set(selected)
+    const leafIds = getLeafIds(item)
 
-      if (isItemSelected(item)) {
-        leafIds.forEach(id => newSelected.delete(id))
-      } else {
-        leafIds.forEach(id => newSelected.add(id))
-      }
+    if (isItemSelected(item)) {
+      leafIds.forEach(id => newSelected.delete(id))
+    } else {
+      leafIds.forEach(id => newSelected.add(id))
+    }
 
-      setSelected(newSelected)
-    },
-    [selected, getLeafIds, isItemSelected, setSelected]
-  )
+    setSelected(newSelected)
+  }
 
-  const handleExpand = useCallback(
-    (itemId: string) => {
-      const newExpanded = new Set(expanded)
-      if (newExpanded.has(itemId)) {
-        newExpanded.delete(itemId)
-      } else {
-        newExpanded.add(itemId)
-      }
-      setExpanded(newExpanded)
-    },
-    [expanded, setExpanded]
-  )
+  const handleExpand = (itemId: string) => {
+    const newExpanded = new Set(expanded)
+    if (newExpanded.has(itemId)) {
+      newExpanded.delete(itemId)
+    } else {
+      newExpanded.add(itemId)
+    }
+    setExpanded(newExpanded)
+  }
 
-  const renderTreeItems = useCallback(
-    (treeItems: TreeItem[], level = 0) =>
-      treeItems.map(item => (
-        <TreeNode
-          key={item.id}
-          item={item}
-          isSelected={isItemSelected(item)}
-          isIndeterminate={isItemIndeterminate(item)}
-          isExpanded={expanded?.has(item.id) ?? false}
-          onToggleSelect={() => handleSelect(item)}
-          onToggleExpand={() => handleExpand(item.id)}
-          renderItem={renderItem}
-          level={level}
-        >
-          {item.children &&
-            expanded?.has(item.id) &&
-            renderTreeItems(item.children, level + 1)}
-        </TreeNode>
-      )),
-    [
-      isItemSelected,
-      isItemIndeterminate,
-      expanded,
-      handleSelect,
-      handleExpand,
-      renderItem
-    ]
-  )
+  const renderTreeItems = (treeItems: TreeItem[], level = 0) =>
+    treeItems.map(item => (
+      <TreeNode
+        key={item.id}
+        item={item}
+        isSelected={isItemSelected(item)}
+        isIndeterminate={isItemIndeterminate(item)}
+        isExpanded={expanded?.has(item.id) ?? false}
+        onToggleSelect={() => handleSelect(item)}
+        onToggleExpand={() => handleExpand(item.id)}
+        renderItem={renderItem}
+        level={level}
+      >
+        {item.children &&
+          expanded?.has(item.id) &&
+          renderTreeItems(item.children, level + 1)}
+      </TreeNode>
+    ))
 
   return (
     <ScrollArea className={cn('h-full w-full', className)}>

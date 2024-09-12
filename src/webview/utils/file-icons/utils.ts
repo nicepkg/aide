@@ -11,7 +11,7 @@ const icons: Record<string, SvgComponent> = import.meta.glob(
     query: '?react',
     import: 'default'
   }
-)
+) as Record<string, SvgComponent>
 
 /**
  * Generate react components based on icon names

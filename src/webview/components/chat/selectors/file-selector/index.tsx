@@ -1,3 +1,4 @@
+/* eslint-disable react-compiler/react-compiler */
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import {
@@ -57,7 +58,6 @@ export const FileSelector: React.FC<FileSelectorProps> = ({
     defaultProp: false,
     onChange: onOpenChange
   })
-
   const { searchQuery, setSearchQuery, filteredFiles } = useFilesSearch()
   const [activeTab, setActiveTab] = useState<TabOption>('list')
   const [topSearchQuery, setTopSearchQuery] = useState('')

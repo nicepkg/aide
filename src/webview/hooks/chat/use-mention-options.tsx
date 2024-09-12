@@ -1,4 +1,3 @@
-import { useMemo } from 'react'
 import {
   CardStackIcon,
   ChevronRightIcon,
@@ -37,196 +36,177 @@ export const useMentionOptions = () => {
   const { data: folders = [] } = useFolders()
   const { data: gitCommits = [] } = useGitCommits()
 
-  const filesMentionOptions = useMemo<MentionOption[]>(
-    () =>
-      files.map(
-        file =>
-          ({
-            id: `file#${file.fullPath}`,
-            label: getFileNameFromPath(file.fullPath),
-            category: MentionCategory.Files,
-            mentionStrategy: new SelectedFilesMentionStrategy(),
-            searchKeywords: [file.relativePath],
-            searchSortStrategy: SearchSortStrategy.EndMatch,
-            data: file,
-            itemLayoutProps: {
-              icon: (
-                <FileIcon2
-                  className="size-4 mr-1"
-                  filePath={file.relativePath}
-                />
-              ),
-              label: getFileNameFromPath(file.fullPath),
-              details: file.relativePath
-            },
-            customRenderPreview: MentionFilePreview
-          }) satisfies MentionOption,
-        [files]
-      ),
+  const filesMentionOptions: MentionOption[] = files.map(
+    file =>
+      ({
+        id: `file#${file.fullPath}`,
+        label: getFileNameFromPath(file.fullPath),
+        category: MentionCategory.Files,
+        mentionStrategy: new SelectedFilesMentionStrategy(),
+        searchKeywords: [file.relativePath],
+        searchSortStrategy: SearchSortStrategy.EndMatch,
+        data: file,
+        itemLayoutProps: {
+          icon: (
+            <FileIcon2 className="size-4 mr-1" filePath={file.relativePath} />
+          ),
+          label: getFileNameFromPath(file.fullPath),
+          details: file.relativePath
+        },
+        customRenderPreview: MentionFilePreview
+      }) satisfies MentionOption,
     [files]
   )
 
-  const foldersMentionOptions = useMemo<MentionOption[]>(
-    () =>
-      folders.map(
-        folder =>
-          ({
-            id: `folder#${folder.fullPath}`,
-            label: getFileNameFromPath(folder.fullPath),
-            category: MentionCategory.Folders,
-            mentionStrategy: new SelectedFoldersMentionStrategy(),
-            searchKeywords: [folder.relativePath],
-            searchSortStrategy: SearchSortStrategy.EndMatch,
-            data: folder,
-            itemLayoutProps: {
-              icon: (
-                <>
-                  <ChevronRightIcon className="size-4 mr-1" />
-                  <FileIcon2
-                    className="size-4 mr-1"
-                    isFolder
-                    isOpen={false}
-                    filePath={folder.relativePath}
-                  />
-                </>
-              ),
-              label: getFileNameFromPath(folder.fullPath),
-              details: folder.relativePath
-            },
-            customRenderPreview: MentionFolderPreview
-          }) satisfies MentionOption
-      ),
-    [files]
+  const foldersMentionOptions: MentionOption[] = folders.map(
+    folder =>
+      ({
+        id: `folder#${folder.fullPath}`,
+        label: getFileNameFromPath(folder.fullPath),
+        category: MentionCategory.Folders,
+        mentionStrategy: new SelectedFoldersMentionStrategy(),
+        searchKeywords: [folder.relativePath],
+        searchSortStrategy: SearchSortStrategy.EndMatch,
+        data: folder,
+        itemLayoutProps: {
+          icon: (
+            <>
+              <ChevronRightIcon className="size-4 mr-1" />
+              <FileIcon2
+                className="size-4 mr-1"
+                isFolder
+                isOpen={false}
+                filePath={folder.relativePath}
+              />
+            </>
+          ),
+          label: getFileNameFromPath(folder.fullPath),
+          details: folder.relativePath
+        },
+        customRenderPreview: MentionFolderPreview
+      }) satisfies MentionOption
   )
 
-  const gitCommitsMentionOptions = useMemo<MentionOption[]>(
-    () =>
-      gitCommits.map(
-        commit =>
-          ({
-            id: `git-commit#${commit.sha}`,
-            label: commit.message,
-            category: MentionCategory.Git,
-            mentionStrategy: new GitCommitsMentionStrategy(),
-            searchKeywords: [commit.sha, commit.message],
-            data: commit,
-            itemLayoutProps: {
-              icon: <CommitIcon className="size-4 mr-1 rotate-90" />,
-              label: commit.message,
-              details: commit.sha
-            }
-          }) satisfies MentionOption
-      ),
-    [gitCommits]
-  )
-
-  const mentionOptions = useMemo<MentionOption[]>(
-    () =>
-      [
-        {
-          id: 'files',
-          label: 'Files',
-          category: MentionCategory.Files,
-          searchKeywords: ['files'],
-          children: filesMentionOptions,
-          itemLayoutProps: {
-            icon: <FileIcon className="size-4 mr-1" />,
-            label: 'Files'
-          }
-        },
-        {
-          id: 'folders',
-          label: 'Folders',
-          category: MentionCategory.Folders,
-          searchKeywords: ['folders'],
-          children: foldersMentionOptions,
-          itemLayoutProps: {
-            icon: <CardStackIcon className="size-4 mr-1" />,
-            label: 'Folders'
-          }
-        },
-        {
-          id: 'code',
-          label: 'Code',
-          category: MentionCategory.Code,
-          searchKeywords: ['code'],
-          itemLayoutProps: {
-            icon: <CodeIcon className="size-4 mr-1" />,
-            label: 'Code'
-          }
-          // mentionStrategy: new CodeChunksMentionStrategy()
-        },
-        {
-          id: 'web',
-          label: 'Web',
-          category: MentionCategory.Web,
-          searchKeywords: ['web'],
-          mentionStrategy: new EnableWebToolMentionStrategy(),
-          itemLayoutProps: {
-            icon: <GlobeIcon className="size-4 mr-1" />,
-            label: 'Web'
-          }
-        },
-        {
-          id: 'docs',
-          label: 'Docs',
-          category: MentionCategory.Docs,
-          searchKeywords: ['docs'],
-          itemLayoutProps: {
-            icon: <IdCardIcon className="size-4 mr-1" />,
-            label: 'Docs'
-          }
-          // mentionStrategy: new AllowSearchDocSiteUrlsToolMentionStrategy()
-        },
-        {
-          id: 'git',
-          label: 'Git',
-          category: MentionCategory.Git,
-          searchKeywords: ['git'],
-          itemLayoutProps: {
-            icon: <TransformIcon className="size-4 mr-1" />,
-            label: 'Git'
-          },
-          children: [
-            {
-              id: 'git#diff',
-              label: 'Diff (Diff of Working State)',
-              category: MentionCategory.Git,
-              searchKeywords: ['diff'],
-              mentionStrategy: new GitDiffsMentionStrategy(),
-              itemLayoutProps: {
-                icon: <MaskOffIcon className="size-4 mr-1" />,
-                label: 'Diff (Diff of Working State)'
-              }
-            },
-            {
-              id: 'git#pull-request',
-              label: 'PR (Diff with Main Branch)',
-              category: MentionCategory.Git,
-              searchKeywords: ['pull request', 'pr', 'diff'],
-              mentionStrategy: new GitPullRequestsMentionStrategy(),
-              itemLayoutProps: {
-                icon: <MaskOffIcon className="size-4 mr-1" />,
-                label: 'PR (Diff with Main Branch)'
-              }
-            },
-            ...gitCommitsMentionOptions
-          ]
-        },
-        {
-          id: 'codebase',
-          label: 'Codebase',
-          category: MentionCategory.Codebase,
-          searchKeywords: ['codebase'],
-          mentionStrategy: new RelevantCodeSnippetsMentionStrategy(),
-          itemLayoutProps: {
-            icon: <CubeIcon className="size-4 mr-1" />,
-            label: 'Codebase'
-          }
+  const gitCommitsMentionOptions: MentionOption[] = gitCommits.map(
+    commit =>
+      ({
+        id: `git-commit#${commit.sha}`,
+        label: commit.message,
+        category: MentionCategory.Git,
+        mentionStrategy: new GitCommitsMentionStrategy(),
+        searchKeywords: [commit.sha, commit.message],
+        data: commit,
+        itemLayoutProps: {
+          icon: <CommitIcon className="size-4 mr-1 rotate-90" />,
+          label: commit.message,
+          details: commit.sha
         }
-      ] satisfies MentionOption[],
-    [filesMentionOptions, foldersMentionOptions, gitCommitsMentionOptions]
+      }) satisfies MentionOption
   )
+
+  const mentionOptions: MentionOption[] = [
+    {
+      id: 'files',
+      label: 'Files',
+      category: MentionCategory.Files,
+      searchKeywords: ['files'],
+      children: filesMentionOptions,
+      itemLayoutProps: {
+        icon: <FileIcon className="size-4 mr-1" />,
+        label: 'Files'
+      }
+    },
+    {
+      id: 'folders',
+      label: 'Folders',
+      category: MentionCategory.Folders,
+      searchKeywords: ['folders'],
+      children: foldersMentionOptions,
+      itemLayoutProps: {
+        icon: <CardStackIcon className="size-4 mr-1" />,
+        label: 'Folders'
+      }
+    },
+    {
+      id: 'code',
+      label: 'Code',
+      category: MentionCategory.Code,
+      searchKeywords: ['code'],
+      itemLayoutProps: {
+        icon: <CodeIcon className="size-4 mr-1" />,
+        label: 'Code'
+      }
+      // mentionStrategy: new CodeChunksMentionStrategy()
+    },
+    {
+      id: 'web',
+      label: 'Web',
+      category: MentionCategory.Web,
+      searchKeywords: ['web'],
+      mentionStrategy: new EnableWebToolMentionStrategy(),
+      itemLayoutProps: {
+        icon: <GlobeIcon className="size-4 mr-1" />,
+        label: 'Web'
+      }
+    },
+    {
+      id: 'docs',
+      label: 'Docs',
+      category: MentionCategory.Docs,
+      searchKeywords: ['docs'],
+      itemLayoutProps: {
+        icon: <IdCardIcon className="size-4 mr-1" />,
+        label: 'Docs'
+      }
+      // mentionStrategy: new AllowSearchDocSiteUrlsToolMentionStrategy()
+    },
+    {
+      id: 'git',
+      label: 'Git',
+      category: MentionCategory.Git,
+      searchKeywords: ['git'],
+      itemLayoutProps: {
+        icon: <TransformIcon className="size-4 mr-1" />,
+        label: 'Git'
+      },
+      children: [
+        {
+          id: 'git#diff',
+          label: 'Diff (Diff of Working State)',
+          category: MentionCategory.Git,
+          searchKeywords: ['diff'],
+          mentionStrategy: new GitDiffsMentionStrategy(),
+          itemLayoutProps: {
+            icon: <MaskOffIcon className="size-4 mr-1" />,
+            label: 'Diff (Diff of Working State)'
+          }
+        },
+        {
+          id: 'git#pull-request',
+          label: 'PR (Diff with Main Branch)',
+          category: MentionCategory.Git,
+          searchKeywords: ['pull request', 'pr', 'diff'],
+          mentionStrategy: new GitPullRequestsMentionStrategy(),
+          itemLayoutProps: {
+            icon: <MaskOffIcon className="size-4 mr-1" />,
+            label: 'PR (Diff with Main Branch)'
+          }
+        },
+        ...gitCommitsMentionOptions
+      ]
+    },
+    {
+      id: 'codebase',
+      label: 'Codebase',
+      category: MentionCategory.Codebase,
+      searchKeywords: ['codebase'],
+      mentionStrategy: new RelevantCodeSnippetsMentionStrategy(),
+      itemLayoutProps: {
+        icon: <CubeIcon className="size-4 mr-1" />,
+        label: 'Codebase'
+      }
+    }
+  ]
 
   return mentionOptions
 }

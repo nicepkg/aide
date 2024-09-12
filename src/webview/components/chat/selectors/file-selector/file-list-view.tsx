@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from 'react'
+import React, { useRef } from 'react'
 import { FileIcon } from '@webview/components/file-icon'
 import {
   KeyboardShortcutsInfo,
@@ -37,6 +37,7 @@ export const FileListView: React.FC<FileListViewProps> = ({
   const listRef = useRef<HTMLDivElement>(null)
   const itemRefs = useRef<(HTMLDivElement | null)[]>([])
 
+  // eslint-disable-next-line react-compiler/react-compiler
   const { focusedIndex, handleKeyDown } = useKeyboardNavigation({
     listRef,
     itemCount: filteredFiles.length,
@@ -46,46 +47,42 @@ export const FileListView: React.FC<FileListViewProps> = ({
 
   useEvent('keydown', handleKeyDown)
 
-  const renderItem = useCallback(
-    (file: FileInfo, index: number) => {
-      const isSelected = selectedFiles.some(f => f.fullPath === file.fullPath)
+  const renderItem = (file: FileInfo, index: number) => {
+    const isSelected = selectedFiles.some(f => f.fullPath === file.fullPath)
 
-      const fileName = getFileNameFromPath(file.relativePath)
+    const fileName = getFileNameFromPath(file.relativePath)
 
-      return (
-        <CommandItem
-          key={file.fullPath}
-          defaultValue=""
-          value=""
-          onSelect={() => onSelect(file)}
-          ref={el => {
-            if (itemRefs.current) {
-              itemRefs.current[index] = el
-            }
-          }}
-          className={cn(
-            'cursor-pointer text-sm px-1 py-1 flex items-center hover:bg-secondary',
-            isSelected && 'text-primary',
-            focusedIndex === index && 'bg-secondary'
-          )}
-        >
-          <div className="flex flex-shrink-0 items-center mr-2">
-            <input
-              type="checkbox"
-              checked={isSelected}
-              onChange={e => e.stopPropagation()}
-              className="mx-1 custom-checkbox"
-            />
+    return (
+      <CommandItem
+        key={file.fullPath}
+        defaultValue=""
+        value=""
+        onSelect={() => onSelect(file)}
+        ref={el => {
+          if (itemRefs.current) {
+            itemRefs.current[index] = el
+          }
+        }}
+        className={cn(
+          'cursor-pointer text-sm px-1 py-1 flex items-center hover:bg-secondary',
+          focusedIndex === index && 'bg-secondary'
+        )}
+      >
+        <div className="flex flex-shrink-0 items-center mr-2">
+          <input
+            type="checkbox"
+            checked={isSelected}
+            onChange={e => e.stopPropagation()}
+            className="mx-1 custom-checkbox"
+          />
 
-            <FileIcon className="size-4 mr-1" filePath={file.relativePath} />
-            <span>{fileName}</span>
-          </div>
-          <TruncateStart>{file.relativePath}</TruncateStart>
-        </CommandItem>
-      )
-    },
-    [selectedFiles, onSelect, focusedIndex]
-  )
+          <FileIcon className="size-4 mr-1" filePath={file.relativePath} />
+          <span>{fileName}</span>
+        </div>
+        <TruncateStart>{file.relativePath}</TruncateStart>
+      </CommandItem>
+    )
+  }
 
   return (
     <div className="flex flex-col h-full pt-1">
@@ -93,6 +90,7 @@ export const FileListView: React.FC<FileListViewProps> = ({
         <CommandList ref={listRef}>
           <CommandEmpty>No files found.</CommandEmpty>
           <CommandGroup>
+            {/* eslint-disable-next-line react-compiler/react-compiler */}
             {filteredFiles.map((file, index) => renderItem(file, index))}
           </CommandGroup>
         </CommandList>

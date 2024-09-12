@@ -34,8 +34,8 @@ export const ChatMessages: React.FC<ChatMessagesProps> = props => {
   } = props
 
   const containerRef = useRef<HTMLDivElement>(null)
-
   const prevConversationLengthRef = useRef(conversationsWithUIState.length)
+
   useEffect(() => {
     if (!containerRef.current) return
 
@@ -144,6 +144,8 @@ const InnerMessage: FC<InnerMessageProps> = props => {
         }
       }}
       style={{ originX: 0.5, originY: 0.5, ...style }}
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       className={cn('flex flex-col', className)}
     >
       <div

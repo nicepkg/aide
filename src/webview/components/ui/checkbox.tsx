@@ -3,10 +3,9 @@ import * as CheckboxPrimitive from '@radix-ui/react-checkbox'
 import { CheckIcon } from '@radix-ui/react-icons'
 import { cn } from '@webview/utils/common'
 
-const Checkbox = React.forwardRef<
-  React.ElementRef<typeof CheckboxPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof CheckboxPrimitive.Root>
->(({ className, ...props }, ref) => (
+const Checkbox: React.FC<
+  React.ComponentPropsWithRef<typeof CheckboxPrimitive.Root>
+> = ({ ref, className, ...props }) => (
   <CheckboxPrimitive.Root
     ref={ref}
     className={cn(
@@ -21,7 +20,7 @@ const Checkbox = React.forwardRef<
       <CheckIcon className="h-4 w-4" />
     </CheckboxPrimitive.Indicator>
   </CheckboxPrimitive.Root>
-))
+)
 Checkbox.displayName = CheckboxPrimitive.Root.displayName
 
 export { Checkbox }

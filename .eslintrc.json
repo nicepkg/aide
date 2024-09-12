@@ -47,7 +47,12 @@
       "parserOptions": {
         "project": ["./tsconfig.json"]
       },
-      "plugins": ["@typescript-eslint", "unused-imports", "prettier"],
+      "plugins": [
+        "@typescript-eslint",
+        "unused-imports",
+        "react-compiler",
+        "prettier"
+      ],
       "rules": {
         "prettier/prettier": [
           "error",
@@ -110,7 +115,8 @@
         "react/destructuring-assignment": "off",
         "jsx-a11y/anchor-is-valid": "off",
         "no-case-declarations": "off",
-        "react/no-unstable-nested-components": "off"
+        "react/no-unstable-nested-components": "off",
+        "react-compiler/react-compiler": "error"
       }
     }
   ]
