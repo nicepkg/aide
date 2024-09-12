@@ -81,7 +81,8 @@ export const MentionPlugin: FC<MentionPluginProps> = props => {
                 position: 'fixed',
                 top: `${mentionPosition.top}px`,
                 left: `${mentionPosition.left}px`,
-                zIndex: 2
+                zIndex: 2,
+                height: '1rem'
               }
             : {}
         }

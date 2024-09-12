@@ -35,3 +35,19 @@ export const removeDuplicates = <T>(
     return seen.has(key) ? false : seen.add(key)
   })
 }
+
+export const tryParseJSON = (jsonString: string) => {
+  try {
+    return JSON.parse(jsonString)
+  } catch (error) {
+    return null
+  }
+}
+
+export const tryStringifyJSON = (obj: any) => {
+  try {
+    return JSON.stringify(obj)
+  } catch (error) {
+    return null
+  }
+}

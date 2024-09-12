@@ -1,3 +1,4 @@
+import { getDefaultConversationAttachments } from '@webview/hooks/chat/use-conversation'
 import type {
   Attachments,
   Conversation,
@@ -13,9 +14,14 @@ export interface UseMentionManagerProps {
 export function useMentionManager(props: UseMentionManagerProps) {
   const { conversation, setConversation } = props
 
-  const currentAttachments = conversation.attachments
+  const currentAttachments =
+    conversation.attachments || getDefaultConversationAttachments()
   const updateCurrentAttachments = (attachments: Partial<Attachments>) => {
     setConversation(draft => {
+      if (!draft.attachments) {
+        draft.attachments = getDefaultConversationAttachments()
+      }
+
       draft.attachments = {
         ...draft.attachments,
         ...attachments

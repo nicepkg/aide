@@ -1,9 +1,8 @@
-import { forwardRef, useCallback, useImperativeHandle } from 'react'
+import { forwardRef, useCallback, useEffect, useImperativeHandle } from 'react'
 import { AutoFocusPlugin } from '@lexical/react/LexicalAutoFocusPlugin'
 import {
   LexicalComposer,
-  type InitialConfigType,
-  type InitialEditorStateType
+  type InitialConfigType
 } from '@lexical/react/LexicalComposer'
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
 import { ContentEditable } from '@lexical/react/LexicalContentEditable'
@@ -19,8 +18,11 @@ import {
 } from '@webview/lexical/plugins/mention-plugin'
 import { cn } from '@webview/utils/common'
 import {
+  $getRoot,
   $getSelection,
   $isRangeSelection,
+  COMMAND_PRIORITY_CRITICAL,
+  KEY_ENTER_COMMAND,
   type EditorState,
   type LexicalEditor
 } from 'lexical'
@@ -34,10 +36,11 @@ export interface ChatEditorProps
   extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange'>,
     MentionPluginProps {
   className?: string
-  editorState?: InitialEditorStateType
+  contentEditableClassName?: string
+  initialConfig?: Partial<InitialConfigType>
   placeholder?: string
+  autoFocus?: boolean
   onComplete?: (
-    event: React.KeyboardEvent<HTMLDivElement>,
     editorState: EditorState,
     editor: LexicalEditor,
     tags: Set<string>
@@ -52,35 +55,41 @@ export interface ChatEditorProps
 export interface ChatEditorRef {
   editor: LexicalEditor
   insertSpaceAndAt: () => void
+  focusOnEditor: (autoMoveCursorToEnd?: boolean) => void
+  resetEditor: () => void
 }
 
 export const ChatEditor = forwardRef<ChatEditorRef, ChatEditorProps>(
   (
     {
       className,
-      editorState,
+      initialConfig,
       placeholder,
+      autoFocus = false,
+      conversation,
       onComplete,
       onChange,
       ...otherProps
     },
     ref
   ) => {
-    const initialConfig: InitialConfigType = {
-      namespace: 'TextComponentEditor',
+    const finalInitialConfig: InitialConfigType = {
+      namespace: `TextComponentEditor-${conversation.id}`,
       // theme: normalTheme,
       onError,
       editable: true,
-      editorState,
-      nodes: [MentionNode]
+      nodes: [MentionNode],
+      ...initialConfig
     }
 
     return (
-      <LexicalComposer initialConfig={initialConfig}>
+      <LexicalComposer initialConfig={finalInitialConfig}>
         <ChatEditorInner
           ref={ref}
           className={className}
           placeholder={placeholder}
+          autoFocus={autoFocus}
+          conversation={conversation}
           onComplete={onComplete}
           onChange={onChange}
           {...otherProps}
@@ -94,7 +103,9 @@ const ChatEditorInner = forwardRef<ChatEditorRef, ChatEditorProps>(
   (
     {
       className,
+      contentEditableClassName,
       placeholder,
+      autoFocus,
       onComplete,
       onChange,
 
@@ -119,30 +130,96 @@ const ChatEditorInner = forwardRef<ChatEditorRef, ChatEditorProps>(
       })
     }, [editor])
 
-    useImperativeHandle(ref, () => ({ editor, insertSpaceAndAt }), [editor])
+    const focusOnEditor = useCallback(
+      (autoMoveCursorToEnd = false) => {
+        const rootEl = editor.getRootElement()
 
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-      if (e.key === 'Enter' && e.ctrlKey) {
-        e.preventDefault()
-        const currentState = editor.getEditorState()
-        const tags = new Set<string>()
-        onComplete?.(e, currentState, editor, tags)
+        if (!rootEl?.children?.length) {
+          rootEl?.focus({
+            preventScroll: true
+          }) // if the editor is empty, focus on it
+        } else {
+          editor.focus(
+            () => {
+              rootEl.focus({
+                preventScroll: true
+              })
+            },
+            {
+              defaultSelection: 'rootEnd'
+            }
+          )
+
+          if (autoMoveCursorToEnd) {
+            // move the cursor to the end of the editor
+            editor.update(() => {
+              const root = $getRoot()
+              const lastChild = root.getLastChild()
+              lastChild?.selectEnd()
+            })
+          }
+        }
+      },
+      [editor]
+    )
+
+    const resetEditor = useCallback(() => {
+      editor.update(() => {
+        const root = $getRoot()
+        root.clear()
+      })
+    }, [editor])
+
+    useEffect(() => {
+      if (!autoFocus) return
+      focusOnEditor()
+    }, [autoFocus, focusOnEditor])
+
+    useImperativeHandle(
+      ref,
+      () => ({ editor, insertSpaceAndAt, focusOnEditor, resetEditor }),
+      [editor]
+    )
+
+    useEffect(() => {
+      const removeKeyEnterListener = editor.registerCommand(
+        KEY_ENTER_COMMAND,
+        event => {
+          if (event && (event.ctrlKey || event.metaKey)) {
+            event.preventDefault()
+            const currentState = editor.getEditorState()
+            const tags = new Set<string>()
+            onComplete?.(currentState, editor, tags)
+            return true // prevent other Enter behaviors
+          }
+
+          return false // allow other Enter behaviors
+        },
+        COMMAND_PRIORITY_CRITICAL
+      )
+
+      return () => {
+        removeKeyEnterListener()
       }
-    }
+    }, [editor, onComplete])
 
     return (
       <div
         className={cn('editor-container relative', className)}
-        onKeyDown={handleKeyDown}
         tabIndex={1}
         {...otherProps}
       >
         <RichTextPlugin
           contentEditable={
-            <ContentEditable className="editor-input min-h-24 min-w-full p-2 outline-none" />
+            <ContentEditable
+              className={cn(
+                'editor-input min-h-24 min-w-full p-2 outline-none',
+                contentEditableClassName
+              )}
+            />
           }
           placeholder={
-            <div className="editor-placeholder absolute pointer-events-none top-2 left-2 text-gray-400">
+            <div className="editor-placeholder absolute pointer-events-none top-2 left-2 text-foreground/50">
               {placeholder}
             </div>
           }
@@ -154,7 +231,7 @@ const ChatEditorInner = forwardRef<ChatEditorRef, ChatEditorProps>(
           setConversation={setConversation}
         />
         <HistoryPlugin />
-        <AutoFocusPlugin />
+        {autoFocus && <AutoFocusPlugin defaultSelection="rootEnd" />}
         <TabIndentationPlugin />
         {/* <TreeViewDebugPlugin /> */}
       </div>

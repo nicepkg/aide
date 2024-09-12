@@ -45,7 +45,7 @@ export class SystemSetupRegister extends BaseRegister {
     const logFetch: typeof globalThis.fetch = (input, init) => {
       const reqBody =
         typeof init?.body === 'string'
-          ? tryParseJSON(init.body, true)
+          ? tryParseJSON(init.body) || init.body
           : init?.body
 
       logger.dev.log('fetching...', {

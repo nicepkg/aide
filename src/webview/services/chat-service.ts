@@ -1,13 +1,10 @@
-import type { ChatContext, Conversation } from '@webview/types/chat'
+import type { ChatContext } from '@webview/types/chat'
 
 export class ChatService {
-  static async sendConversation(
-    chatContext: ChatContext,
-    newConversation: Conversation
+  static async sendConversations(
+    chatContext: ChatContext
   ): Promise<ChatContext> {
-    return {
-      ...chatContext,
-      conversations: [...chatContext.conversations, newConversation]
-    }
+    await new Promise(resolve => setTimeout(resolve, 3000))
+    return chatContext
   }
 }

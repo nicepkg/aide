@@ -14,6 +14,8 @@ export class AttachmentProcessor {
     conversation: Conversation,
     context: ChatContext
   ): Promise<string> {
+    if (!conversation.attachments) return ''
+
     const attachmentResults = await Promise.allSettled(
       Object.entries(conversation.attachments).map(([key, attachment]) =>
         this.processAttachment(

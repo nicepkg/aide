@@ -2,6 +2,7 @@
 import React, { useState } from 'react'
 import { ImageIcon } from '@radix-ui/react-icons'
 import { Button } from '@webview/components/ui/button'
+import { getDefaultConversationAttachments } from '@webview/hooks/chat/use-conversation'
 import type {
   ChatContext,
   Conversation,
@@ -54,6 +55,10 @@ export const ContextSelector: React.FC<ContextSelectorProps> = ({
     }
     input.click()
     setConversation(draft => {
+      if (!draft.attachments) {
+        draft.attachments = getDefaultConversationAttachments()
+      }
+
       draft.attachments.fileContext.selectedImages.push({
         url: 'https://example.com/image.jpg'
       })

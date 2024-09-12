@@ -161,11 +161,11 @@ export const removeCodeBlockEndSyntax = (str: string): string => {
   return str.replace(/\n```\s*$/g, '')
 }
 
-export const tryParseJSON = (str: string, returnOriginal = false) => {
+export const tryParseJSON = (str: string) => {
   try {
     return JSON.parse(str)
   } catch (err) {
-    return returnOriginal ? str : null
+    return null
   }
 }
 

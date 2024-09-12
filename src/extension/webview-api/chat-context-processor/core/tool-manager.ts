@@ -17,6 +17,8 @@ export class ToolManager {
   ): Promise<ToolsInfoMap> {
     const toolsInfoMap: ToolsInfoMap = {}
 
+    if (!conversation.attachments) return toolsInfoMap
+
     for (const [attachmentName, _processor] of processorRegistry.entries()) {
       const processor = _processor as ContextProcessor<BaseToolContext>
 
@@ -69,6 +71,8 @@ export class ToolManager {
   ): Promise<ChatContext> {
     const updatedContext = { ...context }
     const updatedLastConversation = { ...lastConversation }
+
+    if (!updatedLastConversation.attachments) return updatedContext
 
     for (const toolCall of toolCalls) {
       const toolInfo = aiToolsInfoMap[toolCall.name]!

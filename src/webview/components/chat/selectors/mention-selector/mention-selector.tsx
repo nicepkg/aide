@@ -152,7 +152,7 @@ export const MentionSelector: React.FC<MentionSelectorProps> = ({
             <PopoverContent
               side="top"
               align="start"
-              sideOffset={16}
+              sideOffset={32}
               className="min-w-[200px] max-w-[400px] w-screen p-0 z-10"
               onOpenAutoFocus={e => e.preventDefault()}
               onCloseAutoFocus={e => e.preventDefault()}

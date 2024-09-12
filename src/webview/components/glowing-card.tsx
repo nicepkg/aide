@@ -12,9 +12,9 @@ export const GlowingCard = React.forwardRef<HTMLDivElement, GlowingCardProps>(
   (
     {
       children,
-      isAnimated = true,
+      isAnimated = false,
       animationDuration = 0.8,
-      blurAmount = 8,
+      blurAmount = 2,
       className,
       ...props
     },

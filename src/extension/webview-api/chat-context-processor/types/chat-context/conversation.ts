@@ -21,5 +21,6 @@ export interface Conversation {
   createdAt: number
   role: MessageType
   content: string
-  attachments: Attachments
+  richText?: string // JSON stringified
+  attachments?: Attachments
 }

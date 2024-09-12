@@ -56,3 +56,13 @@ export interface IMentionStrategy {
     currentAttachments: Attachments
   ) => Promise<Partial<Attachments>>
 }
+
+export interface ConversationUIState {
+  isEditMode?: boolean
+  isLoading?: boolean
+  sendButtonDisabled?: boolean
+}
+
+export interface ConversationWithUIState extends Conversation {
+  uiState: ConversationUIState
+}

@@ -1,8 +1,7 @@
 import React from 'react'
 import { PlusIcon } from '@radix-ui/react-icons'
+import { ButtonWithTooltip } from '@webview/components/button-with-tooltip'
 import { cn } from '@webview/utils/common'
-
-import { ButtonWithTooltip } from '../../button-with-tooltip'
 
 interface ChatHeaderProps extends React.HTMLAttributes<HTMLHeadElement> {
   headerLeft?: React.ReactNode
