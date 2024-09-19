@@ -1,16 +1,19 @@
-import type { ChatContext } from '../types/chat-context'
-import type { CodeContext } from '../types/chat-context/code-context'
-import type { Conversation } from '../types/chat-context/conversation'
+import type {
+  ChatContext,
+  CodeContext,
+  Conversation
+} from '@extension/webview-api/chat-context-processor/types/chat-context'
+import type { LangchainMessageContents } from '@extension/webview-api/chat-context-processor/types/langchain-message'
+import { formatCodeSnippet } from '@extension/webview-api/chat-context-processor/utils/code-snippet-formatter'
+
 import type { ContextProcessor } from '../types/context-processor'
-import type { LangchainMessageParams } from '../types/langchain-message'
-import { formatCodeSnippet } from '../utils/code-snippet-formatter'
 
 export class CodeProcessor implements ContextProcessor<CodeContext> {
-  async buildMessageParams(
+  async buildMessageContents(
     attachment: CodeContext,
     conversation: Conversation,
     context: ChatContext
-  ): Promise<LangchainMessageParams> {
+  ): Promise<LangchainMessageContents> {
     const isLastConversation =
       context.conversations.lastIndexOf(conversation) ===
       context.conversations.length - 1
@@ -21,7 +24,7 @@ export class CodeProcessor implements ContextProcessor<CodeContext> {
   private processCodeContext(
     codeContext: CodeContext,
     isLastConversation: boolean
-  ): LangchainMessageParams {
+  ): LangchainMessageContents {
     let content = ''
 
     // Process codeChunks
@@ -46,6 +49,11 @@ export class CodeProcessor implements ContextProcessor<CodeContext> {
       )
     }
 
-    return content
+    return [
+      {
+        type: 'text',
+        text: content
+      }
+    ]
   }
 }

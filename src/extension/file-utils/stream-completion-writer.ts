@@ -3,11 +3,11 @@ import { createLoading } from '@extension/loading'
 import {
   removeCodeBlockEndSyntax,
   removeCodeBlockStartSyntax,
-  removeCodeBlockSyntax,
-  sleep
+  removeCodeBlockSyntax
 } from '@extension/utils'
 import type { IterableReadableStream } from '@langchain/core/dist/utils/stream'
 import type { AIMessageChunk } from '@langchain/core/messages'
+import { sleep } from '@shared/utils/common'
 import * as vscode from 'vscode'
 
 export interface StreamingCompletionWriterOptions {

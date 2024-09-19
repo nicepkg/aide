@@ -12,14 +12,16 @@ export class GitDiffsMentionStrategy implements IMentionStrategy {
   name = 'GitDiffsMentionStrategy' as const
 
   async buildNewAttachmentsAfterAddMention(
-    data: GitDiff[],
+    data: GitDiff | GitDiff[],
     currentAttachments: Attachments
   ): Promise<Partial<Attachments>> {
+    const diffs = Array.isArray(data) ? data : [data]
+
     return {
       gitContext: {
         ...currentAttachments.gitContext,
         gitDiffs: removeDuplicates(
-          [...(currentAttachments.gitContext?.gitDiffs || []), ...data],
+          [...(currentAttachments.gitContext?.gitDiffs || []), ...diffs],
           diff =>
             `${diff.from}|${diff.to}|${diff.chunks.map(chunk => chunk.content).join('|')}`
         )

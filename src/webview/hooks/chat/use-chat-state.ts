@@ -1,4 +1,4 @@
-import type { Conversation } from '@webview/types/chat'
+import type { ChatContext, Conversation } from '@webview/types/chat'
 
 import { useChatContextManager } from './use-chat-context-manager'
 import { useConversation } from './use-conversation'
@@ -29,15 +29,37 @@ export const useChatState = () => {
 
   const newConversationUIState = getConversationUIState(newConversation.id)
 
-  const replaceConversationAndTruncate = (conversation: Conversation) => {
+  const replaceConversationAndTruncate = (
+    conversation: Conversation
+  ): Promise<ChatContext> =>
+    new Promise<ChatContext>(resolve => {
+      setContext(draft => {
+        const index = draft.conversations.findIndex(
+          c => c.id === conversation.id
+        )
+
+        // delete current conversation and all conversations after it
+        index !== -1 && draft.conversations.splice(index)
+
+        // add new conversation
+        draft.conversations.push(conversation)
+
+        // Create a copy of the updated context to resolve the promise
+        const updatedContext = JSON.parse(JSON.stringify(draft))
+        resolve(updatedContext)
+      })
+    })
+
+  const streamConversation = (conversation: Conversation) => {
     setContext(draft => {
       const index = draft.conversations.findIndex(c => c.id === conversation.id)
 
-      // delete current conversation and all conversations after it
-      index !== -1 && draft.conversations.splice(index)
-
-      // add new conversation
-      draft.conversations.push(conversation)
+      if (index === -1) {
+        // add new conversation
+        draft.conversations.push(conversation)
+      } else {
+        draft.conversations[index] = conversation
+      }
     })
   }
 
@@ -76,6 +98,7 @@ export const useChatState = () => {
     historiesConversationsWithUIState,
     newConversationUIState,
     replaceConversationAndTruncate,
+    streamConversation,
     setUIStateForSending,
     resetUIStateAfterSending,
     setConversationEditMode

@@ -12,14 +12,19 @@ export class CodeChunksMentionStrategy implements IMentionStrategy {
   name = 'CodeChunksMentionStrategy' as const
 
   async buildNewAttachmentsAfterAddMention(
-    data: CodeChunk,
+    data: CodeChunk | CodeChunk[],
     currentAttachments: Attachments
   ): Promise<Partial<Attachments>> {
+    const codeChunks = Array.isArray(data) ? data : [data]
+
     return {
       codeContext: {
         ...currentAttachments.codeContext,
         codeChunks: removeDuplicates(
-          [...(currentAttachments.codeContext?.codeChunks || []), data],
+          [
+            ...(currentAttachments.codeContext?.codeChunks || []),
+            ...codeChunks
+          ],
           ['relativePath', 'code']
         )
       }

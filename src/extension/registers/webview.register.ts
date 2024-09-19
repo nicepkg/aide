@@ -54,12 +54,6 @@ export class AideWebViewProvider {
   }
 
   private async setupWebview(webview: WebviewPanel) {
-    const setupWebviewAPIManagerDispose = await setupWebviewAPIManager(
-      this.context,
-      webview
-    )
-    this.disposes.push(setupWebviewAPIManagerDispose)
-
     if ('options' in webview.webview) {
       webview.webview.options = {
         enableScripts: true,
@@ -67,6 +61,14 @@ export class AideWebViewProvider {
       }
     }
     webview.webview.html = this.getHtmlForWebview(webview.webview)
+
+    // add socket port state to html string
+    const setupWebviewAPIManagerDispose = await setupWebviewAPIManager(
+      this.context,
+      webview
+    )
+    this.disposes.push(setupWebviewAPIManagerDispose)
+
     webview.onDidDispose(() => {
       setupWebviewAPIManagerDispose.dispose()
     })

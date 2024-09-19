@@ -7,21 +7,21 @@ import {
 
 import type {
   LangchainMessage,
-  LangchainMessageParams
+  LangchainMessageContents
 } from '../types/langchain-message'
 
 export class MessageBuilder {
   static createMessage(
     type: MessageType,
-    messageParams: LangchainMessageParams
+    messageContents: LangchainMessageContents
   ): LangchainMessage {
     switch (type) {
       case 'human':
-        return new HumanMessage(messageParams)
+        return new HumanMessage({ content: messageContents })
       case 'ai':
-        return new AIMessage(messageParams)
+        return new AIMessage({ content: messageContents })
       case 'system':
-        return new SystemMessage(messageParams)
+        return new SystemMessage({ content: messageContents })
       default:
         throw new Error(`Unsupported message type: ${type}`)
     }

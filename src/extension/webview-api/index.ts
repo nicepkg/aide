@@ -1,4 +1,6 @@
 import { getErrorMsg } from '@extension/utils'
+import findFreePorts from 'find-free-ports'
+import { Server } from 'socket.io'
 import * as vscode from 'vscode'
 
 import { ChatController } from './controllers/chat.controller'
@@ -15,16 +17,48 @@ import type {
 class APIManager {
   private controllers: Map<string, Controller> = new Map()
 
-  private webview: vscode.Webview | null = null
+  private io!: Server
 
-  constructor(
-    private context: vscode.ExtensionContext,
-    private panel: WebviewPanel,
+  private port!: number
+
+  private disposes: vscode.Disposable[] = []
+
+  constructor(private context: vscode.ExtensionContext) {}
+
+  public async initialize(
+    panel: WebviewPanel,
     controllerClasses: ControllerClass[]
   ) {
-    this.webview = panel.webview
-    panel.webview.onDidReceiveMessage(this.handleMessage.bind(this))
+    await this.initializeServer()
     this.registerControllers(controllerClasses)
+
+    const listenerDispose = panel.webview.onDidReceiveMessage(e => {
+      if (e.type === 'getVSCodeSocketPort') {
+        panel.webview.postMessage({ socketPort: this.port })
+      }
+    })
+
+    this.disposes.push(listenerDispose)
+  }
+
+  private async initializeServer() {
+    const freePorts = await findFreePorts.findFreePorts(1, {
+      startPort: 3001,
+      endPort: 7999
+    })
+
+    if (!freePorts.length) throw new Error('No free ports found')
+
+    this.port = freePorts[0]!
+    this.io = new Server(this.port, {
+      cors: {
+        origin: '*',
+        methods: ['GET', 'POST']
+      }
+    })
+    this.io.on('connection', socket => {
+      socket.on('request', this.handleMessage.bind(this, socket))
+    })
   }
 
   private registerControllers(controllerClasses: ControllerClass[]) {
@@ -34,12 +68,15 @@ class APIManager {
     }
   }
 
-  private async handleMessage(message: any) {
+  private async handleMessage(socket: any, message: any) {
     const { id, controller: controllerName, method, data } = message
     const controller = this.controllers.get(controllerName)
 
     if (!controller || !(method in controller)) {
-      this.sendError(id, `Method not found: ${controllerName}.${method}`)
+      socket.emit('error', {
+        id,
+        error: `Method not found: ${controllerName}.${method}`
+      })
       return
     }
 
@@ -47,40 +84,25 @@ class APIManager {
       const result = await (controller[method] as ControllerMethod)(data)
       if (result && typeof result[Symbol.asyncIterator] === 'function') {
         for await (const chunk of result as AsyncGenerator<
-          string,
+          any,
           void,
           unknown
         >) {
-          this.sendStream(id, chunk)
+          socket.emit('stream', { id, data: chunk })
         }
-        this.sendEnd(id)
+        socket.emit('end', { id })
       } else {
-        this.sendResponse(id, result)
+        socket.emit('response', { id, data: result })
       }
     } catch (error) {
-      this.sendError(id, getErrorMsg(error))
+      socket.emit('error', { id, error: getErrorMsg(error) })
     }
   }
 
-  private sendResponse(id: number, data: any) {
-    this.webview?.postMessage({ id, type: 'response', data })
-  }
-
-  private sendStream(id: number, data: string) {
-    this.webview?.postMessage({ id, type: 'stream', data })
-  }
-
-  private sendEnd(id: number) {
-    this.webview?.postMessage({ id, type: 'end' })
-  }
-
-  private sendError(id: number, error: string) {
-    this.webview?.postMessage({ id, type: 'error', error })
-  }
-
   cleanUp() {
+    this.disposes.forEach(dispose => dispose.dispose())
     this.controllers.clear()
-    this.webview = null
+    this.io.close()
   }
 }
 
@@ -92,15 +114,13 @@ export const controllers = [
 ] as const
 export type Controllers = typeof controllers
 
-export const setupWebviewAPIManager = (
+export const setupWebviewAPIManager = async (
   context: vscode.ExtensionContext,
   panel: WebviewPanel
-): vscode.Disposable => {
-  const apiManager = new APIManager(
-    context,
-    panel,
-    controllers as any as ControllerClass[]
-  )
+): Promise<vscode.Disposable> => {
+  const apiManager = new APIManager(context)
+
+  await apiManager.initialize(panel, controllers as any as ControllerClass[])
 
   return {
     dispose: () => {

@@ -1,6 +1,6 @@
 import path from 'path'
 import { t } from '@extension/i18n'
-import { getLanguageIdExt } from '@extension/utils'
+import { getLanguageIdExt } from '@shared/utils/vscode-lang'
 import * as vscode from 'vscode'
 
 interface TmpFileUriOptions {

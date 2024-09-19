@@ -1,4 +1,5 @@
-import type { Attachments as IAttachments } from '../types/chat-context/conversation'
+import type { Attachments as IAttachments } from '@extension/webview-api/chat-context-processor/types/chat-context'
+
 import type { ContextProcessor } from '../types/context-processor'
 
 export class ProcessorRegistry<

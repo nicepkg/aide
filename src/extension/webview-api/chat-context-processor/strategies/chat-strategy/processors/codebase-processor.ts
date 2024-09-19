@@ -1,16 +1,20 @@
-import type { ChatContext } from '../types/chat-context'
-import type { CodebaseContext } from '../types/chat-context/codebase-context'
-import type { Conversation } from '../types/chat-context/conversation'
+import type {
+  ChatContext,
+  CodebaseContext,
+  Conversation
+} from '@extension/webview-api/chat-context-processor/types/chat-context'
+import type { LangchainMessageContents } from '@extension/webview-api/chat-context-processor/types/langchain-message'
+import { formatCodeSnippet } from '@extension/webview-api/chat-context-processor/utils/code-snippet-formatter'
+
+import { splitter } from '../prompts'
 import type { ContextProcessor } from '../types/context-processor'
-import type { LangchainMessageParams } from '../types/langchain-message'
-import { formatCodeSnippet } from '../utils/code-snippet-formatter'
 
 export class CodebaseProcessor implements ContextProcessor<CodebaseContext> {
-  async buildMessageParams(
+  async buildMessageContents(
     attachment: CodebaseContext,
     conversation: Conversation,
     context: ChatContext
-  ): Promise<LangchainMessageParams> {
+  ): Promise<LangchainMessageContents> {
     const isLastConversation =
       context.conversations.lastIndexOf(conversation) ===
       context.conversations.length - 1
@@ -21,8 +25,8 @@ export class CodebaseProcessor implements ContextProcessor<CodebaseContext> {
   private processCodebaseContext(
     codebaseContext: CodebaseContext,
     isLastConversation: boolean
-  ): LangchainMessageParams {
-    let content = 'Relevant codebase snippets:\n\n'
+  ): LangchainMessageContents {
+    let content = ''
 
     for (const chunk of codebaseContext.relevantCodeSnippets) {
       content += formatCodeSnippet(
@@ -34,6 +38,19 @@ export class CodebaseProcessor implements ContextProcessor<CodebaseContext> {
       )
     }
 
-    return content
+    content = content
+      ? `
+## Potentially Relevant Code Snippets from the current Codebase
+${content}
+${splitter}
+`
+      : ''
+
+    return [
+      {
+        type: 'text',
+        text: content
+      }
+    ]
   }
 }

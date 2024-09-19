@@ -1,15 +1,18 @@
-import type { ChatContext } from './chat-context'
-import type { BaseToolContext } from './chat-context/base-tool-context'
-import type { Conversation } from './chat-context/conversation'
-import type { LangchainMessageParams } from './langchain-message'
-import type { ToolConfig } from './langchain-tool'
+import type {
+  BaseToolContext,
+  ChatContext,
+  Conversation
+} from '@extension/webview-api/chat-context-processor/types/chat-context'
+import type { LangchainMessageContents } from '@extension/webview-api/chat-context-processor/types/langchain-message'
+
+import type { ToolConfig } from './tools'
 
 interface BaseContextProcessor<Attachment extends object> {
-  buildMessageParams(
+  buildMessageContents(
     attachment: Attachment,
     conversation: Conversation,
     context: ChatContext
-  ): Promise<LangchainMessageParams>
+  ): Promise<LangchainMessageContents>
 }
 
 interface ToolContextProcessor<Attachment extends object> {

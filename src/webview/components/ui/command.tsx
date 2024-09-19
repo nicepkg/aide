@@ -107,10 +107,9 @@ const CommandSeparator: React.FC<
 )
 CommandSeparator.displayName = CommandPrimitive.Separator.displayName
 
-const CommandItem = React.forwardRef<
-  React.ElementRef<typeof CommandPrimitive.Item>,
-  React.ComponentPropsWithoutRef<typeof CommandPrimitive.Item>
->(({ className, ...props }, ref) => (
+const CommandItem: React.FC<
+  React.ComponentPropsWithRef<typeof CommandPrimitive.Item>
+> = ({ ref, className, ...props }) => (
   <CommandPrimitive.Item
     ref={ref}
     className={cn(
@@ -119,7 +118,7 @@ const CommandItem = React.forwardRef<
     )}
     {...props}
   />
-))
+)
 
 CommandItem.displayName = CommandPrimitive.Item.displayName
 

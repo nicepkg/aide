@@ -1,23 +1,26 @@
+import type {
+  DocContext,
+  DocInfo
+} from '@extension/webview-api/chat-context-processor/types/chat-context'
+import type { LangchainMessageContents } from '@extension/webview-api/chat-context-processor/types/langchain-message'
 import { z } from 'zod'
 
-import { DocContext, type DocInfo } from '../types/chat-context/doc-context'
+import { splitter } from '../prompts'
 import type { ContextProcessor } from '../types/context-processor'
-import type { LangchainMessageParams } from '../types/langchain-message'
-import { createToolConfig, type ToolConfig } from '../types/langchain-tool'
+import { createToolConfig, type ToolConfig } from '../types/tools'
 
 export class DocProcessor implements ContextProcessor<DocContext> {
-  async buildMessageParams(
+  async buildMessageContents(
     attachment: DocContext
-  ): Promise<LangchainMessageParams> {
+  ): Promise<LangchainMessageContents> {
     return this.processDocContext(attachment)
   }
 
   async buildAgentTools(
     attachment: DocContext
   ): Promise<Array<ToolConfig<DocContext>>> {
-    const { enableTool, allowSearchDocSiteUrls: allowSearchSiteUrls } =
-      attachment
-    if (!enableTool || allowSearchSiteUrls?.length === 0) return []
+    const { enableTool, allowSearchDocSiteUrls } = attachment
+    if (!enableTool || allowSearchDocSiteUrls?.length === 0) return []
 
     const searchDocToolConfig = await createToolConfig({
       toolParams: {
@@ -25,7 +28,7 @@ export class DocProcessor implements ContextProcessor<DocContext> {
         description: 'Search documentation',
         schema: z.object({
           searchSiteUrl: z
-            .enum(allowSearchSiteUrls as [string, ...string[]])
+            .enum(allowSearchDocSiteUrls as [string, ...string[]])
             .describe('URL of the site to search documentation'),
           keywords: z.string().describe('Keywords to search documentation')
         })
@@ -53,8 +56,8 @@ export class DocProcessor implements ContextProcessor<DocContext> {
     return []
   }
 
-  private processDocContext(docContext: DocContext): LangchainMessageParams {
-    let content = 'Relevant documentation:\n\n'
+  private processDocContext(docContext: DocContext): LangchainMessageContents {
+    let content = ''
 
     for (const doc of docContext.relevantDocs) {
       content += `Title: ${doc.title}\n`
@@ -62,6 +65,19 @@ export class DocProcessor implements ContextProcessor<DocContext> {
       content += `Content:\n${doc.content}\n\n`
     }
 
-    return content
+    content = content
+      ? `
+## Relevant documentation
+${content}
+${splitter}
+`
+      : ''
+
+    return [
+      {
+        type: 'text',
+        text: content
+      }
+    ]
   }
 }

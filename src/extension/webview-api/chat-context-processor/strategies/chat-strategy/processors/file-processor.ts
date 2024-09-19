@@ -1,23 +1,26 @@
 import path from 'path'
 import { traverseFileOrFolders } from '@extension/file-utils/traverse-fs'
 import { VsCodeFS } from '@extension/file-utils/vscode-fs'
-import { getLanguageId, getWorkspaceFolder } from '@extension/utils'
-import type { MessageContentComplex } from '@langchain/core/messages'
+import { getWorkspaceFolder } from '@extension/utils'
+import type {
+  FileContext,
+  FileInfo
+} from '@extension/webview-api/chat-context-processor/types/chat-context'
+import type { LangchainMessageContents } from '@extension/webview-api/chat-context-processor/types/langchain-message'
+import { getLanguageId } from '@shared/utils/vscode-lang'
 
-import type { FileContext, FileInfo } from '../types/chat-context/file-context'
 import type { ContextProcessor } from '../types/context-processor'
-import type { LangchainMessageParams } from '../types/langchain-message'
 
 export class FileProcessor implements ContextProcessor<FileContext> {
-  async buildMessageParams(
+  async buildMessageContents(
     attachment: FileContext
-  ): Promise<LangchainMessageParams> {
+  ): Promise<LangchainMessageContents> {
     return await this.processFileContext(attachment)
   }
 
   private async processFileContext(
     fileContext: FileContext
-  ): Promise<LangchainMessageParams> {
+  ): Promise<LangchainMessageContents> {
     const workspacePath = getWorkspaceFolder().uri.fsPath
 
     const processFolder = async (folder: string): Promise<string> => {
@@ -40,7 +43,7 @@ export class FileProcessor implements ContextProcessor<FileContext> {
       return `\`\`\`${languageId}:${file.relativePath}\n${file.content}\n\`\`\`\n\n`
     }
 
-    const [folderContents, fileContents] = await Promise.all([
+    const [folderContentsResults, fileContentsResults] = await Promise.all([
       Promise.allSettled(
         fileContext.selectedFolders.map(folder =>
           processFolder(folder.fullPath)
@@ -49,24 +52,39 @@ export class FileProcessor implements ContextProcessor<FileContext> {
       Promise.allSettled(fileContext.selectedFiles.map(processFile))
     ])
 
-    const messageParams = {
-      content: [
-        {
-          type: 'text',
-          text: [...folderContents, ...fileContents].join('')
-        }
-      ] as MessageContentComplex[]
-    } satisfies LangchainMessageParams
+    let finalText = ``
+
+    folderContentsResults.forEach(result => {
+      if (result.status === 'fulfilled') {
+        finalText += result.value
+      }
+    })
+
+    fileContentsResults.forEach(result => {
+      if (result.status === 'fulfilled') {
+        finalText += result.value
+      }
+    })
+
+    const messageContents: LangchainMessageContents = [
+      {
+        type: 'text',
+        text: finalText
+      }
+    ]
 
     if (fileContext.selectedImages) {
-      messageParams.content.push(
-        ...fileContext.selectedImages.map(image => ({
-          type: 'image_url',
-          image_url: image.url
-        }))
+      messageContents.push(
+        ...fileContext.selectedImages.map(
+          image =>
+            ({
+              type: 'image_url',
+              image_url: image.url
+            }) satisfies LangchainMessageContents[number]
+        )
       )
     }
 
-    return messageParams
+    return messageContents
   }
 }

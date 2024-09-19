@@ -1,3 +1,5 @@
+import { getLanguageIdExt } from '@shared/utils/vscode-lang'
+
 import { getExtFromPath } from './path'
 
 const shikiLanguages = [
@@ -295,13 +297,26 @@ const shikiLanguages = [
   '文言'
 ] as const
 
-export const getShikiLanguagesFromPath = (
-  path: string
+export const getShikiLanguageFromPath = (
+  path: string,
+  defaultLang = 'md'
 ): (typeof shikiLanguages)[number] => {
   const ext = getExtFromPath(path)
   if (shikiLanguages.includes(ext as any)) {
     return ext as any
   }
 
-  return 'md'
+  return defaultLang as any
+}
+
+export const getShikiLanguage = ({
+  unknownLang,
+  path
+}: {
+  unknownLang?: string
+  path?: string
+}): (typeof shikiLanguages)[number] => {
+  const pathLang = path ? getShikiLanguageFromPath(path, '') : ''
+  const lang = unknownLang ? getLanguageIdExt(unknownLang) : ''
+  return lang || pathLang || ('md' as any)
 }

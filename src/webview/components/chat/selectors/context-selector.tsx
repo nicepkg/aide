@@ -1,8 +1,8 @@
 /* eslint-disable unused-imports/no-unused-vars */
 import React, { useState } from 'react'
 import { ImageIcon } from '@radix-ui/react-icons'
+import { getDefaultConversationAttachments } from '@shared/utils/get-default-conversation-attachments'
 import { Button } from '@webview/components/ui/button'
-import { getDefaultConversationAttachments } from '@webview/hooks/chat/use-conversation'
 import type {
   ChatContext,
   Conversation,

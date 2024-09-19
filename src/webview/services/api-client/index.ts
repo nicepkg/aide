@@ -1,11 +1,13 @@
 import type { Controllers } from '@extension/webview-api'
 import type { Controller } from '@extension/webview-api/types'
-import { vscode } from '@webview/utils/vscode'
+import { io, Socket } from 'socket.io-client'
 
-import type { ApiResponse, APIType } from './types'
+import type { APIType } from './types'
 
 export class APIClient {
   private messageId = 0
+
+  private socket!: Socket
 
   private pendingRequests: Map<
     number,
@@ -17,33 +19,45 @@ export class APIClient {
   > = new Map()
 
   constructor() {
-    window.addEventListener('message', this.handleMessage.bind(this))
+    const port = window.vscodeWebviewState?.socketPort
+
+    if (!port) throw new Error('Socket port not found in VSCode state')
+
+    this.socket = io(`http://localhost:${port}`)
+    this.socket.on('response', this.handleResponse.bind(this))
+    this.socket.on('stream', this.handleStream.bind(this))
+    this.socket.on('end', this.handleEnd.bind(this))
+    this.socket.on('error', this.handleError.bind(this))
   }
 
-  private handleMessage(event: MessageEvent) {
-    const message: ApiResponse<any> & { id: number } = event.data
+  private handleResponse(message: { id: number; data: any }) {
     const pending = this.pendingRequests.get(message.id)
+    if (pending) {
+      pending.resolve(message.data)
+      this.pendingRequests.delete(message.id)
+    }
+  }
 
-    if (!pending) return
+  private handleStream(message: { id: number; data: string }) {
+    const pending = this.pendingRequests.get(message.id)
+    if (pending && pending.onStream) {
+      pending.onStream(message.data)
+    }
+  }
 
-    switch (message.type) {
-      case 'response':
-        pending.resolve(message.data)
-        this.pendingRequests.delete(message.id)
-        break
-      case 'stream':
-        pending.onStream?.(message.data)
-        break
-      case 'end':
-        pending.resolve(undefined)
-        this.pendingRequests.delete(message.id)
-        break
-      case 'error':
-        pending.reject(new Error(message.error))
-        this.pendingRequests.delete(message.id)
-        break
-      default:
-        break
+  private handleEnd(message: { id: number }) {
+    const pending = this.pendingRequests.get(message.id)
+    if (pending) {
+      pending.resolve(undefined)
+      this.pendingRequests.delete(message.id)
+    }
+  }
+
+  private handleError(message: { id: number; error: string }) {
+    const pending = this.pendingRequests.get(message.id)
+    if (pending) {
+      pending.reject(new Error(message.error))
+      this.pendingRequests.delete(message.id)
     }
   }
 
@@ -56,7 +70,7 @@ export class APIClient {
     return new Promise((resolve, reject) => {
       const id = this.messageId++
       this.pendingRequests.set(id, { resolve, reject, onStream })
-      vscode.postMessage({ id, controller, method, data })
+      this.socket.emit('request', { id, controller, method, data })
     })
   }
 }

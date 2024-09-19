@@ -116,7 +116,10 @@
         "jsx-a11y/anchor-is-valid": "off",
         "no-case-declarations": "off",
         "react/no-unstable-nested-components": "off",
-        "react-compiler/react-compiler": "error"
+        "react-compiler/react-compiler": "error",
+        "jsx-a11y/control-has-associated-label": "off",
+        "react/jsx-no-target-blank": "off",
+        "react/jsx-no-useless-fragment": "off"
       }
     }
   ]

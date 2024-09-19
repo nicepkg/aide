@@ -1,5 +1,6 @@
 import type { MessageType } from '@langchain/core/messages'
 
+import type { LangchainMessageContents } from '../langchain-message'
 import type { CodeContext } from './code-context'
 import type { CodebaseContext } from './codebase-context'
 import type { DocContext } from './doc-context'
@@ -20,7 +21,7 @@ export interface Conversation {
   id: string
   createdAt: number
   role: MessageType
-  content: string
+  contents: LangchainMessageContents
   richText?: string // JSON stringified
   attachments?: Attachments
 }

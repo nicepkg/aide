@@ -7,7 +7,7 @@ import {
 import { useReadFile } from '@webview/hooks/api/use-read-file'
 import { useControllableState } from '@webview/hooks/use-controllable-state'
 import { FileInfo } from '@webview/types/chat'
-import { getShikiLanguagesFromPath } from '@webview/utils/shiki'
+import { getShikiLanguageFromPath } from '@webview/utils/shiki'
 import ShikiHighlighter from 'react-shiki'
 
 interface FFileInfoPopoverProps {
@@ -73,7 +73,7 @@ export const FileInfoPopover: React.FC<FFileInfoPopoverProps> = ({
             style={{ cursor: 'text' }}
           >
             <ShikiHighlighter
-              language={getShikiLanguagesFromPath(file.fullPath)}
+              language={getShikiLanguageFromPath(file.fullPath)}
               theme="dark-plus"
               addDefaultStyles={false}
             >

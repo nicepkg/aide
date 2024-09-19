@@ -1,10 +1,27 @@
+import type {
+  Attachments,
+  BaseToolContext,
+  ChatContext,
+  Conversation
+} from '@extension/webview-api/chat-context-processor/types/chat-context'
 import type { ZodObjectAny } from '@langchain/core/dist/types/zod'
 import type { RunnableFunc } from '@langchain/core/runnables'
-import type { ResponseFormat, ToolParams } from '@langchain/core/tools'
+import type {
+  DynamicStructuredTool,
+  ResponseFormat,
+  ToolParams
+} from '@langchain/core/tools'
 import type { z } from 'zod'
 
-import type { ChatContext } from './chat-context'
-import type { Conversation } from './chat-context/conversation'
+export type ToolInfo = {
+  attachmentName: keyof Attachments
+  config: ToolConfig<BaseToolContext>
+  tool: DynamicStructuredTool
+}
+
+export type ToolName = string
+
+export type ToolsInfoMap = Record<ToolName, ToolInfo>
 
 export interface ToolWrapperParams<
   RunInput extends

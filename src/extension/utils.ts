@@ -1,11 +1,5 @@
 import * as vscode from 'vscode'
 
-import {
-  languageExtIdMap,
-  languageIdExtMap,
-  languageIdExts,
-  languageIds
-} from './constants'
 import { getContext } from './context'
 import { t } from './i18n'
 import { logger } from './logger'
@@ -86,27 +80,6 @@ export const commandWithCatcher = <T extends (...args: any[]) => any>(
   (async (...args: any[]) =>
     await runWithCathError(() => commandFn(...args))) as T
 
-export const getLanguageIdExt = (languageIdORExt: string): string => {
-  if (languageIdExts.includes(languageIdORExt)) return languageIdORExt
-
-  return (
-    languageIdExtMap[languageIdORExt as keyof typeof languageIdExtMap]?.[0] ||
-    ''
-  )
-}
-
-export const getLanguageId = (languageIdORExt: string): string => {
-  if (languageIds.includes(languageIdORExt)) return languageIdORExt
-  if (languageIdExts.includes(languageIdORExt)) {
-    return (
-      languageExtIdMap[languageIdORExt as keyof typeof languageExtIdMap] ||
-      languageIdORExt
-    )
-  }
-
-  return languageIdORExt
-}
-
 export const getWorkspaceFolder = <T extends boolean = true>(
   throwErrorWhenNotFound: T = true as T
 ): T extends true
@@ -174,9 +147,6 @@ export const toPlatformPath = (path: string): string => {
 
   return path.replace(/\\/g, '/')
 }
-
-export const sleep = (ms: number): Promise<void> =>
-  new Promise(resolve => setTimeout(resolve, ms))
 
 export const normalizeLineEndings = (text?: string): string => {
   if (!text) return ''
@@ -247,3 +217,51 @@ export const setupHtml = (
   DEV_SERVER
     ? __getWebviewHtml__(DEV_SERVER)
     : __getWebviewHtml__(webview, context)
+
+/**
+ * for inject state into index.html string
+ */
+export const mergeStateIntoHtml = (
+  html: string,
+  newState: Record<string, any>
+): string => {
+  // Regular expression to match and capture the vscodeWebviewState object in the HTML
+  const regex =
+    /(<script class="vscode-webview-state">[\s\S]*?window\.vscodeWebviewState\s*=\s*)(\{[^}]*\})([\s\S]*?<\/script>)/
+
+  if (regex.test(html)) {
+    // If the script tag exists, merge the state
+    return html.replace(regex, (match, prefix, existingStateStr, suffix) => {
+      let existingState: Record<string, any> = {}
+
+      try {
+        // Attempt to parse the existing state object
+        // eslint-disable-next-line @typescript-eslint/no-implied-eval
+        existingState = Function(`return ${existingStateStr}`)()
+      } catch (error) {
+        logger.warn(
+          'Failed to parse existing state, using empty object:',
+          error
+        )
+      }
+
+      // Merge the existing state with the new state
+      const mergedState = { ...existingState, ...newState }
+
+      // Convert the merged state to a string, maintaining good formatting
+      const mergedStateStr = JSON.stringify(mergedState, null, 2)
+        .replace(/^/gm, '    ') // Add indentation
+        .replace(/\n/g, '\n    ') // Maintain consistent indentation
+
+      // Return the updated script tag with the merged state
+      return `${prefix}${mergedStateStr}${suffix}`
+    })
+  }
+  // If the script tag doesn't exist, create a new one and insert it before </head>
+  const stateScript = `
+  <script class="vscode-webview-state">
+    window.vscodeWebviewState = ${JSON.stringify(newState, null, 2)}
+  </script>`
+
+  return html.replace('</head>', `${stateScript}\n</head>`)
+}

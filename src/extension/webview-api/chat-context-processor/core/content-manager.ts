@@ -4,44 +4,49 @@ import type {
   MessageContentText
 } from '@langchain/core/messages'
 
-import type { LangchainMessageParams } from '../types/langchain-message'
+export class LangchainContentsManager {
+  private messageContents: MessageContentComplex[]
 
-export class ContentManager {
-  private messageContent: MessageContentComplex[]
+  constructor(
+    messageContents: string | MessageContentComplex | MessageContentComplex[]
+  ) {
+    this.messageContents = [{ type: 'text', text: '' }]
 
-  constructor() {
-    this.messageContent = [{ type: 'text', text: '' }]
+    if (messageContents) {
+      this.mergeMessageContents(messageContents)
+    }
   }
 
   appendText(text: string): void {
-    const textContent = this.messageContent[0] as MessageContentText
+    const textContent = this.messageContents.find(
+      content => content.type === 'text'
+    ) as MessageContentText
+
     textContent.text += text
   }
 
   appendImage(url: string): void {
-    this.messageContent.push({
+    this.messageContents.push({
       type: 'image_url',
       image_url: url
     } as MessageContentImageUrl)
   }
 
-  mergeMessageParams(params: LangchainMessageParams): void {
-    if (typeof params === 'string') {
-      this.appendText(`\n${params}`)
-    } else if (typeof params.content === 'string') {
-      this.appendText(`\n${params.content}`)
-    } else {
-      params.content.forEach(content => {
-        if (content.type === 'text') {
-          this.appendText(content.text)
-        } else if (content.type === 'image_url') {
-          this.appendImage(content.image_url)
-        }
-      })
+  mergeMessageContents(
+    contents: string | MessageContentComplex | MessageContentComplex[]
+  ): void {
+    if (typeof contents === 'string') {
+      this.appendText(`\n${contents}`)
+    } else if (Array.isArray(contents)) {
+      contents.forEach(param => this.mergeMessageContents(param))
+    } else if (contents.type === 'text') {
+      this.appendText(`\n${contents.text}`)
+    } else if (contents.type === 'image_url') {
+      this.appendImage(contents.image_url)
     }
   }
 
-  getContent(): MessageContentComplex[] {
-    return this.messageContent
+  getContents(): MessageContentComplex[] {
+    return this.messageContents
   }
 }

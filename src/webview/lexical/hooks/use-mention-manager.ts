@@ -1,4 +1,4 @@
-import { getDefaultConversationAttachments } from '@webview/hooks/chat/use-conversation'
+import { getDefaultConversationAttachments } from '@shared/utils/get-default-conversation-attachments'
 import type {
   Attachments,
   Conversation,
@@ -16,6 +16,7 @@ export function useMentionManager(props: UseMentionManagerProps) {
 
   const currentAttachments =
     conversation.attachments || getDefaultConversationAttachments()
+
   const updateCurrentAttachments = (attachments: Partial<Attachments>) => {
     setConversation(draft => {
       if (!draft.attachments) {
@@ -45,7 +46,9 @@ export function useMentionManager(props: UseMentionManagerProps) {
           )
         updateCurrentAttachments(updatedAttachments)
       }
-    } catch (error) {}
+    } catch (error) {
+      console.warn('Error adding mention:', error)
+    }
   }
 
   return {

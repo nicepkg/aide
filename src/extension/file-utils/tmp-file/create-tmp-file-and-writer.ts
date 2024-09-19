@@ -1,5 +1,5 @@
 import path from 'path'
-import { getLanguageId } from '@extension/utils'
+import { getLanguageId } from '@shared/utils/vscode-lang'
 import * as vscode from 'vscode'
 
 import { getOriginalFileUri } from './get-original-file-uri'

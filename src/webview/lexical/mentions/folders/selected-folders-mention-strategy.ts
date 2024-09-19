@@ -12,14 +12,19 @@ export class SelectedFoldersMentionStrategy implements IMentionStrategy {
   name = 'SelectedFoldersMentionStrategy' as const
 
   async buildNewAttachmentsAfterAddMention(
-    data: FolderInfo[],
+    data: FolderInfo | FolderInfo[],
     currentAttachments: Attachments
   ): Promise<Partial<Attachments>> {
+    const folders = Array.isArray(data) ? data : [data]
+
     return {
       fileContext: {
         ...currentAttachments.fileContext,
         selectedFolders: removeDuplicates(
-          [...(currentAttachments.fileContext?.selectedFolders || []), ...data],
+          [
+            ...(currentAttachments.fileContext?.selectedFolders || []),
+            ...folders
+          ],
           ['fullPath']
         )
       }

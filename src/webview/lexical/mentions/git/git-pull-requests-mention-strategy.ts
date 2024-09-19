@@ -12,14 +12,19 @@ export class GitPullRequestsMentionStrategy implements IMentionStrategy {
   name = 'GitPullRequestsMentionStrategy' as const
 
   async buildNewAttachmentsAfterAddMention(
-    data: GitPullRequest[],
+    data: GitPullRequest | GitPullRequest[],
     currentAttachments: Attachments
   ): Promise<Partial<Attachments>> {
+    const pullRequests = Array.isArray(data) ? data : [data]
+
     return {
       gitContext: {
         ...currentAttachments.gitContext,
         gitPullRequests: removeDuplicates(
-          [...(currentAttachments.gitContext?.gitPullRequests || []), ...data],
+          [
+            ...(currentAttachments.gitContext?.gitPullRequests || []),
+            ...pullRequests
+          ],
           ['id']
         )
       }

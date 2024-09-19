@@ -17,7 +17,9 @@ export const setupRegisters = async (registerManager: RegisterManager) => {
     CheckboxFileTreeRegister
   ] satisfies (typeof BaseRegister)[]
 
-  Registers.forEach(async Register => {
+  const promises = Registers.map(async Register => {
     await registerManager.setupRegister(Register)
   })
+
+  await Promise.allSettled(promises)
 }

@@ -1,11 +1,12 @@
 import { getConfigKey, setConfigKey } from '@extension/config'
-import { languageIdExts, languageIds } from '@extension/constants'
 import { t } from '@extension/i18n'
+import { showQuickPickWithCustomInput } from '@extension/utils'
 import {
   getLanguageId,
   getLanguageIdExt,
-  showQuickPickWithCustomInput
-} from '@extension/utils'
+  languageIdExts,
+  languageIds
+} from '@shared/utils/vscode-lang'
 import * as vscode from 'vscode'
 
 /**

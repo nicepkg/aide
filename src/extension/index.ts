@@ -9,6 +9,7 @@ import { logger } from './logger'
 import { setupRegisters } from './registers'
 import { RegisterManager } from './registers/register-manager'
 import { redisStorage, stateStorage } from './storage'
+import { searxngSearch } from './webview-api/chat-context-processor/strategies/chat-strategy/utils/searxng-search'
 
 export const activate = async (context: vscode.ExtensionContext) => {
   try {
@@ -22,6 +23,9 @@ export const activate = async (context: vscode.ExtensionContext) => {
 
     const registerManager = new RegisterManager(context, commandManager)
     await setupRegisters(registerManager)
+
+    const res = await searxngSearch('react  19 new features')
+    console.log('searxngSearch', res)
   } catch (err) {
     logger.warn('Failed to activate extension', err)
   }

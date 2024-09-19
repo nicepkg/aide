@@ -1,20 +1,22 @@
 import { logger } from '@extension/logger'
-
-import type { ChatContext } from '../types/chat-context'
 import type {
   Attachments,
+  ChatContext,
   Conversation
-} from '../types/chat-context/conversation'
+} from '@extension/webview-api/chat-context-processor/types/chat-context'
+import type { LangchainMessageContents } from '@extension/webview-api/chat-context-processor/types/langchain-message'
+import { mergeLangchainMessageContents } from '@shared/utils/merge-langchain-message-contents'
+
 import type { ProcessorRegistry } from './processor-registry'
 
 export class AttachmentProcessor {
-  constructor(private processorRegistry: ProcessorRegistry) {}
+  constructor(public processorRegistry: ProcessorRegistry) {}
 
   async processAttachments(
     conversation: Conversation,
     context: ChatContext
-  ): Promise<string> {
-    if (!conversation.attachments) return ''
+  ): Promise<LangchainMessageContents> {
+    if (!conversation.attachments) return []
 
     const attachmentResults = await Promise.allSettled(
       Object.entries(conversation.attachments).map(([key, attachment]) =>
@@ -29,10 +31,10 @@ export class AttachmentProcessor {
 
     return attachmentResults.reduce((acc, result) => {
       if (result.status === 'fulfilled' && result.value) {
-        return acc + result.value
+        return mergeLangchainMessageContents(acc.concat(result.value))
       }
       return acc
-    }, '')
+    }, [] as LangchainMessageContents)
   }
 
   private async processAttachment(
@@ -40,16 +42,16 @@ export class AttachmentProcessor {
     attachment: any,
     conversation: Conversation,
     context: ChatContext
-  ): Promise<string | null> {
+  ): Promise<LangchainMessageContents | null> {
     const processor = this.processorRegistry.get(key)
     if (processor && attachment) {
       try {
-        const params = await processor.buildMessageParams(
+        const contents = await processor.buildMessageContents(
           attachment,
           conversation,
           context
         )
-        return typeof params === 'string' ? params : (params.content as string)
+        return contents
       } catch (error) {
         logger.warn(`Error processing attachment ${key}:`, error)
         return null

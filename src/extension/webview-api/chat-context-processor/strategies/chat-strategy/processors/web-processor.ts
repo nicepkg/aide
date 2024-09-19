@@ -1,17 +1,19 @@
-import { z } from 'zod'
-
 import type {
   WebContext,
   WebSearchResult
-} from '../types/chat-context/web-context'
+} from '@extension/webview-api/chat-context-processor/types/chat-context'
+import type { LangchainMessageContents } from '@extension/webview-api/chat-context-processor/types/langchain-message'
+import { z } from 'zod'
+
+import { splitter } from '../prompts'
 import type { ContextProcessor } from '../types/context-processor'
-import type { LangchainMessageParams } from '../types/langchain-message'
-import { createToolConfig, type ToolConfig } from '../types/langchain-tool'
+import { createToolConfig, type ToolConfig } from '../types/tools'
+import { searxngSearch } from '../utils/searxng-search'
 
 export class WebProcessor implements ContextProcessor<WebContext> {
-  async buildMessageParams(
+  async buildMessageContents(
     attachment: WebContext
-  ): Promise<LangchainMessageParams> {
+  ): Promise<LangchainMessageContents> {
     return this.processWebContext(attachment)
   }
 
@@ -32,7 +34,7 @@ export class WebProcessor implements ContextProcessor<WebContext> {
       toolCallback: async ({ keywords }) => this.searchWeb({ keywords }),
       reBuildAttachment: async (toolResult, attachment: WebContext) => ({
         ...attachment,
-        searchResults: toolResult ?? []
+        webSearchResults: toolResult ?? []
       })
     })
 
@@ -44,20 +46,35 @@ export class WebProcessor implements ContextProcessor<WebContext> {
   }: {
     keywords: string
   }): Promise<WebSearchResult[]> {
-    console.log('Searching web:', keywords)
-    // TODO: Implement searchDoc
-    return []
+    const searxngSearchResult = await searxngSearch(keywords)
+
+    console.log('searxngSearchResult', searxngSearchResult)
+
+    return [...searxngSearchResult.results]
   }
 
-  private processWebContext(webContext: WebContext): LangchainMessageParams {
-    let content = 'Web search results:\n\n'
+  private processWebContext(webContext: WebContext): LangchainMessageContents {
+    let content = ''
 
     for (const result of webContext.webSearchResults) {
       content += `Title: ${result.title}\n`
       content += `URL: ${result.url}\n`
-      content += `Summary: ${result.snippet}\n\n`
+      content += `Content: ${result.content}\n\n`
     }
 
-    return content
+    content = content
+      ? `
+## Web Search Results
+${content}
+${splitter}
+`
+      : ''
+
+    return [
+      {
+        type: 'text',
+        text: content
+      }
+    ]
   }
 }

@@ -1,6 +1,6 @@
 import { useRef, type FC } from 'react'
 import { useChatState } from '@webview/hooks/chat/use-chat-state'
-import { ChatService } from '@webview/services/chat-service'
+import { api } from '@webview/services/api-client'
 import type { Conversation } from '@webview/types/chat'
 
 import { GlowingCard } from '../glowing-card'
@@ -20,6 +20,7 @@ export const ChatUI: FC = () => {
     historiesConversationsWithUIState,
     newConversationUIState,
     replaceConversationAndTruncate,
+    streamConversation,
     setUIStateForSending,
     resetUIStateAfterSending,
     setConversationEditMode
@@ -34,10 +35,17 @@ export const ChatUI: FC = () => {
 
   const handleSend = async (conversation: Conversation) => {
     try {
-      replaceConversationAndTruncate(conversation)
+      const updatedContext = await replaceConversationAndTruncate(conversation)
       setUIStateForSending(conversation.id)
 
-      await ChatService.sendConversations(context)
+      await api.chat.streamChat(
+        {
+          chatContext: updatedContext
+        },
+        (chunk: Conversation) => {
+          streamConversation(chunk)
+        }
+      )
 
       setConversationEditMode(conversation.id, false)
 

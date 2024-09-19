@@ -12,14 +12,16 @@ export class GitCommitsMentionStrategy implements IMentionStrategy {
   name = 'GitCommitsMentionStrategy' as const
 
   async buildNewAttachmentsAfterAddMention(
-    data: GitCommit[],
+    data: GitCommit | GitCommit[],
     currentAttachments: Attachments
   ): Promise<Partial<Attachments>> {
+    const commits = Array.isArray(data) ? data : [data]
+
     return {
       gitContext: {
         ...currentAttachments.gitContext,
         gitCommits: removeDuplicates(
-          [...(currentAttachments.gitContext?.gitCommits || []), ...data],
+          [...(currentAttachments.gitContext?.gitCommits || []), ...commits],
           ['sha']
         )
       }

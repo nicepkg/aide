@@ -12,14 +12,16 @@ export class SelectedImagesMentionStrategy implements IMentionStrategy {
   name = 'SelectedImagesMentionStrategy' as const
 
   async buildNewAttachmentsAfterAddMention(
-    data: ImageInfo[],
+    data: ImageInfo | ImageInfo[],
     currentAttachments: Attachments
   ): Promise<Partial<Attachments>> {
+    const imgs = Array.isArray(data) ? data : [data]
+
     return {
       fileContext: {
         ...currentAttachments.fileContext,
         selectedImages: removeDuplicates(
-          [...(currentAttachments.fileContext?.selectedImages || []), ...data],
+          [...(currentAttachments.fileContext?.selectedImages || []), ...imgs],
           ['url']
         )
       }

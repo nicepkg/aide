@@ -1,0 +1,272 @@
+.message-markdown {
+  --aide-markdown-font-size: var(--vscode-font-size);
+  --aide-markdown-header-multiple: 1;
+  --aide-markdown-margin-multiple: 1.5;
+  --aide-markdown-line-height: 1.8;
+  --aide-markdown-border-radius: 8px;
+  --aide-markdown-border-color: rgba(0, 0, 0, 0.1);
+
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  font-size: var(--aide-markdown-font-size);
+  line-height: var(--aide-markdown-line-height);
+  word-break: break-word;
+}
+
+.message-markdown svg {
+  line-height: 1;
+}
+
+.message-markdown a {
+  cursor: pointer;
+  color: hsl(var(--primary));
+}
+
+.message-markdown a:hover {
+  color: hsl(var(--primary));
+  text-decoration: underline;
+}
+
+.message-markdown blockquote {
+  cursor: text;
+  margin-block: calc(var(--aide-markdown-margin-multiple) * 1em);
+  margin-inline: 0;
+  padding-block: 0;
+  padding: 1rem;
+  color: var(--color-text-secondary);
+  border-inline-start: solid 4px var(--color-border);
+  border-radius: 0.5rem;
+}
+
+.message-markdown blockquote *:first-child {
+  margin-block-start: 0;
+}
+
+.message-markdown blockquote *:last-child {
+  margin-block-end: 0;
+}
+
+.message-markdown code:not(:has(span)) {
+  cursor: text;
+  display: inline;
+  margin-inline: 0.25em;
+  padding-block: 0.2em;
+  padding-inline: 0.4em;
+  word-break: break-word;
+  white-space: break-spaces;
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  border-radius: 0.25em;
+}
+
+.message-markdown details {
+  cursor: pointer;
+  margin-block: calc(var(--aide-markdown-margin-multiple) * 1em);
+  padding-block: 0.75em;
+  padding-inline: 1em;
+  background: var(--color-fill-tertiary);
+  border-radius: calc(var(--aide-markdown-border-radius) * 1px);
+  box-shadow: 0 0 0 1px var(--aide-markdown-border-color);
+}
+
+.message-markdown details summary {
+  cursor: text;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  list-style: none;
+}
+
+.message-markdown details summary::before {
+  content: '';
+  position: absolute;
+  inset-inline-end: 1.25em;
+  transform: rotateZ(-45deg);
+  display: block;
+  width: 0.4em;
+  height: 0.4em;
+  font-family: var(--font-family);
+  border-block-end: 1.5px solid var(--color-text-secondary);
+  border-inline-end: 1.5px solid var(--color-text-secondary);
+  transition: transform 200ms var(--motion-ease-out);
+}
+
+.message-markdown details[open] summary {
+  padding-block-end: 0.75em;
+  border-block-end: 1px dashed var(--color-border);
+}
+
+.message-markdown details[open] summary::before {
+  transform: rotateZ(45deg);
+}
+
+.message-markdown h1,
+.message-markdown h2,
+.message-markdown h3,
+.message-markdown h4,
+.message-markdown h5,
+.message-markdown h6 {
+  cursor: text;
+  margin-block: max(
+    calc(
+      var(--aide-markdown-header-multiple) *
+        var(--aide-markdown-margin-multiple) * 0.4em
+    ),
+    var(--aide-markdown-font-size)
+  );
+  font-weight: bold;
+  line-height: 1.25;
+}
+
+.message-markdown h1 {
+  font-size: calc(
+    var(--aide-markdown-font-size) *
+      (1 + 1.5 * var(--aide-markdown-header-multiple))
+  );
+}
+
+.message-markdown h2 {
+  font-size: calc(
+    var(--aide-markdown-font-size) * (1 + var(--aide-markdown-header-multiple))
+  );
+}
+
+.message-markdown h3 {
+  font-size: calc(
+    var(--aide-markdown-font-size) *
+      (1 + 0.5 * var(--aide-markdown-header-multiple))
+  );
+}
+
+.message-markdown h4 {
+  font-size: calc(
+    var(--aide-markdown-font-size) *
+      (1 + 0.25 * var(--aide-markdown-header-multiple))
+  );
+}
+
+.message-markdown h5,
+.message-markdown h6 {
+  font-size: calc(var(--aide-markdown-font-size) * 1);
+}
+
+.message-markdown hr {
+  margin-block: calc(var(--aide-markdown-margin-multiple) * 1.5em);
+  border-color: var(--color-border-secondary);
+  border-style: dashed;
+  border-width: 1px;
+  border-block-start: none;
+  border-inline-start: none;
+  border-inline-end: none;
+}
+
+.message-markdown img {
+  cursor: pointer;
+  max-width: 100%;
+}
+
+.message-markdown > img,
+.message-markdown > p > img {
+  margin-block: calc(var(--aide-markdown-margin-multiple) * 1em);
+  border-radius: calc(var(--aide-markdown-border-radius) * 1px);
+  box-shadow: 0 0 0 1px var(--aide-markdown-border-color);
+}
+
+.message-markdown kbd {
+  cursor: default;
+  display: inline-block;
+  min-width: 1em;
+  margin-inline: 0.25em;
+  padding-block: 0.2em;
+  padding-inline: 0.4em;
+  font-family: var(--font-family);
+  font-weight: 500;
+  text-align: center;
+  background: var(--color-bg-layout);
+  border: 1px solid var(--color-border-secondary);
+  border-radius: 0.25em;
+}
+
+.message-markdown li {
+  cursor: text;
+  margin-block: calc(var(--aide-markdown-margin-multiple) * 0.33em);
+}
+
+.message-markdown li p {
+  display: inline;
+}
+
+.message-markdown ul,
+.message-markdown ol {
+  cursor: text;
+  margin-block: calc(var(--aide-markdown-margin-multiple) * 1em);
+  margin-inline-start: 1em;
+  padding-inline-start: 0;
+  list-style-position: outside;
+}
+
+.message-markdown ul ul,
+.message-markdown ul ol,
+.message-markdown ol ul,
+.message-markdown ol ol {
+  margin-block: 0;
+}
+
+.message-markdown ul li,
+.message-markdown ol li {
+  margin-inline-start: 1em;
+}
+
+.message-markdown ol {
+  list-style: auto;
+}
+
+.message-markdown ul {
+  list-style-type: none;
+}
+
+.message-markdown ul li::before {
+  content: '-';
+  display: inline-block;
+  margin-inline: -1em 0.5em;
+  opacity: 0.5;
+}
+
+.message-markdown p {
+  margin-block: calc(var(--aide-markdown-margin-multiple) * 0.5em);
+}
+
+.message-markdown pre,
+.message-markdown [data-code-type='highlighter'] {
+  white-space: break-spaces;
+  border: none;
+}
+
+.message-markdown pre > code,
+.message-markdown [data-code-type='highlighter'] > code {
+  padding: 0 !important;
+  line-height: 1.6;
+  border: none !important;
+}
+
+.message-markdown strong {
+  cursor: text;
+  font-weight: 600;
+}
+
+.message-markdown table code {
+  word-break: break-word;
+}
+
+.message-markdown > video,
+.message-markdown > p > video {
+  cursor: pointer;
+  margin-block: calc(var(--aide-markdown-margin-multiple) * 1em);
+  border-radius: calc(var(--aide-markdown-border-radius) * 1px);
+  box-shadow: 0 0 0 1px var(--aide-markdown-border-color);
+}
+
+.message-markdown video {
+  max-width: 100%;
+}

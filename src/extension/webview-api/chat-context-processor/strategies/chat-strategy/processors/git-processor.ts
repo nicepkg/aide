@@ -3,25 +3,40 @@ import {
   GitContext,
   GitDiff,
   type GitPullRequest
-} from '../types/chat-context/git-context'
+} from '@extension/webview-api/chat-context-processor/types/chat-context'
+import type { LangchainMessageContents } from '@extension/webview-api/chat-context-processor/types/langchain-message'
+
+import { splitter } from '../prompts'
 import type { ContextProcessor } from '../types/context-processor'
-import type { LangchainMessageParams } from '../types/langchain-message'
 
 export class GitProcessor implements ContextProcessor<GitContext> {
-  async buildMessageParams(
+  async buildMessageContents(
     attachment: GitContext
-  ): Promise<LangchainMessageParams> {
+  ): Promise<LangchainMessageContents> {
     return this.processGitContext(attachment)
   }
 
-  private processGitContext(gitContext: GitContext): LangchainMessageParams {
+  private processGitContext(gitContext: GitContext): LangchainMessageContents {
     let content = ''
 
     content += this.processCommits(gitContext.gitCommits)
     content += this.processPullRequests(gitContext.gitPullRequests)
     content += this.processDiffs(gitContext.gitDiffs)
 
-    return content
+    content = content
+      ? `
+## Git Context
+${content}
+${splitter}
+`
+      : ''
+
+    return [
+      {
+        type: 'text',
+        text: content
+      }
+    ]
   }
 
   private processCommits(commits: GitCommit[]): string {

@@ -1,12 +1,13 @@
-import { tryParseJSON } from '@extension/utils'
+import type {
+  BaseToolContext,
+  ChatContext,
+  Conversation
+} from '@extension/webview-api/chat-context-processor/types/chat-context'
 import type { ToolCall } from '@langchain/core/dist/messages/tool'
-import { tool, type DynamicStructuredTool } from '@langchain/core/tools'
+import { tool } from '@langchain/core/tools'
 
-import type { ChatContext } from '../types/chat-context'
-import type { BaseToolContext } from '../types/chat-context/base-tool-context'
-import type { Conversation } from '../types/chat-context/conversation'
 import type { ContextProcessor } from '../types/context-processor'
-import type { AIModel, ToolsInfoMap } from '../types/core'
+import type { ToolsInfoMap } from '../types/tools'
 import type { ProcessorRegistry } from './processor-registry'
 
 export class ToolManager {
@@ -43,43 +44,21 @@ export class ToolManager {
     return toolsInfoMap
   }
 
-  bindToolsToModel(
-    aiModel: AIModel,
-    aiTools: DynamicStructuredTool[],
-    aiModelAbortController: AbortController
-  ) {
-    return aiModel.bindTools!(aiTools).bind({
-      signal: aiModelAbortController.signal
-    })
-  }
-
-  async invokeToolAndGetResult(
-    selectedTool: DynamicStructuredTool,
-    toolCall: ToolCall
-  ): Promise<any> {
-    const toolMessage = await selectedTool.invoke(toolCall)
-    return (
-      tryParseJSON(toolMessage?.content || toolMessage?.kwargs?.content) || {}
-    )
-  }
-
-  async processToolCalls(
+  async updateContextByToolCalls(
     toolCalls: ToolCall[],
     aiToolsInfoMap: ToolsInfoMap,
-    lastConversation: Conversation,
+    lastHumanConversation: Conversation,
     context: ChatContext
   ): Promise<ChatContext> {
     const updatedContext = { ...context }
-    const updatedLastConversation = { ...lastConversation }
+    const updatedLastConversation = { ...lastHumanConversation }
 
     if (!updatedLastConversation.attachments) return updatedContext
 
     for (const toolCall of toolCalls) {
       const toolInfo = aiToolsInfoMap[toolCall.name]!
-      const toolResult = await this.invokeToolAndGetResult(
-        toolInfo.tool,
-        toolCall
-      )
+      const toolMessage = await toolInfo.tool.invoke(toolCall)
+      const toolResult = toolMessage?.content ?? toolMessage?.kwargs?.content
 
       const newAttachment = await toolInfo.config.reBuildAttachment(
         toolResult,

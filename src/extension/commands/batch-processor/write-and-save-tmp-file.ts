@@ -5,8 +5,8 @@ import { getTmpFileUri } from '@extension/file-utils/tmp-file/get-tmp-file-uri'
 import { tmpFileWriter } from '@extension/file-utils/tmp-file/tmp-file-writer'
 import { VsCodeFS } from '@extension/file-utils/vscode-fs'
 import { logger } from '@extension/logger'
-import { getLanguageId } from '@extension/utils'
 import { HumanMessage } from '@langchain/core/messages'
+import { getLanguageId } from '@shared/utils/vscode-lang'
 import * as vscode from 'vscode'
 
 export const writeAndSaveTmpFile = async ({

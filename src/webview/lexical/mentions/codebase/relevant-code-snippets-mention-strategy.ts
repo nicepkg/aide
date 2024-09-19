@@ -12,16 +12,18 @@ export class RelevantCodeSnippetsMentionStrategy implements IMentionStrategy {
   name = 'RelevantCodeSnippetsMentionStrategy' as const
 
   async buildNewAttachmentsAfterAddMention(
-    data: CodeSnippet[],
+    data: CodeSnippet | CodeSnippet[],
     currentAttachments: Attachments
   ): Promise<Partial<Attachments>> {
+    const snippets = Array.isArray(data) ? data : [data]
+
     return {
       codebaseContext: {
         ...currentAttachments.codebaseContext,
         relevantCodeSnippets: removeDuplicates(
           [
             ...(currentAttachments.codebaseContext?.relevantCodeSnippets || []),
-            ...data
+            ...snippets
           ],
           ['fullPath', 'code']
         )
