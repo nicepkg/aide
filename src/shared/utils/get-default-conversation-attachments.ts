@@ -2,8 +2,7 @@ import type { Attachments } from '@extension/webview-api/chat-context-processor/
 
 export const getDefaultConversationAttachments = (): Attachments => ({
   codeContext: {
-    codeChunks: [],
-    tmpCodeChunk: []
+    codeChunks: []
   },
   codebaseContext: {
     relevantCodeSnippets: []
@@ -16,12 +15,12 @@ export const getDefaultConversationAttachments = (): Attachments => ({
   fileContext: {
     selectedFiles: [],
     selectedFolders: [],
-    selectedImages: []
+    selectedImages: [],
+    currentFiles: []
   },
   gitContext: {
     gitCommits: [],
-    gitDiffs: [],
-    gitPullRequests: []
+    gitDiffs: []
   },
   webContext: {
     enableTool: false,

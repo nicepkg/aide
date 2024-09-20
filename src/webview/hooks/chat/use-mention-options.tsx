@@ -18,7 +18,6 @@ import { SelectedFilesMentionStrategy } from '@webview/lexical/mentions/files/se
 import { SelectedFoldersMentionStrategy } from '@webview/lexical/mentions/folders/selected-folders-mention-strategy'
 import { GitCommitsMentionStrategy } from '@webview/lexical/mentions/git/git-commits-mention-strategy'
 import { GitDiffsMentionStrategy } from '@webview/lexical/mentions/git/git-diffs-mention-strategy'
-import { GitPullRequestsMentionStrategy } from '@webview/lexical/mentions/git/git-pull-requests-mention-strategy'
 import { EnableWebToolMentionStrategy } from '@webview/lexical/mentions/web/enable-web-tool-mention-strategy'
 import {
   MentionCategory,
@@ -186,7 +185,7 @@ export const useMentionOptions = () => {
           label: 'PR (Diff with Main Branch)',
           category: MentionCategory.Git,
           searchKeywords: ['pull request', 'pr', 'diff'],
-          mentionStrategy: new GitPullRequestsMentionStrategy(),
+          mentionStrategy: new GitDiffsMentionStrategy(),
           itemLayoutProps: {
             icon: <MaskOffIcon className="size-4 mr-1" />,
             label: 'PR (Diff with Main Branch)'

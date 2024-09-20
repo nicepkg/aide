@@ -7,7 +7,7 @@ import { VsCodeFS } from './vscode-fs'
 
 export interface FileInfo {
   type: 'file'
-  content: string
+  content: string // if isGetFileContent is false, content will be empty
   relativePath: string
   fullPath: string
 }
@@ -23,6 +23,7 @@ type FsType = 'file' | 'folder'
 interface TraverseOptions<T, Type extends FsType = 'file'> {
   type: Type
   filesOrFolders: string[]
+  isGetFileContent?: boolean // default is true
   workspacePath: string
   itemCallback: (
     itemInfo: Type extends 'file' ? FileInfo : FolderInfo
@@ -31,12 +32,17 @@ interface TraverseOptions<T, Type extends FsType = 'file'> {
 
 const getFileInfo = async (
   filePath: string,
-  workspacePath: string
+  workspacePath: string,
+  isGetFileContent = true
 ): Promise<FileInfo | null> => {
-  const fileContent = await VsCodeFS.readFileOrOpenDocumentContent(
-    filePath,
-    'utf-8'
-  )
+  let fileContent = ''
+
+  if (isGetFileContent) {
+    fileContent = await VsCodeFS.readFileOrOpenDocumentContent(
+      filePath,
+      'utf-8'
+    )
+  }
   const relativePath = path.relative(workspacePath, filePath)
 
   return {
@@ -63,7 +69,13 @@ const getFolderInfo = async (
 export const traverseFileOrFolders = async <T, Type extends FsType>(
   props: TraverseOptions<T, Type>
 ): Promise<T[]> => {
-  const { type = 'file', filesOrFolders, workspacePath, itemCallback } = props
+  const {
+    type = 'file',
+    filesOrFolders,
+    isGetFileContent = true,
+    workspacePath,
+    itemCallback
+  } = props
   const itemPathSet = new Set<string>()
   const results: T[] = []
 
@@ -79,7 +91,11 @@ export const traverseFileOrFolders = async <T, Type extends FsType>(
     if (itemPathSet.has(filePath)) return
 
     itemPathSet.add(filePath)
-    const fileInfo = await getFileInfo(filePath, workspacePath)
+    const fileInfo = await getFileInfo(
+      filePath,
+      workspacePath,
+      isGetFileContent
+    )
     results.push(await itemCallback(fileInfo as any))
   }
 

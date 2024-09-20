@@ -357,7 +357,8 @@
     "@ianvs/prettier-plugin-sort-imports": "^4.3.1",
     "@langchain/anthropic": "^0.3.1",
     "@langchain/community": "^0.3.1",
-    "@langchain/core": "0.3.2",
+    "@langchain/core": "0.3.3",
+    "@langchain/langgraph": "^0.2.8",
     "@langchain/openai": "^0.3.0",
     "@lexical/code": "^0.17.1",
     "@lexical/react": "^0.17.1",
@@ -481,7 +482,7 @@
   },
   "pnpm": {
     "overrides": {
-      "@langchain/core": "0.3.2",
+      "@langchain/core": "0.3.3",
       "lexical": "^0.17.1"
     }
   },

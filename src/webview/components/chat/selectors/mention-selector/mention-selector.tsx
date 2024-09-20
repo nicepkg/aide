@@ -60,7 +60,7 @@ export const MentionSelector: React.FC<MentionSelectorProps> = ({
     onChange: onOpenChange
   })
 
-  const currentOptions = optionsStack[optionsStack.length - 1] || []
+  const currentOptions = optionsStack.at(-1) || []
 
   const { filteredOptions, isFlattened, setIsFlattened } =
     useFilteredMentionOptions({

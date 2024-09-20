@@ -50,19 +50,6 @@ export const useChatState = () => {
       })
     })
 
-  const streamConversation = (conversation: Conversation) => {
-    setContext(draft => {
-      const index = draft.conversations.findIndex(c => c.id === conversation.id)
-
-      if (index === -1) {
-        // add new conversation
-        draft.conversations.push(conversation)
-      } else {
-        draft.conversations[index] = conversation
-      }
-    })
-  }
-
   const setUIStateForSending = (conversationId: string) => {
     setAllConversationsUIState({ sendButtonDisabled: true })
     setConversationUIState(conversationId, { isLoading: true })
@@ -98,7 +85,6 @@ export const useChatState = () => {
     historiesConversationsWithUIState,
     newConversationUIState,
     replaceConversationAndTruncate,
-    streamConversation,
     setUIStateForSending,
     resetUIStateAfterSending,
     setConversationEditMode

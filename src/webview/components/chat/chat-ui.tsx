@@ -20,7 +20,6 @@ export const ChatUI: FC = () => {
     historiesConversationsWithUIState,
     newConversationUIState,
     replaceConversationAndTruncate,
-    streamConversation,
     setUIStateForSending,
     resetUIStateAfterSending,
     setConversationEditMode
@@ -42,8 +41,11 @@ export const ChatUI: FC = () => {
         {
           chatContext: updatedContext
         },
-        (chunk: Conversation) => {
-          streamConversation(chunk)
+        (conversations: Conversation[]) => {
+          console.log('Received conversations:', conversations)
+          setContext(draft => {
+            draft.conversations = conversations
+          })
         }
       )
 

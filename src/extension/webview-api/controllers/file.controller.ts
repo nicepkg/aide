@@ -58,6 +58,7 @@ export class FileController extends Controller {
     return await traverseFileOrFolders({
       type: 'file',
       filesOrFolders: req.filesOrFolders,
+      isGetFileContent: false,
       workspacePath: workspaceFolder.uri.fsPath,
       itemCallback: fileInfo => fileInfo
     })
@@ -70,6 +71,7 @@ export class FileController extends Controller {
     return await traverseFileOrFolders({
       type: 'folder',
       filesOrFolders: req.folders,
+      isGetFileContent: false,
       workspacePath: workspaceFolder.uri.fsPath,
       itemCallback: folderInfo => folderInfo
     })

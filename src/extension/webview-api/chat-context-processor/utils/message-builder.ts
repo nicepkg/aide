@@ -14,7 +14,7 @@ export class MessageBuilder {
   static createMessage(
     type: MessageType,
     messageContents: LangchainMessageContents
-  ): LangchainMessage {
+  ): LangchainMessage | null {
     switch (type) {
       case 'human':
         return new HumanMessage({ content: messageContents })
@@ -23,7 +23,7 @@ export class MessageBuilder {
       case 'system':
         return new SystemMessage({ content: messageContents })
       default:
-        throw new Error(`Unsupported message type: ${type}`)
+        return null
     }
   }
 }

@@ -1,9 +1,8 @@
 import type { BaseToolContext } from './base-tool-context'
 
 export interface DocInfo {
-  title: string
   content: string
-  url?: string
+  path: string // file path or url
 }
 
 export interface DocContext extends BaseToolContext {

@@ -1,12 +1,13 @@
-import type { IterableReadableStream } from '@langchain/core/dist/utils/stream'
-
 import { AutoTaskStrategy } from './strategies/auto-task-strategy'
 import type { BaseStrategy } from './strategies/base-strategy'
 import { ChatStrategy } from './strategies/chat-strategy'
 import { ComposerStrategy } from './strategies/composer-strategy'
 import { V0Strategy } from './strategies/v0-strategy'
-import { ChatContextType, type ChatContext } from './types/chat-context'
-import type { LangchainMessage } from './types/langchain-message'
+import {
+  ChatContextType,
+  type ChatContext,
+  type Conversation
+} from './types/chat-context'
 
 export class ChatContextProcessor {
   private strategies: Map<ChatContextType, BaseStrategy>
@@ -19,7 +20,7 @@ export class ChatContextProcessor {
     this.strategies.set(ChatContextType.AutoTask, new AutoTaskStrategy())
   }
 
-  getCurrentStrategy(context: ChatContext): BaseStrategy {
+  private getCurrentStrategy(context: ChatContext): BaseStrategy {
     const strategy =
       this.strategies.get(context.type) ||
       this.strategies.get(ChatContextType.Chat)
@@ -27,9 +28,9 @@ export class ChatContextProcessor {
     return strategy!
   }
 
-  async getAnswers(
+  getAnswers(
     context: ChatContext
-  ): Promise<IterableReadableStream<LangchainMessage>> {
+  ): AsyncGenerator<Conversation[], void, unknown> {
     const strategy = this.getCurrentStrategy(context)
     return strategy.getAnswers(context)
   }

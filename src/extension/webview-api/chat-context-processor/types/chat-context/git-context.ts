@@ -45,17 +45,7 @@ export interface GitCommit {
   date: string
 }
 
-export interface GitPullRequest {
-  id: number
-  title: string
-  description: string
-  author: string
-  url: string
-  diff: GitDiff[]
-}
-
 export interface GitContext {
   gitCommits: GitCommit[]
-  gitPullRequests: GitPullRequest[]
   gitDiffs: GitDiff[]
 }

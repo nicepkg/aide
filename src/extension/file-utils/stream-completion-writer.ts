@@ -5,8 +5,8 @@ import {
   removeCodeBlockStartSyntax,
   removeCodeBlockSyntax
 } from '@extension/utils'
-import type { IterableReadableStream } from '@langchain/core/dist/utils/stream'
 import type { AIMessageChunk } from '@langchain/core/messages'
+import type { IterableReadableStream } from '@langchain/core/utils/stream'
 import { sleep } from '@shared/utils/common'
 import * as vscode from 'vscode'
 

@@ -77,7 +77,7 @@ const convertFilesToTreeItems = (
     })
 
   const buildTreeItems = (node: any, path: string[] = []): TreeItem => {
-    const name = path[path.length - 1] || 'root'
+    const name = path.at(-1) || 'root'
     // const fullPath = toPlatformPath(path.join('/'))
 
     if (typeof node.type === 'string') {

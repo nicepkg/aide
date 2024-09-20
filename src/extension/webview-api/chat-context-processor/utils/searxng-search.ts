@@ -1,5 +1,7 @@
-import type { WebSearchResult } from '@webview/types/chat'
 import * as cheerio from 'cheerio'
+
+import type { WebSearchResult } from '../types/chat-context'
+import { getRandomHeaders } from './fake-request-headers'
 
 interface SearxngSearchOptions {
   apiBase: string
@@ -75,7 +77,7 @@ export const searxngSearch = async (
   options?: SearxngSearchOptions
 ): Promise<SearxngResults> => {
   const {
-    apiBase = 'https://searx.tiekoetter.com',
+    apiBase = 'https://search.hbubli.cc',
     params = {},
     headers = {}
   } = options || {}
@@ -106,7 +108,21 @@ export const searxngSearch = async (
   try {
     const resp = await fetch(url, {
       method: 'GET',
-      headers: { ...headers },
+      headers: {
+        ...getRandomHeaders(),
+        Accept:
+          'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+        'Accept-Encoding': 'gzip, deflate, br',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Cache-Control': 'no-cache',
+        Pragma: 'no-cache',
+        'Sec-Fetch-Dest': 'document',
+        'Sec-Fetch-Mode': 'navigate',
+        'Sec-Fetch-Site': 'none',
+        'Sec-Fetch-User': '?1',
+        'Upgrade-Insecure-Requests': '1',
+        ...headers
+      },
       signal: AbortSignal.timeout(5 * 1000)
     })
 

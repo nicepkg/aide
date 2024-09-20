@@ -6,6 +6,8 @@ import {
   type FunctionMessage,
   type ToolMessage
 } from '@langchain/core/messages'
+import type { RunnableToolLike } from '@langchain/core/runnables'
+import type { StructuredToolInterface } from '@langchain/core/tools'
 
 export type LangchainMessage =
   | HumanMessage
@@ -25,3 +27,5 @@ export type LangchainMessageContents = (
       image_url: string
     }
 )[]
+
+export type LangchainTool = StructuredToolInterface | RunnableToolLike

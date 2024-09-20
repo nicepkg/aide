@@ -1,12 +1,8 @@
-import { convertToLangchainMessageContents } from '@shared/utils/convert-to-langchain-message-contents'
-import { mergeStreamLangchainMessageContents } from '@shared/utils/merge-stream-langchain-message-contents'
-
 import { ChatContextProcessor } from '../chat-context-processor'
 import type {
   ChatContext,
   Conversation
 } from '../chat-context-processor/types/chat-context'
-import { convertLangchainMessageToConversation } from '../chat-context-processor/utils/convert-langchain-message-to-conversation'
 import { Controller } from '../types'
 
 export class ChatController extends Controller {
@@ -14,23 +10,13 @@ export class ChatController extends Controller {
 
   async *streamChat(req: {
     chatContext: ChatContext
-  }): AsyncGenerator<Conversation, void, unknown> {
+  }): AsyncGenerator<Conversation[], void, unknown> {
     const { chatContext } = req
     const chatContextProcessor = new ChatContextProcessor()
     const answerStream = await chatContextProcessor.getAnswers(chatContext)
 
-    let conversation: Conversation | null = null
-    for await (const answer of answerStream) {
-      if (!conversation) {
-        conversation = convertLangchainMessageToConversation(answer)
-      }
-
-      conversation.contents = mergeStreamLangchainMessageContents(
-        conversation.contents,
-        convertToLangchainMessageContents(answer.content)
-      )
-
-      yield conversation
+    for await (const conversations of answerStream) {
+      yield conversations
     }
   }
 
