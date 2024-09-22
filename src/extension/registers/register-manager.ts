@@ -1,7 +1,7 @@
 import type { CommandManager } from '@extension/commands/command-manager'
 import * as vscode from 'vscode'
 
-import { BaseRegister } from './base.register'
+import { BaseRegister } from './base-register'
 
 export class RegisterManager {
   private registers: BaseRegister[] = []

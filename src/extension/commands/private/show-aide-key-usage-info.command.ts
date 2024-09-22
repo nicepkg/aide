@@ -1,7 +1,7 @@
 import { aideKeyUsageInfo } from '@extension/ai/aide-key-request'
 import { getConfigKey } from '@extension/config'
 import { t } from '@extension/i18n'
-import { AideKeyUsageStatusBarRegister } from '@extension/registers/aide-key-usage-statusbar.register'
+import { AideKeyUsageStatusBarRegister } from '@extension/registers/aide-key-usage-statusbar-register'
 import { formatNumber } from '@extension/utils'
 import * as vscode from 'vscode'
 

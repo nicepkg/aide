@@ -96,4 +96,13 @@ export class VsCodeFS {
     const entries = await this.fs.readDirectory(uri)
     return entries.map(([name]) => name)
   }
+
+  static async exists(path: string): Promise<boolean> {
+    try {
+      await this.stat(path)
+      return true
+    } catch {
+      return false
+    }
+  }
 }

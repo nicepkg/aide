@@ -15,7 +15,10 @@ import { VsCodeFS } from './vscode-fs'
  * @returns A function that takes a full file path as input and returns a boolean indicating whether the file should be ignored.
  * @throws An error if the workspace path cannot be determined.
  */
-export const createShouldIgnore = async (fullDirPath: string) => {
+export const createShouldIgnore = async (
+  fullDirPath: string,
+  customIgnorePatterns?: string[]
+) => {
   const dirUri = vscode.Uri.file(fullDirPath)
   const workspacePath = vscode.workspace.getWorkspaceFolder(dirUri)?.uri.fsPath
 
@@ -23,6 +26,10 @@ export const createShouldIgnore = async (fullDirPath: string) => {
 
   const ignorePatterns = await getConfigKey('ignorePatterns')
   const respectGitIgnore = await getConfigKey('respectGitIgnore')
+
+  if (customIgnorePatterns) {
+    ignorePatterns.push(...customIgnorePatterns)
+  }
 
   let ig: ReturnType<typeof ignore> | null = null
 
@@ -70,9 +77,11 @@ export const createShouldIgnore = async (fullDirPath: string) => {
  * @returns A promise that resolves to an array of strings representing the absolute paths of the valid files.
  */
 export const getAllValidFiles = async (
-  fullDirPath: string
+  fullDirPath: string,
+  customShouldIgnore?: (fullFilePath: string) => boolean
 ): Promise<string[]> => {
-  const shouldIgnore = await createShouldIgnore(fullDirPath)
+  const shouldIgnore =
+    customShouldIgnore || (await createShouldIgnore(fullDirPath))
 
   return glob('**/*', {
     cwd: fullDirPath,
@@ -101,9 +110,11 @@ export const getAllValidFiles = async (
  * @returns A promise that resolves to an array of strings representing the absolute paths of the valid folders.
  */
 export const getAllValidFolders = async (
-  fullDirPath: string
+  fullDirPath: string,
+  customShouldIgnore?: (fullFilePath: string) => boolean
 ): Promise<string[]> => {
-  const shouldIgnore = await createShouldIgnore(fullDirPath)
+  const shouldIgnore =
+    customShouldIgnore || (await createShouldIgnore(fullDirPath))
 
   const filesOrFolders = await glob('**/*', {
     cwd: fullDirPath,

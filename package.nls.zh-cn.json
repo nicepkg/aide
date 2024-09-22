@@ -12,7 +12,6 @@
   "command.quickCloseFileWithoutSave": "快速关闭",
   "command.replaceFile": "替换原文",
   "command.showDiff": "对比原文",
-  "view.checkboxFileTree": "Aide 聊天文件选择器",
   "config.title": "Aide 配置",
   "config.openaiKey.description": "OpenAI Key, [点击查看在线文档](https://aide.nicepkg.cn/zh/guide/getting-started/how-to-configure-openai-key) 或者 [我没有 OpenAI Key](https://aide.nicepkg.cn/zh/guide/getting-started/how-to-configure-openai-key#%E6%88%91%E6%B2%A1%E6%9C%89-openai-key)",
   "config.openaiModel.description": "OpenAI Model, [点击查看在线文档](https://aide.nicepkg.cn/zh/guide/configuration/openai-model)",

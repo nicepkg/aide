@@ -1,4 +1,4 @@
-import type { AideWebViewProvider } from '@extension/registers/webview.register'
+import type { AideWebViewProvider } from '@extension/registers/webview-register'
 
 import { BaseCommand } from '../base.command'
 

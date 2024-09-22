@@ -2,7 +2,11 @@ import * as path from 'path'
 import type { MaybePromise } from '@extension/types/common'
 import * as vscode from 'vscode'
 
-import { getAllValidFiles, getAllValidFolders } from './ignore-patterns'
+import {
+  createShouldIgnore,
+  getAllValidFiles,
+  getAllValidFolders
+} from './ignore-patterns'
 import { VsCodeFS } from './vscode-fs'
 
 export interface FileInfo {
@@ -25,6 +29,7 @@ interface TraverseOptions<T, Type extends FsType = 'file'> {
   filesOrFolders: string[]
   isGetFileContent?: boolean // default is true
   workspacePath: string
+  ignorePatterns?: string[]
   itemCallback: (
     itemInfo: Type extends 'file' ? FileInfo : FolderInfo
   ) => MaybePromise<T>
@@ -74,13 +79,16 @@ export const traverseFileOrFolders = async <T, Type extends FsType>(
     filesOrFolders,
     isGetFileContent = true,
     workspacePath,
+    ignorePatterns,
     itemCallback
   } = props
   const itemPathSet = new Set<string>()
   const results: T[] = []
 
+  const shouldIgnore = await createShouldIgnore(workspacePath, ignorePatterns)
+
   const processFolder = async (folderPath: string) => {
-    if (itemPathSet.has(folderPath)) return
+    if (itemPathSet.has(folderPath) || shouldIgnore(folderPath)) return
 
     itemPathSet.add(folderPath)
     const folderInfo = await getFolderInfo(folderPath, workspacePath)
@@ -88,7 +96,7 @@ export const traverseFileOrFolders = async <T, Type extends FsType>(
   }
 
   const processFile = async (filePath: string) => {
-    if (itemPathSet.has(filePath)) return
+    if (itemPathSet.has(filePath) || shouldIgnore(filePath)) return
 
     itemPathSet.add(filePath)
     const fileInfo = await getFileInfo(
@@ -99,6 +107,13 @@ export const traverseFileOrFolders = async <T, Type extends FsType>(
     results.push(await itemCallback(fileInfo as any))
   }
 
+  const getAllValidItemsWithCustomIgnore = async (dirPath: string) => {
+    if (type === 'folder') {
+      return getAllValidFolders(dirPath, shouldIgnore)
+    }
+    return getAllValidFiles(dirPath, shouldIgnore)
+  }
+
   await Promise.allSettled(
     filesOrFolders.map(async fileOrFolder => {
       const absolutePath = path.isAbsolute(fileOrFolder)
@@ -107,21 +122,16 @@ export const traverseFileOrFolders = async <T, Type extends FsType>(
       const stat = await VsCodeFS.stat(absolutePath)
 
       if (stat.type === vscode.FileType.Directory) {
-        if (type === 'folder') {
-          const allFolders = await getAllValidFolders(absolutePath)
-          await Promise.allSettled(
-            allFolders.map(async folderPath => {
-              await processFolder(folderPath)
-            })
-          )
-        } else if (type === 'file') {
-          const allFiles = await getAllValidFiles(absolutePath)
-          await Promise.allSettled(
-            allFiles.map(async filePath => {
-              await processFile(filePath)
-            })
-          )
-        }
+        const allItems = await getAllValidItemsWithCustomIgnore(absolutePath)
+        await Promise.allSettled(
+          allItems.map(async itemPath => {
+            if (type === 'folder') {
+              await processFolder(itemPath)
+            } else {
+              await processFile(itemPath)
+            }
+          })
+        )
       }
 
       if (stat.type === vscode.FileType.File && type === 'file') {

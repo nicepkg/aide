@@ -20,13 +20,6 @@ const chatWorkflow = new StateGraph(chatGraphState)
   .addNode(ChatGraphNodeName.WebSearch, webSearchNode)
   .addNode(ChatGraphNodeName.Generate, generateNode)
 
-// chatWorkflow
-//   .addEdge(START, ChatGraphNodeName.Agent)
-//   .addEdge(ChatGraphNodeName.Agent, ChatGraphNodeName.DocRetrieve)
-//   .addEdge(ChatGraphNodeName.DocRetrieve, ChatGraphNodeName.WebSearch)
-//   .addEdge(ChatGraphNodeName.WebSearch, ChatGraphNodeName.Generate)
-//   .addEdge(ChatGraphNodeName.Generate, END)
-
 chatWorkflow
   .addConditionalEdges(START, createSmartRoute(ChatGraphNodeName.Agent))
   .addConditionalEdges(
