@@ -403,6 +403,7 @@
     "apache-arrow": "^17.0.0",
     "autoprefixer": "^10.4.20",
     "babel-plugin-react-compiler": "latest",
+    "chalk": "^5.3.0",
     "cheerio": "^1.0.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",

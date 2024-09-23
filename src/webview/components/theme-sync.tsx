@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { logger } from '@webview/utils/logger'
 import { hsla, parseToHsla } from 'color2k'
 
 const THEME_CHECK_INTERVAL = 100
@@ -99,7 +100,7 @@ const syncTheme = () => {
           )
         }
       } catch (error) {
-        console.warn(`Failed to parse color for ${key}: ${value}`, error)
+        logger.warn(`Failed to parse color for ${key}: ${value}`, error)
       }
     }
   })

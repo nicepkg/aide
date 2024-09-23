@@ -1,49 +1,93 @@
+import crypto from 'crypto'
 import os from 'os'
 import path from 'path'
-import JSONC from 'comment-json'
+import { getWorkspaceFolder } from '@extension/utils'
 import fs from 'fs-extra'
+
+import { VsCodeFS } from './vscode-fs'
 
 const AIDE_DIR = process.env.AIDE_GLOBAL_DIR ?? path.join(os.homedir(), '.aide')
 
-export class PathManager {
-  static ensureDir(dirPath: string): string {
-    fs.ensureDirSync(dirPath)
-    return dirPath
+export const getExt = (filePath: string): string =>
+  path.extname(filePath).slice(1)
+
+export class AidePaths {
+  private static instance: AidePaths
+
+  private aideDir: string
+
+  private constructor() {
+    this.aideDir = AIDE_DIR
   }
 
-  static getPath(...segments: string[]): string {
-    return PathManager.ensureDir(path.join(AIDE_DIR, ...segments))
-  }
-
-  static getFilePath(...segments: string[]): string {
-    return path.join(AIDE_DIR, ...segments)
-  }
-
-  static writeJsonFile(filePath: string, data: any): void {
-    fs.writeFileSync(filePath, JSON.stringify(data, null, 2))
-  }
-
-  static readJsonFile(filePath: string): any {
-    return JSONC.parse(fs.readFileSync(filePath, 'utf8'))
-  }
-
-  static getExt(filePath: string): string {
-    return path.extname(filePath).slice(1)
-  }
-}
-
-export const Paths = {
-  aideDir: AIDE_DIR,
-  config: () => PathManager.getFilePath('index', 'config.json'),
-  sessionFile: (sessionId: string) =>
-    PathManager.getFilePath('sessions', `${sessionId}.json`),
-  sessionsList: () => {
-    const filePath = PathManager.getFilePath('sessions', 'sessions.json')
-    if (!fs.existsSync(filePath)) {
-      PathManager.writeJsonFile(filePath, [])
+  public static getInstance(): AidePaths {
+    if (!AidePaths.instance) {
+      AidePaths.instance = new AidePaths()
     }
+    return AidePaths.instance
+  }
+
+  private ensurePath(pathToEnsure: string, isDirectory: boolean): string {
+    if (isDirectory) {
+      fs.ensureDirSync(pathToEnsure)
+    } else {
+      fs.ensureFileSync(pathToEnsure)
+    }
+    return pathToEnsure
+  }
+
+  private joinAideGlobalPath(
+    isDirectory: boolean,
+    ...segments: string[]
+  ): string {
+    const fullPath = path.join(this.aideDir, ...segments)
+    return this.ensurePath(fullPath, isDirectory)
+  }
+
+  private joinAideNamespacePath(
+    isDirectory: boolean,
+    ...segments: string[]
+  ): string {
+    const fullPath = path.join(this.aideDir, this.getNamespace(), ...segments)
+    return this.ensurePath(fullPath, isDirectory)
+  }
+
+  getSessionFilePath = (sessionId: string) =>
+    this.joinAideNamespacePath(false, 'sessions', `${sessionId}.json`)
+
+  getSessionsListPath = async () => {
+    const filePath = this.joinAideNamespacePath(
+      false,
+      'sessions',
+      'sessions.json'
+    )
+
+    if (!fs.existsSync(filePath)) {
+      await VsCodeFS.writeJsonFile(filePath, [])
+    }
+
     return filePath
-  },
-  lanceDb: () => PathManager.getPath('index', 'lancedb'),
-  logs: () => PathManager.getPath('logs')
+  }
+
+  getLanceDbPath = () => this.joinAideNamespacePath(true, 'lancedb')
+
+  getLogsPath = () => this.joinAideNamespacePath(true, 'logs')
+
+  getNamespace = () => {
+    const workspacePath = getWorkspaceFolder().uri.fsPath
+
+    const workspaceName = path
+      .basename(workspacePath)
+      .replace(/[^a-zA-Z0-9]/g, '_')
+
+    const workspaceFullPathHash = crypto
+      .createHash('md5')
+      .update(workspacePath)
+      .digest('hex')
+      .substring(0, 8)
+
+    return `${workspaceName}_${workspaceFullPathHash}`.toLowerCase()
+  }
 }
+
+export const aidePaths = AidePaths.getInstance()

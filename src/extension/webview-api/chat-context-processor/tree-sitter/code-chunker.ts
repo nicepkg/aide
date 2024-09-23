@@ -1,5 +1,5 @@
 import path from 'path'
-import { PathManager } from '@extension/file-utils/paths'
+import { getExt } from '@extension/file-utils/paths'
 import { encodingForModel, type Tiktoken } from 'js-tiktoken'
 import Parser from 'web-tree-sitter'
 
@@ -25,6 +25,7 @@ export interface TextChunk {
 
 interface ChunkOptions {
   maxTokenLength: number
+  removeDuplicates?: boolean
 }
 
 export class CodeChunkerManager {
@@ -55,7 +56,7 @@ export class CodeChunkerManager {
   }
 
   async getChunkerFromFilePath(filePath: string): Promise<CodeChunker> {
-    const ext = PathManager.getExt(filePath).toLowerCase()
+    const ext = getExt(filePath).toLowerCase()
     const language = treeSitterExtLanguageMap[ext]
 
     if (language && copilotQueriesSupportedExt.includes(ext)) {
@@ -155,14 +156,20 @@ export class CodeChunker {
       }
     }
 
+    let processedChunks = chunks
+    // Remove duplicates if the option is set
+    if (options.removeDuplicates) {
+      processedChunks = this.removeDuplicateChunks(chunks)
+    }
+
     // Sort chunks by their position in the original code
-    chunks.sort(
+    processedChunks.sort(
       (a, b) =>
         a.range.startLine - b.range.startLine ||
         a.range.startColumn - b.range.startColumn
     )
 
-    return chunks
+    return processedChunks
   }
 
   // for other ext files
@@ -273,6 +280,35 @@ export class CodeChunker {
         type: `${chunk.type}_part`
       })
     }
+  }
+
+  private removeDuplicateChunks(chunks: TextChunk[]): TextChunk[] {
+    // Sort chunks by size (text length) in descending order
+    const sortedChunks = [...chunks].sort(
+      (a, b) => b.text.length - a.text.length
+    )
+
+    const result: TextChunk[] = []
+    for (const chunk of sortedChunks) {
+      const isContained = result.some(existingChunk =>
+        this.isRangeContained(chunk.range, existingChunk.range)
+      )
+      if (!isContained) {
+        result.push(chunk)
+      }
+    }
+
+    return result
+  }
+
+  private isRangeContained(inner: Range, outer: Range): boolean {
+    return (
+      (inner.startLine > outer.startLine ||
+        (inner.startLine === outer.startLine &&
+          inner.startColumn >= outer.startColumn)) &&
+      (inner.endLine < outer.endLine ||
+        (inner.endLine === outer.endLine && inner.endColumn <= outer.endColumn))
+    )
   }
 
   private countTokens(text: string): number {

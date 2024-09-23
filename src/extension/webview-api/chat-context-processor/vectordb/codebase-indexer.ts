@@ -1,7 +1,7 @@
 import crypto from 'crypto'
 import { MAX_EMBEDDING_TOKENS } from '@extension/constants'
 import { createShouldIgnore } from '@extension/file-utils/ignore-patterns'
-import { PathManager } from '@extension/file-utils/paths'
+import { getExt } from '@extension/file-utils/paths'
 import { traverseFileOrFolders } from '@extension/file-utils/traverse-fs'
 import { VsCodeFS } from '@extension/file-utils/vscode-fs'
 import { logger } from '@extension/logger'
@@ -114,7 +114,7 @@ export class CodebaseIndexer {
       ...Object.keys(treeSitterExtLanguageMap),
       ...languageIdExts
     ])
-    return allowExt.has(PathManager.getExt(filePath)!.toLowerCase())
+    return allowExt.has(getExt(filePath)!.toLowerCase())
   }
 
   // for handle change use
@@ -188,7 +188,8 @@ export class CodebaseIndexer {
     const chunker = await manager.getChunkerFromFilePath(filePath)
     const content = await VsCodeFS.readFile(filePath)
     const chunks = await chunker.chunkCode(content, {
-      maxTokenLength: MAX_EMBEDDING_TOKENS
+      maxTokenLength: MAX_EMBEDDING_TOKENS,
+      removeDuplicates: true
     })
 
     return chunks
@@ -197,7 +198,9 @@ export class CodebaseIndexer {
   private async createCodeChunkRows(filePath: string): Promise<CodeChunkRow[]> {
     const chunks = await this.chunkCodeFile(filePath)
 
-    // console.log('chunks', filePath, chunks)
+    const table = await this.databaseManager.getOrCreateTable()
+
+    logger.log('chunks', chunks, await table.filter('true').execute())
 
     const chunkRowsPromises = chunks.map(async chunk => {
       const embedding = await this.embeddings.embedQuery(chunk.text)
@@ -220,6 +223,8 @@ export class CodebaseIndexer {
     chunkRowsResults.forEach(result => {
       if (result.status === 'fulfilled') {
         chunkRows.push(result.value)
+      } else {
+        logger.warn('Error creating code chunk row:', result.reason)
       }
     })
 

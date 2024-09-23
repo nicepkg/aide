@@ -3,6 +3,7 @@ import React from 'react'
 import { ArchiveIcon, PlusIcon } from '@radix-ui/react-icons'
 import { ButtonWithTooltip } from '@webview/components/button-with-tooltip'
 import { Button } from '@webview/components/ui/button'
+import { logger } from '@webview/utils/logger'
 
 interface ChatHistoryItem {
   id: string
@@ -19,7 +20,7 @@ export const ChatSidebar: React.FC = () => {
   const chatHistory = useChatHistory()
 
   const handleNewChat = () => {
-    console.log('New chat created')
+    logger.log('New chat created')
   }
 
   const handleArchiveChat = (id: string) => {

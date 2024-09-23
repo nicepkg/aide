@@ -4,6 +4,7 @@ import type {
   Conversation,
   IMentionStrategy
 } from '@webview/types/chat'
+import { logger } from '@webview/utils/logger'
 import type { Updater } from 'use-immer'
 
 export interface UseMentionManagerProps {
@@ -47,7 +48,7 @@ export function useMentionManager(props: UseMentionManagerProps) {
         updateCurrentAttachments(updatedAttachments)
       }
     } catch (error) {
-      console.warn('Error adding mention:', error)
+      logger.warn('Error adding mention:', error)
     }
   }
 

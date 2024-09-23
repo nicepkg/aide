@@ -1,4 +1,5 @@
 /* eslint-disable unused-imports/no-unused-vars */
+import JSONC from 'comment-json'
 import * as vscode from 'vscode'
 
 export class VsCodeFS {
@@ -104,5 +105,13 @@ export class VsCodeFS {
     } catch {
       return false
     }
+  }
+
+  static async writeJsonFile(filePath: string, data: any): Promise<void> {
+    await this.writeFile(filePath, JSON.stringify(data, null, 2))
+  }
+
+  static async readJsonFile<T extends object>(filePath: string): Promise<T> {
+    return JSONC.parse(await this.readFile(filePath, 'utf8')) as T
   }
 }

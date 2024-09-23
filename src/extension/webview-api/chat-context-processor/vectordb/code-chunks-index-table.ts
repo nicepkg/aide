@@ -1,4 +1,4 @@
-import { Paths } from '@extension/file-utils/paths'
+import { aidePaths } from '@extension/file-utils/paths'
 import { logger } from '@extension/logger'
 import {
   Field,
@@ -31,7 +31,8 @@ export class CodeChunksIndexTable {
 
   async initialize() {
     try {
-      this.lanceDb = await connect(Paths.lanceDb())
+      const lanceDbDir = aidePaths.getLanceDbPath()
+      this.lanceDb = await connect(lanceDbDir)
       logger.log('LanceDB initialized successfully')
     } catch (error) {
       logger.error('Failed to initialize LanceDB:', error)

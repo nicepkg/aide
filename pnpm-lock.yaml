@@ -168,6 +168,9 @@ importers:
       babel-plugin-react-compiler:
         specifier: latest
         version: 0.0.0-experimental-6067d4e-20240919
+      chalk:
+        specifier: ^5.3.0
+        version: 5.3.0
       cheerio:
         specifier: ^1.0.0
         version: 1.0.0
@@ -11870,7 +11873,7 @@ snapshots:
       '@vue/shared': 3.4.36
       entities: 5.0.0
       estree-walker: 2.0.2
-      source-map-js: 1.2.0
+      source-map-js: 1.2.1
 
   '@vue/compiler-dom@3.4.36':
     dependencies:
@@ -11887,7 +11890,7 @@ snapshots:
       estree-walker: 2.0.2
       magic-string: 0.30.11
       postcss: 8.4.47
-      source-map-js: 1.2.0
+      source-map-js: 1.2.1
 
   '@vue/compiler-ssr@3.4.36':
     dependencies:
