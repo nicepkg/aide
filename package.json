@@ -449,8 +449,6 @@
     "minimatch": "^10.0.1",
     "next-themes": "^0.3.0",
     "node-fetch": "^3.3.2",
-    "onnxruntime-common": "^1.19.2",
-    "onnxruntime-node": "^1.19.2",
     "p-limit": "^6.1.0",
     "pnpm": "^9.10.0",
     "postcss": "^8.4.47",

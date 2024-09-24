@@ -1,4 +1,5 @@
 import type { CommandManager } from '@extension/commands/command-manager'
+import { logger } from '@extension/logger'
 import * as vscode from 'vscode'
 
 import { BaseRegister } from './base-register'
@@ -16,9 +17,17 @@ export class RegisterManager {
       ...args: ConstructorParameters<typeof BaseRegister>
     ) => BaseRegister
   ): Promise<void> {
-    const register = new RegisterClass(this.context, this, this.commandManager)
-    await register.register()
-    this.registers.push(register)
+    try {
+      const register = new RegisterClass(
+        this.context,
+        this,
+        this.commandManager
+      )
+      await register.register()
+      this.registers.push(register)
+    } catch (e) {
+      logger.error('Failed to setup register', e)
+    }
   }
 
   async cleanup(): Promise<void> {

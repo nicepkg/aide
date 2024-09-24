@@ -1,3 +1,5 @@
+/* eslint-disable unused-imports/no-unused-vars */
+/* eslint-disable no-console */
 import path, { dirname } from 'path'
 import { fileURLToPath } from 'url'
 import vscode from '@tomjs/vite-plugin-vscode'
@@ -17,6 +19,9 @@ const dir =
 const resolvePath = (...paths: string[]) => path.resolve(dir, ...paths)
 
 const extensionDistPath = resolvePath('dist/extension')
+
+const resolveExtensionDistPath = (...paths: string[]) =>
+  path.resolve(extensionDistPath, ...paths)
 
 const define: Record<string, string> = {
   __EXTENSION_DIST_PATH__: JSON.stringify(extensionDistPath)
@@ -49,80 +54,73 @@ export default defineConfig(() => {
           external: [
             './index.node' // shit, vectordb need this
           ],
-          async onSuccess() {
-            await tsupCopyFiles()
-          }
-          // esbuildOptions(options) {
-          //   options.alias = {
-          //     'vectordb/native': resolvePath(
-          //       'scripts/fix-package/vectordb/native.js'
-          //     )
-          //   }
-          // },
-          // esbuildPlugins: [
-          //   {
-          //     name: 'handle-native-node-modules',
-          //     setup(build) {
-          //       build.onResolve({ filter: /\.node$/ }, args => ({
-          //         path: path.resolve(args.resolveDir, args.path),
-          //         external: true
-          //       }))
-          //     }
-          //   }
-          // ]
+          // esbuildPlugins: [createRedirectPlugin(redirects) as any],
+          esbuildOptions(options) {
+            options.alias = {
+              ...options.alias,
+              'onnxruntime-node': resolvePath(
+                'node_modules/onnxruntime-node/dist/index.js'
+              )
+            }
+          },
+          plugins: [
+            {
+              name: 'copy-files',
+              async buildStart() {
+                await tsupCopyFiles()
+              }
+            }
+          ]
         }
       })
     ],
-    build: {
-      commonjsOptions: {
-        ignoreDynamicRequires: true,
-        dynamicRequireRoot: '/',
-        dynamicRequireTargets: ['./bin/napi-v3/**/onnxruntime_binding.node']
-      }
-    },
     resolve: {
-      dedupe: ['react', 'react-dom'],
-      alias: {
-        // hack onnxruntime-node
-        'onnxruntime-node': path.join(
-          __dirname,
-          'vendors/onnxruntime-node/index.cjs'
-        )
-      }
+      dedupe: ['react', 'react-dom']
     }
   }
 })
 
 const tsupCopyFiles = async () => {
   const targets = [
+    // copy node_modules to extension dist
     {
-      src: 'node_modules/tree-sitter-wasms/out/*.wasm',
-      dest: 'tree-sitter-wasms/'
+      src: resolvePath('node_modules/tree-sitter-wasms/out/*.wasm'),
+      dest: resolveExtensionDistPath('tree-sitter-wasms/')
     },
     {
-      src: 'node_modules/web-tree-sitter/*.wasm',
-      dest: './'
+      src: resolvePath('node_modules/web-tree-sitter/*.wasm'),
+      dest: resolveExtensionDistPath('./')
     },
     {
-      src: 'node_modules/onnxruntime-node/bin/**',
-      dest: 'onnxruntime/'
+      src: resolvePath('node_modules/onnxruntime-node/bin/**'),
+      dest: resolveExtensionDistPath('onnxruntime/bin/')
     },
     {
-      src: 'node_modules/@lancedb/**',
-      dest: 'node_modules/@lancedb/'
+      src: resolvePath('node_modules/@lancedb/**'),
+      dest: resolveExtensionDistPath('node_modules/@lancedb/')
     },
     {
-      src: 'src/extension/webview-api/chat-context-processor/models/**',
-      dest: 'models/'
+      src: resolvePath(
+        'src/extension/webview-api/chat-context-processor/models/**'
+      ),
+      dest: resolveExtensionDistPath('models/')
+    },
+
+    // copy fix-packages to node_modules
+    {
+      src: resolvePath('scripts/fix-package/@xenova/transformers/**'),
+      dest: resolvePath('node_modules/@xenova/transformers/src/')
+    },
+    {
+      src: resolvePath('scripts/fix-package/onnxruntime-node/**'),
+      dest: resolvePath('node_modules/onnxruntime-node/dist/')
     }
   ]
 
   const promises = targets.map(async ({ src, dest }) => {
-    const srcPath = resolvePath(src)
-    const destPath = path.join(extensionDistPath, dest)
-
-    await cpy(srcPath, destPath, {
-      cwd: dir
+    await cpy(src, dest, {
+      cwd: dir,
+      overwrite: true
     })
   })
 

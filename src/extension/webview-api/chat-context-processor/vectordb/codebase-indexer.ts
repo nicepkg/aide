@@ -1,12 +1,12 @@
 import crypto from 'crypto'
-import { MAX_EMBEDDING_TOKENS } from '@extension/constants'
+import { EmbeddingManager } from '@extension/ai/embeddings/embedding-manager'
+import type { BaseEmbeddings } from '@extension/ai/embeddings/types'
 import { createShouldIgnore } from '@extension/file-utils/ignore-patterns'
 import { getExt } from '@extension/file-utils/paths'
 import { traverseFileOrFolders } from '@extension/file-utils/traverse-fs'
 import { VsCodeFS } from '@extension/file-utils/vscode-fs'
 import { logger } from '@extension/logger'
 import { getWorkspaceFolder } from '@extension/utils'
-import { OpenAIEmbeddings } from '@langchain/openai'
 import { languageIdExts } from '@shared/utils/vscode-lang'
 import * as vscode from 'vscode'
 
@@ -23,7 +23,7 @@ export class CodebaseIndexer {
 
   private progressReporter: ProgressReporter
 
-  private embeddings: OpenAIEmbeddings
+  private embeddings!: BaseEmbeddings
 
   private indexingQueue: string[] = []
 
@@ -34,10 +34,10 @@ export class CodebaseIndexer {
       workspaceRootPath || getWorkspaceFolder().uri.fsPath
     this.databaseManager = new CodeChunksIndexTable()
     this.progressReporter = new ProgressReporter()
-    this.embeddings = new OpenAIEmbeddings()
   }
 
   async initialize() {
+    this.embeddings = await EmbeddingManager.getInstance().getActiveEmbedding()
     await this.databaseManager.initialize()
   }
 
@@ -171,6 +171,9 @@ export class CodebaseIndexer {
     try {
       const rows = await this.createCodeChunkRows(filePath)
       await this.databaseManager.addRows(rows)
+
+      logger.dev.log(await this.databaseManager.getAllRows())
+
       logger.log(`Indexed file: ${filePath}`)
     } catch (error) {
       logger.error(`Error indexing file ${filePath}:`, error)
@@ -187,8 +190,10 @@ export class CodebaseIndexer {
     const manager = CodeChunkerManager.getInstance()
     const chunker = await manager.getChunkerFromFilePath(filePath)
     const content = await VsCodeFS.readFile(filePath)
+    const { maxTokens } = EmbeddingManager.getInstance().getActiveModelInfo()
+
     const chunks = await chunker.chunkCode(content, {
-      maxTokenLength: MAX_EMBEDDING_TOKENS,
+      maxTokenLength: maxTokens,
       removeDuplicates: true
     })
 
@@ -198,9 +203,7 @@ export class CodebaseIndexer {
   private async createCodeChunkRows(filePath: string): Promise<CodeChunkRow[]> {
     const chunks = await this.chunkCodeFile(filePath)
 
-    const table = await this.databaseManager.getOrCreateTable()
-
-    logger.log('chunks', chunks, await table.filter('true').execute())
+    logger.dev.log('code chunks', chunks)
 
     const chunkRowsPromises = chunks.map(async chunk => {
       const embedding = await this.embeddings.embedQuery(chunk.text)

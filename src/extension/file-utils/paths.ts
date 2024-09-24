@@ -11,6 +11,23 @@ const AIDE_DIR = process.env.AIDE_GLOBAL_DIR ?? path.join(os.homedir(), '.aide')
 export const getExt = (filePath: string): string =>
   path.extname(filePath).slice(1)
 
+export const getSemanticHashName = (
+  forSemantic: string,
+  forHash?: string
+): string => {
+  const semanticsName = forSemantic.replace(/[^a-zA-Z0-9]/g, '_')
+
+  if (!forHash) return semanticsName.toLowerCase()
+
+  const hashName = crypto
+    .createHash('md5')
+    .update(forHash)
+    .digest('hex')
+    .substring(0, 8)
+
+  return `${semanticsName}_${hashName}`.toLowerCase()
+}
+
 export class AidePaths {
   private static instance: AidePaths
 
@@ -76,17 +93,7 @@ export class AidePaths {
   getNamespace = () => {
     const workspacePath = getWorkspaceFolder().uri.fsPath
 
-    const workspaceName = path
-      .basename(workspacePath)
-      .replace(/[^a-zA-Z0-9]/g, '_')
-
-    const workspaceFullPathHash = crypto
-      .createHash('md5')
-      .update(workspacePath)
-      .digest('hex')
-      .substring(0, 8)
-
-    return `${workspaceName}_${workspaceFullPathHash}`.toLowerCase()
+    return getSemanticHashName(workspacePath, path.basename(workspacePath))
   }
 }
 

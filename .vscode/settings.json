@@ -4,6 +4,21 @@
   "i18n-ally.localesPaths": ["."],
   "i18n-ally.enabledFrameworks": ["vscode", "react"],
   "i18n-ally.dirStructure": "file",
+
+  // performance
+  "editor.largeFileOptimizations": true,
+  "search.exclude": {
+    "**/node_modules/**": true,
+    "**/dist/**": true,
+    "**/*.min.js": true
+  },
+  "files.watcherExclude": {
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/node_modules/**": true,
+    "**/dist/**": true
+  },
+
   // Enable eslint for all supported languages
   "eslint.validate": [
     "javascript",
@@ -18,9 +33,6 @@
   ],
   "editor.tabSize": 2,
   "editor.detectIndentation": false,
-  "search.exclude": {
-    "package-lock.json": true
-  },
   "editor.codeActionsOnSave": [
     "source.addMissingImports",
     "source.fixAll.eslint"
@@ -74,17 +86,20 @@
     "lancedb",
     "langchain",
     "langgraph",
+    "logits",
     "Mhchem",
     "multistream",
     "Nicepkg",
     "nodir",
     "Nolebase",
     "Ollama",
+    "onnx",
     "onnxruntime",
     "openai",
     "pino",
     "Pipfile",
     "Pluggable",
+    "pretrained",
     "pyproject",
     "qwen",
     "rehype",
@@ -104,6 +119,7 @@
     "treeshake",
     "tsup",
     "undici",
+    "unsqueeze",
     "uuidv",
     "vectordb",
     "vectorstores",
