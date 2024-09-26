@@ -5,6 +5,7 @@ import type {
 } from '@extension/webview-api/chat-context-processor/types/chat-context'
 import type { MentionItemLayoutProps } from '@webview/components/chat/selectors/mention-selector/mention-item-layout'
 
+export type { IndexingProgress } from '@extension/webview-api/chat-context-processor/vectordb/process-reporter'
 export * from '@extension/webview-api/chat-context-processor/types/chat-context'
 
 export interface ModelOption {

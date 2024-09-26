@@ -3,16 +3,18 @@ import type {
   Conversation
 } from '@extension/webview-api/chat-context-processor/types/chat-context'
 
-import type { BaseStrategy } from '../base-strategy'
+import { BaseStrategy } from '../base-strategy'
 import { chatWorkflow } from './chat-workflow'
 
-export class ChatStrategy implements BaseStrategy {
+export class ChatStrategy extends BaseStrategy {
   async *getAnswers(
     chatContext: ChatContext
   ): AsyncGenerator<Conversation[], void, unknown> {
     const graph = chatWorkflow.compile()
 
     const stream = await graph.stream({
+      registerManager: this.registerManager,
+      commandManager: this.commandManager,
       chatContext
     })
 

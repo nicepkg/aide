@@ -27,11 +27,15 @@ export class CodeChunksIndexTable {
     }
   }
 
-  async getOrCreateTable(): Promise<Table<number[]>> {
-    const { modelName, dimensions } =
-      EmbeddingManager.getInstance().getActiveModelInfo()
+  async getTableName(): Promise<string> {
+    const { modelName } = EmbeddingManager.getInstance().getActiveModelInfo()
     const semanticModelName = getSemanticHashName(modelName)
-    const tableName = `code_chunks_embeddings_${semanticModelName}`
+    return `code_chunks_embeddings_${semanticModelName}`
+  }
+
+  async getOrCreateTable(): Promise<Table<number[]>> {
+    const tableName = await this.getTableName()
+    const { dimensions } = EmbeddingManager.getInstance().getActiveModelInfo()
 
     try {
       const tables = await this.lanceDb.tableNames()
@@ -63,6 +67,21 @@ export class CodeChunksIndexTable {
     }
   }
 
+  async dropTable() {
+    const tableName = await this.getTableName()
+
+    try {
+      const tables = await this.lanceDb.tableNames()
+
+      if (tables.includes(tableName)) {
+        await this.lanceDb.dropTable(tableName)
+      }
+    } catch (error) {
+      logger.error('Error dropping table:', error)
+      throw error
+    }
+  }
+
   async addRows(rows: CodeChunkRow[]) {
     const table = await this.getOrCreateTable()
     await table.add(rows as any)
@@ -70,12 +89,11 @@ export class CodeChunksIndexTable {
 
   async deleteFileFromIndex(filePath: string) {
     const table = await this.getOrCreateTable()
-    await table.delete(`fullPath = '${filePath}'`)
+    await table.delete(`\`fullPath\` = '${filePath}'`)
   }
 
   async clearIndex() {
-    const table = await this.getOrCreateTable()
-    await table.delete('true')
+    await this.dropTable()
   }
 
   async searchSimilarCode(embedding: number[]): Promise<CodeChunkRow[]> {
@@ -86,7 +104,7 @@ export class CodeChunksIndexTable {
   async getFileRows(filePath: string): Promise<CodeChunkRow[]> {
     const table = await this.getOrCreateTable()
     return await table
-      .filter(`fullPath = '${filePath}'`)
+      .filter(`\`fullPath\` = '${filePath}'`)
       .execute<CodeChunkRow>()
   }
 

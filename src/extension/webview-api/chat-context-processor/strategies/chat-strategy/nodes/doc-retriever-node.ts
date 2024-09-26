@@ -61,7 +61,7 @@ export const createDocRetrieverTool = async (state: ChatGraphState) => {
 
   return new DynamicStructuredTool({
     name: ChatGraphToolName.DocRetriever,
-    description: 'Search and return information about question.',
+    description: 'Search and return information about question in Docs.',
     func: async ({ query }, runManager): Promise<DocRetrieverToolResult> => {
       const retriever = await getRetriever()
 

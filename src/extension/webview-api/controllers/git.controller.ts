@@ -1,3 +1,5 @@
+import type { CommandManager } from '@extension/commands/command-manager'
+import type { RegisterManager } from '@extension/registers/register-manager'
 import { getWorkspaceFolder } from '@extension/utils'
 import simpleGit, { SimpleGit } from 'simple-git'
 
@@ -12,8 +14,11 @@ export class GitController extends Controller {
 
   private git: SimpleGit
 
-  constructor() {
-    super()
+  constructor(
+    registerManager: RegisterManager,
+    commandManager: CommandManager
+  ) {
+    super(registerManager, commandManager)
     const workspaceFolder = getWorkspaceFolder()
     this.git = simpleGit(workspaceFolder.uri.fsPath)
   }

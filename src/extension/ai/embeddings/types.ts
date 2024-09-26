@@ -11,6 +11,7 @@ export interface BaseEmbeddingModelInfo<
   modelName: string
   dimensions: number
   maxTokens: number
+  batchSize: number
   EmbeddingClass: ClassType<T>
   buildConstructParams?: (modelInfo: BaseEmbeddingModelInfo) => any
 }

@@ -48,7 +48,7 @@ export class TransformerJsEmbeddings extends BaseEmbeddings {
 
   async embedDocuments(texts: string[]): Promise<number[][]> {
     await this.init()
-    const batches = chunkArray(texts, this.modelInfo.maxTokens)
+    const batches = chunkArray(texts, this.modelInfo.batchSize)
 
     const batchRequests = batches.map(batch => this.embeddingWithRetry(batch))
     const batchResponses = await Promise.all(batchRequests)

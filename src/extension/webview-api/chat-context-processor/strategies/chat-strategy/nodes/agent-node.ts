@@ -5,6 +5,7 @@ import { getToolCallsFromMessage } from '@extension/webview-api/chat-context-pro
 import { produce } from 'immer'
 
 import { ChatMessagesConstructor } from '../messages-constructors/chat-messages-constructor'
+import { createCodebaseSearchTool } from './codebase-search-node'
 import { createDocRetrieverTool } from './doc-retriever-node'
 import type { ChatGraphNode } from './state'
 import { createWebSearchTool } from './web-search-node'
@@ -15,6 +16,8 @@ export const agentNode: ChatGraphNode = async state => {
   const aiModel = await modelProvider.getModel()
 
   const tools = [
+    // code base search
+    await createCodebaseSearchTool(state),
     // doc
     await createDocRetrieverTool(state),
     // web search

@@ -1,16 +1,19 @@
 import { useRef, type FC } from 'react'
+import { GearIcon, PlusIcon } from '@radix-ui/react-icons'
 import { useChatState } from '@webview/hooks/chat/use-chat-state'
 import { api } from '@webview/services/api-client'
 import type { Conversation } from '@webview/types/chat'
+import { useNavigate } from 'react-router'
 
+import { ButtonWithTooltip } from '../button-with-tooltip'
 import { GlowingCard } from '../glowing-card'
 import { SidebarLayout } from '../sidebar-layout'
 import { ChatInput, type ChatInputRef } from './editor/chat-input'
-import { ChatHeader } from './header/chat-header'
 import { ChatMessages } from './messages/chat-messages'
 import { ChatSidebar } from './sidebar/chat-sidebar'
 
 export const ChatUI: FC = () => {
+  const navigate = useNavigate()
   const {
     context,
     setContext,
@@ -70,10 +73,33 @@ export const ChatUI: FC = () => {
 
   return (
     <SidebarLayout
+      title="Chat"
       sidebar={<ChatSidebar />}
-      buildHeader={SidebarHamburger => (
-        <ChatHeader headerLeft={<SidebarHamburger />} />
-      )}
+      headerLeft={
+        <>
+          <ButtonWithTooltip
+            variant="ghost"
+            size="iconXs"
+            tooltip="New Chat"
+            side="bottom"
+            className="shrink-0"
+          >
+            <PlusIcon className="size-3" />
+          </ButtonWithTooltip>
+          <ButtonWithTooltip
+            variant="ghost"
+            size="iconXs"
+            tooltip="Settings"
+            side="bottom"
+            className="shrink-0"
+            onClick={() => {
+              navigate('/settings')
+            }}
+          >
+            <GearIcon className="size-3" />
+          </ButtonWithTooltip>
+        </>
+      }
       className="chat-ui"
     >
       <ChatMessages

@@ -1,6 +1,8 @@
 import { END, START, StateGraph } from '@langchain/langgraph'
 
+import { combineNode } from '../../utils/combine-node'
 import { agentNode } from './nodes/agent-node'
+import { codebaseSearchNode } from './nodes/codebase-search-node'
 import { docRetrieverNode } from './nodes/doc-retriever-node'
 import { generateNode } from './nodes/generate-node'
 import {
@@ -16,22 +18,23 @@ const createSmartRoute =
 
 const chatWorkflow = new StateGraph(chatGraphState)
   .addNode(ChatGraphNodeName.Agent, agentNode)
-  .addNode(ChatGraphNodeName.DocRetrieve, docRetrieverNode)
-  .addNode(ChatGraphNodeName.WebSearch, webSearchNode)
+  .addNode(
+    ChatGraphNodeName.Tools,
+    combineNode(
+      [codebaseSearchNode, docRetrieverNode, webSearchNode],
+      chatGraphState
+    )
+  )
   .addNode(ChatGraphNodeName.Generate, generateNode)
 
 chatWorkflow
   .addConditionalEdges(START, createSmartRoute(ChatGraphNodeName.Agent))
   .addConditionalEdges(
     ChatGraphNodeName.Agent,
-    createSmartRoute(ChatGraphNodeName.DocRetrieve)
+    createSmartRoute(ChatGraphNodeName.Tools)
   )
   .addConditionalEdges(
-    ChatGraphNodeName.DocRetrieve,
-    createSmartRoute(ChatGraphNodeName.WebSearch)
-  )
-  .addConditionalEdges(
-    ChatGraphNodeName.WebSearch,
+    ChatGraphNodeName.Tools,
     createSmartRoute(ChatGraphNodeName.Generate)
   )
   .addEdge(ChatGraphNodeName.Generate, END)

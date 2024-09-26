@@ -1,6 +1,6 @@
 /* eslint-disable react/no-unstable-nested-components */
 // src/webview/components/layout/sidebar-layout.tsx
-import React, { type FC } from 'react'
+import React from 'react'
 import { TextAlignJustifyIcon } from '@radix-ui/react-icons'
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
 import { Button, type ButtonProps } from '@webview/components/ui/button'
@@ -14,19 +14,32 @@ import {
 } from '@webview/components/ui/sheet'
 import { cn } from '@webview/utils/common'
 
+import { SidebarHeader } from './sidebar-header'
+
 interface SidebarLayoutProps {
+  title: string
   sidebar: React.ReactNode
-  buildHeader: (SidebarHamburger: FC) => React.ReactNode
   children: React.ReactNode
   className?: string
+  headerLeft?: React.ReactNode
+  showBackButton?: boolean
 }
 
 export const SidebarLayout: React.FC<SidebarLayoutProps> = ({
+  title,
   sidebar,
-  buildHeader,
   children,
-  className
+  className,
+  headerLeft,
+  showBackButton
 }) => {
+  const Sidebar = () => (
+    <div className="flex flex-col h-full">
+      <h2 className="mb-4 text-2xl font-semibold tracking-tight">{title}</h2>
+      {sidebar}
+    </div>
+  )
+
   const SidebarHamburger = (props: ButtonProps) => (
     <Sheet>
       <SheetTrigger asChild>
@@ -42,24 +55,31 @@ export const SidebarLayout: React.FC<SidebarLayoutProps> = ({
             <SheetDescription />
           </SheetHeader>
         </VisuallyHidden>
-        {sidebar}
+        <Sidebar />
       </SheetContent>
     </Sheet>
   )
 
   return (
-    <div
-      className={cn(
-        'grid h-full w-full grid-flow-col grid-rows-[auto_1fr] md:grid-cols-[250px_1fr]',
-        className
-      )}
-    >
-      <div className="hidden md:block h-full p-4 border-r">{sidebar}</div>
-      <div>
-        <div className="md:hidden">{buildHeader(SidebarHamburger)}</div>
+    <div className={cn('flex h-full w-full flex-col md:flex-row', className)}>
+      <div className="hidden md:block w-[250px] h-full p-4 border-r overflow-y-auto">
+        <Sidebar />
       </div>
-      <div className="overflow-hidden flex-1 w-full flex flex-col justify-between lg:col-span-2">
-        {children}
+      <div className="flex flex-col flex-1 h-full">
+        <div className="flex-shrink-0">
+          <SidebarHeader
+            title={title}
+            showBackButton={showBackButton}
+            headerLeft={
+              <>
+                <SidebarHamburger className="md:hidden" />
+                {headerLeft}
+              </>
+            }
+          />
+        </div>
+
+        <div className="flex flex-1 flex-col overflow-auto">{children}</div>
       </div>
     </div>
   )

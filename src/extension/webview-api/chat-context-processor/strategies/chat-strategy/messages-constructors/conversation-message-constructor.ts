@@ -2,6 +2,7 @@ import {
   traverseFileOrFolders,
   type FileInfo
 } from '@extension/file-utils/traverse-fs'
+import { logger } from '@extension/logger'
 import { getWorkspaceFolder } from '@extension/utils'
 import type {
   Conversation,
@@ -13,6 +14,7 @@ import type {
 } from '@extension/webview-api/chat-context-processor/types/langchain-message'
 import { formatCodeSnippet } from '@extension/webview-api/chat-context-processor/utils/code-snippet-formatter'
 import { getFileContent } from '@extension/webview-api/chat-context-processor/utils/get-file-content'
+import { mergeCodeSnippets } from '@extension/webview-api/chat-context-processor/utils/merge-code-snippets'
 import { MessageBuilder } from '@extension/webview-api/chat-context-processor/utils/message-builder'
 import { HumanMessage } from '@langchain/core/messages'
 
@@ -60,7 +62,10 @@ export class ConversationMessageConstructor {
   }
 
   private async buildContextMessage(): Promise<HumanMessage | null> {
-    const codeSnippetsPrompt = this.buildCodeSnippetsPrompt()
+    const codeSnippetsPrompt = await this.buildCodeSnippetsPrompt()
+
+    logger.dev.verbose('codeSnippetsPrompt', codeSnippetsPrompt)
+
     const { currentFilesPrompt } = await this.getBuildFilePromptsResult()
     const relevantDocsPrompt = this.buildRelevantDocsPrompt()
     const gitCommitsPrompt = this.buildGitCommitPrompt()
@@ -125,17 +130,21 @@ ${fileContextPrompt}
     return new HumanMessage({ content: enhancedContents })
   }
 
-  private buildCodeSnippetsPrompt(): string {
+  private async buildCodeSnippetsPrompt(): Promise<string> {
     const codeSnippets =
       this.conversation.attachments?.codebaseContext.relevantCodeSnippets
 
     if (!codeSnippets || codeSnippets.length === 0) return ''
 
-    const snippetsContent = codeSnippets
+    const mergedSnippets = await mergeCodeSnippets(codeSnippets)
+
+    const snippetsContent = mergedSnippets
       .map(snippet =>
         formatCodeSnippet({
           relativePath: snippet.relativePath,
           code: snippet.code,
+          startLine: snippet.startLine,
+          endLine: snippet.endLine,
           showLine: true
         })
       )

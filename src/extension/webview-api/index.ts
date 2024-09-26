@@ -1,9 +1,12 @@
+import type { CommandManager } from '@extension/commands/command-manager'
+import type { RegisterManager } from '@extension/registers/register-manager'
 import { getErrorMsg } from '@extension/utils'
 import findFreePorts from 'find-free-ports'
 import { Server } from 'socket.io'
 import * as vscode from 'vscode'
 
 import { ChatController } from './controllers/chat.controller'
+import { CodebaseController } from './controllers/codebase.controller'
 import { FileController } from './controllers/file.controller'
 import { GitController } from './controllers/git.controller'
 import { SystemController } from './controllers/system.controller'
@@ -23,7 +26,11 @@ class APIManager {
 
   private disposes: vscode.Disposable[] = []
 
-  constructor(private context: vscode.ExtensionContext) {}
+  constructor(
+    private context: vscode.ExtensionContext,
+    private registerManager: RegisterManager,
+    private commandManager: CommandManager
+  ) {}
 
   public async initialize(
     panel: WebviewPanel,
@@ -63,7 +70,10 @@ class APIManager {
 
   private registerControllers(controllerClasses: ControllerClass[]) {
     for (const ControllerClass of controllerClasses) {
-      const controller = new ControllerClass()
+      const controller = new ControllerClass(
+        this.registerManager,
+        this.commandManager
+      )
       this.controllers.set(controller.name, controller)
     }
   }
@@ -108,6 +118,7 @@ class APIManager {
 
 export const controllers = [
   ChatController,
+  CodebaseController,
   FileController,
   GitController,
   SystemController
@@ -116,9 +127,11 @@ export type Controllers = typeof controllers
 
 export const setupWebviewAPIManager = async (
   context: vscode.ExtensionContext,
-  panel: WebviewPanel
+  panel: WebviewPanel,
+  registerManager: RegisterManager,
+  commandManager: CommandManager
 ): Promise<vscode.Disposable> => {
-  const apiManager = new APIManager(context)
+  const apiManager = new APIManager(context, registerManager, commandManager)
 
   await apiManager.initialize(panel, controllers as any as ControllerClass[])
 

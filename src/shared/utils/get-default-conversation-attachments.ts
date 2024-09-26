@@ -5,6 +5,7 @@ export const getDefaultConversationAttachments = (): Attachments => ({
     codeChunks: []
   },
   codebaseContext: {
+    enableTool: false,
     relevantCodeSnippets: []
   },
   docContext: {

@@ -1,3 +1,4 @@
+import path from 'path'
 import {
   traverseFileOrFolders,
   type FileInfo,
@@ -49,6 +50,46 @@ export class FileController extends Controller {
 
   async readdir(req: { path: string }): Promise<string[]> {
     return await VsCodeFS.readdir(req.path)
+  }
+
+  async getFileInfoForMessage(req: {
+    relativePath: string
+    startLine?: number
+    endLine?: number
+  }): Promise<FileInfo | undefined> {
+    const workspaceFolder = getWorkspaceFolder()
+    const fullPath = path.join(workspaceFolder.uri.fsPath, req.relativePath)
+    const fileInfo = await VsCodeFS.stat(fullPath)
+
+    if (!fileInfo || fileInfo.type !== vscode.FileType.File) return
+
+    const fileContent = await VsCodeFS.readFile(fullPath)
+    const lines = fileContent.split('\n')
+    const startLine = req.startLine ?? 0
+    const endLine = req.endLine ?? lines.length - 1
+    const code = lines.slice(startLine, endLine + 1).join('\n')
+
+    return {
+      type: 'file',
+      content: code,
+      relativePath: req.relativePath,
+      fullPath
+    }
+  }
+
+  async openFileInEditor(req: {
+    path: string
+    startLine?: number
+  }): Promise<void> {
+    if (!req.path) return
+
+    const document = await vscode.workspace.openTextDocument(req.path)
+    const startPosition = new vscode.Position(req.startLine ?? 0, 0)
+
+    await vscode.window.showTextDocument(document, {
+      preview: true,
+      selection: new vscode.Range(startPosition, startPosition)
+    })
   }
 
   async traverseWorkspaceFiles(req: {

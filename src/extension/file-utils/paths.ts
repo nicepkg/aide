@@ -93,7 +93,7 @@ export class AidePaths {
   getNamespace = () => {
     const workspacePath = getWorkspaceFolder().uri.fsPath
 
-    return getSemanticHashName(workspacePath, path.basename(workspacePath))
+    return getSemanticHashName(path.basename(workspacePath), workspacePath)
   }
 }
 

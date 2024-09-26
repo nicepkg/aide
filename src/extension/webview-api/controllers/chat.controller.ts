@@ -12,7 +12,10 @@ export class ChatController extends Controller {
     chatContext: ChatContext
   }): AsyncGenerator<Conversation[], void, unknown> {
     const { chatContext } = req
-    const chatContextProcessor = new ChatContextProcessor()
+    const chatContextProcessor = new ChatContextProcessor(
+      this.registerManager,
+      this.commandManager
+    )
     const answerStream = await chatContextProcessor.getAnswers(chatContext)
 
     for await (const conversations of answerStream) {

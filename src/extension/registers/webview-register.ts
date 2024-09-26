@@ -1,9 +1,11 @@
+import type { CommandManager } from '@extension/commands/command-manager'
 import { setupHtml } from '@extension/utils'
 import { setupWebviewAPIManager } from '@extension/webview-api'
 import type { WebviewPanel } from '@extension/webview-api/types'
 import * as vscode from 'vscode'
 
 import { BaseRegister } from './base-register'
+import type { RegisterManager } from './register-manager'
 
 export class AideWebViewProvider {
   static readonly viewType = 'aide.webview'
@@ -16,7 +18,9 @@ export class AideWebViewProvider {
 
   constructor(
     private readonly extensionUri: vscode.Uri,
-    private readonly context: vscode.ExtensionContext
+    private readonly context: vscode.ExtensionContext,
+    private readonly registerManager: RegisterManager,
+    private readonly commandManager: CommandManager
   ) {}
 
   async resolveSidebarView(webviewView: vscode.WebviewView) {
@@ -65,7 +69,9 @@ export class AideWebViewProvider {
     // add socket port state to html string
     const setupWebviewAPIManagerDispose = await setupWebviewAPIManager(
       this.context,
-      webview
+      webview,
+      this.registerManager,
+      this.commandManager
     )
     this.disposes.push(setupWebviewAPIManagerDispose)
 
@@ -94,7 +100,9 @@ export class WebviewRegister extends BaseRegister {
   async register(): Promise<void> {
     this.provider = new AideWebViewProvider(
       this.context.extensionUri,
-      this.context
+      this.context,
+      this.registerManager,
+      this.commandManager
     )
 
     const disposable = vscode.window.registerWebviewViewProvider(

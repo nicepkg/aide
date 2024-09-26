@@ -9,6 +9,7 @@ export const embeddingModels = [
     modelName: 'all-MiniLM-L6-v2',
     dimensions: 384,
     maxTokens: 512,
+    batchSize: 512,
     EmbeddingClass: TransformerJsEmbeddings,
     buildConstructParams: modelInfo => ({
       modelInfo
@@ -19,6 +20,7 @@ export const embeddingModels = [
     modelName: 'text-embedding-ada-002',
     dimensions: 1536,
     maxTokens: 8191,
+    batchSize: 512,
     EmbeddingClass: OpenAIEmbeddings
   }
 ] as const satisfies BaseEmbeddingModelInfo[]

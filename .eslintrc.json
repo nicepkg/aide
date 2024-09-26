@@ -119,7 +119,9 @@
         "react-compiler/react-compiler": "error",
         "jsx-a11y/control-has-associated-label": "off",
         "react/jsx-no-target-blank": "off",
-        "react/jsx-no-useless-fragment": "off"
+        "react/jsx-no-useless-fragment": "off",
+        "no-restricted-exports": "off",
+        "jsx-a11y/label-has-associated-control": "off"
       }
     }
   ]

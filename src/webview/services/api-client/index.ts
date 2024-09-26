@@ -1,5 +1,5 @@
 import type { Controllers } from '@extension/webview-api'
-import type { Controller } from '@extension/webview-api/types'
+import type { ControllerClass } from '@extension/webview-api/types'
 import { io, Socket } from 'socket.io-client'
 
 import type { APIType } from './types'
@@ -75,9 +75,7 @@ export class APIClient {
   }
 }
 
-export const createWebviewApi = <
-  T extends readonly (new () => Controller)[]
->() => {
+export const createWebviewApi = <T extends readonly ControllerClass[]>() => {
   const apiClient = new APIClient()
   return new Proxy({} as APIType<T>, {
     get: (target, controllerName: string) =>

@@ -6,7 +6,7 @@ import { BaseRegister } from './base-register'
 export class CodebaseWatcherRegister extends BaseRegister {
   private fileSystemWatcher: vscode.FileSystemWatcher | undefined
 
-  private indexer: CodebaseIndexer | undefined
+  indexer: CodebaseIndexer | undefined
 
   async register(): Promise<void> {
     this.indexer = new CodebaseIndexer()

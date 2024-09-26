@@ -2,15 +2,17 @@ import type { BaseMessage } from '@langchain/core/messages'
 import { Annotation } from '@langchain/langgraph'
 import type { ChatContext } from '@webview/types/chat'
 
+import { baseState } from '../../base-state'
+
 export enum ChatGraphToolName {
   DocRetriever = 'docRetriever',
-  WebSearch = 'webSearch'
+  WebSearch = 'webSearch',
+  CodebaseSearch = 'codebaseSearch'
 }
 
 export enum ChatGraphNodeName {
   Agent = 'agent',
-  DocRetrieve = 'docRetrieve',
-  WebSearch = 'webSearch',
+  Tools = 'tools',
   Generate = 'generate'
 }
 
@@ -25,7 +27,8 @@ export const chatGraphState = Annotation.Root({
   shouldContinue: Annotation<boolean>({
     reducer: (x, y) => y ?? x,
     default: () => true
-  })
+  }),
+  ...baseState
 })
 
 export type ChatGraphState = typeof chatGraphState.State

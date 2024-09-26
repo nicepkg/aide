@@ -1,4 +1,4 @@
-import type { Controller } from '@extension/webview-api/types'
+import type { ControllerClass } from '@extension/webview-api/types'
 
 export type ApiResponse<T> =
   | {
@@ -36,7 +36,7 @@ export type InferMethodReturn<T, M extends keyof T> = T[M] extends (
     ? void
     : never
 
-export type APIType<T extends readonly (new () => Controller)[]> = {
+export type APIType<T extends readonly ControllerClass[]> = {
   [K in T[number] as InstanceType<K>['name']]: {
     [M in keyof InferControllerMethods<K>]: (
       req: InferMethodParams<InferControllerMethods<K>, M>,

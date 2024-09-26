@@ -6,6 +6,7 @@ import vscode from '@tomjs/vite-plugin-vscode'
 import react from '@vitejs/plugin-react'
 import cpy from 'cpy'
 import { defineConfig } from 'vite'
+import pages from 'vite-plugin-pages'
 import svgr from 'vite-plugin-svgr'
 import tsconfigPaths from 'vite-tsconfig-paths'
 
@@ -43,6 +44,10 @@ export default defineConfig(() => {
         }
       }),
       svgr(),
+      pages({
+        dirs: 'src/webview/pages',
+        routeStyle: 'next'
+      }),
       vscode({
         extension: {
           entry: resolvePath('./src/extension/index.ts'),

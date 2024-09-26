@@ -25,9 +25,11 @@ export class CodebaseIndexer {
 
   private embeddings!: BaseEmbeddings
 
+  private isIndexing: boolean = false
+
   private indexingQueue: string[] = []
 
-  private isIndexing: boolean = false
+  private totalFiles: number = 0
 
   constructor(workspaceRootPath?: string) {
     this.workspaceRootPath =
@@ -47,6 +49,7 @@ export class CodebaseIndexer {
 
   async indexWorkspace() {
     const filePaths = await this.getAllIndexedFilePaths()
+    this.totalFiles = filePaths.length
     await this.processFiles(filePaths)
   }
 
@@ -55,7 +58,7 @@ export class CodebaseIndexer {
       if (!(await this.isAvailableFile(filePath))) return
 
       await this.databaseManager.deleteFileFromIndex(filePath)
-      await this.queueFileForIndexing(filePath)
+      this.processFiles([filePath])
     } catch (error) {
       logger.error(`Error handling file change for ${filePath}:`, error)
     }
@@ -91,22 +94,11 @@ export class CodebaseIndexer {
     await this.databaseManager.clearIndex()
   }
 
-  async searchSimilarCode(query: string): Promise<vscode.Location[]> {
+  async searchSimilarCode(query: string): Promise<CodeChunkRow[]> {
     const embedding = await this.embeddings.embedQuery(query)
     const results = await this.databaseManager.searchSimilarCode(embedding)
 
-    return results.map(
-      result =>
-        new vscode.Location(
-          vscode.Uri.file(result.fullPath),
-          new vscode.Range(
-            result.startLine,
-            result.startCharacter,
-            result.endLine,
-            result.endCharacter
-          )
-        )
-    )
+    return results
   }
 
   private isAvailableExtFile(filePath: string): boolean {
@@ -137,31 +129,22 @@ export class CodebaseIndexer {
   }
 
   private async processFiles(filePaths: string[]) {
-    const totalFiles = filePaths.length
-    let processedFiles = 0
+    this.indexingQueue.push(...filePaths)
 
-    for (const filePath of filePaths) {
-      await this.queueFileForIndexing(filePath)
-      processedFiles++
-      this.progressReporter.report(processedFiles, totalFiles, filePath)
-    }
-  }
-
-  private async queueFileForIndexing(filePath: string) {
-    this.indexingQueue.push(filePath)
-    if (!this.isIndexing) {
-      this.processIndexingQueue()
-    }
-  }
-
-  private async processIndexingQueue() {
+    if (this.isIndexing) return
     this.isIndexing = true
+
     while (this.indexingQueue.length > 0) {
       const filePath = this.indexingQueue.shift()!
       try {
         await this.indexFile(filePath)
       } catch (error) {
         logger.error(`Error indexing file ${filePath}:`, error)
+      } finally {
+        this.progressReporter.report(
+          this.totalFiles - this.indexingQueue.length,
+          this.totalFiles
+        )
       }
     }
     this.isIndexing = false
@@ -172,7 +155,10 @@ export class CodebaseIndexer {
       const rows = await this.createCodeChunkRows(filePath)
       await this.databaseManager.addRows(rows)
 
-      logger.dev.log(await this.databaseManager.getAllRows())
+      logger.dev.verbose(
+        'Table all rows:',
+        await this.databaseManager.getAllRows()
+      )
 
       logger.log(`Indexed file: ${filePath}`)
     } catch (error) {
@@ -186,9 +172,22 @@ export class CodebaseIndexer {
     return crypto.createHash('sha256').update(content, 'utf-8').digest('hex')
   }
 
+  async isValidRow(row: CodeChunkRow): Promise<boolean> {
+    // valid file hash
+    const currentHash = await this.generateFileHash(row.fullPath)
+    if (currentHash !== row.fileHash) return false
+
+    return true
+  }
+
+  async getRowFileContent(row: CodeChunkRow): Promise<string> {
+    const content = await VsCodeFS.readFile(row.fullPath)
+    return content
+  }
+
   private async chunkCodeFile(filePath: string): Promise<TextChunk[]> {
-    const manager = CodeChunkerManager.getInstance()
-    const chunker = await manager.getChunkerFromFilePath(filePath)
+    const chunker =
+      await CodeChunkerManager.getInstance().getChunkerFromFilePath(filePath)
     const content = await VsCodeFS.readFile(filePath)
     const { maxTokens } = EmbeddingManager.getInstance().getActiveModelInfo()
 
@@ -203,7 +202,7 @@ export class CodebaseIndexer {
   private async createCodeChunkRows(filePath: string): Promise<CodeChunkRow[]> {
     const chunks = await this.chunkCodeFile(filePath)
 
-    logger.dev.log('code chunks', chunks)
+    logger.dev.verbose('code chunks', chunks)
 
     const chunkRowsPromises = chunks.map(async chunk => {
       const embedding = await this.embeddings.embedQuery(chunk.text)
@@ -236,9 +235,8 @@ export class CodebaseIndexer {
 
   private async diffReindex() {
     const filePaths = await this.getAllIndexedFilePaths()
-    const totalFiles = filePaths.length
-
-    const tasks = filePaths.map(async (filePath, index) => {
+    const filePathsNeedReindex: string[] = []
+    const tasks = filePaths.map(async filePath => {
       try {
         const currentHash = await this.generateFileHash(filePath)
         const existingRows = await this.databaseManager.getFileRows(filePath)
@@ -248,15 +246,17 @@ export class CodebaseIndexer {
           existingRows[0]?.fileHash !== currentHash
         ) {
           await this.databaseManager.deleteFileFromIndex(filePath)
-          await this.indexFile(filePath)
+          filePathsNeedReindex.push(filePath)
         }
-
-        this.progressReporter.report(index + 1, totalFiles, filePath)
       } catch (error) {
         logger.error(`Error processing file ${filePath}:`, error)
       }
     })
 
     await Promise.allSettled(tasks)
+
+    this.totalFiles = filePathsNeedReindex.length
+
+    await this.processFiles(filePathsNeedReindex)
   }
 }
