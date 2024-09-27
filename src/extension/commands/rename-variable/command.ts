@@ -1,9 +1,9 @@
 import path from 'path'
 import { createModelProvider } from '@extension/ai/helpers'
+import { AbortError } from '@extension/constants'
 import { t } from '@extension/i18n'
 import { createLoading } from '@extension/loading'
 import { getActiveEditor, getWorkspaceFolder } from '@extension/utils'
-import { AbortError } from 'node-fetch'
 import * as vscode from 'vscode'
 import { z } from 'zod'
 
