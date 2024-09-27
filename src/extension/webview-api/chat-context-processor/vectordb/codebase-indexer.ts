@@ -201,14 +201,17 @@ export class CodebaseIndexer {
 
   private async createCodeChunkRows(filePath: string): Promise<CodeChunkRow[]> {
     const chunks = await this.chunkCodeFile(filePath)
+    const relativePath = vscode.workspace.asRelativePath(filePath)
 
     logger.dev.verbose('code chunks', chunks)
 
     const chunkRowsPromises = chunks.map(async chunk => {
-      const embedding = await this.embeddings.embedQuery(chunk.text)
+      const embedding = await this.embeddings.embedQuery(
+        `file path: ${relativePath}\n\n${chunk.text}`
+      )
       const fileHash = await this.generateFileHash(filePath)
       return {
-        relativePath: vscode.workspace.asRelativePath(filePath),
+        relativePath,
         fullPath: filePath,
         fileHash,
         startLine: chunk.range.startLine,

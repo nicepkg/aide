@@ -7,6 +7,7 @@ import { useFileInfoForMessage } from '@webview/hooks/api/use-file-info-for-mess
 import { useShikiHighlighter } from '@webview/hooks/use-shiki-highlighter'
 import { api } from '@webview/services/api-client'
 import { getFileNameFromPath } from '@webview/utils/path'
+import parse from 'html-react-parser'
 import { toast } from 'sonner'
 
 export interface HighlighterProps {
@@ -100,11 +101,7 @@ export const Highlighter: React.FC<HighlighterProps> = ({
       isLoading={isLoading}
       defaultExpanded={defaultExpanded}
     >
-      <div
-        style={style}
-        // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{ __html: highlightedCode }}
-      />
+      <div style={style}>{parse(highlightedCode)}</div>
     </CollapsibleCode>
   )
 }

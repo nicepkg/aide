@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
-import { createHighlighter, type Highlighter } from 'shiki'
-
-const highlighterCache: Record<string, Highlighter> = {}
+import { logger } from '@webview/utils/logger'
+import { codeToHtml } from 'shiki'
 
 export interface UseShikiHighlighterProps {
   code: string
@@ -15,24 +14,17 @@ export const useShikiHighlighter = (props: UseShikiHighlighterProps) => {
 
   useEffect(() => {
     const highlightCode = async () => {
-      let highlighter: Highlighter
-
-      if (highlighterCache[language]) {
-        highlighter = highlighterCache[language]!
-      } else {
-        highlighter = await createHighlighter({
-          themes: ['dark-plus'],
-          langs: [language]
+      try {
+        const html = await codeToHtml(code, {
+          lang: language,
+          theme: 'dark-plus'
         })
-        highlighterCache[language] = highlighter
+        setHighlightedCode(html)
+      } catch (error) {
+        logger.warn('Failed to highlight code:', error)
+      } finally {
+        setIsLoading(false)
       }
-
-      const highlighted = await highlighter.codeToHtml(code, {
-        lang: language,
-        theme: 'dark-plus'
-      })
-      setHighlightedCode(highlighted)
-      setIsLoading(false)
     }
 
     highlightCode()
