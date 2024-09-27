@@ -1,22 +1,5 @@
 import type { ControllerClass } from '@extension/webview-api/types'
 
-export type ApiResponse<T> =
-  | {
-      type: 'response'
-      data: T
-    }
-  | {
-      type: 'stream'
-      data: string
-    }
-  | {
-      type: 'end'
-    }
-  | {
-      type: 'error'
-      error: string
-    }
-
 export type InferControllerMethods<T> = T extends new (...args: any) => infer R
   ? {
       [K in keyof R as R[K] extends Function ? K : never]: R[K]

@@ -1,5 +1,6 @@
 import { AskAICommand } from './ask-ai/command'
 import type { BaseCommand } from './base.command'
+import { BatchProcessorCommand } from './batch-processor/command'
 import { CodeConvertCommand } from './code-convert/command'
 import { CodeViewerHelperCommand } from './code-viewer-helper/command'
 import { CommandManager } from './command-manager'
@@ -18,6 +19,7 @@ export const registerCommands = (commandManager: CommandManager) => {
   const Commands = [
     CopyAsPromptCommand,
     AskAICommand,
+    BatchProcessorCommand,
     CodeConvertCommand,
     CodeViewerHelperCommand,
     ExpertCodeEnhancerCommand,
