@@ -84,7 +84,7 @@ export class ExpertCodeEnhancerCommand extends BaseCommand {
     })
   }
 
-  async cleanup(): Promise<void> {
+  async dispose(): Promise<void> {
     const openDocumentPaths = new Set(
       vscode.workspace.textDocuments.map(doc => doc.uri.fsPath)
     )

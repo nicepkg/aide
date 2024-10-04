@@ -1,3 +1,5 @@
+import { aidePaths } from '@extension/file-utils/paths'
+import { getWorkspaceFolder } from '@extension/utils'
 import { CodebaseIndexer } from '@extension/webview-api/chat-context-processor/vectordb/codebase-indexer'
 import * as vscode from 'vscode'
 
@@ -9,7 +11,9 @@ export class CodebaseWatcherRegister extends BaseRegister {
   indexer: CodebaseIndexer | undefined
 
   async register(): Promise<void> {
-    this.indexer = new CodebaseIndexer()
+    const workspaceRootPath = getWorkspaceFolder()?.uri.fsPath
+    const dbPath = aidePaths.getWorkspaceLanceDbPath()
+    this.indexer = new CodebaseIndexer(workspaceRootPath, dbPath)
 
     // Initialize the indexer
     await this.indexer.initialize()
@@ -42,7 +46,8 @@ export class CodebaseWatcherRegister extends BaseRegister {
     }
   }
 
-  cleanup(): void {
+  dispose(): void {
     this.fileSystemWatcher?.dispose()
+    this.indexer?.dispose()
   }
 }

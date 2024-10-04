@@ -38,9 +38,9 @@ export class CommandManager {
     return this.services.get(name) as T | undefined
   }
 
-  async cleanup(): Promise<void> {
+  async dispose(): Promise<void> {
     await Promise.allSettled(
-      Array.from(this.commands.values()).map(command => command.cleanup())
+      Array.from(this.commands.values()).map(command => command.dispose())
     )
   }
 }

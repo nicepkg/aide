@@ -139,6 +139,9 @@ importers:
       '@types/shell-quote':
         specifier: ^1.7.5
         version: 1.7.5
+      '@types/turndown':
+        specifier: ^5.0.5
+        version: 5.0.5
       '@types/vscode':
         specifier: 1.82.0
         version: 1.82.0
@@ -168,7 +171,7 @@ importers:
         version: 10.4.20(postcss@8.4.47)
       babel-plugin-react-compiler:
         specifier: latest
-        version: 0.0.0-experimental-57db2f6-20240926
+        version: 0.0.0-experimental-27e0f40-20241002
       chalk:
         specifier: ^5.3.0
         version: 5.3.0
@@ -228,7 +231,7 @@ importers:
         version: 5.2.1(@types/eslint@8.56.10)(eslint-config-prettier@9.1.0(eslint@8.57.0))(eslint@8.57.0)(prettier@3.3.3)
       eslint-plugin-react-compiler:
         specifier: latest
-        version: 0.0.0-experimental-78c4cf3-20240926(eslint@8.57.0)
+        version: 0.0.0-experimental-1e98da5-20241002(eslint@8.57.0)
       eslint-plugin-simple-import-sort:
         specifier: ^12.1.1
         version: 12.1.1(eslint@8.57.0)
@@ -289,6 +292,9 @@ importers:
       lint-staged:
         specifier: ^15.2.10
         version: 15.2.10
+      lowdb:
+        specifier: ^7.0.1
+        version: 7.0.1
       mermaid:
         specifier: ^11.2.1
         version: 11.2.1
@@ -388,6 +394,9 @@ importers:
       tsup:
         specifier: ^8.3.0
         version: 8.3.0(@swc/core@1.7.10)(jiti@1.21.6)(postcss@8.4.47)(tsx@4.16.3)(typescript@5.4.5)(yaml@2.5.0)
+      turndown:
+        specifier: ^7.2.0
+        version: 7.2.0
       typescript:
         specifier: 5.4.5
         version: 5.4.5
@@ -2173,6 +2182,9 @@ packages:
   '@mermaid-js/parser@0.3.0':
     resolution: {integrity: sha512-HsvL6zgE5sUPGgkIDlmAWR1HTNHz2Iy11BAWPTa4Jjabkpguy4Ze2gzfLrg6pdRuBvFwgUYyxiaNqZwrEEXepA==}
 
+  '@mixmark-io/domino@2.2.0':
+    resolution: {integrity: sha512-Y28PR25bHXUg88kCV7nivXrP2Nj2RueZ3/l/jdx6J9f8J4nsEGcgX0Qe6lt7Pa+J79+kPiJU3LguR6O/6zrLOw==}
+
   '@neon-rs/load@0.0.74':
     resolution: {integrity: sha512-/cPZD907UNz55yrc/ud4wDgQKtU1TvkD9jeqZWG6J4IMmZkp6zgjkQcKA8UvpkZlcpPHvc8J17sGzLFbP/LUYg==}
 
@@ -3432,6 +3444,9 @@ packages:
   '@types/shell-quote@1.7.5':
     resolution: {integrity: sha512-+UE8GAGRPbJVQDdxi16dgadcBfQ+KG2vgZhV1+3A1XmHbmwcdwhCUwIdy+d3pAGrbvgRoVSjeI9vOWyq376Yzw==}
 
+  '@types/turndown@5.0.5':
+    resolution: {integrity: sha512-TL2IgGgc7B5j78rIccBtlYAnkuv8nUQqhQc+DSYV5j9Be9XOcm/SKOVRuA47xAVI3680Tk9B1d8flK2GWT2+4w==}
+
   '@types/unist@2.0.11':
     resolution: {integrity: sha512-CmBKiL6NNo/OqgmMn95Fk9Whlp2mtvIv+KNpQKN2F4SjvrEesubTRWGYSg+BnWZOnlCaSTU1sMpsBOzgbYhnsA==}
 
@@ -4002,8 +4017,8 @@ packages:
   b4a@1.6.6:
     resolution: {integrity: sha512-5Tk1HLk6b6ctmjIkAcU/Ujv/1WqiDl0F0JdRCR80VsOcUlHcu7pWeWRlOqQLHfDEsVx9YH/aif5AG4ehoCtTmg==}
 
-  babel-plugin-react-compiler@0.0.0-experimental-57db2f6-20240926:
-    resolution: {integrity: sha512-zbDaQPCUcTlPgLXzYMkhA/7ozI3P45vagP3Vc97s/ykEzT0Mi9n3Td4mCTRP0NiWt5iu31/iUDNQyfNy8Qn45A==}
+  babel-plugin-react-compiler@0.0.0-experimental-27e0f40-20241002:
+    resolution: {integrity: sha512-hMOwSqoI0gxyjgGVhsMqPsVV4bjCqJ2WTUFsQyrk+KAkDqK/o7Th9XRl/xhVApPbE4VzQeiutC60rbBGqNebHQ==}
 
   bail@2.0.2:
     resolution: {integrity: sha512-0xO6mYd7JB2YesxDKplafRpsiOzPt9V02ddPCLbY1xYGPOX24NTyN50qnUxgCPcSoYMhKpAuBTjQoRZCAkUDRw==}
@@ -5076,8 +5091,8 @@ packages:
       eslint-config-prettier:
         optional: true
 
-  eslint-plugin-react-compiler@0.0.0-experimental-78c4cf3-20240926:
-    resolution: {integrity: sha512-+rvUPuD0QeB9NK5ywyE4kvI2f8H/xZm/qSWSNznhyQc7ED2VZVLX6wWZFeLYem4Qh75dwM/+E7Q8TwGDUUnmxg==}
+  eslint-plugin-react-compiler@0.0.0-experimental-1e98da5-20241002:
+    resolution: {integrity: sha512-+wA20cShsWWf0DNuj4PIcbsomnn9emcyGncNzGNesP/tXMXmYy/yH+i2STv/fFG1Ap9FeTVeFhwciWtvpcauRA==}
     engines: {node: ^14.17.0 || ^16.0.0 || >= 18.0.0}
     peerDependencies:
       eslint: '>=7'
@@ -6328,6 +6343,10 @@ packages:
 
   loupe@3.1.1:
     resolution: {integrity: sha512-edNu/8D5MKVfGVFRhFf8aAxiTM6Wumfz5XsaatSxlD3w4R1d/WEKUTydCdPGbl9K7QG/Ca3GnDV2sIKIpXRQcw==}
+
+  lowdb@7.0.1:
+    resolution: {integrity: sha512-neJAj8GwF0e8EpycYIDFqEPcx9Qz4GUho20jWFR7YiFeXzF1YMLdxB36PypcTSPMA+4+LvgyMacYhlr18Zlymw==}
+    engines: {node: '>=18'}
 
   lower-case@2.0.2:
     resolution: {integrity: sha512-7fm3l3NAF9WfN6W3JOmf5drwpVqX78JtoGJ3A6W0a6ZnldM41w2fV5D490psKFTpMds8TJse/eHLFFsNHHjHgg==}
@@ -7686,6 +7705,10 @@ packages:
   std-env@3.7.0:
     resolution: {integrity: sha512-JPbdCEQLj1w5GilpiHAx3qJvFndqybBysA3qUOnznweH4QbNYUsW/ea8QzSrnh0vNsezMMw5bcVool8lM0gwzg==}
 
+  steno@4.0.2:
+    resolution: {integrity: sha512-yhPIQXjrlt1xv7dyPQg2P17URmXbuM5pdGkpiMB3RenprfiBlvK415Lctfe0eshk90oA7/tNq7WEiMK8RSP39A==}
+    engines: {node: '>=18'}
+
   stop-iteration-iterator@1.0.0:
     resolution: {integrity: sha512-iCGQj+0l0HOdZ2AEeBADlsRC+vsnDsZsbdSiH1yNSjcfKM7fdpCMfqAL/dwF5BLiw/XhRft/Wax6zQbhq2BcjQ==}
     engines: {node: '>= 0.4'}
@@ -8051,6 +8074,9 @@ packages:
   tunnel@0.0.6:
     resolution: {integrity: sha512-1h/Lnq9yajKY2PEbBadPXj3VxsDDu844OnaAo52UVmIzIvwwtBPIuNvkjuzBlTWpfJyUbG3ez0KSBibQkj4ojg==}
     engines: {node: '>=0.6.11 <=0.7.0 || >=0.7.3'}
+
+  turndown@7.2.0:
+    resolution: {integrity: sha512-eCZGBN4nNNqM9Owkv9HAtWRYfLA4h909E/WGAWWBpmB275ehNhZyk87/Tpvjbp0jjNl9XwCsbe6bm6CqFsgD+A==}
 
   type-check@0.4.0:
     resolution: {integrity: sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew==}
@@ -10152,6 +10178,8 @@ snapshots:
     dependencies:
       langium: 3.0.0
 
+  '@mixmark-io/domino@2.2.0': {}
+
   '@neon-rs/load@0.0.74': {}
 
   '@nodelib/fs.scandir@2.1.5':
@@ -11441,6 +11469,8 @@ snapshots:
 
   '@types/shell-quote@1.7.5': {}
 
+  '@types/turndown@5.0.5': {}
+
   '@types/unist@2.0.11': {}
 
   '@types/unist@3.0.2': {}
@@ -12196,7 +12226,7 @@ snapshots:
 
   b4a@1.6.6: {}
 
-  babel-plugin-react-compiler@0.0.0-experimental-57db2f6-20240926:
+  babel-plugin-react-compiler@0.0.0-experimental-27e0f40-20241002:
     dependencies:
       '@babel/generator': 7.2.0
       '@babel/types': 7.25.2
@@ -13522,7 +13552,7 @@ snapshots:
       '@types/eslint': 8.56.10
       eslint-config-prettier: 9.1.0(eslint@8.57.0)
 
-  eslint-plugin-react-compiler@0.0.0-experimental-78c4cf3-20240926(eslint@8.57.0):
+  eslint-plugin-react-compiler@0.0.0-experimental-1e98da5-20241002(eslint@8.57.0):
     dependencies:
       '@babel/core': 7.25.2
       '@babel/parser': 7.25.3
@@ -14897,6 +14927,10 @@ snapshots:
   loupe@3.1.1:
     dependencies:
       get-func-name: 2.0.2
+
+  lowdb@7.0.1:
+    dependencies:
+      steno: 4.0.2
 
   lower-case@2.0.2:
     dependencies:
@@ -16600,6 +16634,8 @@ snapshots:
 
   std-env@3.7.0: {}
 
+  steno@4.0.2: {}
+
   stop-iteration-iterator@1.0.0:
     dependencies:
       internal-slot: 1.0.7
@@ -17009,6 +17045,10 @@ snapshots:
       safe-buffer: 5.2.1
 
   tunnel@0.0.6: {}
+
+  turndown@7.2.0:
+    dependencies:
+      '@mixmark-io/domino': 2.2.0
 
   type-check@0.4.0:
     dependencies:

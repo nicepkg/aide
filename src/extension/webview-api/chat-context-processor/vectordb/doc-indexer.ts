@@ -1,37 +1,39 @@
+import path from 'path'
 import { EmbeddingManager } from '@extension/ai/embeddings/embedding-manager'
-import { createShouldIgnore } from '@extension/file-utils/ignore-patterns'
-import { getExt, getSemanticHashName } from '@extension/file-utils/paths'
+import { getSemanticHashName } from '@extension/file-utils/paths'
 import { traverseFileOrFolders } from '@extension/file-utils/traverse-fs'
 import { VsCodeFS } from '@extension/file-utils/vscode-fs'
 import { logger } from '@extension/logger'
-import { languageIdExts } from '@shared/utils/vscode-lang'
-import * as vscode from 'vscode'
 
 import { CodeChunkerManager, type TextChunk } from '../tree-sitter/code-chunker'
-import { treeSitterExtLanguageMap } from '../tree-sitter/constants'
+import { ProgressReporter } from '../utils/process-reporter'
 import { BaseIndexer, IndexRow } from './base-indexer'
 
-export interface CodeChunkRow extends IndexRow {
-  relativePath: string
-}
+export interface DocChunkRow extends IndexRow {}
 
-export class CodebaseIndexer extends BaseIndexer<CodeChunkRow> {
+export class DocIndexer extends BaseIndexer<DocChunkRow> {
   constructor(
-    private workspaceRootPath: string,
+    private docsRootPath: string,
     dbPath: string
   ) {
     super(dbPath)
+    this.progressReporter = new ProgressReporter()
   }
 
   async getTableName(): Promise<string> {
     const { modelName } = EmbeddingManager.getInstance().getActiveModelInfo()
     const semanticModelName = getSemanticHashName(modelName)
-    return `code_chunks_embeddings_${semanticModelName}`
+    const docPathName = getSemanticHashName(
+      path.basename(this.docsRootPath),
+      this.docsRootPath
+    )
+
+    return `doc_chunks_embeddings_${semanticModelName}_${docPathName}`
   }
 
   async indexFile(filePath: string): Promise<void> {
     try {
-      const rows = await this.createCodeChunkRows(filePath)
+      const rows = await this.createDocChunkRows(filePath)
       await this.addRows(rows)
       logger.log(`Indexed file: ${filePath}`)
     } catch (error) {
@@ -40,17 +42,13 @@ export class CodebaseIndexer extends BaseIndexer<CodeChunkRow> {
     }
   }
 
-  private async createCodeChunkRows(filePath: string): Promise<CodeChunkRow[]> {
+  private async createDocChunkRows(filePath: string): Promise<DocChunkRow[]> {
     const chunks = await this.chunkCodeFile(filePath)
-    const relativePath = vscode.workspace.asRelativePath(filePath)
 
     const chunkRowsPromises = chunks.map(async chunk => {
-      const embedding = await this.embeddings.embedQuery(
-        `file path: ${relativePath}\n\n${chunk.text}`
-      )
+      const embedding = await this.embeddings.embedQuery(chunk.text)
       const fileHash = await this.generateFileHash(filePath)
       return {
-        relativePath,
         fullPath: filePath,
         fileHash,
         startLine: chunk.range.startLine,
@@ -77,27 +75,26 @@ export class CodebaseIndexer extends BaseIndexer<CodeChunkRow> {
   }
 
   async getAllIndexedFilePaths(): Promise<string[]> {
-    const filePaths = await traverseFileOrFolders({
+    return traverseFileOrFolders({
       type: 'file',
-      filesOrFolders: ['./'],
+      filesOrFolders: [this.docsRootPath],
       isGetFileContent: false,
-      workspacePath: this.workspaceRootPath,
+      workspacePath: this.docsRootPath,
+      customShouldIgnore: () => false,
       itemCallback: fileInfo => fileInfo.fullPath
     })
-
-    return filePaths.filter(filePath => this.isAvailableExtFile(filePath))
-  }
-
-  private isAvailableExtFile(filePath: string): boolean {
-    const allowExt = new Set([
-      ...Object.keys(treeSitterExtLanguageMap),
-      ...languageIdExts
-    ])
-    return allowExt.has(getExt(filePath)!.toLowerCase())
   }
 
   async isAvailableFile(filePath: string): Promise<boolean> {
-    const shouldIgnore = await createShouldIgnore(this.workspaceRootPath)
-    return !shouldIgnore(filePath) && this.isAvailableExtFile(filePath)
+    return filePath.endsWith('.md')
+  }
+
+  async indexWorkspace(): Promise<void> {
+    const filePaths = await this.getAllIndexedFilePaths()
+    this.progressReporter.setTotalItems(filePaths.length)
+    for (const filePath of filePaths) {
+      await this.indexFile(filePath)
+      this.progressReporter.incrementProcessedItems()
+    }
   }
 }

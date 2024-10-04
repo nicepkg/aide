@@ -7,6 +7,7 @@ import * as vscode from 'vscode'
 
 import { ChatController } from './controllers/chat.controller'
 import { CodebaseController } from './controllers/codebase.controller'
+import { DocController } from './controllers/doc.controller'
 import { FileController } from './controllers/file.controller'
 import { GitController } from './controllers/git.controller'
 import { SystemController } from './controllers/system.controller'
@@ -109,7 +110,7 @@ class APIManager {
     }
   }
 
-  cleanUp() {
+  dispose() {
     this.disposes.forEach(dispose => dispose.dispose())
     this.controllers.clear()
     this.io.close()
@@ -121,7 +122,8 @@ export const controllers = [
   CodebaseController,
   FileController,
   GitController,
-  SystemController
+  SystemController,
+  DocController
 ] as const
 export type Controllers = typeof controllers
 
@@ -137,7 +139,7 @@ export const setupWebviewAPIManager = async (
 
   return {
     dispose: () => {
-      apiManager.cleanUp()
+      apiManager.dispose()
     }
   }
 }

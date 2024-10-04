@@ -225,7 +225,7 @@ export class RedisStorage {
   /**
    * Removes all expired keys from the storage.
    */
-  cleanup(): void {
+  dispose(): void {
     for (let i = 0; i < this.length; i++) {
       const key = this.key(i)
       if (key) this.getItem(key) // This will automatically remove expired items

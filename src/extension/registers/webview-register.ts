@@ -88,7 +88,7 @@ export class AideWebViewProvider {
     return setupHtml(webview, this.context)
   }
 
-  cleanUp() {
+  dispose() {
     this.disposes.forEach(dispose => dispose.dispose())
     this.disposes = []
   }
@@ -119,7 +119,7 @@ export class WebviewRegister extends BaseRegister {
     )
     this.context.subscriptions.push(disposable, {
       dispose: () => {
-        this.provider?.cleanUp()
+        this.provider?.dispose()
       }
     })
 

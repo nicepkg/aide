@@ -1,4 +1,5 @@
 import { CodebaseIndexing } from './custom-renders/codebase'
+import { DocManagement } from './custom-renders/doc-management'
 import type { SettingsConfig } from './settings'
 
 export const settingsConfig: SettingsConfig = {
@@ -190,6 +191,20 @@ export const settingsConfig: SettingsConfig = {
       id: 'batchProcessor',
       label: 'Batch Processor',
       settings: []
+    },
+    {
+      id: 'docManagement',
+      label: 'Doc Management',
+      settings: [
+        {
+          key: 'docManagement',
+          label: 'Manage Documentation Sites',
+          description:
+            'Add, remove, and manage documentation sites for indexing',
+          type: 'custom',
+          customRenderer: () => <DocManagement />
+        }
+      ]
     }
   ]
 }

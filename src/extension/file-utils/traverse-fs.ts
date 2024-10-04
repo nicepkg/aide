@@ -30,6 +30,7 @@ interface TraverseOptions<T, Type extends FsType = 'file'> {
   isGetFileContent?: boolean // default is true
   workspacePath: string
   ignorePatterns?: string[]
+  customShouldIgnore?: (fullFilePath: string) => boolean
   itemCallback: (
     itemInfo: Type extends 'file' ? FileInfo : FolderInfo
   ) => MaybePromise<T>
@@ -72,7 +73,7 @@ const getFolderInfo = async (
 }
 
 export const traverseFileOrFolders = async <T, Type extends FsType>(
-  props: TraverseOptions<T, Type>
+  options: TraverseOptions<T, Type>
 ): Promise<T[]> => {
   const {
     type = 'file',
@@ -80,12 +81,17 @@ export const traverseFileOrFolders = async <T, Type extends FsType>(
     isGetFileContent = true,
     workspacePath,
     ignorePatterns,
+    customShouldIgnore,
     itemCallback
-  } = props
+  } = options
   const itemPathSet = new Set<string>()
   const results: T[] = []
 
-  const shouldIgnore = await createShouldIgnore(workspacePath, ignorePatterns)
+  let shouldIgnore = customShouldIgnore
+
+  if (!shouldIgnore) {
+    shouldIgnore = await createShouldIgnore(workspacePath, ignorePatterns)
+  }
 
   const processFolder = async (folderPath: string) => {
     if (itemPathSet.has(folderPath) || shouldIgnore(folderPath)) return

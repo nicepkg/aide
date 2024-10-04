@@ -36,9 +36,9 @@ export class RegisterManager {
     return this.registers.get(RegisterClass.name) as T | undefined
   }
 
-  async cleanup(): Promise<void> {
+  async dispose(): Promise<void> {
     await Promise.allSettled(
-      Array.from(this.registers.values()).map(register => register.cleanup())
+      Array.from(this.registers.values()).map(register => register.dispose())
     )
   }
 }

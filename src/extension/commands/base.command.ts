@@ -13,7 +13,7 @@ export abstract class BaseCommand {
 
   abstract run(...args: any[]): Promise<void>
 
-  cleanup(): Promise<void> | void {}
+  dispose(): Promise<void> | void {}
 
   register(): vscode.Disposable {
     return vscode.commands.registerCommand(

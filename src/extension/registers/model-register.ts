@@ -25,7 +25,7 @@ export class ModelRegister extends BaseRegister {
     await this.embeddingManager.setActiveModel(embeddingModels[0])
   }
 
-  cleanup(): void {
+  dispose(): void {
     this.embeddingManager.dispose()
   }
 }

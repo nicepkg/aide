@@ -65,7 +65,11 @@ export class AidePaths {
     isDirectory: boolean,
     ...segments: string[]
   ): string {
-    const fullPath = path.join(this.aideDir, this.getNamespace(), ...segments)
+    const fullPath = this.joinAideGlobalPath(
+      isDirectory,
+      this.getNamespace(),
+      ...segments
+    )
     return this.ensurePath(fullPath, isDirectory)
   }
 
@@ -86,9 +90,19 @@ export class AidePaths {
     return filePath
   }
 
-  getLanceDbPath = () => this.joinAideNamespacePath(true, 'lancedb')
+  // lancedb
+  getGlobalLanceDbPath = () => this.joinAideGlobalPath(true, 'lancedb')
+
+  getWorkspaceLanceDbPath = () => this.joinAideNamespacePath(true, 'lancedb')
+
+  // lowdb
+  getGlobalLowdbPath = () => this.joinAideGlobalPath(true, 'lowdb')
+
+  getWorkspaceLowdbPath = () => this.joinAideNamespacePath(true, 'lowdb')
 
   getLogsPath = () => this.joinAideNamespacePath(true, 'logs')
+
+  getDocCrawlerPath = () => this.joinAideGlobalPath(true, 'doc-crawler')
 
   getNamespace = () => {
     const workspacePath = getWorkspaceFolder().uri.fsPath

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Button } from '@webview/components/ui/button'
 import { Progress } from '@webview/components/ui/progress'
 import { api } from '@webview/services/api-client'
-import type { IndexingProgress } from '@webview/types/chat'
+import type { ProgressInfo } from '@webview/types/chat'
 import { logger } from '@webview/utils/logger'
 
 export const CodebaseIndexing = () => {
@@ -14,14 +14,14 @@ export const CodebaseIndexing = () => {
     setProgress(0)
 
     try {
-      api.codebase.reindexWorkspace(
+      api.codebase.reindexCodebase(
         {
           type: 'full'
         },
-        (progress: IndexingProgress) => {
+        (progress: ProgressInfo) => {
           logger.dev.verbose('progress', progress)
           setProgress(
-            Math.round((progress.processedFiles / progress.totalFiles) * 100)
+            Math.round((progress.processedItems / progress.totalItems) * 100)
           )
         }
       )

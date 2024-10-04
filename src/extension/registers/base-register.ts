@@ -12,5 +12,5 @@ export abstract class BaseRegister {
 
   abstract register(): void | Promise<void>
 
-  cleanup(): Promise<void> | void {}
+  dispose(): Promise<void> | void {}
 }
