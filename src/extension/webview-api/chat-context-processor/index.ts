@@ -13,7 +13,7 @@ import {
 } from './types/chat-context'
 
 export class ChatContextProcessor {
-  private strategies: Map<ChatContextType, BaseStrategy>
+  private strategyMap: Map<ChatContextType, BaseStrategy>
 
   protected registerManager: RegisterManager
 
@@ -26,37 +26,31 @@ export class ChatContextProcessor {
     this.registerManager = registerManager
     this.commandManager = commandManager
 
-    this.strategies = new Map()
-    this.strategies.set(
-      ChatContextType.Chat,
-      new ChatStrategy(registerManager, commandManager)
-    )
-    this.strategies.set(
-      ChatContextType.Composer,
-      new ComposerStrategy(registerManager, commandManager)
-    )
-    this.strategies.set(
-      ChatContextType.V0,
-      new V0Strategy(registerManager, commandManager)
-    )
-    this.strategies.set(
-      ChatContextType.AutoTask,
-      new AutoTaskStrategy(registerManager, commandManager)
+    this.strategyMap = new Map([
+      [ChatContextType.Chat, new ChatStrategy(registerManager, commandManager)],
+      [
+        ChatContextType.Composer,
+        new ComposerStrategy(registerManager, commandManager)
+      ],
+      [ChatContextType.V0, new V0Strategy(registerManager, commandManager)],
+      [
+        ChatContextType.AutoTask,
+        new AutoTaskStrategy(registerManager, commandManager)
+      ]
+    ])
+  }
+
+  private selectStrategy(context: ChatContext): BaseStrategy {
+    return (
+      this.strategyMap.get(context.type) ||
+      this.strategyMap.get(ChatContextType.Chat)!
     )
   }
 
-  private getCurrentStrategy(context: ChatContext): BaseStrategy {
-    const strategy =
-      this.strategies.get(context.type) ||
-      this.strategies.get(ChatContextType.Chat)
-
-    return strategy!
-  }
-
-  getAnswers(
+  async *getAnswers(
     context: ChatContext
   ): AsyncGenerator<Conversation[], void, unknown> {
-    const strategy = this.getCurrentStrategy(context)
-    return strategy.getAnswers(context)
+    const strategy = this.selectStrategy(context)
+    yield* strategy.getAnswers(context)
   }
 }

@@ -8,7 +8,7 @@ import {
 import type { ProgressInfo } from '../chat-context-processor/utils/process-reporter'
 import type { ReIndexType } from '../chat-context-processor/vectordb/base-indexer'
 import { DocIndexer } from '../chat-context-processor/vectordb/doc-indexer'
-import { docSitesDB } from '../lowdb/doc-sites'
+import { docSitesDB } from '../lowdb/doc-sites-db'
 import { Controller } from '../types'
 
 export class DocController extends Controller {
@@ -22,73 +22,120 @@ export class DocController extends Controller {
     return await docSitesDB.getAll()
   }
 
-  async addDocSite(req: { url: string }) {
-    return await docSitesDB.add(req.url)
+  async addDocSite(request: { name: string; url: string }) {
+    return await docSitesDB.add(request)
   }
 
-  async removeDocSite(req: { id: string }) {
-    await docSitesDB.remove(req.id)
-
-    this.docCrawlers[req.id]?.dispose()
-    this.docIndexers[req.id]?.dispose()
-
-    delete this.docCrawlers[req.id]
-    delete this.docIndexers[req.id]
+  async removeDocSite(request: { id: string }) {
+    await docSitesDB.remove(request.id)
+    this.disposeResources(request.id)
   }
 
-  async *crawlDocs(req: {
+  async *crawlDocs(request: {
     id: string
     options?: Partial<CrawlerOptions>
   }): AsyncGenerator<ProgressInfo, void, unknown> {
     try {
-      const sites = await docSitesDB.getAll()
-      const site = sites.find(s => s.id === req.id)
-      if (!site) throw new Error('Doc site not found')
+      const site = await this.findSiteById(request.id)
+      if (!site) throw new Error('找不到文档站点')
 
-      const crawler = new DocCrawler(site.url, req.options)
-      this.docCrawlers[req.id] = crawler
+      const crawler = this.initiateCrawler(
+        request.id,
+        site.url,
+        request.options
+      )
+      const crawlingCompleted = crawler.crawl()
 
-      const crawlingPromise = crawler.crawl()
+      yield* this.reportProgress(crawler.progressReporter.getProgressIterator())
+      await crawlingCompleted
 
-      for await (const progress of crawler.progressReporter.getProgressIterator()) {
-        yield progress
-      }
-
-      await crawlingPromise
-      logger.log('Document crawling completed')
+      await docSitesDB.updateStatus(request.id, { isCrawled: true })
+      logger.log('文档抓取完成')
     } finally {
-      this.docCrawlers[req.id]?.dispose()
-      delete this.docCrawlers[req.id]
+      this.disposeCrawler(request.id)
     }
   }
 
   async *reindexDocs(
-    req: { id: string },
+    request: { id: string },
     type: ReIndexType = 'full'
   ): AsyncGenerator<ProgressInfo, void, unknown> {
     try {
-      const sites = await docSitesDB.getAll()
-      const site = sites.find(s => s.id === req.id)
-      if (!site) throw new Error('Doc site not found')
+      const site = await this.findSiteById(request.id)
+      if (!site) throw new Error('找不到文档站点')
+      if (!site.isCrawled) throw new Error('请先爬取站点，然后再索引')
 
-      const docsRootPath = aidePaths.getDocCrawlerPath()
-      const dbPath = aidePaths.getGlobalLanceDbPath()
-      const indexer = new DocIndexer(docsRootPath, dbPath)
-      this.docIndexers[req.id] = indexer
-
+      const indexer = this.initiateIndexer(request.id)
       await indexer.initialize()
 
-      const indexingPromise = indexer.reindexWorkspace(type)
+      const indexingCompleted = indexer.reindexWorkspace(type)
+      yield* this.reportProgress(indexer.progressReporter.getProgressIterator())
+      await indexingCompleted
 
-      for await (const progress of indexer.progressReporter.getProgressIterator()) {
-        yield progress
-      }
-
-      await indexingPromise
-      logger.log('Document indexing completed')
+      await docSitesDB.updateStatus(request.id, { isIndexed: true })
+      logger.log('文档索引完成')
     } finally {
-      this.docIndexers[req.id]?.dispose()
-      delete this.docIndexers[req.id]
+      this.disposeIndexer(request.id)
+    }
+  }
+
+  async updateDocSite(request: { id: string; name: string; url: string }) {
+    const { id, ...updates } = request
+    return await docSitesDB.update(id, updates)
+  }
+
+  async searchDocSites(query: string) {
+    const sites = await docSitesDB.getAll()
+    return sites.filter(
+      site =>
+        site.name.toLowerCase().includes(query.toLowerCase()) ||
+        site.url.toLowerCase().includes(query.toLowerCase())
+    )
+  }
+
+  private async findSiteById(id: string) {
+    const sites = await docSitesDB.getAll()
+    return sites.find(site => site.id === id)
+  }
+
+  private initiateCrawler(
+    id: string,
+    url: string,
+    options?: Partial<CrawlerOptions>
+  ) {
+    if (this.docCrawlers[id]) return this.docCrawlers[id]!
+    const crawler = new DocCrawler(url, options)
+    this.docCrawlers[id] = crawler
+    return crawler
+  }
+
+  private initiateIndexer(id: string) {
+    if (this.docIndexers[id]) return this.docIndexers[id]!
+    const docsPath = aidePaths.getDocCrawlerPath()
+    const dbPath = aidePaths.getGlobalLanceDbPath()
+    const indexer = new DocIndexer(docsPath, dbPath)
+    this.docIndexers[id] = indexer
+    return indexer
+  }
+
+  private disposeResources(id: string) {
+    this.disposeCrawler(id)
+    this.disposeIndexer(id)
+  }
+
+  private disposeCrawler(id: string) {
+    this.docCrawlers[id]?.dispose()
+    delete this.docCrawlers[id]
+  }
+
+  private disposeIndexer(id: string) {
+    this.docIndexers[id]?.dispose()
+    delete this.docIndexers[id]
+  }
+
+  private async *reportProgress(progressIterator: AsyncIterable<ProgressInfo>) {
+    for await (const progress of progressIterator) {
+      yield progress
     }
   }
 }

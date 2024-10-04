@@ -19,12 +19,12 @@ export function Providers({ children }: React.PropsWithChildren) {
       enableSystem
       disableTransitionOnChange
     >
+      <Toaster position="top-center" />
       <TooltipProvider>
         <QueryClientProvider client={queryClientRef.current}>
           {children}
         </QueryClientProvider>
       </TooltipProvider>
-      <Toaster />
     </NextThemesProvider>
   )
 }

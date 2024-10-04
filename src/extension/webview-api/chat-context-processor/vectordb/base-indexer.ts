@@ -14,7 +14,6 @@ import {
 import { connect, Table, type Connection } from 'vectordb'
 
 import { ProgressReporter } from '../utils/process-reporter'
-import type { CodeChunkRow } from './types'
 
 export type ReIndexType = 'full' | 'diff'
 
@@ -139,7 +138,7 @@ export abstract class BaseIndexer<T extends IndexRow> {
     return crypto.createHash('sha256').update(content, 'utf-8').digest('hex')
   }
 
-  async isValidRow(row: CodeChunkRow): Promise<boolean> {
+  async isValidRow(row: T): Promise<boolean> {
     const currentHash = await this.generateFileHash(row.fullPath)
     return currentHash === row.fileHash
   }

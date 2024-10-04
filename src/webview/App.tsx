@@ -4,8 +4,6 @@ import { useRoutes } from 'react-router-dom'
 
 import './styles/global.css'
 
-import { Toaster } from 'sonner'
-
 import { LoadingSpinner } from './components/loading-spinner'
 import { ThemeSync } from './components/theme-sync'
 import { Providers } from './contexts/providers'
@@ -13,7 +11,6 @@ import { Providers } from './contexts/providers'
 export default function App() {
   return (
     <div className="h-full">
-      <Toaster position="top-center" />
       <Providers>
         <div className="flex min-h-screen flex-col h-full">
           <main className="flex flex-1 flex-col h-full">

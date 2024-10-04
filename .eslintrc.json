@@ -121,7 +121,8 @@
         "react/jsx-no-target-blank": "off",
         "react/jsx-no-useless-fragment": "off",
         "no-restricted-exports": "off",
-        "jsx-a11y/label-has-associated-control": "off"
+        "jsx-a11y/label-has-associated-control": "off",
+        "jsx-a11y/heading-has-content": "off"
       }
     }
   ]
