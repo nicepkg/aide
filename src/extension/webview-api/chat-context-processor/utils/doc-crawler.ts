@@ -1,6 +1,7 @@
-import * as fs from 'fs/promises'
-import * as path from 'path'
-import * as url from 'url'
+/* eslint-disable func-names */
+import fs from 'fs/promises'
+import path from 'path'
+import url from 'url'
 import { aidePaths, getSemanticHashName } from '@extension/file-utils/paths'
 import { logger } from '@extension/logger'
 import * as cheerio from 'cheerio'
@@ -38,11 +39,18 @@ export class DocCrawler {
 
   private turndownService: TurndownService
 
-  private outputDir: string
-
   private domainDir: string
 
   progressReporter = new ProgressReporter()
+
+  static getDocCrawlerFolderPath(baseUrl: string) {
+    const parsedUrl = new URL(baseUrl)
+    const domainFolderName = getSemanticHashName(
+      parsedUrl.hostname,
+      parsedUrl.hostname
+    )
+    return path.join(aidePaths.getDocCrawlerPath(), domainFolderName)
+  }
 
   constructor(baseUrl: string, options: Partial<CrawlerOptions> = {}) {
     this.baseUrl = baseUrl
@@ -122,14 +130,7 @@ export class DocCrawler {
     this.content = {}
     this.depthMap = new Map([[baseUrl, 0]])
     this.turndownService = new TurndownService()
-    this.outputDir = aidePaths.getDocCrawlerPath()
-
-    const parsedUrl = new URL(baseUrl)
-    const domainFolderName = getSemanticHashName(
-      parsedUrl.hostname,
-      parsedUrl.hostname
-    )
-    this.domainDir = path.join(this.outputDir, domainFolderName)
+    this.domainDir = DocCrawler.getDocCrawlerFolderPath(baseUrl)
   }
 
   private generateRandomUserAgent(): string {
@@ -162,7 +163,52 @@ export class DocCrawler {
       await new Promise(resolve => setTimeout(resolve, this.options.delay))
       this.progressReporter.setProcessedItems(this.visited.size)
     }
-    await this.saveResults()
+  }
+
+  public async getPageContent(
+    pageUrl: string,
+    retries: number = 3
+  ): Promise<string | null> {
+    try {
+      const randomIP = this.generateRandomIP()
+      const response = await fetch(pageUrl, {
+        headers: {
+          'User-Agent': this.generateRandomUserAgent(),
+          Accept:
+            'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+          'Accept-Language': 'en-US,en;q=0.5',
+          'Cache-Control': 'no-cache',
+          Pragma: 'no-cache',
+          'X-Forwarded-For': randomIP,
+          'X-Real-IP': randomIP,
+          'X-Originating-IP': randomIP,
+          'CF-Connecting-IP': randomIP,
+          'True-Client-IP': randomIP
+        }
+      })
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          logger.error(`Page not found: ${pageUrl}`)
+          return null
+        }
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      const html = await response.text()
+      const $ = cheerio.load(html)
+
+      const content = this.extractContent($)
+      return content
+    } catch (error) {
+      logger.error(`Error crawling ${pageUrl}:`, error)
+      if (retries > 0) {
+        logger.log(`Retrying... (${retries} attempts left)`)
+        await new Promise(resolve => setTimeout(resolve, 5000))
+        await this.getPageContent(pageUrl, retries - 1)
+      }
+      return null
+    }
   }
 
   private async crawlPage(
@@ -224,7 +270,19 @@ export class DocCrawler {
       mainContent = this.detectMainContent($)
     }
 
-    // Convert HTML to Markdown
+    mainContent
+      .find('script, style, noscript, iframe, img, svg, header, footer, nav')
+      .remove()
+
+    mainContent
+      .find('p, div')
+      .filter(function (this: any) {
+        return $(this).text().trim() === ''
+      })
+      .remove()
+
+    mainContent.find('*').removeAttr('class').removeAttr('id')
+
     return this.turndownService.turndown(mainContent.html() || '')
   }
 
@@ -444,11 +502,6 @@ export class DocCrawler {
     const fileName = getSemanticHashName(urlObj.pathname, url)
     const filePath = path.join(this.domainDir, `${fileName}.md`)
     await fs.writeFile(filePath, content)
-  }
-
-  private async saveResults(): Promise<void> {
-    const indexFilePath = path.join(this.domainDir, 'index.json')
-    await fs.writeFile(indexFilePath, JSON.stringify(this.content, null, 2))
   }
 
   dispose() {

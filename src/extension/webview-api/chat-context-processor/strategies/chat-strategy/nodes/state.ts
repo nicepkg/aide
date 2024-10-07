@@ -7,7 +7,8 @@ import { baseState } from '../../base-state'
 export enum ChatGraphToolName {
   DocRetriever = 'docRetriever',
   WebSearch = 'webSearch',
-  CodebaseSearch = 'codebaseSearch'
+  CodebaseSearch = 'codebaseSearch',
+  WebVisit = 'webVisit'
 }
 
 export enum ChatGraphNodeName {

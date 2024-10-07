@@ -9,8 +9,7 @@ export const getDefaultConversationAttachments = (): Attachments => ({
     relevantCodeSnippets: []
   },
   docContext: {
-    enableTool: false,
-    allowSearchDocSiteUrls: [],
+    allowSearchDocSiteNames: [],
     relevantDocs: []
   },
   fileContext: {

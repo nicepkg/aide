@@ -9,6 +9,7 @@ import { createCodebaseSearchTool } from './codebase-search-node'
 import { createDocRetrieverTool } from './doc-retriever-node'
 import type { ChatGraphNode } from './state'
 import { createWebSearchTool } from './web-search-node'
+import { createWebVisitTool } from './web-visit-node'
 
 export const agentNode: ChatGraphNode = async state => {
   const modelProvider = await createModelProvider()
@@ -21,7 +22,9 @@ export const agentNode: ChatGraphNode = async state => {
     // doc
     await createDocRetrieverTool(state),
     // web search
-    await createWebSearchTool(state)
+    await createWebSearchTool(state),
+    // web visit
+    await createWebVisitTool(state)
   ].filter(Boolean) as LangchainTool[]
 
   const chatMessagesConstructor = new ChatMessagesConstructor(state.chatContext)

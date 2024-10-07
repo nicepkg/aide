@@ -14,6 +14,7 @@ import { MentionFilePreview } from '@webview/components/chat/selectors/mention-s
 import { MentionFolderPreview } from '@webview/components/chat/selectors/mention-selector/folders/mention-folder-preview'
 import { FileIcon as FileIcon2 } from '@webview/components/file-icon'
 import { RelevantCodeSnippetsMentionStrategy } from '@webview/lexical/mentions/codebase/relevant-code-snippets-mention-strategy'
+import { AllowSearchDocSiteNamesToolMentionStrategy } from '@webview/lexical/mentions/docs/allow-search-doc-site-names-mention-strategy'
 import { SelectedFilesMentionStrategy } from '@webview/lexical/mentions/files/selected-files-mention-strategy'
 import { SelectedFoldersMentionStrategy } from '@webview/lexical/mentions/folders/selected-folders-mention-strategy'
 import { GitCommitsMentionStrategy } from '@webview/lexical/mentions/git/git-commits-mention-strategy'
@@ -26,6 +27,7 @@ import {
 } from '@webview/types/chat'
 import { getFileNameFromPath } from '@webview/utils/path'
 
+import { useDocSites } from '../api/use-doc-sites'
 import { useFiles } from '../api/use-files'
 import { useFolders } from '../api/use-folders'
 import { useGitCommits } from '../api/use-git-commits'
@@ -34,6 +36,7 @@ export const useMentionOptions = () => {
   const { data: files = [] } = useFiles()
   const { data: folders = [] } = useFolders()
   const { data: gitCommits = [] } = useGitCommits()
+  const { data: docSites = [] } = useDocSites()
 
   const filesMentionOptions: MentionOption[] = files.map(
     file =>
@@ -103,6 +106,20 @@ export const useMentionOptions = () => {
       }) satisfies MentionOption
   )
 
+  const docSitesMentionOptions: MentionOption[] = docSites.map(site => ({
+    id: `doc-site#${site.id}`,
+    label: site.name,
+    category: MentionCategory.Docs,
+    mentionStrategy: new AllowSearchDocSiteNamesToolMentionStrategy(),
+    searchKeywords: [site.name, site.url],
+    data: site,
+    itemLayoutProps: {
+      icon: <IdCardIcon className="size-4 mr-1" />,
+      label: site.name,
+      details: site.url
+    }
+  }))
+
   const mentionOptions: MentionOption[] = [
     {
       id: 'files',
@@ -156,8 +173,8 @@ export const useMentionOptions = () => {
       itemLayoutProps: {
         icon: <IdCardIcon className="size-4 mr-1" />,
         label: 'Docs'
-      }
-      // mentionStrategy: new AllowSearchDocSiteUrlsToolMentionStrategy()
+      },
+      children: docSitesMentionOptions
     },
     {
       id: 'git',

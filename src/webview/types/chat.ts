@@ -5,6 +5,8 @@ import type {
 } from '@extension/webview-api/chat-context-processor/types/chat-context'
 import type { MentionItemLayoutProps } from '@webview/components/chat/selectors/mention-selector/mention-item-layout'
 
+export type { DocSite } from '@extension/webview-api/lowdb/doc-sites-db'
+
 export type { ProgressInfo } from '@extension/webview-api/chat-context-processor/utils/process-reporter'
 export * from '@extension/webview-api/chat-context-processor/types/chat-context'
 

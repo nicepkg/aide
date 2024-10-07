@@ -251,7 +251,7 @@ export const DocManagement = () => {
           className="w-full md:w-auto text-xs h-6"
           size="sm"
           onClick={() => handler(site.id)}
-          disabled={loading[site.id] || isCompleted}
+          disabled={loading[site.id]}
         >
           {loading[site.id] && (
             <ReloadIcon className="mr-1 h-3 w-3 animate-spin" />

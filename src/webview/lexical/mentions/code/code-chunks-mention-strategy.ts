@@ -1,10 +1,10 @@
+import { removeDuplicates } from '@shared/utils/common'
 import {
   MentionCategory,
   type Attachments,
   type CodeChunk,
   type IMentionStrategy
 } from '@webview/types/chat'
-import { removeDuplicates } from '@webview/utils/common'
 
 export class CodeChunksMentionStrategy implements IMentionStrategy {
   category = MentionCategory.Code as const

@@ -1,13 +1,13 @@
+import { aidePaths } from '@extension/file-utils/paths'
+import { DocInfo } from '@extension/webview-api/chat-context-processor/types/chat-context/doc-context'
 import type { LangchainTool } from '@extension/webview-api/chat-context-processor/types/langchain-message'
+import { DocCrawler } from '@extension/webview-api/chat-context-processor/utils/doc-crawler'
 import { findCurrentToolsCallParams } from '@extension/webview-api/chat-context-processor/utils/find-current-tools-call-params'
-import { CheerioWebBaseLoader } from '@langchain/community/document_loaders/web/cheerio'
-import type { DocumentInterface } from '@langchain/core/documents'
+import { DocIndexer } from '@extension/webview-api/chat-context-processor/vectordb/doc-indexer'
+import { docSitesDB } from '@extension/webview-api/lowdb/doc-sites-db'
 import type { ToolMessage } from '@langchain/core/messages'
 import { DynamicStructuredTool } from '@langchain/core/tools'
-import type { VectorStoreRetriever } from '@langchain/core/vectorstores'
-import { OpenAIEmbeddings } from '@langchain/openai'
-import { RecursiveCharacterTextSplitter } from '@langchain/textsplitters'
-import { MemoryVectorStore } from 'langchain/vectorstores/memory'
+import { removeDuplicates } from '@shared/utils/common'
 import { z } from 'zod'
 
 import {
@@ -17,7 +17,7 @@ import {
 } from './state'
 
 interface DocRetrieverToolResult {
-  relevantDocs: DocumentInterface<Record<string, any>>[]
+  relevantDocs: DocInfo[]
 }
 
 export const createDocRetrieverTool = async (state: ChatGraphState) => {
@@ -28,52 +28,93 @@ export const createDocRetrieverTool = async (state: ChatGraphState) => {
 
   if (!docContext) return null
 
-  const { allowSearchDocSiteUrls } = docContext
+  const { allowSearchDocSiteNames } = docContext
 
-  if (!allowSearchDocSiteUrls.length) return null
+  if (!allowSearchDocSiteNames.length) return null
 
-  let _retriever: VectorStoreRetriever<MemoryVectorStore>
+  const getRelevantDocs = async (
+    queryParts: { siteName: string; keywords: string[] }[]
+  ): Promise<DocInfo[]> => {
+    const docSites = await docSitesDB.getAll()
 
-  const getRetriever = async () => {
-    if (_retriever) return _retriever
+    const docPromises = queryParts.map(async ({ siteName, keywords }) => {
+      const docSite = docSites.find(site => site.name === siteName)
 
-    // TODO: Deep search
-    const docs = await Promise.all(
-      allowSearchDocSiteUrls.map(url => new CheerioWebBaseLoader(url).load())
-    )
-    const docsList = docs.flat()
+      if (!docSite?.isIndexed || !allowSearchDocSiteNames.includes(siteName)) {
+        return []
+      }
 
-    const textSplitter = new RecursiveCharacterTextSplitter({
-      chunkSize: 500,
-      chunkOverlap: 50
+      const docIndexer = new DocIndexer(
+        DocCrawler.getDocCrawlerFolderPath(docSite.url),
+        aidePaths.getGlobalLanceDbPath()
+      )
+
+      await docIndexer.initialize()
+
+      const searchResults = await Promise.allSettled(
+        keywords.map(keyword => docIndexer.searchSimilarRow(keyword))
+      )
+
+      const searchRows = removeDuplicates(
+        searchResults
+          .filter(
+            (result): result is PromiseFulfilledResult<any> =>
+              result.status === 'fulfilled'
+          )
+          .flatMap(result => result.value),
+        ['fullPath']
+      ).slice(0, 3)
+
+      const docInfoResults = await Promise.allSettled(
+        searchRows.map(async row => ({
+          content: await docIndexer.getRowFileContent(row),
+          path: docSite.url
+        }))
+      )
+
+      return docInfoResults
+        .filter(
+          (result): result is PromiseFulfilledResult<DocInfo> =>
+            result.status === 'fulfilled'
+        )
+        .map(result => result.value)
     })
-    const docSplits = await textSplitter.splitDocuments(docsList)
 
-    const vectorStore = await MemoryVectorStore.fromDocuments(
-      docSplits,
-      new OpenAIEmbeddings()
-    )
+    const results = await Promise.allSettled(docPromises)
+    const relevantDocs = results
+      .filter(
+        (result): result is PromiseFulfilledResult<DocInfo[]> =>
+          result.status === 'fulfilled'
+      )
+      .flatMap(result => result.value)
 
-    _retriever = vectorStore.asRetriever()
-
-    return _retriever
+    return relevantDocs
   }
 
   return new DynamicStructuredTool({
     name: ChatGraphToolName.DocRetriever,
-    description: 'Search and return information about question in Docs.',
-    func: async ({ query }, runManager): Promise<DocRetrieverToolResult> => {
-      const retriever = await getRetriever()
-
-      return {
-        relevantDocs: await retriever.invoke(
-          query,
-          runManager?.getChild('retriever')
-        )
-      }
-    },
+    description:
+      'Search for relevant information in specified documentation sites. This tool can search across multiple doc sites, with multiple keywords for each site. Use this tool to find documentation on specific topics or understand how certain features are described in the documentation.',
+    func: async ({ queryParts }): Promise<DocRetrieverToolResult> => ({
+      relevantDocs: await getRelevantDocs(queryParts)
+    }),
     schema: z.object({
-      query: z.string().describe('query to look up in retriever')
+      queryParts: z
+        .array(
+          z.object({
+            siteName: z
+              .enum(allowSearchDocSiteNames as unknown as [string, ...string[]])
+              .describe('The name of the documentation site to search'),
+            keywords: z
+              .array(z.string())
+              .describe(
+                'List of keywords to search for in the specified doc site'
+              )
+          })
+        )
+        .describe(
+          "The AI should break down the user's query into multiple parts, each targeting a specific doc site with relevant keywords. This allows for a more comprehensive search across multiple documentation sources."
+        )
     })
   })
 }
@@ -105,10 +146,7 @@ export const docRetrieverNode: ChatGraphNode = async state => {
 
     lastConversation.attachments!.docContext.relevantDocs = [
       ...lastConversation.attachments!.docContext.relevantDocs,
-      ...result.relevantDocs.map(doc => ({
-        path: doc.metadata?.filePath,
-        content: doc.pageContent
-      }))
+      ...result.relevantDocs
     ]
   })
 

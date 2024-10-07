@@ -62,10 +62,10 @@ export class DocController extends Controller {
   ): AsyncGenerator<ProgressInfo, void, unknown> {
     try {
       const site = await this.findSiteById(request.id)
-      if (!site) throw new Error('找不到文档站点')
-      if (!site.isCrawled) throw new Error('请先爬取站点，然后再索引')
+      if (!site) throw new Error('can not find doc site')
+      if (!site.isCrawled) throw new Error('please crawl the site first')
 
-      const indexer = this.initiateIndexer(request.id)
+      const indexer = await this.initiateIndexer(request.id)
       await indexer.initialize()
 
       const indexingCompleted = indexer.reindexWorkspace(type)
@@ -109,9 +109,10 @@ export class DocController extends Controller {
     return crawler
   }
 
-  private initiateIndexer(id: string) {
+  private async initiateIndexer(id: string) {
     if (this.docIndexers[id]) return this.docIndexers[id]!
-    const docsPath = aidePaths.getDocCrawlerPath()
+    const site = await this.findSiteById(id)
+    const docsPath = DocCrawler.getDocCrawlerFolderPath(site!.url)
     const dbPath = aidePaths.getGlobalLanceDbPath()
     const indexer = new DocIndexer(docsPath, dbPath)
     this.docIndexers[id] = indexer

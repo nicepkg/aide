@@ -11,6 +11,7 @@ import {
   type ChatGraphState
 } from './nodes/state'
 import { webSearchNode } from './nodes/web-search-node'
+import { webVisitNode } from './nodes/web-visit-node'
 
 const createSmartRoute =
   (nextNodeName: ChatGraphNodeName) => (state: ChatGraphState) =>
@@ -21,7 +22,7 @@ const chatWorkflow = new StateGraph(chatGraphState)
   .addNode(
     ChatGraphNodeName.Tools,
     combineNode(
-      [codebaseSearchNode, docRetrieverNode, webSearchNode],
+      [codebaseSearchNode, docRetrieverNode, webSearchNode, webVisitNode],
       chatGraphState
     )
   )

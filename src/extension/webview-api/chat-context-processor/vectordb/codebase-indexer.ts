@@ -77,15 +77,15 @@ export class CodebaseIndexer extends BaseIndexer<CodeChunkRow> {
   }
 
   async getAllIndexedFilePaths(): Promise<string[]> {
-    const filePaths = await traverseFileOrFolders({
+    return await traverseFileOrFolders({
       type: 'file',
       filesOrFolders: ['./'],
       isGetFileContent: false,
       workspacePath: this.workspaceRootPath,
+      customShouldIgnore: (fullFilePath: string) =>
+        !this.isAvailableFile(fullFilePath),
       itemCallback: fileInfo => fileInfo.fullPath
     })
-
-    return filePaths.filter(filePath => this.isAvailableExtFile(filePath))
   }
 
   private isAvailableExtFile(filePath: string): boolean {

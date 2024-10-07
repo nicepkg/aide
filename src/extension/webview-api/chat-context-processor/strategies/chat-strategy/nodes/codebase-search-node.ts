@@ -40,7 +40,7 @@ export const createCodebaseSearchTool = async (state: ChatGraphState) => {
     if (!indexer) return searchResults
 
     const searchPromisesResult = await Promise.allSettled(
-      queryParts?.map(queryPart => indexer.searchSimilarCode(queryPart)) || []
+      queryParts?.map(queryPart => indexer.searchSimilarRow(queryPart)) || []
     )
 
     const searchCodeSnippets: CodeSnippet[] = searchPromisesResult

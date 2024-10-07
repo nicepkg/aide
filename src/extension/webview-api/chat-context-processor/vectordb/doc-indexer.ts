@@ -80,7 +80,8 @@ export class DocIndexer extends BaseIndexer<DocChunkRow> {
       filesOrFolders: [this.docsRootPath],
       isGetFileContent: false,
       workspacePath: this.docsRootPath,
-      customShouldIgnore: () => false,
+      customShouldIgnore: (fullFilePath: string) =>
+        !this.isAvailableFile(fullFilePath),
       itemCallback: fileInfo => fileInfo.fullPath
     })
   }

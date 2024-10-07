@@ -3,7 +3,7 @@ import { aidePaths } from '@extension/file-utils/paths'
 
 import { BaseDB, BaseItem } from './base-db'
 
-interface DocSite extends BaseItem {
+export interface DocSite extends BaseItem {
   name: string
   url: string
   isCrawled: boolean

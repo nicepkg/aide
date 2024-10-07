@@ -1,4 +1,5 @@
 import { useEffect, useRef, type FC } from 'react'
+import { tryParseJSON, tryStringifyJSON } from '@shared/utils/common'
 import { convertToLangchainMessageContents } from '@shared/utils/convert-to-langchain-message-contents'
 import { getAllTextFromLangchainMessageContents } from '@shared/utils/get-all-text-from-langchain-message-contents'
 import { getDefaultConversationAttachments } from '@shared/utils/get-default-conversation-attachments'
@@ -6,7 +7,7 @@ import { mergeLangchainMessageContents } from '@shared/utils/merge-langchain-mes
 import { Button } from '@webview/components/ui/button'
 import { useCloneState } from '@webview/hooks/use-clone-state'
 import type { ChatContext, Conversation, FileInfo } from '@webview/types/chat'
-import { cn, tryParseJSON, tryStringifyJSON } from '@webview/utils/common'
+import { cn } from '@webview/utils/common'
 import {
   $createParagraphNode,
   $createTextNode,

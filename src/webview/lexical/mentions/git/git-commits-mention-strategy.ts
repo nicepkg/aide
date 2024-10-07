@@ -1,10 +1,10 @@
+import { removeDuplicates } from '@shared/utils/common'
 import {
   MentionCategory,
   type Attachments,
   type GitCommit,
   type IMentionStrategy
 } from '@webview/types/chat'
-import { removeDuplicates } from '@webview/utils/common'
 
 export class GitCommitsMentionStrategy implements IMentionStrategy {
   category = MentionCategory.Git as const

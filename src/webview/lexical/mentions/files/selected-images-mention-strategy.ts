@@ -1,10 +1,10 @@
+import { removeDuplicates } from '@shared/utils/common'
 import {
   IMentionStrategy,
   MentionCategory,
   type Attachments,
   type ImageInfo
 } from '@webview/types/chat'
-import { removeDuplicates } from '@webview/utils/common'
 
 export class SelectedImagesMentionStrategy implements IMentionStrategy {
   category = MentionCategory.Files as const
