@@ -36,3 +36,14 @@ export const tryStringifyJSON = (obj: any) => {
     return null
   }
 }
+
+export async function settledPromiseResults<T>(
+  promises: Promise<T>[]
+): Promise<T[]> {
+  const results = await Promise.allSettled(promises)
+  return results
+    .map((result, index) => ({ result, index }))
+    .filter(item => item.result.status === 'fulfilled')
+    .sort((a, b) => a.index - b.index)
+    .map(item => (item.result as PromiseFulfilledResult<T>).value)
+}

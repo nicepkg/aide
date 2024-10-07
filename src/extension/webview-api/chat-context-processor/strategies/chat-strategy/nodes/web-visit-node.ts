@@ -3,6 +3,7 @@ import { DocCrawler } from '@extension/webview-api/chat-context-processor/utils/
 import { findCurrentToolsCallParams } from '@extension/webview-api/chat-context-processor/utils/find-current-tools-call-params'
 import type { ToolMessage } from '@langchain/core/messages'
 import { DynamicStructuredTool } from '@langchain/core/tools'
+import { settledPromiseResults } from '@shared/utils/common'
 import { z } from 'zod'
 
 import {
@@ -20,21 +21,15 @@ export const createWebVisitTool = async (state: ChatGraphState) => {
   const getPageContents = async (
     urls: string[]
   ): Promise<{ url: string; content: string }[]> => {
-    const docCrawler = new DocCrawler(urls![0]!)
-    const promises = await Promise.allSettled(
+    const docCrawler = new DocCrawler(urls[0]!)
+    const contents = await settledPromiseResults(
       urls.map(async url => ({
         url,
         content:
           (await docCrawler.getPageContent(url)) || 'Failed to retrieve content'
       }))
     )
-    return promises
-      .filter(promise => promise.status === 'fulfilled')
-      .map(
-        promise =>
-          (promise as PromiseFulfilledResult<{ url: string; content: string }>)
-            .value
-      )
+    return contents
   }
 
   return new DynamicStructuredTool({
@@ -89,7 +84,7 @@ export const webVisitNode: ChatGraphNode = async state => {
     ]
   })
 
-  await Promise.allSettled(toolCallsPromises)
+  await settledPromiseResults(toolCallsPromises)
 
   return {
     chatContext

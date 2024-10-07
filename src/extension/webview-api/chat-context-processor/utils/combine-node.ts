@@ -1,6 +1,6 @@
 /* eslint-disable prefer-destructuring */
-import { logger } from '@extension/logger'
 import { BinaryOperatorAggregate } from '@langchain/langgraph'
+import { settledPromiseResults } from '@shared/utils/common'
 
 import type { CreateAnnotationRoot } from '../types/langgraph'
 
@@ -14,25 +14,18 @@ export const combineNode = <GraphState extends Record<string, any>>(
 ): GraphNode<GraphState> => {
   const combined: GraphNode<GraphState> = async state => {
     const promises = nodes.map(async node => await node(state))
-    const promisesResults = await Promise.allSettled(promises)
+    const states = await settledPromiseResults(promises)
     const keys = new Set<keyof GraphState>()
-    const states: Partial<GraphState>[] = []
 
-    promisesResults.forEach((result, index) => {
-      if (result.status === 'fulfilled') {
-        const partialState = result.value as Partial<GraphState>
-        Object.keys(partialState).forEach(key =>
-          keys.add(key as keyof GraphState)
-        )
-        states.push(partialState)
-      } else {
-        logger.warn(`Error in node ${index}:`, result.reason)
-      }
+    states.forEach(partialState => {
+      Object.keys(partialState).forEach(key =>
+        keys.add(key as keyof GraphState)
+      )
     })
 
     const combinedResult = {} as Partial<GraphState>
 
-    for (const _key in keys) {
+    for (const _key of keys) {
       const key = _key as keyof GraphState
       const annotation = stateDefinition.spec[key]
 

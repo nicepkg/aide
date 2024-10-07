@@ -198,7 +198,7 @@ export abstract class BaseIndexer<T extends IndexRow> {
     this.progressReporter.reset()
     const filePaths = await this.getAllIndexedFilePaths()
     const filePathsNeedReindex: string[] = []
-    const tasks = filePaths.map(async filePath => {
+    const tasksPromises = filePaths.map(async filePath => {
       try {
         const currentHash = await this.generateFileHash(filePath)
         const existingRows = await this.getFileRows(filePath)
@@ -215,7 +215,7 @@ export abstract class BaseIndexer<T extends IndexRow> {
       }
     })
 
-    await Promise.allSettled(tasks)
+    await Promise.allSettled(tasksPromises)
 
     this.totalFiles = filePathsNeedReindex.length
     this.progressReporter.setTotalItems(this.totalFiles)

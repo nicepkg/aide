@@ -7,6 +7,7 @@ import { CheerioWebBaseLoader } from '@langchain/community/document_loaders/web/
 import type { Document } from '@langchain/core/documents'
 import { HumanMessage, type ToolMessage } from '@langchain/core/messages'
 import { DynamicStructuredTool } from '@langchain/core/tools'
+import { settledPromiseResults } from '@shared/utils/common'
 import { z } from 'zod'
 
 import { ChatMessagesConstructor } from '../messages-constructors/chat-messages-constructor'
@@ -38,17 +39,11 @@ export const createWebSearchTool = async (state: ChatGraphState) => {
     const searxngSearchResult = await searxngSearch(keywords)
     const urls = searxngSearchResult.results.map(result => result.url)
 
-    const docsLoadResult = await Promise.allSettled(
+    const docsLoadResult = await settledPromiseResults(
       urls.map(url => new CheerioWebBaseLoader(url).load())
     )
 
-    const docs: Document<Record<string, any>>[] = []
-
-    docsLoadResult.forEach(result => {
-      if (result.status === 'fulfilled') {
-        docs.push(...result.value)
-      }
-    })
+    const docs: Document<Record<string, any>>[] = docsLoadResult.flat()
 
     const docsContent = docs
       .map(doc => doc.pageContent)
@@ -156,7 +151,7 @@ export const webSearchNode: ChatGraphNode = async state => {
     ]
   })
 
-  await Promise.allSettled(toolCallsPromises)
+  await settledPromiseResults(toolCallsPromises)
 
   return {
     chatContext

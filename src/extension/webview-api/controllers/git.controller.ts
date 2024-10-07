@@ -1,6 +1,7 @@
 import type { CommandManager } from '@extension/commands/command-manager'
 import type { RegisterManager } from '@extension/registers/register-manager'
 import { getWorkspaceFolder } from '@extension/utils'
+import { settledPromiseResults } from '@shared/utils/common'
 import simpleGit, { SimpleGit } from 'simple-git'
 
 import type {
@@ -27,7 +28,7 @@ export class GitController extends Controller {
     const { maxCount = 50 } = req
     const log = await this.git.log({ maxCount })
 
-    const commits: GitCommit[] = await Promise.all(
+    const commits: GitCommit[] = await settledPromiseResults(
       log.all.map(async commit => {
         const diff = await this.git.diff([`${commit.hash}^`, commit.hash])
         return {

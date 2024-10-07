@@ -7,7 +7,7 @@ import { DocIndexer } from '@extension/webview-api/chat-context-processor/vector
 import { docSitesDB } from '@extension/webview-api/lowdb/doc-sites-db'
 import type { ToolMessage } from '@langchain/core/messages'
 import { DynamicStructuredTool } from '@langchain/core/tools'
-import { removeDuplicates } from '@shared/utils/common'
+import { removeDuplicates, settledPromiseResults } from '@shared/utils/common'
 import { z } from 'zod'
 
 import {
@@ -51,21 +51,16 @@ export const createDocRetrieverTool = async (state: ChatGraphState) => {
 
       await docIndexer.initialize()
 
-      const searchResults = await Promise.allSettled(
+      const searchResults = await settledPromiseResults(
         keywords.map(keyword => docIndexer.searchSimilarRow(keyword))
       )
 
       const searchRows = removeDuplicates(
-        searchResults
-          .filter(
-            (result): result is PromiseFulfilledResult<any> =>
-              result.status === 'fulfilled'
-          )
-          .flatMap(result => result.value),
+        searchResults.flatMap(result => result),
         ['fullPath']
       ).slice(0, 3)
 
-      const docInfoResults = await Promise.allSettled(
+      const docInfoResults = await settledPromiseResults(
         searchRows.map(async row => ({
           content: await docIndexer.getRowFileContent(row),
           path: docSite.url
@@ -73,22 +68,10 @@ export const createDocRetrieverTool = async (state: ChatGraphState) => {
       )
 
       return docInfoResults
-        .filter(
-          (result): result is PromiseFulfilledResult<DocInfo> =>
-            result.status === 'fulfilled'
-        )
-        .map(result => result.value)
     })
 
-    const results = await Promise.allSettled(docPromises)
-    const relevantDocs = results
-      .filter(
-        (result): result is PromiseFulfilledResult<DocInfo[]> =>
-          result.status === 'fulfilled'
-      )
-      .flatMap(result => result.value)
-
-    return relevantDocs
+    const results = await settledPromiseResults(docPromises)
+    return results.flatMap(result => result)
   }
 
   return new DynamicStructuredTool({
@@ -150,7 +133,7 @@ export const docRetrieverNode: ChatGraphNode = async state => {
     ]
   })
 
-  await Promise.allSettled(toolCallsPromises)
+  await settledPromiseResults(toolCallsPromises)
 
   return {
     chatContext

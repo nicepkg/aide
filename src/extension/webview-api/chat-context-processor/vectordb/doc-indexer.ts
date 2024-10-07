@@ -4,6 +4,7 @@ import { getSemanticHashName } from '@extension/file-utils/paths'
 import { traverseFileOrFolders } from '@extension/file-utils/traverse-fs'
 import { VsCodeFS } from '@extension/file-utils/vscode-fs'
 import { logger } from '@extension/logger'
+import { settledPromiseResults } from '@shared/utils/common'
 
 import { CodeChunkerManager, type TextChunk } from '../tree-sitter/code-chunker'
 import { ProgressReporter } from '../utils/process-reporter'
@@ -59,7 +60,7 @@ export class DocIndexer extends BaseIndexer<DocChunkRow> {
       }
     })
 
-    return Promise.all(chunkRowsPromises)
+    return settledPromiseResults(chunkRowsPromises)
   }
 
   private async chunkCodeFile(filePath: string): Promise<TextChunk[]> {

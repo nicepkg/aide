@@ -4,6 +4,7 @@ import { getExt, getSemanticHashName } from '@extension/file-utils/paths'
 import { traverseFileOrFolders } from '@extension/file-utils/traverse-fs'
 import { VsCodeFS } from '@extension/file-utils/vscode-fs'
 import { logger } from '@extension/logger'
+import { settledPromiseResults } from '@shared/utils/common'
 import { languageIdExts } from '@shared/utils/vscode-lang'
 import * as vscode from 'vscode'
 
@@ -61,7 +62,7 @@ export class CodebaseIndexer extends BaseIndexer<CodeChunkRow> {
       }
     })
 
-    return Promise.all(chunkRowsPromises)
+    return settledPromiseResults(chunkRowsPromises)
   }
 
   private async chunkCodeFile(filePath: string): Promise<TextChunk[]> {

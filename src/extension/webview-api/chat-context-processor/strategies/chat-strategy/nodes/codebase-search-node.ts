@@ -5,6 +5,7 @@ import { findCurrentToolsCallParams } from '@extension/webview-api/chat-context-
 import { mergeCodeSnippets } from '@extension/webview-api/chat-context-processor/utils/merge-code-snippets'
 import type { ToolMessage } from '@langchain/core/messages'
 import { DynamicStructuredTool } from '@langchain/core/tools'
+import { settledPromiseResults } from '@shared/utils/common'
 import { z } from 'zod'
 
 import {
@@ -39,13 +40,12 @@ export const createCodebaseSearchTool = async (state: ChatGraphState) => {
 
     if (!indexer) return searchResults
 
-    const searchPromisesResult = await Promise.allSettled(
+    const searchPromisesResult = await settledPromiseResults(
       queryParts?.map(queryPart => indexer.searchSimilarRow(queryPart)) || []
     )
 
     const searchCodeSnippets: CodeSnippet[] = searchPromisesResult
-      .filter(result => result.status === 'fulfilled')
-      .flatMap(result => (result as any).value)
+      .flat()
       .map(row => {
         // eslint-disable-next-line unused-imports/no-unused-vars
         const { embedding, ...others } = row
@@ -117,7 +117,7 @@ export const codebaseSearchNode: ChatGraphNode = async state => {
     ]
   })
 
-  await Promise.allSettled(toolCallsPromises)
+  await settledPromiseResults(toolCallsPromises)
 
   return {
     chatContext

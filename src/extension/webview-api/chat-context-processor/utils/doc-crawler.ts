@@ -159,7 +159,7 @@ export class DocCrawler {
     while (this.queue.length > 0 && this.visited.size < this.options.maxPages) {
       const batch = this.queue.splice(0, this.options.concurrency)
       const promises = batch.map(item => this.crawlPage(item.url, item.depth))
-      await Promise.all(promises)
+      await Promise.allSettled(promises)
       await new Promise(resolve => setTimeout(resolve, this.options.delay))
       this.progressReporter.setProcessedItems(this.visited.size)
     }

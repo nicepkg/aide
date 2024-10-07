@@ -1,6 +1,7 @@
 import type { ChatContext } from '@extension/webview-api/chat-context-processor/types/chat-context'
 import type { LangchainMessage } from '@extension/webview-api/chat-context-processor/types/langchain-message'
 import { HumanMessage, SystemMessage } from '@langchain/core/messages'
+import { settledPromiseResults } from '@shared/utils/common'
 
 import { CHAT_WITH_FILE_SYSTEM_PROMPT, COMMON_SYSTEM_PROMPT } from './constants'
 import { ConversationMessageConstructor } from './conversation-message-constructor'
@@ -70,15 +71,7 @@ ${explicitContext}
         hasAttachedFiles
       ).buildMessages()
     )
-    const messageArrays = await Promise.allSettled(messagePromises)
-    const messages: LangchainMessage[] = []
-
-    messageArrays.forEach(result => {
-      if (result.status === 'fulfilled') {
-        messages.push(...result.value)
-      }
-    })
-
-    return messages
+    const messageArrays = await settledPromiseResults(messagePromises)
+    return messageArrays.flat()
   }
 }
