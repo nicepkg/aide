@@ -8,6 +8,7 @@ import { docSitesDB } from '@extension/webview-api/lowdb/doc-sites-db'
 import type { ToolMessage } from '@langchain/core/messages'
 import { DynamicStructuredTool } from '@langchain/core/tools'
 import { removeDuplicates, settledPromiseResults } from '@shared/utils/common'
+import { ContextInfoSource } from '@webview/types/chat'
 import { z } from 'zod'
 
 import {
@@ -31,6 +32,7 @@ export const createDocRetrieverTool = async (state: ChatGraphState) => {
   const { allowSearchDocSiteNames } = docContext
 
   if (!allowSearchDocSiteNames.length) return null
+  const siteNames = allowSearchDocSiteNames.map(item => item.name)
 
   const getRelevantDocs = async (
     queryParts: { siteName: string; keywords: string[] }[]
@@ -40,7 +42,7 @@ export const createDocRetrieverTool = async (state: ChatGraphState) => {
     const docPromises = queryParts.map(async ({ siteName, keywords }) => {
       const docSite = docSites.find(site => site.name === siteName)
 
-      if (!docSite?.isIndexed || !allowSearchDocSiteNames.includes(siteName)) {
+      if (!docSite?.isIndexed || !siteNames.includes(siteName)) {
         return []
       }
 
@@ -63,7 +65,8 @@ export const createDocRetrieverTool = async (state: ChatGraphState) => {
       const docInfoResults = await settledPromiseResults(
         searchRows.map(async row => ({
           content: await docIndexer.getRowFileContent(row),
-          path: docSite.url
+          path: docSite.url,
+          source: ContextInfoSource.ToolNode
         }))
       )
 

@@ -3,7 +3,8 @@ export const sleep = (ms: number) =>
 
 export const removeDuplicates = <T>(
   arr: T[],
-  keys?: (keyof T)[] | ((item: T) => any)
+  keys?: (keyof T)[] | ((item: T) => any),
+  prioritySelector?: (a: T, b: T) => T
 ): T[] => {
   if (!keys) {
     return Array.from(new Set(arr))
@@ -14,11 +15,20 @@ export const removeDuplicates = <T>(
       ? keys
       : (item: T) => keys.map(k => item[k]).join('|')
 
-  const seen = new Set<string>()
-  return arr.filter(item => {
+  const uniqueMap = new Map<string, T>()
+
+  for (const item of arr) {
     const key = keyFn(item)
-    return seen.has(key) ? false : seen.add(key)
-  })
+    if (!uniqueMap.has(key)) {
+      uniqueMap.set(key, item)
+    } else if (prioritySelector) {
+      const existingItem = uniqueMap.get(key)!
+      const priorityItem = prioritySelector(existingItem, item)
+      uniqueMap.set(key, priorityItem)
+    }
+  }
+
+  return Array.from(uniqueMap.values())
 }
 
 export const tryParseJSON = (jsonString: string) => {

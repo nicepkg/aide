@@ -1,6 +1,5 @@
+import type { FileInfo } from '@extension/file-utils/traverse-fs'
 import { VsCodeFS } from '@extension/file-utils/vscode-fs'
-
-import type { FileInfo } from '../types/chat-context'
 
 export const getFileContent = async (fileInfo: FileInfo): Promise<string> => {
   if (fileInfo.content) {

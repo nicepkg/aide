@@ -17,7 +17,7 @@ export interface ChatContext {
   settings: SettingsContext
 }
 
-export * from './base-tool-context'
+export * from './base-context'
 export * from './code-context'
 export * from './codebase-context'
 export * from './conversation'

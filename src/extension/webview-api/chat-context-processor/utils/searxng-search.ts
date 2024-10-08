@@ -1,6 +1,6 @@
 import * as cheerio from 'cheerio'
 
-import type { WebSearchResult } from '../types/chat-context'
+import { ContextInfoSource, type WebSearchResult } from '../types/chat-context'
 import { getRandomHeaders } from './fake-request-headers'
 
 interface SearxngSearchOptions {
@@ -42,7 +42,8 @@ const parseHtml = (htmlContent: string): SearxngResults => {
     .map((_, element) => ({
       title: $(element).find('h3').text().trim(),
       url: $(element).find('a').attr('href') || '',
-      content: $(element).find('.content').text().trim()
+      content: $(element).find('.content').text().trim(),
+      source: ContextInfoSource.ToolNode
     }))
     .get()
 

@@ -6,6 +6,7 @@ import { mergeCodeSnippets } from '@extension/webview-api/chat-context-processor
 import type { ToolMessage } from '@langchain/core/messages'
 import { DynamicStructuredTool } from '@langchain/core/tools'
 import { settledPromiseResults } from '@shared/utils/common'
+import { ContextInfoSource } from '@webview/types/chat'
 import { z } from 'zod'
 
 import {
@@ -49,7 +50,7 @@ export const createCodebaseSearchTool = async (state: ChatGraphState) => {
       .map(row => {
         // eslint-disable-next-line unused-imports/no-unused-vars
         const { embedding, ...others } = row
-        return { ...others, code: '' }
+        return { ...others, code: '', source: ContextInfoSource.ToolNode }
       })
 
     const mergedCodeSnippets = await mergeCodeSnippets(searchCodeSnippets, {

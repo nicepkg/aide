@@ -1,8 +1,13 @@
-import type { FileInfo, FolderInfo } from '@extension/file-utils/traverse-fs'
+import type {
+  FileInfo as IFileInfo,
+  FolderInfo as IFolderInfo
+} from '@extension/file-utils/traverse-fs'
 
-export type { FileInfo, FolderInfo }
+import type { BaseContextInfo } from './base-context'
 
-export interface ImageInfo {
+export interface FileInfo extends BaseContextInfo, IFileInfo {}
+export interface FolderInfo extends BaseContextInfo, IFolderInfo {}
+export interface ImageInfo extends BaseContextInfo {
   url: string
 }
 

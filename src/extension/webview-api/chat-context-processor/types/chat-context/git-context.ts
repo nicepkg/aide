@@ -1,4 +1,6 @@
-export interface GitDiff {
+import type { BaseContextInfo } from './base-context'
+
+export interface GitDiff extends BaseContextInfo {
   /**
    * @example '.github/workflows/ci.yml'
    */
@@ -29,7 +31,7 @@ export interface GitDiff {
   }[]
 }
 
-export interface GitCommit {
+export interface GitCommit extends BaseContextInfo {
   /**
    * @example '0bc7f06aa2930c2755c751615cfb2331de41ddb1'
    */

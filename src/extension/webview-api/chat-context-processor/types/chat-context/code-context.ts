@@ -1,4 +1,6 @@
-export interface CodeChunk {
+import type { BaseContextInfo } from './base-context'
+
+export interface CodeChunk extends BaseContextInfo {
   code: string
   language: string
 

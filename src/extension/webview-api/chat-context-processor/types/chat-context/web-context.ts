@@ -1,6 +1,6 @@
-import type { BaseToolContext } from './base-tool-context'
+import type { BaseContextInfo, BaseToolContext } from './base-context'
 
-export interface WebSearchResult {
+export interface WebSearchResult extends BaseContextInfo {
   url: string
   title: string
   content: string

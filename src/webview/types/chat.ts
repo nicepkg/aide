@@ -23,8 +23,7 @@ export enum SearchSortStrategy {
 export interface MentionOption {
   id: string
   label: string
-  category: MentionCategory
-  mentionStrategy?: IMentionStrategy
+  type?: AttachmentType
   searchKeywords?: string[]
   searchSortStrategy?: SearchSortStrategy
   children?: MentionOption[]
@@ -34,18 +33,26 @@ export interface MentionOption {
   customRenderPreview?: FC<MentionOption>
 }
 
-export enum MentionCategory {
+export enum AttachmentType {
   Files = 'Files',
   Folders = 'Folders',
+  Images = 'Images',
   Code = 'Code',
   Web = 'Web',
   Docs = 'Docs',
-  Git = 'Git',
+  GitDiff = 'GitDiff',
+  GitCommit = 'GitCommit',
+  GitPr = 'GitPr',
   Codebase = 'Codebase'
 }
 
+export type AttachmentItem = {
+  type: AttachmentType
+  data: any
+}
+
 export interface IMentionStrategy {
-  readonly category: MentionCategory
+  readonly category: AttachmentType
   readonly name: string
 
   buildLexicalNodeAfterAddMention?: (

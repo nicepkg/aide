@@ -1,4 +1,4 @@
-import { useEffect, useImperativeHandle, type FC, type Ref } from 'react'
+import { useEffect, useId, useImperativeHandle, type FC, type Ref } from 'react'
 import { AutoFocusPlugin } from '@lexical/react/LexicalAutoFocusPlugin'
 import {
   LexicalComposer,
@@ -66,13 +66,13 @@ export const ChatEditor: FC<ChatEditorProps> = ({
   initialConfig,
   placeholder,
   autoFocus = false,
-  conversation,
   onComplete,
   onChange,
   ...otherProps
 }) => {
+  const id = useId()
   const finalInitialConfig: InitialConfigType = {
-    namespace: `TextComponentEditor-${conversation.id}`,
+    namespace: `TextComponentEditor-${id}`,
     // theme: normalTheme,
     onError,
     editable: true,
@@ -87,7 +87,6 @@ export const ChatEditor: FC<ChatEditorProps> = ({
         className={className}
         placeholder={placeholder}
         autoFocus={autoFocus}
-        conversation={conversation}
         onComplete={onComplete}
         onChange={onChange}
         {...otherProps}
@@ -104,10 +103,6 @@ const ChatEditorInner: FC<ChatEditorProps> = ({
   autoFocus,
   onComplete,
   onChange,
-
-  // mention plugin props
-  conversation,
-  setConversation,
 
   // div props
   ...otherProps
@@ -218,10 +213,7 @@ const ChatEditorInner: FC<ChatEditorProps> = ({
         ErrorBoundary={LexicalErrorBoundary}
       />
       <OnChangePlugin onChange={onChange!} />
-      <MentionPlugin
-        conversation={conversation}
-        setConversation={setConversation}
-      />
+      <MentionPlugin />
       <HistoryPlugin />
       {autoFocus && <AutoFocusPlugin defaultSelection="rootEnd" />}
       <TabIndentationPlugin />

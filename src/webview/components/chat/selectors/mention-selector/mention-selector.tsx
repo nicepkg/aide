@@ -17,22 +17,16 @@ import {
 import { useFilteredMentionOptions } from '@webview/hooks/chat/use-filtered-mention-options'
 import { useControllableState } from '@webview/hooks/use-controllable-state'
 import { useKeyboardNavigation } from '@webview/hooks/use-keyboard-navigation'
-import { IMentionStrategy, MentionOption } from '@webview/types/chat'
+import { MentionOption } from '@webview/types/chat'
 import { cn } from '@webview/utils/common'
 import { useEvent } from 'react-use'
 
 import { MentionItemLayout } from './mention-item-layout'
 
-export interface SelectedMentionStrategy {
-  name: string
-  strategy: IMentionStrategy
-  strategyAddData: any
-}
-
 interface MentionSelectorProps {
   searchQuery?: string
   mentionOptions: MentionOption[]
-  onSelect: (option: SelectedMentionStrategy) => void
+  onSelect: (option: MentionOption) => void
   open?: boolean
   onOpenChange?: (open: boolean) => void
   onCloseWithoutSelect?: () => void
@@ -102,12 +96,8 @@ export const MentionSelector: React.FC<MentionSelectorProps> = ({
 
   const handleSelect = (option: MentionOption) => {
     if (isFlattened) {
-      if (option.mentionStrategy) {
-        onSelect({
-          name: option.label,
-          strategy: option.mentionStrategy,
-          strategyAddData: option.data || { label: option.label }
-        })
+      if (option.data) {
+        onSelect(option)
       }
       setIsFlattened(false)
       setIsOpen(false)
@@ -119,12 +109,8 @@ export const MentionSelector: React.FC<MentionSelectorProps> = ({
       setOptionsStack(prevStack => [...prevStack, option.children || []])
       onCloseWithoutSelect?.()
     } else {
-      if (option.mentionStrategy) {
-        onSelect({
-          name: option.label,
-          strategy: option.mentionStrategy,
-          strategyAddData: option.data || { label: option.label }
-        })
+      if (option.data) {
+        onSelect(option)
       }
       setIsOpen(false)
     }

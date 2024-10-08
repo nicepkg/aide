@@ -1,6 +1,6 @@
-import type { BaseToolContext } from './base-tool-context'
+import type { BaseContextInfo, BaseToolContext } from './base-context'
 
-export interface CodeSnippet {
+export interface CodeSnippet extends BaseContextInfo {
   fileHash: string
   relativePath: string
   fullPath: string

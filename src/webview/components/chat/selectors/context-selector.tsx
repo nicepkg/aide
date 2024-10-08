@@ -3,10 +3,11 @@ import React, { useState } from 'react'
 import { ImageIcon } from '@radix-ui/react-icons'
 import { getDefaultConversationAttachments } from '@shared/utils/get-default-conversation-attachments'
 import { Button } from '@webview/components/ui/button'
-import type {
-  ChatContext,
-  Conversation,
-  ModelOption
+import {
+  ContextInfoSource,
+  type ChatContext,
+  type Conversation,
+  type ModelOption
 } from '@webview/types/chat'
 import type { Updater } from 'use-immer'
 
@@ -60,7 +61,8 @@ export const ContextSelector: React.FC<ContextSelectorProps> = ({
       }
 
       draft.attachments.fileContext.selectedImages.push({
-        url: 'https://example.com/image.jpg'
+        url: 'https://example.com/image.jpg',
+        source: ContextInfoSource.FileSelector
       })
     })
   }

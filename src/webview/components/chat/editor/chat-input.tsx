@@ -2,11 +2,20 @@ import { useEffect, useRef, type FC } from 'react'
 import { tryParseJSON, tryStringifyJSON } from '@shared/utils/common'
 import { convertToLangchainMessageContents } from '@shared/utils/convert-to-langchain-message-contents'
 import { getAllTextFromLangchainMessageContents } from '@shared/utils/get-all-text-from-langchain-message-contents'
-import { getDefaultConversationAttachments } from '@shared/utils/get-default-conversation-attachments'
 import { mergeLangchainMessageContents } from '@shared/utils/merge-langchain-message-contents'
 import { Button } from '@webview/components/ui/button'
 import { useCloneState } from '@webview/hooks/use-clone-state'
-import type { ChatContext, Conversation, FileInfo } from '@webview/types/chat'
+import {
+  AttachmentType,
+  ContextInfoSource,
+  type ChatContext,
+  type Conversation,
+  type FileInfo
+} from '@webview/types/chat'
+import {
+  getAttachmentsFromEditorState,
+  overrideAttachmentItemsBySource
+} from '@webview/utils/attachments'
 import { cn } from '@webview/utils/common'
 import {
   $createParagraphNode,
@@ -62,11 +71,9 @@ export const ChatInput: FC<ChatInputProps> = ({
     _setConversation
   )
 
-  const selectedFiles =
-    conversation.attachments?.fileContext?.selectedFiles ?? []
-
-  const handleEditorChange = (editorState: EditorState) => {
+  const handleEditorChange = async (editorState: EditorState) => {
     const newRichText = tryStringifyJSON(editorState.toJSON()) || ''
+
     setConversation(draft => {
       if (draft.richText !== newRichText) {
         draft.richText = newRichText
@@ -74,6 +81,10 @@ export const ChatInput: FC<ChatInputProps> = ({
           convertToLangchainMessageContents(
             editorState.read(() => $getRoot().getTextContent())
           )
+        )
+        draft.attachments = getAttachmentsFromEditorState(
+          editorState,
+          draft.attachments
         )
       }
     })
@@ -114,13 +125,21 @@ export const ChatInput: FC<ChatInputProps> = ({
     handleSend()
   }
 
+  const selectedFiles =
+    conversation.attachments?.fileContext?.selectedFiles?.filter(
+      file => file.source === ContextInfoSource.FileSelector
+    ) || []
+
   const handleSelectedFiles = (files: FileInfo[]) => {
     setConversation(draft => {
-      if (!draft.attachments) {
-        draft.attachments = getDefaultConversationAttachments()
-      }
-
-      draft.attachments.fileContext.selectedFiles = files
+      draft.attachments = overrideAttachmentItemsBySource(
+        ContextInfoSource.FileSelector,
+        draft.attachments,
+        files.map(file => ({
+          type: AttachmentType.Files,
+          data: file
+        }))
+      )
     })
   }
 
@@ -171,8 +190,6 @@ export const ChatInput: FC<ChatInputProps> = ({
           onChange={handleEditorChange}
           placeholder="Type your message here..."
           autoFocus={autoFocus}
-          conversation={conversation}
-          setConversation={setConversation}
           className={cn(
             'min-h-24 max-h-64 my-2 border overflow-y-auto rounded-lg bg-background shadow-none focus-visible:ring-0',
             [ChatInputMode.MessageReadonly, ChatInputMode.MessageEdit].includes(

@@ -13,16 +13,14 @@ import {
 import { MentionFilePreview } from '@webview/components/chat/selectors/mention-selector/files/mention-file-preview'
 import { MentionFolderPreview } from '@webview/components/chat/selectors/mention-selector/folders/mention-folder-preview'
 import { FileIcon as FileIcon2 } from '@webview/components/file-icon'
-import { RelevantCodeSnippetsMentionStrategy } from '@webview/lexical/mentions/codebase/relevant-code-snippets-mention-strategy'
-import { AllowSearchDocSiteNamesToolMentionStrategy } from '@webview/lexical/mentions/docs/allow-search-doc-site-names-mention-strategy'
-import { SelectedFilesMentionStrategy } from '@webview/lexical/mentions/files/selected-files-mention-strategy'
-import { SelectedFoldersMentionStrategy } from '@webview/lexical/mentions/folders/selected-folders-mention-strategy'
-import { GitCommitsMentionStrategy } from '@webview/lexical/mentions/git/git-commits-mention-strategy'
-import { GitDiffsMentionStrategy } from '@webview/lexical/mentions/git/git-diffs-mention-strategy'
-import { EnableWebToolMentionStrategy } from '@webview/lexical/mentions/web/enable-web-tool-mention-strategy'
 import {
-  MentionCategory,
+  AttachmentType,
+  ContextInfoSource,
   SearchSortStrategy,
+  type DocSiteName,
+  type FileInfo,
+  type FolderInfo,
+  type GitCommit,
   type MentionOption
 } from '@webview/types/chat'
 import { getFileNameFromPath } from '@webview/utils/path'
@@ -43,11 +41,10 @@ export const useMentionOptions = () => {
       ({
         id: `file#${file.fullPath}`,
         label: getFileNameFromPath(file.fullPath),
-        category: MentionCategory.Files,
-        mentionStrategy: new SelectedFilesMentionStrategy(),
+        type: AttachmentType.Files,
         searchKeywords: [file.relativePath],
         searchSortStrategy: SearchSortStrategy.EndMatch,
-        data: file,
+        data: { ...file, source: ContextInfoSource.Editor } satisfies FileInfo,
         itemLayoutProps: {
           icon: (
             <FileIcon2 className="size-4 mr-1" filePath={file.relativePath} />
@@ -65,11 +62,13 @@ export const useMentionOptions = () => {
       ({
         id: `folder#${folder.fullPath}`,
         label: getFileNameFromPath(folder.fullPath),
-        category: MentionCategory.Folders,
-        mentionStrategy: new SelectedFoldersMentionStrategy(),
+        type: AttachmentType.Folders,
         searchKeywords: [folder.relativePath],
         searchSortStrategy: SearchSortStrategy.EndMatch,
-        data: folder,
+        data: {
+          ...folder,
+          source: ContextInfoSource.Editor
+        } satisfies FolderInfo,
         itemLayoutProps: {
           icon: (
             <>
@@ -94,10 +93,12 @@ export const useMentionOptions = () => {
       ({
         id: `git-commit#${commit.sha}`,
         label: commit.message,
-        category: MentionCategory.Git,
-        mentionStrategy: new GitCommitsMentionStrategy(),
+        type: AttachmentType.GitCommit,
         searchKeywords: [commit.sha, commit.message],
-        data: commit,
+        data: {
+          ...commit,
+          source: ContextInfoSource.Editor
+        } satisfies GitCommit,
         itemLayoutProps: {
           icon: <CommitIcon className="size-4 mr-1 rotate-90" />,
           label: commit.message,
@@ -106,13 +107,15 @@ export const useMentionOptions = () => {
       }) satisfies MentionOption
   )
 
-  const docSitesMentionOptions: MentionOption[] = docSites.map(site => ({
+  const docSiteNamesMentionOptions: MentionOption[] = docSites.map(site => ({
     id: `doc-site#${site.id}`,
     label: site.name,
-    category: MentionCategory.Docs,
-    mentionStrategy: new AllowSearchDocSiteNamesToolMentionStrategy(),
+    type: AttachmentType.Docs,
     searchKeywords: [site.name, site.url],
-    data: site,
+    data: {
+      name: site.name,
+      source: ContextInfoSource.Editor
+    } satisfies DocSiteName,
     itemLayoutProps: {
       icon: <IdCardIcon className="size-4 mr-1" />,
       label: site.name,
@@ -124,7 +127,7 @@ export const useMentionOptions = () => {
     {
       id: 'files',
       label: 'Files',
-      category: MentionCategory.Files,
+      type: AttachmentType.Files,
       searchKeywords: ['files'],
       children: filesMentionOptions,
       itemLayoutProps: {
@@ -135,7 +138,7 @@ export const useMentionOptions = () => {
     {
       id: 'folders',
       label: 'Folders',
-      category: MentionCategory.Folders,
+      type: AttachmentType.Folders,
       searchKeywords: ['folders'],
       children: foldersMentionOptions,
       itemLayoutProps: {
@@ -146,20 +149,18 @@ export const useMentionOptions = () => {
     {
       id: 'code',
       label: 'Code',
-      category: MentionCategory.Code,
+      type: AttachmentType.Code,
       searchKeywords: ['code'],
       itemLayoutProps: {
         icon: <CodeIcon className="size-4 mr-1" />,
         label: 'Code'
       }
-      // mentionStrategy: new CodeChunksMentionStrategy()
     },
     {
       id: 'web',
       label: 'Web',
-      category: MentionCategory.Web,
+      type: AttachmentType.Web,
       searchKeywords: ['web'],
-      mentionStrategy: new EnableWebToolMentionStrategy(),
       itemLayoutProps: {
         icon: <GlobeIcon className="size-4 mr-1" />,
         label: 'Web'
@@ -168,18 +169,17 @@ export const useMentionOptions = () => {
     {
       id: 'docs',
       label: 'Docs',
-      category: MentionCategory.Docs,
+      type: AttachmentType.Docs,
       searchKeywords: ['docs'],
       itemLayoutProps: {
         icon: <IdCardIcon className="size-4 mr-1" />,
         label: 'Docs'
       },
-      children: docSitesMentionOptions
+      children: docSiteNamesMentionOptions
     },
     {
       id: 'git',
       label: 'Git',
-      category: MentionCategory.Git,
       searchKeywords: ['git'],
       itemLayoutProps: {
         icon: <TransformIcon className="size-4 mr-1" />,
@@ -189,9 +189,8 @@ export const useMentionOptions = () => {
         {
           id: 'git#diff',
           label: 'Diff (Diff of Working State)',
-          category: MentionCategory.Git,
+          type: AttachmentType.GitDiff,
           searchKeywords: ['diff'],
-          mentionStrategy: new GitDiffsMentionStrategy(),
           itemLayoutProps: {
             icon: <MaskOffIcon className="size-4 mr-1" />,
             label: 'Diff (Diff of Working State)'
@@ -200,9 +199,8 @@ export const useMentionOptions = () => {
         {
           id: 'git#pull-request',
           label: 'PR (Diff with Main Branch)',
-          category: MentionCategory.Git,
+          type: AttachmentType.GitPr,
           searchKeywords: ['pull request', 'pr', 'diff'],
-          mentionStrategy: new GitDiffsMentionStrategy(),
           itemLayoutProps: {
             icon: <MaskOffIcon className="size-4 mr-1" />,
             label: 'PR (Diff with Main Branch)'
@@ -214,9 +212,8 @@ export const useMentionOptions = () => {
     {
       id: 'codebase',
       label: 'Codebase',
-      category: MentionCategory.Codebase,
+      type: AttachmentType.Codebase,
       searchKeywords: ['codebase'],
-      mentionStrategy: new RelevantCodeSnippetsMentionStrategy(),
       itemLayoutProps: {
         icon: <CubeIcon className="size-4 mr-1" />,
         label: 'Codebase'

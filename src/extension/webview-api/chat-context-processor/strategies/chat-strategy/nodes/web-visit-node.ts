@@ -4,6 +4,7 @@ import { findCurrentToolsCallParams } from '@extension/webview-api/chat-context-
 import type { ToolMessage } from '@langchain/core/messages'
 import { DynamicStructuredTool } from '@langchain/core/tools'
 import { settledPromiseResults } from '@shared/utils/common'
+import { ContextInfoSource } from '@webview/types/chat'
 import { z } from 'zod'
 
 import {
@@ -79,7 +80,8 @@ export const webVisitNode: ChatGraphNode = async state => {
       ...lastConversation.attachments!.docContext.relevantDocs,
       ...result.contents.map(item => ({
         path: item.url,
-        content: item.content
+        content: item.content,
+        source: ContextInfoSource.ToolNode
       }))
     ]
   })

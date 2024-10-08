@@ -1,5 +1,8 @@
 import { createModelProvider } from '@extension/ai/helpers'
-import type { WebSearchResult } from '@extension/webview-api/chat-context-processor/types/chat-context'
+import {
+  ContextInfoSource,
+  type WebSearchResult
+} from '@extension/webview-api/chat-context-processor/types/chat-context'
 import type { LangchainTool } from '@extension/webview-api/chat-context-processor/types/langchain-message'
 import { findCurrentToolsCallParams } from '@extension/webview-api/chat-context-processor/utils/find-current-tools-call-params'
 import { searxngSearch } from '@extension/webview-api/chat-context-processor/utils/searxng-search'
@@ -141,7 +144,8 @@ export const webSearchNode: ChatGraphNode = async state => {
       ...lastConversation.attachments!.docContext.relevantDocs,
       {
         path: '',
-        content: result.relevantContent
+        content: result.relevantContent,
+        source: ContextInfoSource.ToolNode
       }
     ]
 
