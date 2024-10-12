@@ -5,10 +5,15 @@ import { traverseFileOrFolders } from '@extension/file-utils/traverse-fs'
 import { VsCodeFS } from '@extension/file-utils/vscode-fs'
 import { logger } from '@extension/logger'
 import { settledPromiseResults } from '@shared/utils/common'
+import { Schema } from 'apache-arrow'
 
 import { CodeChunkerManager, type TextChunk } from '../tree-sitter/code-chunker'
 import { ProgressReporter } from '../utils/process-reporter'
-import { BaseIndexer, IndexRow } from './base-indexer'
+import {
+  BaseIndexer,
+  createBaseTableSchemaFields,
+  IndexRow
+} from './base-indexer'
 
 export interface DocChunkRow extends IndexRow {}
 
@@ -30,6 +35,10 @@ export class DocIndexer extends BaseIndexer<DocChunkRow> {
     )
 
     return `doc_chunks_embeddings_${semanticModelName}_${docPathName}`
+  }
+
+  getTableSchema(dimensions: number): Schema<any> {
+    return new Schema([...createBaseTableSchemaFields(dimensions)])
   }
 
   async indexFile(filePath: string): Promise<void> {

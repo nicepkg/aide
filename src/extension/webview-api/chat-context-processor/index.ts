@@ -1,16 +1,19 @@
 import type { CommandManager } from '@extension/commands/command-manager'
 import type { RegisterManager } from '@extension/registers/register-manager'
-
-import { AutoTaskStrategy } from './strategies/auto-task-strategy'
-import type { BaseStrategy } from './strategies/base-strategy'
-import { ChatStrategy } from './strategies/chat-strategy'
-import { ComposerStrategy } from './strategies/composer-strategy'
-import { V0Strategy } from './strategies/v0-strategy'
 import {
   ChatContextType,
   type ChatContext,
   type Conversation
-} from './types/chat-context'
+} from '@shared/types/chat-context'
+
+import { AutoTaskStrategy } from './strategies/auto-task-strategy'
+import type {
+  BaseStrategy,
+  BaseStrategyOptions
+} from './strategies/base-strategy'
+import { ChatStrategy } from './strategies/chat-strategy'
+import { ComposerStrategy } from './strategies/composer-strategy'
+import { V0Strategy } from './strategies/v0-strategy'
 
 export class ChatContextProcessor {
   private strategyMap: Map<ChatContextType, BaseStrategy>
@@ -26,17 +29,16 @@ export class ChatContextProcessor {
     this.registerManager = registerManager
     this.commandManager = commandManager
 
+    const baseStrategyOptions: BaseStrategyOptions = {
+      registerManager,
+      commandManager
+    }
+
     this.strategyMap = new Map([
-      [ChatContextType.Chat, new ChatStrategy(registerManager, commandManager)],
-      [
-        ChatContextType.Composer,
-        new ComposerStrategy(registerManager, commandManager)
-      ],
-      [ChatContextType.V0, new V0Strategy(registerManager, commandManager)],
-      [
-        ChatContextType.AutoTask,
-        new AutoTaskStrategy(registerManager, commandManager)
-      ]
+      [ChatContextType.Chat, new ChatStrategy(baseStrategyOptions)],
+      [ChatContextType.Composer, new ComposerStrategy(baseStrategyOptions)],
+      [ChatContextType.V0, new V0Strategy(baseStrategyOptions)],
+      [ChatContextType.AutoTask, new AutoTaskStrategy(baseStrategyOptions)]
     ])
   }
 

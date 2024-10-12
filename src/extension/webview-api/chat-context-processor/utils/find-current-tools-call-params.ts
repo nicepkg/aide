@@ -1,7 +1,7 @@
 import type { AIMessage, BaseMessage } from '@langchain/core/messages'
 import type { ToolCall } from '@langchain/core/messages/tool'
 
-import type { LangchainTool } from '../types/langchain-message'
+import type { LangchainTool } from '../../../../shared/types/chat-context/langchain-message'
 import { getToolCallsFromMessage } from './get-tool-calls-from-message'
 
 export const findCurrentToolsCallParams = (

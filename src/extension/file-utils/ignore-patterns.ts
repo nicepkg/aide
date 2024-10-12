@@ -61,6 +61,8 @@ export const createShouldIgnore = async (
     const relativePath = path.relative(workspacePath, fullFilePath)
     const unixRelativePath = relativePath.replace(/\\/g, '/')
 
+    if (!unixRelativePath) return true
+
     if (ig && ig.ignores(unixRelativePath)) {
       return true
     }

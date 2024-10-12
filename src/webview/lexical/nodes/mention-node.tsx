@@ -1,6 +1,5 @@
 /* eslint-disable unused-imports/no-unused-vars */
 import React from 'react'
-import type { AttachmentType } from '@webview/types/chat'
 import {
   $applyNodeReplacement,
   $createTextNode,
@@ -19,7 +18,7 @@ import {
 
 export type SerializedMentionNode = Spread<
   {
-    mentionType: AttachmentType
+    mentionType: string
     mentionData: any
     text: string
   },
@@ -31,7 +30,7 @@ function convertMentionElement(
 ): DOMConversionOutput | null {
   const mentionType = domNode.getAttribute(
     'data-lexical-mention-type'
-  ) as AttachmentType
+  ) as string
   const mentionData = domNode.getAttribute('data-lexical-mention-data')
   const text = domNode.textContent
 
@@ -47,7 +46,7 @@ function convertMentionElement(
 }
 
 export class MentionNode extends DecoratorNode<React.ReactNode> {
-  __mentionType: AttachmentType
+  __mentionType: string
 
   __mentionData: any
 
@@ -67,7 +66,7 @@ export class MentionNode extends DecoratorNode<React.ReactNode> {
   }
 
   constructor(
-    mentionType: AttachmentType,
+    mentionType: string,
     mentionData: any,
     text: string,
     key?: NodeKey
@@ -202,7 +201,7 @@ export class MentionNode extends DecoratorNode<React.ReactNode> {
 }
 
 export function $createMentionNode(
-  mentionType: AttachmentType,
+  mentionType: string,
   mentionData: any,
   text: string
 ): MentionNode {

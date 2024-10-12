@@ -20,7 +20,7 @@ import {
 import { useFilesSearch } from '@webview/hooks/chat/use-files-search'
 import { useControllableState } from '@webview/hooks/use-controllable-state'
 import { useKeyboardNavigation } from '@webview/hooks/use-keyboard-navigation'
-import { ContextInfoSource, type FileInfo } from '@webview/types/chat'
+import { type FileInfo } from '@webview/types/chat'
 import { useEvent } from 'react-use'
 
 import { FileListView } from './file-list-view'
@@ -63,11 +63,6 @@ export const FileSelector: React.FC<FileSelectorProps> = ({
   const [topSearchQuery, setTopSearchQuery] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([])
-
-  const filteredFilesWithSource = filteredFiles.map(file => ({
-    ...file,
-    source: ContextInfoSource.FileSelector
-  }))
 
   const { handleKeyDown, setFocusedIndex } = useKeyboardNavigation({
     itemCount: tabOptions.length,
@@ -162,14 +157,14 @@ export const FileSelector: React.FC<FileSelectorProps> = ({
           <div className="flex-grow overflow-auto">
             <TabsContent value="list" className="h-full mt-0">
               <FileListView
-                filteredFiles={filteredFilesWithSource}
+                filteredFiles={filteredFiles}
                 selectedFiles={selectedFiles}
                 onSelect={handleListSelect}
               />
             </TabsContent>
             <TabsContent value="tree" className="h-full mt-0">
               <FileTreeView
-                files={filteredFilesWithSource}
+                files={filteredFiles}
                 selectedFiles={selectedFiles}
                 onSelect={handleTreeSelect}
                 searchQuery={searchQuery}

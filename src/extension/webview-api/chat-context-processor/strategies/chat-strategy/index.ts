@@ -1,15 +1,29 @@
-import type {
-  ChatContext,
-  Conversation
-} from '@extension/webview-api/chat-context-processor/types/chat-context'
+import type { ChatContext, Conversation } from '@shared/types/chat-context'
+import { UnPromise } from '@shared/types/common'
 
 import { BaseStrategy } from '../base-strategy'
-import { chatWorkflow } from './chat-workflow'
+import { createChatWorkflow } from './chat-workflow'
 
 export class ChatStrategy extends BaseStrategy {
+  private _chatWorkflow: UnPromise<
+    ReturnType<typeof createChatWorkflow>
+  > | null = null
+
+  private getChatWorkflow = async () => {
+    if (!this._chatWorkflow) {
+      this._chatWorkflow = await createChatWorkflow({
+        registerManager: this.registerManager,
+        commandManager: this.commandManager
+      })
+    }
+
+    return this._chatWorkflow
+  }
+
   async *getAnswers(
     chatContext: ChatContext
   ): AsyncGenerator<Conversation[], void, unknown> {
+    const chatWorkflow = await this.getChatWorkflow()
     const graph = chatWorkflow.compile()
 
     const stream = await graph.stream({

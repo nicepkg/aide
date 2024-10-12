@@ -1,10 +1,9 @@
 /* eslint-disable unused-imports/no-unused-vars */
 import React, { useState } from 'react'
 import { ImageIcon } from '@radix-ui/react-icons'
-import { getDefaultConversationAttachments } from '@shared/utils/get-default-conversation-attachments'
 import { Button } from '@webview/components/ui/button'
+import { usePluginImagesSelectorProviders } from '@webview/hooks/chat/use-plugin-providers'
 import {
-  ContextInfoSource,
   type ChatContext,
   type Conversation,
   type ModelOption
@@ -36,6 +35,7 @@ export const ContextSelector: React.FC<ContextSelectorProps> = ({
   ])
 
   const [selectedModel, setSelectedModel] = useState(modelOptions[0])
+  const { addSelectedImage } = usePluginImagesSelectorProviders()
 
   const handleSelectModel = (model: ModelOption) => {
     setSelectedModel(model)
@@ -51,20 +51,15 @@ export const ContextSelector: React.FC<ContextSelectorProps> = ({
     input.onchange = event => {
       const file = (event.target as HTMLInputElement).files?.[0]
       if (file) {
-        console.log('Selected image:', file)
+        const reader = new FileReader()
+        reader.onload = e => {
+          const base64Image = e.target?.result as string
+          addSelectedImage?.({ url: base64Image })
+        }
+        reader.readAsDataURL(file)
       }
     }
     input.click()
-    setConversation(draft => {
-      if (!draft.attachments) {
-        draft.attachments = getDefaultConversationAttachments()
-      }
-
-      draft.attachments.fileContext.selectedImages.push({
-        url: 'https://example.com/image.jpg',
-        source: ContextInfoSource.FileSelector
-      })
-    })
   }
 
   return (

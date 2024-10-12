@@ -27,6 +27,19 @@ export interface IndexRow {
   embedding: number[]
 }
 
+export const createBaseTableSchemaFields = (dimensions: number) => [
+  new Field('fullPath', new Utf8()),
+  new Field('fileHash', new Utf8()),
+  new Field('startLine', new Int32()),
+  new Field('startCharacter', new Int32()),
+  new Field('endLine', new Int32()),
+  new Field('endCharacter', new Int32()),
+  new Field(
+    'embedding',
+    new FixedSizeList(dimensions, new Field('emb', new Float32()))
+  )
+]
+
 export abstract class BaseIndexer<T extends IndexRow> {
   protected lanceDb!: Connection
 
@@ -58,6 +71,8 @@ export abstract class BaseIndexer<T extends IndexRow> {
 
   abstract getTableName(): Promise<string>
 
+  abstract getTableSchema(dimensions: number): Schema
+
   async getOrCreateTable(): Promise<Table<number[]>> {
     const tableName = await this.getTableName()
     const { dimensions } = EmbeddingManager.getInstance().getActiveModelInfo()
@@ -68,18 +83,7 @@ export abstract class BaseIndexer<T extends IndexRow> {
       if (tables.includes(tableName))
         return await this.lanceDb.openTable(tableName)
 
-      const schema = new Schema([
-        new Field('fullPath', new Utf8()),
-        new Field('fileHash', new Utf8()),
-        new Field('startLine', new Int32()),
-        new Field('startCharacter', new Int32()),
-        new Field('endLine', new Int32()),
-        new Field('endCharacter', new Int32()),
-        new Field(
-          'embedding',
-          new FixedSizeList(dimensions, new Field('emb', new Float32()))
-        )
-      ])
+      const schema = this.getTableSchema(dimensions)
 
       return await this.lanceDb.createTable({
         name: tableName,

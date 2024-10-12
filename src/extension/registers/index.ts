@@ -4,6 +4,7 @@ import { BaseRegister } from './base-register'
 import { CodebaseWatcherRegister } from './codebase-watcher-register'
 import { ModelRegister } from './model-register'
 import { RegisterManager } from './register-manager'
+import { ServerPluginRegister } from './server-plugin-register'
 import { SystemSetupRegister } from './system-setup-register'
 import { TmpFileActionRegister } from './tmp-file-action-register'
 import { WebviewRegister } from './webview-register'
@@ -14,9 +15,10 @@ export const setupRegisters = async (registerManager: RegisterManager) => {
     TmpFileActionRegister,
     AideKeyUsageStatusBarRegister,
     AutoOpenCorrespondingFilesRegister,
-    WebviewRegister,
     ModelRegister,
-    CodebaseWatcherRegister
+    CodebaseWatcherRegister,
+    ServerPluginRegister,
+    WebviewRegister
   ] satisfies (typeof BaseRegister)[]
 
   for await (const Register of Registers) {

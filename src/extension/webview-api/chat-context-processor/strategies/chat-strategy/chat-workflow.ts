@@ -1,43 +1,44 @@
+import { ServerPluginRegister } from '@extension/registers/server-plugin-register'
 import { END, START, StateGraph } from '@langchain/langgraph'
 
 import { combineNode } from '../../utils/combine-node'
-import { agentNode } from './nodes/agent-node'
-import { codebaseSearchNode } from './nodes/codebase-search-node'
-import { docRetrieverNode } from './nodes/doc-retriever-node'
-import { generateNode } from './nodes/generate-node'
+import type { BaseStrategyOptions } from '../base-strategy'
+import { createAgentNode } from './nodes/agent-node'
+import { createGenerateNode } from './nodes/generate-node'
 import {
   ChatGraphNodeName,
   chatGraphState,
   type ChatGraphState
 } from './nodes/state'
-import { webSearchNode } from './nodes/web-search-node'
-import { webVisitNode } from './nodes/web-visit-node'
 
 const createSmartRoute =
   (nextNodeName: ChatGraphNodeName) => (state: ChatGraphState) =>
     state.shouldContinue ? nextNodeName : END
 
-const chatWorkflow = new StateGraph(chatGraphState)
-  .addNode(ChatGraphNodeName.Agent, agentNode)
-  .addNode(
-    ChatGraphNodeName.Tools,
-    combineNode(
-      [codebaseSearchNode, docRetrieverNode, webSearchNode, webVisitNode],
-      chatGraphState
+export const createChatWorkflow = async (options: BaseStrategyOptions) => {
+  const chatStrategyProvider = options.registerManager
+    .getRegister(ServerPluginRegister)
+    ?.serverPluginRegistry?.providerManagers.chatStrategy.mergeAll()
+
+  const toolNodes =
+    (await chatStrategyProvider?.buildLanggraphToolNodes?.(options)) || []
+
+  const chatWorkflow = new StateGraph(chatGraphState)
+    .addNode(ChatGraphNodeName.Agent, createAgentNode(options))
+    .addNode(ChatGraphNodeName.Tools, combineNode(toolNodes, chatGraphState))
+    .addNode(ChatGraphNodeName.Generate, createGenerateNode(options))
+
+  chatWorkflow
+    .addConditionalEdges(START, createSmartRoute(ChatGraphNodeName.Agent))
+    .addConditionalEdges(
+      ChatGraphNodeName.Agent,
+      createSmartRoute(ChatGraphNodeName.Tools)
     )
-  )
-  .addNode(ChatGraphNodeName.Generate, generateNode)
+    .addConditionalEdges(
+      ChatGraphNodeName.Tools,
+      createSmartRoute(ChatGraphNodeName.Generate)
+    )
+    .addEdge(ChatGraphNodeName.Generate, END)
 
-chatWorkflow
-  .addConditionalEdges(START, createSmartRoute(ChatGraphNodeName.Agent))
-  .addConditionalEdges(
-    ChatGraphNodeName.Agent,
-    createSmartRoute(ChatGraphNodeName.Tools)
-  )
-  .addConditionalEdges(
-    ChatGraphNodeName.Tools,
-    createSmartRoute(ChatGraphNodeName.Generate)
-  )
-  .addEdge(ChatGraphNodeName.Generate, END)
-
-export { chatWorkflow }
+  return chatWorkflow
+}

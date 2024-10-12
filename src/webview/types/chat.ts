@@ -1,14 +1,11 @@
 import type { FC } from 'react'
-import type {
-  Attachments,
-  Conversation
-} from '@extension/webview-api/chat-context-processor/types/chat-context'
+import type { Conversation } from '@shared/types/chat-context'
 import type { MentionItemLayoutProps } from '@webview/components/chat/selectors/mention-selector/mention-item-layout'
 
 export type { DocSite } from '@extension/webview-api/lowdb/doc-sites-db'
-
 export type { ProgressInfo } from '@extension/webview-api/chat-context-processor/utils/process-reporter'
-export * from '@extension/webview-api/chat-context-processor/types/chat-context'
+export * from '@shared/types/chat-context'
+export type { FileInfo, FolderInfo } from '@extension/file-utils/traverse-fs'
 
 export interface ModelOption {
   value: string
@@ -20,51 +17,22 @@ export enum SearchSortStrategy {
   EndMatch = 'EndMatch'
 }
 
-export interface MentionOption {
+export interface MentionOption<T = any> {
   id: string
   label: string
-  type?: AttachmentType
+  type?: string
+  onAddOne?: (data: T) => void
+  onRemoveOne?: (data: T) => void
+  onReplaceAll?: (dataArr: T[]) => void
+
+  topLevelSort?: number
   searchKeywords?: string[]
   searchSortStrategy?: SearchSortStrategy
   children?: MentionOption[]
-  data?: any
+  data?: T
   itemLayoutProps?: MentionItemLayoutProps
   customRenderItem?: FC<MentionOption>
   customRenderPreview?: FC<MentionOption>
-}
-
-export enum AttachmentType {
-  Files = 'Files',
-  Folders = 'Folders',
-  Images = 'Images',
-  Code = 'Code',
-  Web = 'Web',
-  Docs = 'Docs',
-  GitDiff = 'GitDiff',
-  GitCommit = 'GitCommit',
-  GitPr = 'GitPr',
-  Codebase = 'Codebase'
-}
-
-export type AttachmentItem = {
-  type: AttachmentType
-  data: any
-}
-
-export interface IMentionStrategy {
-  readonly category: AttachmentType
-  readonly name: string
-
-  buildLexicalNodeAfterAddMention?: (
-    data: any,
-    currentAttachments: Attachments,
-    currentConversation: Conversation
-  ) => Promise<string>
-
-  buildNewAttachmentsAfterAddMention: (
-    data: any,
-    currentAttachments: Attachments
-  ) => Promise<Partial<Attachments>>
 }
 
 export interface ConversationUIState {

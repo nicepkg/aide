@@ -1,14 +1,10 @@
 import type { CommandManager } from '@extension/commands/command-manager'
 import type { RegisterManager } from '@extension/registers/register-manager'
 import { getWorkspaceFolder } from '@extension/utils'
+import type { GitCommit, GitDiff } from '@shared/plugins/git-plugin/types'
 import { settledPromiseResults } from '@shared/utils/common'
 import simpleGit, { SimpleGit } from 'simple-git'
 
-import {
-  ContextInfoSource,
-  type GitCommit,
-  type GitDiff
-} from '../chat-context-processor/types/chat-context'
 import { Controller } from '../types'
 
 export class GitController extends Controller {
@@ -37,8 +33,7 @@ export class GitController extends Controller {
           message: commit.message,
           diff: this.parseDiff(diff),
           author: commit.author_name,
-          date: commit.date,
-          source: ContextInfoSource.Editor
+          date: commit.date
         }
       })
     )
@@ -97,8 +92,7 @@ export class GitController extends Controller {
             content: `@@ ${content}`,
             lines: lines.filter(line => line.trim() !== '')
           }
-        }),
-        source: ContextInfoSource.Editor
+        })
       })
     })
 

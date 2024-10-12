@@ -52,5 +52,3 @@ export const PreMermaid: FC<MermaidProps> = ({
     {children}
   </Mermaid>
 )
-
-export default Pre

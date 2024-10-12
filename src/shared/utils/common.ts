@@ -47,13 +47,22 @@ export const tryStringifyJSON = (obj: any) => {
   }
 }
 
-export async function settledPromiseResults<T>(
-  promises: Promise<T>[]
-): Promise<T[]> {
+export const settledPromiseResults = async <T>(
+  promises: Promise<T>[],
+  onError?: (error: any) => void
+): Promise<T[]> => {
+  // eslint-disable-next-line no-console
+  onError ||= err => console.debug('settledPromiseResults error:', err)
   const results = await Promise.allSettled(promises)
+
   return results
     .map((result, index) => ({ result, index }))
-    .filter(item => item.result.status === 'fulfilled')
+    .filter(item => {
+      if (item.result.status === 'rejected' && onError) {
+        onError((item.result as PromiseRejectedResult).reason)
+      }
+      return item.result.status === 'fulfilled'
+    })
     .sort((a, b) => a.index - b.index)
     .map(item => (item.result as PromiseFulfilledResult<T>).value)
 }

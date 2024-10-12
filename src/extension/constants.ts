@@ -1,5 +1,7 @@
 export const AbortError = new Error('AbortError')
 
+export const AI_SUPPORT_IMG_EXT = ['jpg', 'jpeg', 'png']
+
 export const DEFAULT_IGNORE_FILETYPES = [
   '**/*.DS_Store',
   '**/*-lock.json',
@@ -69,6 +71,10 @@ export const DEFAULT_IGNORE_FILETYPES = [
   '**/*.bin'
   // "**/*.prompt", // can be incredibly confusing for the LLM to have another set of instructions injected into the prompt
 ]
+
+export const IGNORE_FILETYPES_WITHOUT_IMG = DEFAULT_IGNORE_FILETYPES.filter(
+  filetype => !AI_SUPPORT_IMG_EXT.some(ext => filetype.endsWith(ext))
+)
 
 export const PRE_INDEX_DOCS = [
   {

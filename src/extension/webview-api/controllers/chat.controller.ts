@@ -1,8 +1,6 @@
+import type { ChatContext, Conversation } from '@shared/types/chat-context'
+
 import { ChatContextProcessor } from '../chat-context-processor'
-import type {
-  ChatContext,
-  Conversation
-} from '../chat-context-processor/types/chat-context'
 import { Controller } from '../types'
 
 export class ChatController extends Controller {

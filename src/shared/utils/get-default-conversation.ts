@@ -1,7 +1,5 @@
-import type { Conversation } from '@extension/webview-api/chat-context-processor/types/chat-context'
+import type { Conversation } from '@shared/types/chat-context'
 import { v4 as uuidv4 } from 'uuid'
-
-import { getDefaultConversationAttachments } from './get-default-conversation-attachments'
 
 export const getDefaultConversation = (
   role: Conversation['role']
@@ -10,5 +8,5 @@ export const getDefaultConversation = (
   createdAt: Date.now(),
   role,
   contents: [],
-  attachments: getDefaultConversationAttachments()
+  pluginStates: {}
 })

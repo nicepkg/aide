@@ -2,9 +2,9 @@
 import { useRef } from 'react'
 import { TooltipProvider } from '@radix-ui/react-tooltip'
 import { QueryClientProvider, type QueryClient } from '@tanstack/react-query'
+import { Toaster } from '@webview/components/ui/sonner'
 import { createQueryClient } from '@webview/services/react-query/query-client'
 import { ThemeProvider as NextThemesProvider } from 'next-themes'
-import { Toaster } from 'sonner'
 
 export function Providers({ children }: React.PropsWithChildren) {
   const queryClientRef = useRef<QueryClient>(null)

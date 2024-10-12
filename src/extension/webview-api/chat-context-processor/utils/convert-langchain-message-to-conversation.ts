@@ -1,9 +1,9 @@
-import type { Conversation } from '@extension/webview-api/chat-context-processor/types/chat-context'
+import type { MessageType } from '@langchain/core/messages'
+import type { Conversation } from '@shared/types/chat-context'
 import type {
   LangchainMessage,
   LangchainMessageContents
-} from '@extension/webview-api/chat-context-processor/types/langchain-message'
-import type { MessageType } from '@langchain/core/messages'
+} from '@shared/types/chat-context/langchain-message'
 import { convertToLangchainMessageContents } from '@shared/utils/convert-to-langchain-message-contents'
 import { getDefaultConversation } from '@shared/utils/get-default-conversation'
 

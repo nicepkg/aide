@@ -3,28 +3,33 @@ import { convertLangchainMessageToConversation } from '@extension/webview-api/ch
 import { produce } from 'immer'
 
 import { ChatMessagesConstructor } from '../messages-constructors/chat-messages-constructor'
-import type { ChatGraphNode } from './state'
+import type { CreateChatGraphNode } from './state'
 
-export const generateNode: ChatGraphNode = async state => {
-  const { chatContext } = state
-  const modelProvider = await createModelProvider()
-  const aiModelAbortController = new AbortController()
-  const aiModel = await modelProvider.getModel()
+export const createGenerateNode: CreateChatGraphNode =
+  options => async state => {
+    const { chatContext } = state
+    const modelProvider = await createModelProvider()
+    const aiModelAbortController = new AbortController()
+    const aiModel = await modelProvider.getModel()
 
-  const chatMessagesConstructor = new ChatMessagesConstructor(state.chatContext)
-  const messagesFromChatContext =
-    await chatMessagesConstructor.constructMessages()
+    const chatMessagesConstructor = new ChatMessagesConstructor({
+      ...options,
+      chatContext: state.chatContext
+    })
 
-  const response = await aiModel
-    .bind({ signal: aiModelAbortController.signal })
-    .invoke(messagesFromChatContext)
+    const messagesFromChatContext =
+      await chatMessagesConstructor.constructMessages()
 
-  const finalChatContext = produce(chatContext, draft => {
-    draft.conversations.push(convertLangchainMessageToConversation(response))
-  })
+    const response = await aiModel
+      .bind({ signal: aiModelAbortController.signal })
+      .invoke(messagesFromChatContext)
 
-  return {
-    messages: [response],
-    chatContext: finalChatContext
+    const finalChatContext = produce(chatContext, draft => {
+      draft.conversations.push(convertLangchainMessageToConversation(response))
+    })
+
+    return {
+      messages: [response],
+      chatContext: finalChatContext
+    }
   }
-}

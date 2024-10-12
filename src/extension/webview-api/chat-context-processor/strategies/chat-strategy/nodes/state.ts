@@ -1,15 +1,9 @@
 import type { BaseMessage } from '@langchain/core/messages'
 import { Annotation } from '@langchain/langgraph'
-import type { ChatContext } from '@webview/types/chat'
+import type { ChatContext } from '@shared/types/chat-context'
 
 import { baseState } from '../../base-state'
-
-export enum ChatGraphToolName {
-  DocRetriever = 'docRetriever',
-  WebSearch = 'webSearch',
-  CodebaseSearch = 'codebaseSearch',
-  WebVisit = 'webVisit'
-}
+import type { BaseStrategyOptions } from '../../base-strategy'
 
 export enum ChatGraphNodeName {
   Agent = 'agent',
@@ -33,6 +27,11 @@ export const chatGraphState = Annotation.Root({
 })
 
 export type ChatGraphState = typeof chatGraphState.State
+
 export type ChatGraphNode = (
   state: ChatGraphState
 ) => Promise<Partial<ChatGraphState>>
+
+export type CreateChatGraphNode = (
+  options: BaseStrategyOptions
+) => ChatGraphNode

@@ -1,51 +1,54 @@
-import type { ChatContext } from '@extension/webview-api/chat-context-processor/types/chat-context'
-import type { LangchainMessage } from '@extension/webview-api/chat-context-processor/types/langchain-message'
+import type { CommandManager } from '@extension/commands/command-manager'
+import type { RegisterManager } from '@extension/registers/register-manager'
+import { ServerPluginRegister } from '@extension/registers/server-plugin-register'
 import { HumanMessage, SystemMessage } from '@langchain/core/messages'
+import type { ChatContext } from '@shared/types/chat-context'
+import type { LangchainMessage } from '@shared/types/chat-context/langchain-message'
 import { settledPromiseResults } from '@shared/utils/common'
 
-import { CHAT_WITH_FILE_SYSTEM_PROMPT, COMMON_SYSTEM_PROMPT } from './constants'
+import type { BaseStrategyOptions } from '../../base-strategy'
 import { ConversationMessageConstructor } from './conversation-message-constructor'
+
+interface ChatMessagesConstructorOptions extends BaseStrategyOptions {
+  chatContext: ChatContext
+}
 
 export class ChatMessagesConstructor {
   private chatContext: ChatContext
 
-  constructor(chatContext: ChatContext) {
-    this.chatContext = chatContext
+  private registerManager: RegisterManager
+
+  private commandManager: CommandManager
+
+  private getChatStrategyProvider() {
+    return this.registerManager
+      .getRegister(ServerPluginRegister)
+      ?.serverPluginRegistry?.providerManagers.chatStrategy.mergeAll()
+  }
+
+  constructor(options: ChatMessagesConstructorOptions) {
+    this.chatContext = options.chatContext
+    this.registerManager = options.registerManager
+    this.commandManager = options.commandManager
   }
 
   async constructMessages(): Promise<LangchainMessage[]> {
-    const hasAttachedFiles = this.checkForAttachedFiles()
-    const systemMessage = this.createSystemMessage(hasAttachedFiles)
+    const systemMessage = await this.createSystemMessage()
     const instructionMessage = this.createCustomInstructionMessage()
-    const conversationMessages =
-      await this.buildConversationMessages(hasAttachedFiles)
+    const conversationMessages = await this.buildConversationMessages()
 
     return [systemMessage, instructionMessage, ...conversationMessages].filter(
       Boolean
     ) as LangchainMessage[]
   }
 
-  private checkForAttachedFiles(): boolean {
-    return this.chatContext.conversations.some(conversation => {
-      const { selectedFiles = [], selectedFolders = [] } =
-        conversation.attachments?.fileContext || {}
-      const { relevantCodeSnippets = [] } =
-        conversation.attachments?.codebaseContext || {}
+  private async createSystemMessage(): Promise<SystemMessage | null> {
+    const chatStrategyProvider = this.getChatStrategyProvider()
+    const content = await chatStrategyProvider?.buildSystemMessagePrompt?.(
+      this.chatContext
+    )
 
-      return (
-        selectedFiles.length > 0 ||
-        selectedFolders.length > 0 ||
-        relevantCodeSnippets.length > 0
-      )
-    })
-  }
-
-  private createSystemMessage(hasAttachedFiles: boolean): SystemMessage {
-    const content = hasAttachedFiles
-      ? CHAT_WITH_FILE_SYSTEM_PROMPT
-      : COMMON_SYSTEM_PROMPT
-
-    return new SystemMessage({ content })
+    return content ? new SystemMessage({ content }) : null
   }
 
   private createCustomInstructionMessage(): HumanMessage | null {
@@ -62,14 +65,18 @@ ${explicitContext}
     })
   }
 
-  private async buildConversationMessages(
-    hasAttachedFiles: boolean
-  ): Promise<LangchainMessage[]> {
+  private async buildConversationMessages(): Promise<LangchainMessage[]> {
+    const chatStrategyProvider = this.getChatStrategyProvider()
+
+    if (!chatStrategyProvider)
+      throw new Error('Chat strategy provider not found')
+
     const messagePromises = this.chatContext.conversations.map(conversation =>
-      new ConversationMessageConstructor(
+      new ConversationMessageConstructor({
+        chatContext: this.chatContext,
         conversation,
-        hasAttachedFiles
-      ).buildMessages()
+        chatStrategyProvider
+      }).buildMessages()
     )
     const messageArrays = await settledPromiseResults(messagePromises)
     return messageArrays.flat()

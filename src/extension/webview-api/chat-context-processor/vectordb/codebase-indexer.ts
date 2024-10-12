@@ -6,11 +6,16 @@ import { VsCodeFS } from '@extension/file-utils/vscode-fs'
 import { logger } from '@extension/logger'
 import { settledPromiseResults } from '@shared/utils/common'
 import { languageIdExts } from '@shared/utils/vscode-lang'
+import { Field, Schema, Utf8 } from 'apache-arrow'
 import * as vscode from 'vscode'
 
 import { CodeChunkerManager, type TextChunk } from '../tree-sitter/code-chunker'
 import { treeSitterExtLanguageMap } from '../tree-sitter/constants'
-import { BaseIndexer, IndexRow } from './base-indexer'
+import {
+  BaseIndexer,
+  createBaseTableSchemaFields,
+  IndexRow
+} from './base-indexer'
 
 export interface CodeChunkRow extends IndexRow {
   relativePath: string
@@ -28,6 +33,13 @@ export class CodebaseIndexer extends BaseIndexer<CodeChunkRow> {
     const { modelName } = EmbeddingManager.getInstance().getActiveModelInfo()
     const semanticModelName = getSemanticHashName(modelName)
     return `code_chunks_embeddings_${semanticModelName}`
+  }
+
+  getTableSchema(dimensions: number): Schema<any> {
+    return new Schema([
+      ...createBaseTableSchemaFields(dimensions),
+      new Field('relativePath', new Utf8())
+    ])
   }
 
   async indexFile(filePath: string): Promise<void> {

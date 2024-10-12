@@ -8,7 +8,7 @@ import {
 import type {
   LangchainMessage,
   LangchainMessageContents
-} from '../types/langchain-message'
+} from '../../../../shared/types/chat-context/langchain-message'
 
 export class MessageBuilder {
   static createMessage(

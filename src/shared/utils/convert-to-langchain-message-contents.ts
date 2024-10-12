@@ -1,5 +1,5 @@
-import type { LangchainMessageContents } from '@extension/webview-api/chat-context-processor/types/langchain-message'
 import type { MessageContentComplex } from '@langchain/core/messages'
+import type { LangchainMessageContents } from '@shared/types/chat-context/langchain-message'
 
 export const convertToLangchainMessageContents = (
   content:

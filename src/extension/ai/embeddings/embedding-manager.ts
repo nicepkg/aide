@@ -25,8 +25,6 @@ export const embeddingModels = [
   }
 ] as const satisfies BaseEmbeddingModelInfo[]
 
-export type EmbeddingModelType = (typeof embeddingModels)[number]['type']
-
 export class EmbeddingManager {
   private static instance: EmbeddingManager
 

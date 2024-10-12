@@ -1,22 +1,24 @@
 import { useEffect, useRef, type FC } from 'react'
+import type { PluginId } from '@shared/plugins/base/types'
 import { tryParseJSON, tryStringifyJSON } from '@shared/utils/common'
 import { convertToLangchainMessageContents } from '@shared/utils/convert-to-langchain-message-contents'
 import { getAllTextFromLangchainMessageContents } from '@shared/utils/get-all-text-from-langchain-message-contents'
 import { mergeLangchainMessageContents } from '@shared/utils/merge-langchain-message-contents'
 import { Button } from '@webview/components/ui/button'
+import {
+  usePluginRegistry,
+  WithPluginRegistryProvider
+} from '@webview/contexts/plugin-registry-context'
+import { useMentionOptions } from '@webview/hooks/chat/use-mention-options'
+import { usePluginFilesSelectorProviders } from '@webview/hooks/chat/use-plugin-providers'
 import { useCloneState } from '@webview/hooks/use-clone-state'
 import {
-  AttachmentType,
-  ContextInfoSource,
   type ChatContext,
   type Conversation,
   type FileInfo
 } from '@webview/types/chat'
-import {
-  getAttachmentsFromEditorState,
-  overrideAttachmentItemsBySource
-} from '@webview/utils/attachments'
 import { cn } from '@webview/utils/common'
+import { updatePluginStatesFromEditorState } from '@webview/utils/plugin-states'
 import {
   $createParagraphNode,
   $createTextNode,
@@ -52,7 +54,7 @@ export interface ChatInputProps {
 
 export interface ChatInputRef extends ChatEditorRef {}
 
-export const ChatInput: FC<ChatInputProps> = ({
+const _ChatInput: FC<ChatInputProps> = ({
   ref,
   className,
   editorClassName,
@@ -66,10 +68,22 @@ export const ChatInput: FC<ChatInputProps> = ({
   onSend
 }) => {
   const editorRef = useRef<ChatEditorRef>(null)
+  const { pluginRegistry, isPluginRegistryLoaded } = usePluginRegistry()
+  const { getSelectedFiles, setSelectedFiles } =
+    usePluginFilesSelectorProviders()
+  const mentionOptions = useMentionOptions()
+
   const [conversation, setConversation, applyConversation] = useCloneState(
     _conversation,
     _setConversation
   )
+
+  // sync conversation plugin states with plugin registry
+  useEffect(() => {
+    Object.entries(conversation.pluginStates).forEach(([pluginId, state]) => {
+      pluginRegistry?.setState(pluginId as PluginId, state)
+    })
+  }, [isPluginRegistryLoaded, conversation.pluginStates])
 
   const handleEditorChange = async (editorState: EditorState) => {
     const newRichText = tryStringifyJSON(editorState.toJSON()) || ''
@@ -82,11 +96,12 @@ export const ChatInput: FC<ChatInputProps> = ({
             editorState.read(() => $getRoot().getTextContent())
           )
         )
-        draft.attachments = getAttachmentsFromEditorState(
-          editorState,
-          draft.attachments
-        )
       }
+    })
+
+    updatePluginStatesFromEditorState(editorState, mentionOptions)
+    setConversation(draft => {
+      draft.pluginStates = pluginRegistry?.providerManagers.state.getAll() || {}
     })
   }
 
@@ -125,22 +140,10 @@ export const ChatInput: FC<ChatInputProps> = ({
     handleSend()
   }
 
-  const selectedFiles =
-    conversation.attachments?.fileContext?.selectedFiles?.filter(
-      file => file.source === ContextInfoSource.FileSelector
-    ) || []
+  const selectedFiles = getSelectedFiles?.() || []
 
   const handleSelectedFiles = (files: FileInfo[]) => {
-    setConversation(draft => {
-      draft.attachments = overrideAttachmentItemsBySource(
-        ContextInfoSource.FileSelector,
-        draft.attachments,
-        files.map(file => ({
-          type: AttachmentType.Files,
-          data: file
-        }))
-      )
-    })
+    setSelectedFiles?.(files)
   }
 
   const focusOnEditor = () => editorRef.current?.focusOnEditor()
@@ -235,3 +238,5 @@ export const ChatInput: FC<ChatInputProps> = ({
     </div>
   )
 }
+
+export const ChatInput = WithPluginRegistryProvider(_ChatInput)
