@@ -262,7 +262,7 @@ export abstract class BaseIndexer<T extends IndexRow> {
     logger.verbose('Finished indexing all files')
   }
 
-  abstract isAvailableFile(filePath: string): Promise<boolean>
+  abstract isAvailableFile(filePath: string): boolean | Promise<boolean>
   abstract indexFile(filePath: string): Promise<void>
   abstract getAllIndexedFilePaths(): Promise<string[]>
 

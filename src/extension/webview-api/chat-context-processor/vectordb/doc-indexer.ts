@@ -96,7 +96,7 @@ export class DocIndexer extends BaseIndexer<DocChunkRow> {
     })
   }
 
-  async isAvailableFile(filePath: string): Promise<boolean> {
+  isAvailableFile(filePath: string): boolean {
     return filePath.endsWith('.md')
   }
 

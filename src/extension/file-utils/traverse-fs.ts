@@ -63,7 +63,7 @@ const getFolderInfo = async (
   folderPath: string,
   workspacePath: string
 ): Promise<FolderInfo> => {
-  const relativePath = path.relative(workspacePath, folderPath)
+  const relativePath = path.relative(workspacePath, folderPath) || './'
 
   return {
     type: 'folder',

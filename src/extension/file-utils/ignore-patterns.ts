@@ -58,7 +58,7 @@ export const createShouldIgnore = async (
    * @returns A boolean indicating whether the file should be ignored.
    */
   const shouldIgnore = (fullFilePath: string) => {
-    const relativePath = path.relative(workspacePath, fullFilePath)
+    const relativePath = path.relative(workspacePath, fullFilePath) || './'
     const unixRelativePath = relativePath.replace(/\\/g, '/')
 
     if (!unixRelativePath) return true
@@ -118,6 +118,7 @@ export const getAllValidFolders = async (
   const shouldIgnore =
     customShouldIgnore || (await createShouldIgnore(fullDirPath))
 
+  // TODO: ignore not working
   const filesOrFolders = await glob('**/*', {
     cwd: fullDirPath,
     nodir: false,

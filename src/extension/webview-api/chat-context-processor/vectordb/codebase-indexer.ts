@@ -90,23 +90,30 @@ export class CodebaseIndexer extends BaseIndexer<CodeChunkRow> {
   }
 
   async getAllIndexedFilePaths(): Promise<string[]> {
+    const shouldIgnore = await createShouldIgnore(this.workspaceRootPath)
+
     return await traverseFileOrFolders({
       type: 'file',
       filesOrFolders: ['./'],
       isGetFileContent: false,
       workspacePath: this.workspaceRootPath,
       customShouldIgnore: (fullFilePath: string) =>
-        !this.isAvailableFile(fullFilePath),
+        shouldIgnore(fullFilePath) ||
+        !this.isAvailableExtFile(fullFilePath, true),
       itemCallback: fileInfo => fileInfo.fullPath
     })
   }
 
-  private isAvailableExtFile(filePath: string): boolean {
+  private isAvailableExtFile(filePath: string, allowFolder = false): boolean {
     const allowExt = new Set([
       ...Object.keys(treeSitterExtLanguageMap),
       ...languageIdExts
     ])
-    return allowExt.has(getExt(filePath)!.toLowerCase())
+    const ext = getExt(filePath)!.toLowerCase()
+
+    if (!ext) return allowFolder
+
+    return allowExt.has(ext)
   }
 
   async isAvailableFile(filePath: string): Promise<boolean> {
