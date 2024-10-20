@@ -16,7 +16,6 @@ import {
 } from '@webview/components/ui/popover'
 import { useFilteredMentionOptions } from '@webview/hooks/chat/use-filtered-mention-options'
 import { useControllableState } from '@webview/hooks/use-controllable-state'
-import { useKeyboardNavigation } from '@webview/hooks/use-keyboard-navigation'
 import { MentionOption } from '@webview/types/chat'
 import { cn } from '@webview/utils/common'
 import { useEvent } from 'react-use'
@@ -63,26 +62,19 @@ export const MentionSelector: React.FC<MentionSelectorProps> = ({
       maxItemLength
     })
 
-  const itemRefs = useRef<(HTMLDivElement | null)[]>([])
-  const { focusedIndex, setFocusedIndex, handleKeyDown, listEventHandlers } =
-    useKeyboardNavigation({
-      itemCount: filteredOptions.length,
-      itemRefs,
-      onEnter: el => el?.click()
-    })
-
-  useEvent('keydown', handleKeyDown)
-
-  const focusedOption = filteredOptions[focusedIndex]
+  const [focusedOptionId, setFocusedOptionId] = useState<string | null>(null)
+  const focusedOption = filteredOptions.find(
+    option => option.id === focusedOptionId
+  )
 
   useEffect(() => {
-    setFocusedIndex(0)
+    setFocusedOptionId(filteredOptions?.[0]?.id || null)
   }, [filteredOptions])
 
   useEffect(() => {
     if (!isOpen) {
       setOptionsStack([mentionOptions])
-      setFocusedIndex(0)
+      setFocusedOptionId(filteredOptions?.[0]?.id || null)
     }
   }, [isOpen, mentionOptions])
 
@@ -115,6 +107,20 @@ export const MentionSelector: React.FC<MentionSelectorProps> = ({
       setIsOpen(false)
     }
   }
+
+  useEvent('keydown', e => {
+    if (isOpen && commandRef.current) {
+      const event = new KeyboardEvent('keydown', {
+        key: e.key,
+        code: e.code,
+        which: e.which,
+        keyCode: e.keyCode,
+        bubbles: true,
+        cancelable: true
+      })
+      commandRef.current.dispatchEvent(event)
+    }
+  })
 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
@@ -151,27 +157,30 @@ export const MentionSelector: React.FC<MentionSelectorProps> = ({
             </PopoverContent>
           </Popover>
 
-          <Command ref={commandRef} shouldFilter={false}>
-            <CommandList {...listEventHandlers}>
+          <Command
+            loop
+            ref={commandRef}
+            shouldFilter={false}
+            value={focusedOptionId ?? ''}
+            onValueChange={val => {
+              const target = filteredOptions.find(item => item.id === val)
+              target && setFocusedOptionId(target.id)
+            }}
+          >
+            <CommandList>
               <CommandEmpty>No results found.</CommandEmpty>
               <CommandGroup
                 className={cn(filteredOptions.length === 0 ? 'p-0' : 'p-1')}
               >
-                {filteredOptions.map((option, index) => (
+                {filteredOptions.map(option => (
                   <CommandItem
                     key={option.id}
-                    defaultValue=""
-                    value=""
+                    defaultValue={option.id}
+                    value={option.id}
                     onSelect={() => handleSelect(option)}
                     className={cn(
-                      'px-1.5 py-1',
-                      focusedIndex === index && 'bg-secondary'
+                      'px-1.5 py-1  data-[selected=true]:bg-secondary data-[selected=true]:text-foreground'
                     )}
-                    ref={el => {
-                      if (itemRefs.current) {
-                        itemRefs.current[index] = el
-                      }
-                    }}
                   >
                     {option.customRenderItem ? (
                       <option.customRenderItem {...option} />

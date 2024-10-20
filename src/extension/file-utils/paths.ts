@@ -4,8 +4,6 @@ import path from 'path'
 import { getWorkspaceFolder } from '@extension/utils'
 import fs from 'fs-extra'
 
-import { VsCodeFS } from './vscode-fs'
-
 const AIDE_DIR = process.env.AIDE_GLOBAL_DIR ?? path.join(os.homedir(), '.aide')
 
 export const getExt = (filePath: string): string =>
@@ -74,21 +72,7 @@ export class AidePaths {
   }
 
   getSessionFilePath = (sessionId: string) =>
-    this.joinAideNamespacePath(false, 'sessions', `${sessionId}.json`)
-
-  getSessionsListPath = async () => {
-    const filePath = this.joinAideNamespacePath(
-      false,
-      'sessions',
-      'sessions.json'
-    )
-
-    if (!fs.existsSync(filePath)) {
-      await VsCodeFS.writeJsonFile(filePath, [])
-    }
-
-    return filePath
-  }
+    this.joinAideNamespacePath(false, 'sessions', `session-${sessionId}.json`)
 
   // lancedb
   getGlobalLanceDbPath = () => this.joinAideGlobalPath(true, 'lancedb')

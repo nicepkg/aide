@@ -29,7 +29,8 @@ const define: Record<string, string> = {
 }
 
 // https://vitejs.dev/config/
-export default defineConfig(() => {
+export default defineConfig(env => {
+  const isBuild = env.command === 'build'
   process.env.APP_BUILD_TIME = `${Date.now()}`
   process.env.APP_VERSION = pkg.version
 
@@ -46,7 +47,8 @@ export default defineConfig(() => {
       svgr(),
       pages({
         dirs: 'src/webview/pages',
-        routeStyle: 'next'
+        routeStyle: 'next',
+        importMode: 'sync'
       }),
       vscode({
         extension: {
@@ -76,11 +78,22 @@ export default defineConfig(() => {
               }
             }
           ]
+        },
+        webview: {
+          csp: isBuild ? '<meta>' : undefined
         }
       })
     ],
     resolve: {
       dedupe: ['react', 'react-dom']
+    },
+    experimental: {
+      renderBuiltUrl(filename, { hostType }) {
+        if (hostType === 'js' && isBuild) {
+          return { runtime: `window.__assetsPath(${JSON.stringify(filename)})` }
+        }
+        return { relative: true }
+      }
     }
   }
 })

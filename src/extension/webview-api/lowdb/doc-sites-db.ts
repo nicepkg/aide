@@ -16,7 +16,9 @@ class DocSitesDB extends BaseDB<DocSite> {
   }
 
   async add(
-    item: Omit<DocSite, 'id' | 'isCrawled' | 'isIndexed'>
+    item: Omit<DocSite, 'id' | 'isCrawled' | 'isIndexed'> & {
+      id?: string
+    }
   ): Promise<DocSite> {
     return super.add({
       ...item,

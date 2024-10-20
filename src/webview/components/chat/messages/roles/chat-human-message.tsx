@@ -29,7 +29,7 @@ export const ChatHumanMessage: FC<ChatHumanMessageProps> = props => {
     onEditModeChange,
     context,
     setContext,
-    conversation: _conversation,
+    conversation: initialConversation,
     onSend,
     className,
     style
@@ -38,7 +38,7 @@ export const ChatHumanMessage: FC<ChatHumanMessageProps> = props => {
 
   const { conversation, setConversation } = useConversation(
     'human',
-    _conversation
+    initialConversation
   )
 
   const handleSend = () => {

@@ -15,10 +15,15 @@ export class CommandManager {
       ...args: ConstructorParameters<typeof BaseCommand>
     ) => BaseCommand
   ): void {
+    const startTime = Date.now()
     try {
       const command = new CommandClass(this.context, this)
       this.commands.set(CommandClass.name, command)
       this.context.subscriptions.push(command.register())
+      const endTime = Date.now()
+      logger.dev.verbose(
+        `Command ${CommandClass.name} registered in ${endTime - startTime}ms`
+      )
     } catch (e) {
       logger.error(`Failed to register command: ${CommandClass.name}`, e)
     }

@@ -7,14 +7,14 @@ import React, {
 } from 'react'
 import { ClientPluginRegistry } from '@shared/plugins/base/client/client-plugin-registry'
 import { createClientPlugins } from '@shared/plugins/base/client/create-client-plugins'
-import type { PluginId } from '@shared/plugins/base/types'
+import { PluginId } from '@shared/plugins/base/types'
 import { useQueryClient } from '@tanstack/react-query'
 import { useAsyncEffect } from '@webview/hooks/use-async-effect'
 import { useCallbackRef } from '@webview/hooks/use-callback-ref'
-import { useImmer } from 'use-immer'
+import { useImmer, type DraftFunction } from 'use-immer'
 
 const PluginRegistryContext = createContext<{
-  pluginRegistry: ClientPluginRegistry | null
+  pluginRegistryRef: React.RefObject<ClientPluginRegistry | null>
   isPluginRegistryLoaded: boolean
 } | null>(null)
 
@@ -30,11 +30,14 @@ export const PluginRegistryProvider: FC<React.PropsWithChildren> = ({
   const getState = useCallbackRef(
     (pluginId: PluginId) => pluginStates[pluginId] || {}
   )
-  const setState = useCallbackRef((pluginId: PluginId, newState: any) => {
-    updatePluginStates(draft => {
-      draft[pluginId] = newState
-    })
-  })
+  const setState = useCallbackRef(
+    (pluginId: PluginId, newState: any | DraftFunction<any>) => {
+      updatePluginStates(draft => {
+        draft[pluginId] = newState
+      })
+    }
+  )
+
   const pluginRegistryRef = useRef<ClientPluginRegistry | null>(null)
 
   useAsyncEffect(
@@ -61,11 +64,18 @@ export const PluginRegistryProvider: FC<React.PropsWithChildren> = ({
     [getState, setState]
   )
 
+  // eslint-disable-next-line react-compiler/react-compiler
+  if (isLoaded && pluginRegistryRef.current) {
+    // eslint-disable-next-line react-compiler/react-compiler
+    pluginRegistryRef.current!.getState = (pluginId: PluginId) =>
+      pluginStates[pluginId] || {}
+  }
+
   return (
     <PluginRegistryContext.Provider
       value={{
         // eslint-disable-next-line react-compiler/react-compiler
-        pluginRegistry: pluginRegistryRef.current,
+        pluginRegistryRef,
         isPluginRegistryLoaded: isLoaded
       }}
     >

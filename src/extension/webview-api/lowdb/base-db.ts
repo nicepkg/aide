@@ -24,9 +24,9 @@ export class BaseDB<T extends BaseItem> {
     return this.db.data.items
   }
 
-  async add(item: Omit<T, 'id'>): Promise<T> {
+  async add(item: Omit<T, 'id'> & { id?: string }): Promise<T> {
     await this.load()
-    const newItem = { ...item, id: uuidv4() } as T
+    const newItem = { ...item, id: item.id || uuidv4() } as T
     this.db.data.items.push(newItem)
     await this.db.write()
     return newItem
@@ -47,5 +47,14 @@ export class BaseDB<T extends BaseItem> {
       return item
     }
     return null
+  }
+
+  async createOrUpdate(item: T): Promise<T> {
+    await this.load()
+    const existingItem = this.db.data.items.find(i => i.id === item.id)
+    if (existingItem) {
+      return (await this.update(item.id, item)) as T
+    }
+    return this.add(item)
   }
 }

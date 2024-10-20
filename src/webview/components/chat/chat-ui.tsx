@@ -1,8 +1,11 @@
 import { useRef, type FC } from 'react'
-import { GearIcon, PlusIcon } from '@radix-ui/react-icons'
+import { GearIcon, MagnifyingGlassIcon, PlusIcon } from '@radix-ui/react-icons'
+import { useChatContext, withChatContext } from '@webview/contexts/chat-context'
+import { useGlobalSearch } from '@webview/contexts/global-search-context'
 import { useChatState } from '@webview/hooks/chat/use-chat-state'
 import { api } from '@webview/services/api-client'
 import type { Conversation } from '@webview/types/chat'
+import { logger } from '@webview/utils/logger'
 import { useNavigate } from 'react-router'
 
 import { ButtonWithTooltip } from '../button-with-tooltip'
@@ -12,23 +15,28 @@ import { ChatInput, type ChatInputRef } from './editor/chat-input'
 import { ChatMessages } from './messages/chat-messages'
 import { ChatSidebar } from './sidebar/chat-sidebar'
 
-export const ChatUI: FC = () => {
+const _ChatUI: FC = () => {
   const navigate = useNavigate()
   const {
     context,
     setContext,
+    getContext,
+    saveSession,
+    createAndSwitchToNewSession
+  } = useChatContext()
+  const {
     newConversation,
     setNewConversation,
     resetNewConversation,
     historiesConversationsWithUIState,
     newConversationUIState,
-    replaceConversationAndTruncate,
-    setUIStateForSending,
-    resetUIStateAfterSending,
-    setConversationEditMode
+    replaceConversationAndTrimHistory,
+    prepareUIForSending,
+    resetUIAfterSending,
+    toggleConversationEditMode
   } = useChatState()
-
   const chatInputRef = useRef<ChatInputRef>(null)
+  const { openSearch } = useGlobalSearch()
 
   const resetNewConversationInput = () => {
     resetNewConversation()
@@ -37,22 +45,23 @@ export const ChatUI: FC = () => {
 
   const handleSend = async (conversation: Conversation) => {
     try {
-      const updatedContext = await replaceConversationAndTruncate(conversation)
-      setUIStateForSending(conversation.id)
-
+      replaceConversationAndTrimHistory(conversation)
+      prepareUIForSending(conversation.id)
+      await saveSession()
       await api.chat.streamChat(
         {
-          chatContext: updatedContext
+          chatContext: getContext()
         },
         (conversations: Conversation[]) => {
-          console.log('Received conversations:', conversations)
+          logger.verbose('Received conversations:', conversations)
           setContext(draft => {
             draft.conversations = conversations
           })
         }
       )
 
-      setConversationEditMode(conversation.id, false)
+      await saveSession()
+      toggleConversationEditMode(conversation.id, false)
 
       if (conversation.id === newConversation.id) {
         resetNewConversationInput()
@@ -60,7 +69,7 @@ export const ChatUI: FC = () => {
 
       chatInputRef.current?.focusOnEditor()
     } finally {
-      resetUIStateAfterSending(conversation.id)
+      resetUIAfterSending(conversation.id)
     }
   }
 
@@ -68,7 +77,7 @@ export const ChatUI: FC = () => {
     isEditMode: boolean,
     conversation: Conversation
   ) => {
-    setConversationEditMode(conversation.id, isEditMode)
+    toggleConversationEditMode(conversation.id, isEditMode)
   }
 
   return (
@@ -80,9 +89,20 @@ export const ChatUI: FC = () => {
           <ButtonWithTooltip
             variant="ghost"
             size="iconXs"
+            tooltip="Search"
+            side="bottom"
+            className="shrink-0"
+            onClick={openSearch}
+          >
+            <MagnifyingGlassIcon className="size-3" />
+          </ButtonWithTooltip>
+          <ButtonWithTooltip
+            variant="ghost"
+            size="iconXs"
             tooltip="New Chat"
             side="bottom"
             className="shrink-0"
+            onClick={createAndSwitchToNewSession}
           >
             <PlusIcon className="size-3" />
           </ButtonWithTooltip>
@@ -129,3 +149,5 @@ export const ChatUI: FC = () => {
     </SidebarLayout>
   )
 }
+
+export const ChatUI = withChatContext(_ChatUI)

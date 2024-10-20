@@ -15,10 +15,10 @@ export const setupRegisters = async (registerManager: RegisterManager) => {
     TmpFileActionRegister,
     AideKeyUsageStatusBarRegister,
     AutoOpenCorrespondingFilesRegister,
-    ModelRegister,
-    CodebaseWatcherRegister,
     ServerPluginRegister,
-    WebviewRegister
+    WebviewRegister,
+    ModelRegister,
+    CodebaseWatcherRegister
   ] satisfies (typeof BaseRegister)[]
 
   for await (const Register of Registers) {

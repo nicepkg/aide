@@ -68,9 +68,8 @@ const _ChatInput: FC<ChatInputProps> = ({
   onSend
 }) => {
   const editorRef = useRef<ChatEditorRef>(null)
-  const { pluginRegistry, isPluginRegistryLoaded } = usePluginRegistry()
-  const { getSelectedFiles, setSelectedFiles } =
-    usePluginFilesSelectorProviders()
+  const { pluginRegistryRef, isPluginRegistryLoaded } = usePluginRegistry()
+  const { selectedFiles, setSelectedFiles } = usePluginFilesSelectorProviders()
   const mentionOptions = useMentionOptions()
 
   const [conversation, setConversation, applyConversation] = useCloneState(
@@ -81,7 +80,7 @@ const _ChatInput: FC<ChatInputProps> = ({
   // sync conversation plugin states with plugin registry
   useEffect(() => {
     Object.entries(conversation.pluginStates).forEach(([pluginId, state]) => {
-      pluginRegistry?.setState(pluginId as PluginId, state)
+      pluginRegistryRef.current?.setState(pluginId as PluginId, state)
     })
   }, [isPluginRegistryLoaded, conversation.pluginStates])
 
@@ -101,7 +100,8 @@ const _ChatInput: FC<ChatInputProps> = ({
 
     updatePluginStatesFromEditorState(editorState, mentionOptions)
     setConversation(draft => {
-      draft.pluginStates = pluginRegistry?.providerManagers.state.getAll() || {}
+      draft.pluginStates =
+        pluginRegistryRef.current?.providerManagers.state.getAll() || {}
     })
   }
 
@@ -139,8 +139,6 @@ const _ChatInput: FC<ChatInputProps> = ({
     applyConversation()
     handleSend()
   }
-
-  const selectedFiles = getSelectedFiles?.() || []
 
   const handleSelectedFiles = (files: FileInfo[]) => {
     setSelectedFiles?.(files)

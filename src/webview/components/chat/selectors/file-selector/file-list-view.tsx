@@ -8,11 +8,9 @@ import { TruncateStart } from '@webview/components/truncate-start'
 import {
   Command,
   CommandEmpty,
-  CommandGroup,
   CommandItem,
   CommandList
 } from '@webview/components/ui/command'
-import { useKeyboardNavigation } from '@webview/hooks/use-keyboard-navigation'
 import { FileInfo } from '@webview/types/chat'
 import { cn } from '@webview/utils/common'
 import { getFileNameFromPath } from '@webview/utils/path'
@@ -34,20 +32,23 @@ export const FileListView: React.FC<FileListViewProps> = ({
   selectedFiles,
   onSelect
 }) => {
-  const listRef = useRef<HTMLDivElement>(null)
-  const itemRefs = useRef<(HTMLDivElement | null)[]>([])
+  const commandRef = useRef<HTMLDivElement>(null)
 
-  // eslint-disable-next-line react-compiler/react-compiler
-  const { focusedIndex, handleKeyDown } = useKeyboardNavigation({
-    listRef,
-    itemCount: filteredFiles.length,
-    itemRefs,
-    onEnter: el => el?.click()
+  useEvent('keydown', e => {
+    if (commandRef.current && !commandRef.current.contains(e.target as Node)) {
+      const event = new KeyboardEvent('keydown', {
+        key: e.key,
+        code: e.code,
+        which: e.which,
+        keyCode: e.keyCode,
+        bubbles: true,
+        cancelable: true
+      })
+      commandRef.current.dispatchEvent(event)
+    }
   })
 
-  useEvent('keydown', handleKeyDown)
-
-  const renderItem = (file: FileInfo, index: number) => {
+  const renderItem = (file: FileInfo) => {
     const isSelected = selectedFiles.some(f => f.fullPath === file.fullPath)
 
     const fileName = getFileNameFromPath(file.relativePath)
@@ -55,17 +56,13 @@ export const FileListView: React.FC<FileListViewProps> = ({
     return (
       <CommandItem
         key={file.fullPath}
-        defaultValue=""
-        value=""
-        onSelect={() => onSelect(file)}
-        ref={el => {
-          if (itemRefs.current) {
-            itemRefs.current[index] = el
-          }
+        defaultValue={file.fullPath}
+        value={file.fullPath}
+        onSelect={() => {
+          onSelect(file)
         }}
         className={cn(
-          'cursor-pointer text-sm px-1 py-1 flex items-center hover:bg-secondary',
-          focusedIndex === index && 'bg-secondary'
+          'cursor-pointer text-sm mx-2 px-1 py-1 flex items-center data-[selected=true]:bg-secondary data-[selected=true]:text-foreground'
         )}
       >
         <div className="flex flex-shrink-0 items-center mr-2">
@@ -86,13 +83,13 @@ export const FileListView: React.FC<FileListViewProps> = ({
 
   return (
     <div className="flex flex-col h-full pt-1">
-      <Command shouldFilter={false}>
-        <CommandList ref={listRef}>
-          <CommandEmpty>No files found.</CommandEmpty>
-          <CommandGroup>
-            {/* eslint-disable-next-line react-compiler/react-compiler */}
-            {filteredFiles.map((file, index) => renderItem(file, index))}
-          </CommandGroup>
+      <Command loop ref={commandRef} shouldFilter={false}>
+        <CommandList className="py-2">
+          {!filteredFiles.length ? (
+            <CommandEmpty>No files found.</CommandEmpty>
+          ) : (
+            filteredFiles.map(file => renderItem(file))
+          )}
         </CommandList>
       </Command>
       <KeyboardShortcutsInfo shortcuts={keyboardShortcuts} />

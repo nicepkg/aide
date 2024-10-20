@@ -1,5 +1,7 @@
 import React, { RefObject, useState } from 'react'
 
+import { useCallbackRef } from './use-callback-ref'
+
 interface UseKeyboardNavigationProps {
   itemCount: number
   itemRefs: RefObject<(HTMLElement | null)[]>
@@ -129,18 +131,20 @@ export const useKeyboardNavigation = (props: UseKeyboardNavigationProps) => {
     }
   }
 
+  const getFocusedIndex = useCallbackRef(() => focusedIndex)
+
   // for list item hover
-  const handleMouseOver = (event: React.MouseEvent) => {
+  const handleMouseMove = (event: React.MouseEvent) => {
     event.stopPropagation()
     event.preventDefault()
 
-    const target = event.relatedTarget as HTMLElement
+    const target = (event.relatedTarget || event.target) as HTMLElement
     const index =
       itemRefs.current?.findIndex(
         el => el === target || el?.contains(target)
       ) ?? -1
 
-    if (index === -1 || index === focusedIndex) return
+    if (index === -1 || index === getFocusedIndex()) return
 
     setFocusedIndex(index)
   }
@@ -150,7 +154,7 @@ export const useKeyboardNavigation = (props: UseKeyboardNavigationProps) => {
     setFocusedIndex,
     handleKeyDown,
     listEventHandlers: {
-      onMouseOver: handleMouseOver
+      onMouseMove: handleMouseMove
     }
   }
 }

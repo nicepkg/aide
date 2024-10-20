@@ -213,10 +213,32 @@ export const DEV_SERVER = process.env.VITE_DEV_SERVER_URL
 export const setupHtml = (
   webview: vscode.Webview,
   context: vscode.ExtensionContext
-) =>
-  DEV_SERVER
-    ? __getWebviewHtml__(DEV_SERVER)
-    : __getWebviewHtml__(webview, context)
+) => {
+  if (DEV_SERVER) return __getWebviewHtml__(DEV_SERVER)
+
+  const html = __getWebviewHtml__(webview, context)
+
+  const baseUri = vscode.Uri.joinPath(
+    context.extensionUri,
+    process.env.VITE_WEBVIEW_DIST || 'dist'
+  )
+
+  const injectScriptRegex =
+    /(<script[\w\W]*?>\s*)(\/\*\s*inject\s+script\s*\*\/)(\s*<\/script>)/g
+  const injectScriptContent = `
+    window.__assetsPath = filename => {
+        const baseUrl = document.baseURI;
+        return baseUrl + (filename.startsWith('/') ? filename.slice(1) : filename);
+    }
+    `
+  return html
+    .replace(
+      /\s+(href|src)="(.+?)"/g,
+      (_, attr, url) =>
+        ` ${attr}="${webview.asWebviewUri(vscode.Uri.joinPath(baseUri, url))}"`
+    )
+    .replace(injectScriptRegex, `$1${injectScriptContent}$3`)
+}
 
 /**
  * for inject state into index.html string

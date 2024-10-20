@@ -17,6 +17,7 @@ export class RegisterManager {
       ...args: ConstructorParameters<typeof BaseRegister>
     ) => BaseRegister
   ): Promise<void> {
+    const startTime = Date.now()
     try {
       const register = new RegisterClass(
         this.context,
@@ -25,6 +26,10 @@ export class RegisterManager {
       )
       await register.register()
       this.registers.set(RegisterClass.name, register)
+      const endTime = Date.now()
+      logger.dev.verbose(
+        `Register ${RegisterClass.name} setup in ${endTime - startTime}ms`
+      )
     } catch (e) {
       logger.error('Failed to setup register', e)
     }

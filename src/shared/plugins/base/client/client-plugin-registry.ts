@@ -43,7 +43,7 @@ export class ClientPluginRegistry {
         | PluginState
         | ((draft: PluginState) => ValidRecipeReturnType<PluginState>)
     ) => {
-      const currentState = options.getState(pluginId)
+      const currentState = this.getState(pluginId)
       const newState =
         typeof updater === 'function' ? produce(currentState, updater) : updater
       options.setState(pluginId, newState)

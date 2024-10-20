@@ -42,7 +42,9 @@ export class AideWebViewProvider {
         {
           enableScripts: true,
           retainContextWhenHidden: true,
-          localResourceRoots: [this.extensionUri]
+          localResourceRoots: [
+            vscode.Uri.joinPath(this.extensionUri, 'dist/webview')
+          ]
         }
       )
       await this.setupWebview(this.webviewPanel)
@@ -61,7 +63,9 @@ export class AideWebViewProvider {
     if ('options' in webview.webview) {
       webview.webview.options = {
         enableScripts: true,
-        localResourceRoots: [this.extensionUri]
+        localResourceRoots: [
+          vscode.Uri.joinPath(this.extensionUri, 'dist/webview')
+        ]
       }
     }
     webview.webview.html = this.getHtmlForWebview(webview.webview)

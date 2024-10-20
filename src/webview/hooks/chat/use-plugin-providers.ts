@@ -2,9 +2,9 @@ import { useMemo } from 'react'
 import { usePluginRegistry } from '@webview/contexts/plugin-registry-context'
 
 export const usePluginEditorProviders = () => {
-  const { pluginRegistry, isPluginRegistryLoaded } = usePluginRegistry()
+  const { pluginRegistryRef, isPluginRegistryLoaded } = usePluginRegistry()
   const merged = useMemo(
-    () => pluginRegistry?.providerManagers.editor.mergeAll() || {},
+    () => pluginRegistryRef.current?.providerManagers.editor.mergeAll() || {},
     [isPluginRegistryLoaded]
   )
 
@@ -12,19 +12,25 @@ export const usePluginEditorProviders = () => {
 }
 
 export const usePluginFilesSelectorProviders = () => {
-  const { pluginRegistry, isPluginRegistryLoaded } = usePluginRegistry()
+  const { pluginRegistryRef, isPluginRegistryLoaded } = usePluginRegistry()
   const merged = useMemo(
-    () => pluginRegistry?.providerManagers.filesSelector.mergeAll() || {},
+    () =>
+      pluginRegistryRef.current?.providerManagers.filesSelector.mergeAll() ||
+      {},
     [isPluginRegistryLoaded]
   )
 
-  return merged
+  const selectedFiles = merged.getSelectedFiles?.() || []
+
+  return { ...merged, selectedFiles }
 }
 
 export const usePluginImagesSelectorProviders = () => {
-  const { pluginRegistry, isPluginRegistryLoaded } = usePluginRegistry()
+  const { pluginRegistryRef, isPluginRegistryLoaded } = usePluginRegistry()
   const merged = useMemo(
-    () => pluginRegistry?.providerManagers.imagesSelector.mergeAll() || {},
+    () =>
+      pluginRegistryRef.current?.providerManagers.imagesSelector.mergeAll() ||
+      {},
     [isPluginRegistryLoaded]
   )
 
@@ -32,9 +38,9 @@ export const usePluginImagesSelectorProviders = () => {
 }
 
 export const usePluginStates = () => {
-  const { pluginRegistry, isPluginRegistryLoaded } = usePluginRegistry()
+  const { pluginRegistryRef, isPluginRegistryLoaded } = usePluginRegistry()
   const states = useMemo(
-    () => pluginRegistry?.providerManagers.state.getAll() || {},
+    () => pluginRegistryRef.current?.providerManagers.state.getAll() || {},
     [isPluginRegistryLoaded]
   )
 

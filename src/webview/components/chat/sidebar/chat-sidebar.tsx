@@ -1,57 +1,49 @@
-// src/webview/components/chat/sidebar/chat-sidebar.tsx
 import React from 'react'
-import { ArchiveIcon, PlusIcon } from '@radix-ui/react-icons'
-import { ButtonWithTooltip } from '@webview/components/button-with-tooltip'
+import { PlusIcon, TrashIcon } from '@radix-ui/react-icons'
 import { Button } from '@webview/components/ui/button'
-import { logger } from '@webview/utils/logger'
-
-interface ChatHistoryItem {
-  id: string
-  title: string
-}
-
-const useChatHistory = (): ChatHistoryItem[] => [
-  { id: '1', title: 'Chat 1' },
-  { id: '2', title: 'Chat 2' },
-  { id: '3', title: 'Chat 3' }
-]
+import { useChatContext } from '@webview/contexts/chat-context'
+import { useChatSessionsUI } from '@webview/hooks/chat/use-chat-sessions-ui'
+import { cn } from '@webview/utils/common'
 
 export const ChatSidebar: React.FC = () => {
-  const chatHistory = useChatHistory()
+  const { context, createAndSwitchToNewSession, deleteSession, switchSession } =
+    useChatContext()
 
-  const handleNewChat = () => {
-    logger.log('New chat created')
-  }
-
-  const handleArchiveChat = (id: string) => {
-    console.log(`Chat ${id} archived`)
-  }
+  const { chatSessionForRender } = useChatSessionsUI()
 
   return (
     <div className="flex flex-col h-full">
       <Button
-        onClick={handleNewChat}
+        onClick={createAndSwitchToNewSession}
         className="mb-4 flex items-center justify-center"
       >
         <PlusIcon className="mr-2 size-4" />
         New Chat
       </Button>
       <nav className="flex-1 overflow-y-auto">
-        {chatHistory.map(chat => (
+        {chatSessionForRender.map(chatSession => (
           <div
-            key={chat.id}
-            className="flex items-center justify-between cursor-pointer px-2 py-1 hover:bg-muted rounded-lg mb-2"
+            key={chatSession.id}
+            className={cn(
+              'flex items-center justify-between cursor-pointer px-2 py-1 hover:bg-muted rounded-lg mb-2',
+              {
+                'bg-muted': chatSession.id === context.id
+              }
+            )}
+            onClick={() => switchSession(chatSession.id)}
           >
-            <span>{chat.title}</span>
-            <ButtonWithTooltip
+            <span>{chatSession.title}</span>
+            <Button
               variant="ghost"
               size="sm"
               className="hover:bg-transparent"
-              tooltip="Archive"
-              onClick={() => handleArchiveChat(chat.id)}
+              onClick={e => {
+                e.stopPropagation()
+                deleteSession(chatSession.id)
+              }}
             >
-              <ArchiveIcon className="size-4" />
-            </ButtonWithTooltip>
+              <TrashIcon className="size-4" />
+            </Button>
           </div>
         ))}
       </nav>
