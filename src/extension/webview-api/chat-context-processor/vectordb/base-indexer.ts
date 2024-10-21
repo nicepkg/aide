@@ -13,7 +13,7 @@ import {
 } from 'apache-arrow'
 import { connect, Table, type Connection } from 'vectordb'
 
-import { ProgressReporter } from '../utils/process-reporter'
+import { ProgressReporter } from '../utils/progress-reporter'
 
 export type ReIndexType = 'full' | 'diff'
 

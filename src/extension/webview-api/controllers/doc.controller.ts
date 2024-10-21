@@ -5,7 +5,7 @@ import {
   DocCrawler,
   type CrawlerOptions
 } from '../chat-context-processor/utils/doc-crawler'
-import type { ProgressInfo } from '../chat-context-processor/utils/process-reporter'
+import type { ProgressInfo } from '../chat-context-processor/utils/progress-reporter'
 import type { ReIndexType } from '../chat-context-processor/vectordb/base-indexer'
 import { DocIndexer } from '../chat-context-processor/vectordb/doc-indexer'
 import { docSitesDB } from '../lowdb/doc-sites-db'

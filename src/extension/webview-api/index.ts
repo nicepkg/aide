@@ -5,6 +5,7 @@ import findFreePorts from 'find-free-ports'
 import { Server } from 'socket.io'
 import * as vscode from 'vscode'
 
+import { ApplyController } from './controllers/apply.controller'
 import { ChatSessionController } from './controllers/chat-session.controller'
 import { ChatController } from './controllers/chat.controller'
 import { CodebaseController } from './controllers/codebase.controller'
@@ -125,7 +126,8 @@ export const controllers = [
   GitController,
   SystemController,
   DocController,
-  ChatSessionController
+  ChatSessionController,
+  ApplyController
 ] as const
 export type Controllers = typeof controllers
 

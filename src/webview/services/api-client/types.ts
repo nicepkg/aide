@@ -18,12 +18,17 @@ export type InferMethodReturn<T, M extends keyof T> = T[M] extends (
   : T[M] extends (req: any) => AsyncGenerator<any, any, any>
     ? void
     : never
+export type InferStreamChunk<T, M extends keyof T> = T[M] extends (
+  req: any
+) => AsyncGenerator<infer R, any, any>
+  ? R
+  : never
 
 export type APIType<T extends readonly ControllerClass[]> = {
   [K in T[number] as InstanceType<K>['name']]: {
     [M in keyof InferControllerMethods<K>]: (
       req: InferMethodParams<InferControllerMethods<K>, M>,
-      onStream?: (chunk: any) => void
+      onStream?: (chunk: InferStreamChunk<InferControllerMethods<K>, M>) => void
     ) => Promise<InferMethodReturn<InferControllerMethods<K>, M>>
   }
 }

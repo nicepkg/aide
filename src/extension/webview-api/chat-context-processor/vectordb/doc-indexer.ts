@@ -8,7 +8,7 @@ import { settledPromiseResults } from '@shared/utils/common'
 import { Schema } from 'apache-arrow'
 
 import { CodeChunkerManager, type TextChunk } from '../tree-sitter/code-chunker'
-import { ProgressReporter } from '../utils/process-reporter'
+import { ProgressReporter } from '../utils/progress-reporter'
 import {
   BaseIndexer,
   createBaseTableSchemaFields,

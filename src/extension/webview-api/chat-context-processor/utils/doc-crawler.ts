@@ -8,7 +8,7 @@ import * as cheerio from 'cheerio'
 import type { Element } from 'domhandler'
 import TurndownService from 'turndown'
 
-import { ProgressReporter } from './process-reporter'
+import { ProgressReporter } from './progress-reporter'
 
 export interface CrawlerOptions {
   maxDepth: number

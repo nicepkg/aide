@@ -1,6 +1,6 @@
 import { CodebaseWatcherRegister } from '@extension/registers/codebase-watcher-register'
 
-import type { ProgressInfo } from '../chat-context-processor/utils/process-reporter'
+import type { ProgressInfo } from '../chat-context-processor/utils/progress-reporter'
 import type { ReIndexType } from '../chat-context-processor/vectordb/base-indexer'
 import { Controller } from '../types'
 

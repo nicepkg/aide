@@ -1,9 +1,17 @@
 import React, { type CSSProperties } from 'react'
-import { CopyIcon, ExternalLinkIcon } from '@radix-ui/react-icons'
+import { TmpFileStatus } from '@extension/file-utils/apply-file/types'
+import {
+  CopyIcon,
+  ExternalLinkIcon,
+  PlayIcon,
+  ReloadIcon,
+  StopIcon
+} from '@radix-ui/react-icons'
 import { CollapsibleCode } from '@webview/components/collapsible-code'
 import { FileIcon } from '@webview/components/file-icon'
 import { Button } from '@webview/components/ui/button'
 import { useFileInfoForMessage } from '@webview/hooks/api/use-file-info-for-message'
+import { useApplyCode } from '@webview/hooks/chat/use-apply-code'
 import { useShikiHighlighter } from '@webview/hooks/use-shiki-highlighter'
 import { api } from '@webview/services/api-client'
 import { getFileNameFromPath } from '@webview/utils/path'
@@ -39,6 +47,14 @@ export const Highlighter: React.FC<HighlighterProps> = ({
   const fileFullPath = fileInfo?.fullPath
   const children = startLine === undefined ? code : fileInfo?.content || ''
 
+  const { isApplying, applyStatus, applyCode, cancelApply, reapplyCode } =
+    useApplyCode(fileFullPath, children)
+
+  const { highlightedCode, isLoading } = useShikiHighlighter({
+    code: children,
+    language
+  })
+
   const copyToClipboard = () => {
     navigator.clipboard.writeText(children)
     toast.success('Code copied to clipboard')
@@ -46,57 +62,96 @@ export const Highlighter: React.FC<HighlighterProps> = ({
 
   const openFileInEditor = () => {
     if (!fileFullPath) return
-
     api.file.openFileInEditor({
       path: fileFullPath,
       startLine
     })
   }
 
-  const { highlightedCode, isLoading } = useShikiHighlighter({
-    code: children,
-    language
-  })
+  const renderApplyButton = () => {
+    const getButtonProps = () => {
+      if (isApplying) {
+        return {
+          onClick: cancelApply,
+          icon: <StopIcon className="size-3" />,
+          text: 'Stopping...'
+        }
+      }
+      if (applyStatus === TmpFileStatus.COMPLETED) {
+        return {
+          onClick: () => reapplyCode(),
+          icon: <ReloadIcon className="size-3" />,
+          text: 'Reapply'
+        }
+      }
+      return {
+        onClick: () => applyCode(),
+        icon: <PlayIcon className="size-3" />,
+        text: 'Apply'
+      }
+    }
 
-  const actions = (
+    const { onClick, icon, text } = getButtonProps()
+
+    return (
+      <Button
+        className="transition-colors gap-1"
+        onClick={onClick}
+        size="xs"
+        variant="ghost"
+        aria-label={text}
+        disabled={isApplying}
+      >
+        {icon}
+        <span>{text}</span>
+      </Button>
+    )
+  }
+
+  const renderActions = () => (
     <>
       {Boolean(fileFullPath) && (
-        <Button
-          className="transition-colors"
-          onClick={openFileInEditor}
-          size="iconXss"
-          variant="ghost"
-          aria-label="Open file in editor"
-        >
-          <ExternalLinkIcon className="size-3" />
-        </Button>
+        <>
+          <Button
+            className="transition-colors gap-1"
+            onClick={openFileInEditor}
+            size="xs"
+            variant="ghost"
+            aria-label="Open file in editor"
+          >
+            <ExternalLinkIcon className="size-3" />
+            <span>Open</span>
+          </Button>
+          {renderApplyButton()}
+        </>
       )}
-
       {copyable && (
         <Button
-          className="transition-colors"
+          className="transition-colors gap-1"
           onClick={copyToClipboard}
-          size="iconXss"
+          size="xs"
           variant="ghost"
           aria-label="Copy code"
         >
           <CopyIcon className="size-3" />
+          <span>Copy</span>
         </Button>
       )}
     </>
   )
 
-  const fileNameComponent = fileRelativePath ? (
-    <div className="flex flex-shrink-0 items-center mr-2">
-      <FileIcon className="size-3 mr-1" filePath={fileRelativePath} />
-      <span>{getFileNameFromPath(fileRelativePath)}</span>
-    </div>
-  ) : null
+  const renderFileNameComponent = () =>
+    fileRelativePath ? (
+      <div className="flex flex-shrink-0 items-center mr-2">
+        <FileIcon className="size-3 mr-1" filePath={fileRelativePath} />
+        <span>{getFileNameFromPath(fileRelativePath)}</span>
+      </div>
+    ) : null
 
   return (
     <CollapsibleCode
-      title={fileNameComponent || language}
-      actions={actions}
+      title={renderFileNameComponent() || language}
+      actions={renderActions()}
       className={className}
       isLoading={isLoading}
       defaultExpanded={defaultExpanded}
