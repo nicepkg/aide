@@ -1,6 +1,6 @@
 import { vscode } from '@webview/utils/vscode'
 
-export const getSocketPort = (timeout = 5000) =>
+export const getSocketPort = (timeout = 12000) =>
   new Promise<number>((resolve, reject) => {
     const messageHandler = (event: any) => {
       const message = event.data

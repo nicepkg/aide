@@ -25,9 +25,9 @@ export const ChatSidebar: React.FC = () => {
           <div
             key={chatSession.id}
             className={cn(
-              'flex items-center justify-between cursor-pointer px-2 py-1 hover:bg-muted rounded-lg mb-2',
+              'flex items-center justify-between cursor-pointer px-2 py-1 hover:bg-secondary rounded-lg mb-2',
               {
-                'bg-muted': chatSession.id === context.id
+                'bg-secondary': chatSession.id === context.id
               }
             )}
             onClick={() => switchSession(chatSession.id)}

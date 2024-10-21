@@ -68,7 +68,6 @@ export class AideWebViewProvider {
         ]
       }
     }
-    webview.webview.html = this.getHtmlForWebview(webview.webview)
 
     // add socket port state to html string
     const setupWebviewAPIManagerDispose = await setupWebviewAPIManager(
@@ -78,6 +77,8 @@ export class AideWebViewProvider {
       this.commandManager
     )
     this.disposes.push(setupWebviewAPIManagerDispose)
+
+    webview.webview.html = this.getHtmlForWebview(webview.webview)
 
     webview.onDidDispose(() => {
       setupWebviewAPIManagerDispose.dispose()
