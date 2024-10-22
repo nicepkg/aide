@@ -144,6 +144,26 @@
         "command": "aide.showDiff",
         "title": "%command.showDiff%",
         "enablement": "false"
+      },
+      {
+        "command": "aide.createDiff",
+        "title": "%command.createDiff%",
+        "enablement": "false"
+      },
+      {
+        "command": "aide.acceptDiff",
+        "title": "%command.acceptDiff%",
+        "enablement": "false"
+      },
+      {
+        "command": "aide.rejectDiff",
+        "title": "%command.rejectDiff%",
+        "enablement": "false"
+      },
+      {
+        "command": "aide.getDiffStatus",
+        "title": "%command.getDiffStatus%",
+        "enablement": "false"
       }
     ],
     "menus": {

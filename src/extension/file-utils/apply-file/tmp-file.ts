@@ -26,6 +26,7 @@ export interface CreateTmpFileOptions {
   tmpFileIdentifier?: string
   silentMode?: boolean
   autoDiff?: boolean
+  taskId?: string
 }
 
 export class TmpFile {
@@ -47,6 +48,8 @@ export class TmpFile {
 
   private autoDiff: boolean
 
+  private taskId?: string
+
   constructor(options: CreateTmpFileOptions) {
     this.originalFileUri = options.originalFileUri
     this.tmpFileIdentifier =
@@ -55,6 +58,7 @@ export class TmpFile {
     this.languageId = options.languageId
     this.silentMode = options.silentMode ?? false
     this.autoDiff = options.autoDiff ?? false
+    this.taskId = options.taskId
   }
 
   async initialize(): Promise<void> {
@@ -78,18 +82,11 @@ export class TmpFile {
 
   async showDiff(): Promise<void> {
     try {
-      const toFileTitle = path.basename(this.originalFileUri.fsPath)
-      const title = `Diff: AI Changes ↔ ${toFileTitle}`
-      const options: vscode.TextDocumentShowOptions = {
-        viewColumn: vscode.ViewColumn.One
-      }
-
       await vscode.commands.executeCommand(
-        'vscode.diff',
-        this.tmpFileUri,
+        'aide.createDiff',
         this.originalFileUri,
-        title,
-        options
+        this.tmpFileUri,
+        this.tmpFileUri.toString()
       )
       logger.log(`Showed diff for: ${this.tmpFileUri.fsPath}`)
     } catch (error) {
@@ -256,7 +253,7 @@ export class TmpFile {
   }
 
   private getTmpFileUri(options: CreateTmpFileOptions): vscode.Uri {
-    const { ext, languageId, tmpFileUri } = options
+    const { ext, languageId, tmpFileUri, silentMode, taskId } = options
 
     if (tmpFileUri) return tmpFileUri
 
@@ -267,16 +264,19 @@ export class TmpFile {
       ext: originalFileExt
     } = path.parse(filePath)
     const languageExt =
-      ext ??
-      (languageId ? getLanguageIdExt(languageId) : '') ??
-      languageId ??
+      ext ||
+      (languageId ? getLanguageIdExt(languageId) : '') ||
+      languageId ||
+      originalFileExt.slice(1) ||
       ''
     const finalPath = path.join(
       originalFileDir,
       `${originalFileName}${originalFileExt}.${this.tmpFileIdentifier}${languageExt ? `.${languageExt}` : ''}`
     )
 
-    return vscode.Uri.parse(`untitled:${finalPath}`)
+    if (!silentMode) return vscode.Uri.parse(`untitled:${finalPath}`)
+
+    return vscode.Uri.parse(`aide:${finalPath}#${taskId}`)
   }
 
   interrupt(): void {
@@ -293,7 +293,10 @@ export class TmpFile {
   async close(): Promise<void> {
     try {
       if (!this.silentMode) {
-        await vscode.workspace.fs.delete(this.tmpFileUri)
+        await vscode.commands.executeCommand(
+          'aide.quickCloseFileWithoutSave',
+          this.tmpFileUri
+        )
       }
       logger.log(`Closed temporary file: ${this.tmpFileUri.fsPath}`)
     } catch (error) {

@@ -8,6 +8,8 @@ import { BaseRegister } from './base-register'
 export class CodebaseWatcherRegister extends BaseRegister {
   private fileSystemWatcher: vscode.FileSystemWatcher | undefined
 
+  private disposes: vscode.Disposable[] = []
+
   indexer: CodebaseIndexer | undefined
 
   async register(): Promise<void> {
@@ -22,14 +24,16 @@ export class CodebaseWatcherRegister extends BaseRegister {
     this.fileSystemWatcher = vscode.workspace.createFileSystemWatcher('**/*')
 
     // Handle file changes
-    this.fileSystemWatcher.onDidChange(uri =>
-      this.handleFileEvent(uri, 'change')
-    )
-    this.fileSystemWatcher.onDidCreate(uri =>
-      this.handleFileEvent(uri, 'create')
-    )
-    this.fileSystemWatcher.onDidDelete(uri =>
-      this.handleFileEvent(uri, 'delete')
+    this.disposes.push(
+      this.fileSystemWatcher.onDidChange(uri =>
+        this.handleFileEvent(uri, 'change')
+      ),
+      this.fileSystemWatcher.onDidCreate(uri =>
+        this.handleFileEvent(uri, 'create')
+      ),
+      this.fileSystemWatcher.onDidDelete(uri =>
+        this.handleFileEvent(uri, 'delete')
+      )
     )
   }
 
@@ -49,5 +53,7 @@ export class CodebaseWatcherRegister extends BaseRegister {
   dispose(): void {
     this.fileSystemWatcher?.dispose()
     this.indexer?.dispose()
+    this.disposes.forEach(dispose => dispose.dispose())
+    this.disposes = []
   }
 }

@@ -32,4 +32,9 @@ export class AideKeyUsageStatusBarRegister extends BaseRegister {
       this
     )
   }
+
+  dispose(): void | Promise<void> {
+    this.statusBar?.dispose()
+    this.statusBar = undefined
+  }
 }

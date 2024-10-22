@@ -1,7 +1,7 @@
 import { createModelProvider } from '@extension/ai/helpers'
-import { TmpFileManager } from '@extension/file-utils/apply-file/tmp-file-manager'
 import type { TmpFileYieldedChunk } from '@extension/file-utils/apply-file/types'
 import { VsCodeFS } from '@extension/file-utils/vscode-fs'
+import { DiffRegister } from '@extension/registers/diff-register'
 import { HumanMessage, SystemMessage } from '@langchain/core/messages'
 import * as vscode from 'vscode'
 
@@ -10,7 +10,9 @@ import { Controller } from '../types'
 export class ApplyController extends Controller {
   readonly name = 'apply'
 
-  private tmpFileManager = new TmpFileManager()
+  private get tmpFileManager() {
+    return this.registerManager.getRegister(DiffRegister)?.tmpFileManager
+  }
 
   async *applyCode(req: {
     path: string
@@ -18,7 +20,7 @@ export class ApplyController extends Controller {
     silentMode?: boolean
     closeCurrentTmpFile?: boolean
   }): AsyncGenerator<TmpFileYieldedChunk> {
-    if (!req.path || !req.code) return
+    if (!req.path || !req.code || !this.tmpFileManager) return
 
     const originalCode = await VsCodeFS.readFileOrOpenDocumentContent(req.path)
 
@@ -59,6 +61,8 @@ Don't reply with anything except the code.
   }
 
   async interruptApplyCode(req: { path: string }): Promise<void> {
+    if (!req.path || !this.tmpFileManager) return
+
     const tmpFile = await this.tmpFileManager.createTmpFile({
       originalFileUri: vscode.Uri.file(req.path),
       silentMode: true
@@ -67,6 +71,8 @@ Don't reply with anything except the code.
   }
 
   async cleanupTmpFiles(): Promise<void> {
+    if (!this.tmpFileManager) return
+
     await this.tmpFileManager.cleanupTmpFiles()
   }
 }

@@ -9,8 +9,8 @@ export class QuickCloseFileWithoutSaveCommand extends BaseCommand {
   }
 
   async run(uri?: vscode.Uri): Promise<void> {
-    const targetUri = uri || vscode.window.activeTextEditor?.document.uri
-    if (!targetUri) throw new Error(t('error.noActiveEditor'))
+    const targetUri = uri
+    if (!targetUri) return
 
     const targetEditor = vscode.window.visibleTextEditors.find(
       editor => editor.document.uri.toString() === targetUri.toString()

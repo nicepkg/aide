@@ -96,6 +96,9 @@ export class AideWebViewProvider {
   dispose() {
     this.disposes.forEach(dispose => dispose.dispose())
     this.disposes = []
+    this.webviewPanel?.dispose()
+    this.webviewPanel = undefined
+    this.sidebarView = undefined
   }
 }
 
@@ -134,5 +137,10 @@ export class WebviewRegister extends BaseRegister {
     )
 
     this.provider.revealSidebar()
+  }
+
+  dispose(): void {
+    this.provider?.dispose()
+    this.provider = undefined
   }
 }
