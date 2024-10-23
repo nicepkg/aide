@@ -1,7 +1,7 @@
 import { createModelProvider } from '@extension/ai/helpers'
-import type { TmpFileYieldedChunk } from '@extension/file-utils/apply-file/types'
 import { VsCodeFS } from '@extension/file-utils/vscode-fs'
-import { DiffRegister } from '@extension/registers/diff-register'
+import { InlineDiffRegister } from '@extension/registers/inline-diff-register'
+import type { InlineDiffTask } from '@extension/registers/inline-diff-register/types'
 import { HumanMessage, SystemMessage } from '@langchain/core/messages'
 import * as vscode from 'vscode'
 
@@ -10,28 +10,24 @@ import { Controller } from '../types'
 export class ApplyController extends Controller {
   readonly name = 'apply'
 
-  private get tmpFileManager() {
-    return this.registerManager.getRegister(DiffRegister)?.tmpFileManager
+  private get inlineDiffProvider() {
+    return this.registerManager?.getRegister(InlineDiffRegister)
+      ?.inlineDiffProvider
   }
 
   async *applyCode(req: {
     path: string
     code: string
-    silentMode?: boolean
-    closeCurrentTmpFile?: boolean
-  }): AsyncGenerator<TmpFileYieldedChunk> {
-    if (!req.path || !req.code || !this.tmpFileManager) return
+    selectionRange?: vscode.Range
+    cleanLast?: boolean
+  }): AsyncGenerator<InlineDiffTask> {
+    if (!req.path || !req.code || !this.inlineDiffProvider) return
 
     const originalCode = await VsCodeFS.readFileOrOpenDocumentContent(req.path)
+    const taskId = req.path
 
-    const tmpFile = await this.tmpFileManager.createTmpFile({
-      originalFileUri: vscode.Uri.file(req.path),
-      silentMode: !!req.silentMode,
-      autoDiff: true
-    })
-
-    if (req.closeCurrentTmpFile) {
-      this.tmpFileManager.interruptProcessing(tmpFile.tmpFileUri)
+    if (req.cleanLast) {
+      await this.inlineDiffProvider.cancelAndRemoveTask(taskId)
     }
 
     const buildAiStream = async (abortController: AbortController) => {
@@ -57,22 +53,28 @@ Don't reply with anything except the code.
       return aiStream
     }
 
-    yield* tmpFile.processAiStream(buildAiStream)
+    const uri =
+      vscode.window.visibleTextEditors.find(
+        editor => editor.document.uri.toString() === req.path
+      )?.document.uri || vscode.Uri.file(req.path)
+    const document = await vscode.workspace.openTextDocument(uri)
+    const fullRange = new vscode.Range(
+      0,
+      0,
+      document.lineCount - 1,
+      document.lineAt(document.lineCount - 1).text.length
+    )
+    const selectionRange = req.selectionRange || fullRange
+
+    await this.inlineDiffProvider.createTask(taskId, uri, selectionRange, '')
+
+    yield* this.inlineDiffProvider.startStreamTask(taskId, buildAiStream)
   }
 
   async interruptApplyCode(req: { path: string }): Promise<void> {
-    if (!req.path || !this.tmpFileManager) return
+    if (!req.path || !this.inlineDiffProvider) return
 
-    const tmpFile = await this.tmpFileManager.createTmpFile({
-      originalFileUri: vscode.Uri.file(req.path),
-      silentMode: true
-    })
-    this.tmpFileManager.interruptProcessing(tmpFile.tmpFileUri)
-  }
-
-  async cleanupTmpFiles(): Promise<void> {
-    if (!this.tmpFileManager) return
-
-    await this.tmpFileManager.cleanupTmpFiles()
+    const taskId = req.path
+    await this.inlineDiffProvider.cancelAndRemoveTask(taskId)
   }
 }

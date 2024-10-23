@@ -1,5 +1,5 @@
 import React, { type CSSProperties } from 'react'
-import { TmpFileStatus } from '@extension/file-utils/apply-file/types'
+import { InlineDiffTaskState } from '@extension/registers/inline-diff-register/types'
 import {
   CopyIcon,
   ExternalLinkIcon,
@@ -77,7 +77,7 @@ export const Highlighter: React.FC<HighlighterProps> = ({
           text: 'Stopping...'
         }
       }
-      if (applyStatus === TmpFileStatus.COMPLETED) {
+      if (applyStatus === InlineDiffTaskState.Finished) {
         return {
           onClick: () => reapplyCode(),
           icon: <ReloadIcon className="size-3" />,

@@ -1,24 +1,24 @@
 import { useState } from 'react'
 import {
-  TmpFileStatus,
-  TmpFileYieldedChunk
-} from '@extension/file-utils/apply-file/types'
+  InlineDiffTask,
+  InlineDiffTaskState
+} from '@extension/registers/inline-diff-register/types'
 import { api } from '@webview/services/api-client'
 import { logger } from '@webview/utils/logger'
 import { toast } from 'sonner'
 
 export function useApplyCode(fileFullPath: string | undefined, code: string) {
   const [isApplying, setIsApplying] = useState(false)
-  const [applyStatus, setApplyStatus] = useState<TmpFileStatus>(
-    TmpFileStatus.IDLE
+  const [applyStatus, setApplyStatus] = useState<InlineDiffTaskState>(
+    InlineDiffTaskState.Idle
   )
   const [appliedContent, setAppliedContent] = useState('')
 
-  const handleChunk = (chunk: TmpFileYieldedChunk) => {
-    setAppliedContent(chunk.generatedContent)
-    setApplyStatus(chunk.status)
+  const handleStream = (task: InlineDiffTask) => {
+    setAppliedContent(task.replacementContent)
+    setApplyStatus(task.state)
 
-    if (chunk.status === TmpFileStatus.ERROR) {
+    if (task.state === InlineDiffTaskState.Error) {
       toast.error('Failed to apply code')
     }
   }
@@ -26,19 +26,18 @@ export function useApplyCode(fileFullPath: string | undefined, code: string) {
   const applyCode = async (isReapply = false) => {
     if (!fileFullPath) return
     setIsApplying(true)
-    setApplyStatus(TmpFileStatus.PROCESSING)
+    setApplyStatus(InlineDiffTaskState.Applying)
     try {
       await api.apply.applyCode(
         {
           path: fileFullPath,
           code,
-          closeCurrentTmpFile: isReapply,
-          silentMode: true
+          cleanLast: isReapply
         },
-        handleChunk
+        handleStream
       )
     } catch (error) {
-      setApplyStatus(TmpFileStatus.ERROR)
+      setApplyStatus(InlineDiffTaskState.Error)
       logger.error('Failed to apply code', error)
       toast.error('Failed to apply code')
     } finally {
@@ -50,13 +49,13 @@ export function useApplyCode(fileFullPath: string | undefined, code: string) {
     if (fileFullPath) {
       api.apply.interruptApplyCode({ path: fileFullPath })
       setIsApplying(false)
-      setApplyStatus(TmpFileStatus.IDLE)
+      setApplyStatus(InlineDiffTaskState.Idle)
       toast.info('Code application cancelled')
     }
   }
 
   const reapplyCode = () => {
-    setApplyStatus(TmpFileStatus.IDLE)
+    setApplyStatus(InlineDiffTaskState.Idle)
     setAppliedContent('')
     applyCode(true)
   }
