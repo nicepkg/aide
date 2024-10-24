@@ -18,6 +18,12 @@ export interface DiffBlock {
   newLines: string[]
 }
 
+export interface DiffBlockWithRange extends DiffBlock {
+  displayRange: Range
+  status: 'pending' | 'accept' | 'reject'
+  renderedLines: string[]
+}
+
 export interface InlineDiffTask {
   id: string
   state: InlineDiffTaskState
