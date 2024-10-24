@@ -10,11 +10,12 @@ export enum InlineDiffTaskState {
 }
 
 export interface DiffBlock {
+  id: string
+  type: 'add' | 'remove' | 'no-change'
   oldStart: number
   oldLines: string[]
   newStart: number
   newLines: string[]
-  type: 'add' | 'remove' | 'modify'
 }
 
 export interface InlineDiffTask {
@@ -22,9 +23,21 @@ export interface InlineDiffTask {
   state: InlineDiffTaskState
   selectionRange: Range
   selectionContent: string
+  contentAfterSelection: string
   replacementContent: string
   originalFileUri: Uri
   diffBlocks: DiffBlock[]
   abortController?: AbortController
   error?: Error
+
+  lastKnownDocumentVersion: number
+  appliedEdits: {
+    actionId: string
+    blockId: string
+    editType: 'accept' | 'reject'
+    range: Range
+    oldText: string
+    newText: string
+  }[]
+  waitForReviewDiffBlockIds: string[]
 }

@@ -31,11 +31,11 @@ export class InlineDiffRegister extends BaseRegister {
       ),
       vscode.commands.registerCommand(
         'aide.inlineDiff.accept',
-        this.inlineDiffProvider.acceptDiff.bind(this.inlineDiffProvider)
+        this.inlineDiffProvider.acceptDiffs.bind(this.inlineDiffProvider)
       ),
       vscode.commands.registerCommand(
         'aide.inlineDiff.reject',
-        this.inlineDiffProvider.rejectDiff.bind(this.inlineDiffProvider)
+        this.inlineDiffProvider.rejectDiffs.bind(this.inlineDiffProvider)
       ),
       vscode.commands.registerCommand(
         'aide.inlineDiff.acceptAll',
