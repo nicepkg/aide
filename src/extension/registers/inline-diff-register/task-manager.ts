@@ -121,9 +121,7 @@ export class TaskManager {
         await this.diffProcessor.computeDiff(task)
 
         const editor = await this.diffProcessor.getEditor(task)
-        // const blocksWithRange =
-        //   await this.diffProcessor.getDiffBlocksWithDisplayRange(task)
-        // await this.applyToDocumentAndRefresh(task, blocksWithRange)
+
         await this.decorationManager.updateScanningDecoration(editor, task)
 
         yield task
