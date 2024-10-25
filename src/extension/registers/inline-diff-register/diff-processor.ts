@@ -60,7 +60,7 @@ export class DiffProcessor {
     let totalOffset = 0
 
     for (const block of task.diffBlocks) {
-      const edit = task.appliedEdits.find(e => e.blockId === block.id)
+      const edit = task.history.getAllEdits().find(e => e.blockId === block.id)
       const status = edit ? edit.editType : 'pending'
       const startLine = baseStartLine + block.oldStart + totalOffset
       let renderedLines: string[] = []

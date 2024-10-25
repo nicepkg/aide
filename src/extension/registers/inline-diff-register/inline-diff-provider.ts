@@ -105,6 +105,16 @@ export class InlineDiffProvider implements vscode.CodeLensProvider {
         continue
       }
 
+      if (task.state === InlineDiffTaskState.Pending) {
+        codeLenses.push(
+          new vscode.CodeLens(topRange, {
+            title: '$(sync~spin) Aide is working...',
+            command: ''
+          })
+        )
+        continue
+      }
+
       if (task.state === InlineDiffTaskState.Applying) {
         codeLenses.push(
           new vscode.CodeLens(topRange, {

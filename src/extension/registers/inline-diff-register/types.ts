@@ -1,5 +1,7 @@
 import type { Range, Uri } from 'vscode'
 
+import type { HistoryManager } from './history-manager'
+
 export enum InlineDiffTaskState {
   Idle = 'Idle',
   Applying = 'Applying',
@@ -24,6 +26,20 @@ export interface DiffBlockWithRange extends DiffBlock {
   renderedLines: string[]
 }
 
+export interface DiffEdit {
+  blockId: string
+  editType: 'accept' | 'reject'
+  range: Range
+  oldText: string
+  newText: string
+}
+
+export interface DiffAction {
+  id: string
+  edits: DiffEdit[]
+  timestamp: number
+}
+
 export interface InlineDiffTask {
   id: string
   state: InlineDiffTaskState
@@ -35,15 +51,7 @@ export interface InlineDiffTask {
   diffBlocks: DiffBlock[]
   abortController?: AbortController
   error?: Error
-
   lastKnownDocumentVersion: number
-  appliedEdits: {
-    actionId: string
-    blockId: string
-    editType: 'accept' | 'reject'
-    range: Range
-    oldText: string
-    newText: string
-  }[]
   waitForReviewDiffBlockIds: string[]
+  history: HistoryManager
 }

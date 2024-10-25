@@ -12,9 +12,11 @@ import * as vscode from 'vscode'
 
 import { DecorationManager } from './decoration-manager'
 import { DiffProcessor } from './diff-processor'
+import { HistoryManager } from './history-manager'
 import {
   InlineDiffTask,
   InlineDiffTaskState,
+  type DiffAction,
   type DiffBlock,
   type DiffBlockWithRange
 } from './types'
@@ -64,8 +66,8 @@ export class TaskManager {
       diffBlocks: [],
       abortController,
       lastKnownDocumentVersion: document.version,
-      appliedEdits: [],
-      waitForReviewDiffBlockIds: []
+      waitForReviewDiffBlockIds: [],
+      history: new HistoryManager()
     }
 
     this.tasks.set(task.id, task)
@@ -119,9 +121,9 @@ export class TaskManager {
         await this.diffProcessor.computeDiff(task)
 
         const editor = await this.diffProcessor.getEditor(task)
-        const blocksWithRange =
-          await this.diffProcessor.getDiffBlocksWithDisplayRange(task)
-        await this.applyToDocumentAndRefresh(task, blocksWithRange)
+        // const blocksWithRange =
+        //   await this.diffProcessor.getDiffBlocksWithDisplayRange(task)
+        // await this.applyToDocumentAndRefresh(task, blocksWithRange)
         await this.decorationManager.updateScanningDecoration(editor, task)
 
         yield task
@@ -131,15 +133,14 @@ export class TaskManager {
         removeCodeBlockEndSyntax(task.replacementContent)
       )
 
+      this.updateTaskState(task, InlineDiffTaskState.Applying)
       await this.diffProcessor.computeDiff(task)
       const editor = await this.diffProcessor.getEditor(task)
       const blocksWithRange =
         await this.diffProcessor.getDiffBlocksWithDisplayRange(task)
-
       await this.applyToDocumentAndRefresh(task, blocksWithRange)
       await this.decorationManager.updateScanningDecoration(editor, task, true)
 
-      this.updateTaskState(task, InlineDiffTaskState.Applying)
       yield task
     } catch (error) {
       this.handleTaskError(task, error)
@@ -232,6 +233,12 @@ export class TaskManager {
     blocks: DiffBlock[],
     actionId = uuidv4()
   ) {
+    const action: DiffAction = {
+      id: actionId,
+      edits: [],
+      timestamp: Date.now()
+    }
+
     await Promise.all(
       blocks
         .filter(
@@ -246,6 +253,7 @@ export class TaskManager {
             blocksWithRange,
             block
           )
+
           let newText = ''
           let oldText = ''
 
@@ -258,14 +266,15 @@ export class TaskManager {
           }
 
           try {
-            task.appliedEdits.push({
-              actionId,
+            action.edits.push({
               blockId: block.id,
               editType: 'accept',
               range,
               oldText,
               newText
             })
+
+            task.history.push(action)
 
             task.waitForReviewDiffBlockIds =
               task.waitForReviewDiffBlockIds.filter(id => id !== block.id)
@@ -290,6 +299,12 @@ export class TaskManager {
     blocks: DiffBlock[],
     actionId = uuidv4()
   ) {
+    const action: DiffAction = {
+      id: actionId,
+      edits: [],
+      timestamp: Date.now()
+    }
+
     await Promise.all(
       blocks
         .filter(
@@ -316,14 +331,15 @@ export class TaskManager {
           }
 
           try {
-            task.appliedEdits.push({
-              actionId,
+            action.edits.push({
               blockId: block.id,
               editType: 'reject',
               range,
               oldText,
               newText
             })
+
+            task.history.push(action)
 
             task.waitForReviewDiffBlockIds =
               task.waitForReviewDiffBlockIds.filter(id => id !== block.id)
@@ -367,41 +383,40 @@ export class TaskManager {
     task: InlineDiffTask,
     event: vscode.TextDocumentChangeEvent
   ) {
-    if (task.appliedEdits.length === 0) return
+    if (task.history.isEmpty) return
 
     try {
+      let action: DiffAction | undefined
+
       if (event.reason === vscode.TextDocumentChangeReason.Undo) {
-        // Find all edits with the last actionId
-        const lastEdit = task.appliedEdits[task.appliedEdits.length - 1]!
-        const lastActionId = lastEdit.actionId
-
-        // Remove all edits with the same actionId
-        const editsToRemove = task.appliedEdits.filter(
-          edit => edit.actionId === lastActionId
-        )
-        task.appliedEdits = task.appliedEdits.filter(
-          edit => edit.actionId !== lastActionId
-        )
-
-        // Add these edit blockIds back to review list
-        editsToRemove.forEach(edit => {
-          if (!task.waitForReviewDiffBlockIds.includes(edit.blockId)) {
-            task.waitForReviewDiffBlockIds.push(edit.blockId)
-          }
-        })
+        action = task.history.undo()
+        if (action) {
+          action.edits.forEach(edit => {
+            if (!task.waitForReviewDiffBlockIds.includes(edit.blockId)) {
+              task.waitForReviewDiffBlockIds.push(edit.blockId)
+            }
+          })
+        }
+      } else if (event.reason === vscode.TextDocumentChangeReason.Redo) {
+        action = task.history.redo()
+        if (action) {
+          action.edits.forEach(edit => {
+            task.waitForReviewDiffBlockIds =
+              task.waitForReviewDiffBlockIds.filter(id => id !== edit.blockId)
+          })
+        }
       }
 
       const blocksWithRange =
         await this.diffProcessor.getDiffBlocksWithDisplayRange(task)
       await this.applyToDocumentAndRefresh(task, blocksWithRange)
-
       await this.updateDecorationsAndCodeLenses(task, blocksWithRange)
 
-      // Update task state
       if (task.waitForReviewDiffBlockIds.length === 0) {
-        const allAccepted = task.appliedEdits.every(
-          edit => edit.editType === 'accept'
-        )
+        const allAccepted = task.history
+          .getAllEdits()
+          .every(edit => edit.editType === 'accept')
+
         this.updateTaskState(
           task,
           allAccepted
