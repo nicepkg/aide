@@ -58,6 +58,7 @@
   background: hsl(var(--primary));
   color: hsl(var(--primary-foreground));
   border-radius: 0.25em;
+  font-size: 0.75rem;
 }
 
 .message-markdown details {

@@ -52,6 +52,30 @@ export class FileController extends Controller {
     return await VsCodeFS.readdir(req.path)
   }
 
+  async getFullPath(req: {
+    path: string
+    returnNullIfNotExists?: boolean
+  }): Promise<string | null> {
+    try {
+      const workspaceFolder = getWorkspaceFolder()
+      const absolutePath = path.isAbsolute(req.path)
+        ? req.path
+        : path.join(workspaceFolder.uri.fsPath, req.path)
+      const stat = await VsCodeFS.stat(absolutePath)
+
+      if (
+        req.returnNullIfNotExists &&
+        stat.type !== vscode.FileType.File &&
+        stat.type !== vscode.FileType.Directory
+      )
+        return null
+
+      return absolutePath
+    } catch {
+      return null
+    }
+  }
+
   async getFileInfoForMessage(req: {
     relativePath: string
     startLine?: number

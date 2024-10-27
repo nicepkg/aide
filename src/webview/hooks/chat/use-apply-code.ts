@@ -7,7 +7,10 @@ import { api } from '@webview/services/api-client'
 import { logger } from '@webview/utils/logger'
 import { toast } from 'sonner'
 
-export function useApplyCode(fileFullPath: string | undefined, code: string) {
+export const useApplyCode = (
+  fileFullPath: string | undefined,
+  code: string
+) => {
   const [isApplying, setIsApplying] = useState(false)
   const [applyStatus, setApplyStatus] = useState<InlineDiffTaskState>(
     InlineDiffTaskState.Idle

@@ -7,6 +7,7 @@ import {
   ReloadIcon,
   StopIcon
 } from '@radix-ui/react-icons'
+import { ButtonWithTooltip } from '@webview/components/button-with-tooltip'
 import { CollapsibleCode } from '@webview/components/collapsible-code'
 import { FileIcon } from '@webview/components/file-icon'
 import { Button } from '@webview/components/ui/button'
@@ -60,9 +61,9 @@ export const Highlighter: React.FC<HighlighterProps> = ({
     toast.success('Code copied to clipboard')
   }
 
-  const openFileInEditor = () => {
+  const openFileInEditor = async () => {
     if (!fileFullPath) return
-    api.file.openFileInEditor({
+    await api.file.openFileInEditor({
       path: fileFullPath,
       startLine
     })
@@ -112,30 +113,30 @@ export const Highlighter: React.FC<HighlighterProps> = ({
     <>
       {Boolean(fileFullPath) && (
         <>
-          <Button
+          {renderApplyButton()}
+          <ButtonWithTooltip
             className="transition-colors gap-1"
             onClick={openFileInEditor}
-            size="xs"
+            size="iconXs"
             variant="ghost"
+            tooltip="Open"
             aria-label="Open file in editor"
           >
             <ExternalLinkIcon className="size-3" />
-            <span>Open</span>
-          </Button>
-          {renderApplyButton()}
+          </ButtonWithTooltip>
         </>
       )}
       {copyable && (
-        <Button
+        <ButtonWithTooltip
           className="transition-colors gap-1"
           onClick={copyToClipboard}
-          size="xs"
+          size="iconXs"
           variant="ghost"
+          tooltip="Copy"
           aria-label="Copy code"
         >
           <CopyIcon className="size-3" />
-          <span>Copy</span>
-        </Button>
+        </ButtonWithTooltip>
       )}
     </>
   )

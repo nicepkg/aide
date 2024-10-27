@@ -15,7 +15,11 @@ import remarkGfm from 'remark-gfm'
 import remarkMath from 'remark-math'
 import type { Pluggable } from 'unified'
 
-import { CodeBlock } from './code-block'
+import {
+  PreCodeBlock,
+  SingleCodeBlock,
+  type SingleCodeBlockProps
+} from './code-block'
 import { type HighlighterProps } from './highlighter/highlighter'
 import { type MermaidProps } from './mermaid/mermaid'
 import { type PreProps } from './pre/pre'
@@ -50,6 +54,7 @@ export interface MarkdownProps extends React.HTMLAttributes<HTMLDivElement> {
     mermaid?: Partial<MermaidProps>
     pre?: Partial<PreProps>
     video?: Partial<VideoProps>
+    code?: Partial<SingleCodeBlockProps>
   }
   components?: Components
   customRender?: (dom: ReactNode, context: { text: string }) => ReactNode
@@ -110,13 +115,16 @@ export const Markdown: FC<MarkdownProps> = ({
         )
       : undefined,
     pre: (props: any) => (
-      <CodeBlock
+      <PreCodeBlock
         enableMermaid={enableMermaid}
         highlight={componentProps?.highlight}
         mermaid={componentProps?.mermaid}
         {...props}
         {...componentProps?.pre}
       />
+    ),
+    code: (props: any) => (
+      <SingleCodeBlock {...props} {...componentProps?.code} />
     ),
     video: (props: any) => <Video {...props} {...componentProps?.video} />,
     table: (props: any) => <Table {...props} />,

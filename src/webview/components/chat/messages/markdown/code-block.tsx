@@ -1,4 +1,6 @@
 import { FC } from 'react'
+import { useGetFullPath } from '@webview/hooks/api/use-get-full-path'
+import { api } from '@webview/services/api-client'
 
 import { type HighlighterProps } from './highlighter/highlighter'
 import { type MermaidProps } from './mermaid/mermaid'
@@ -22,14 +24,14 @@ export const useCode = (raw: any) => {
   }
 }
 
-interface CodeBlockProps {
+interface PreCodeBlockProps {
   children: any
   enableMermaid?: boolean
   highlight?: HighlighterProps
   mermaid?: MermaidProps
 }
 
-export const CodeBlock: FC<CodeBlockProps> = ({
+export const PreCodeBlock: FC<PreCodeBlockProps> = ({
   enableMermaid,
   highlight,
   mermaid,
@@ -48,5 +50,37 @@ export const CodeBlock: FC<CodeBlockProps> = ({
     <Pre language={code.lang} {...highlight} {...rest}>
       {code.content}
     </Pre>
+  )
+}
+
+export interface SingleCodeBlockProps {
+  children: any
+}
+export const SingleCodeBlock: FC<SingleCodeBlockProps> = props => {
+  const code: string =
+    (Array.isArray(props?.children) ? props?.children[0] : props?.children) ||
+    ''
+
+  const { data: fileFullPath } = useGetFullPath({
+    path: code,
+    returnNullIfNotExists: true
+  })
+
+  const openFileInEditor = async () => {
+    if (!fileFullPath) return
+    await api.file.openFileInEditor({
+      path: fileFullPath
+    })
+  }
+
+  return (
+    <code
+      style={{
+        cursor: fileFullPath ? 'pointer' : 'text'
+      }}
+      onClick={openFileInEditor}
+    >
+      {code}
+    </code>
   )
 }
