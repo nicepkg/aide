@@ -27,8 +27,9 @@ export class DecorationManager {
       }),
       scanning: vscode.window.createTextEditorDecorationType({
         backgroundColor: new vscode.ThemeColor(
-          'editor.findMatchHighlightBackground'
+          'diffEditor.insertedTextBackground'
         ),
+        border: `1px solid var(--vscode-diffEditor-insertedLineBackground)`,
         isWholeLine: true
       })
     }

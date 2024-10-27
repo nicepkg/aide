@@ -29,9 +29,6 @@ export interface DiffBlockWithRange extends DiffBlock {
 export interface DiffEdit {
   blockId: string
   editType: 'accept' | 'reject'
-  range: Range
-  oldText: string
-  newText: string
 }
 
 export interface DiffAction {

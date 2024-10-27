@@ -237,59 +237,39 @@ export class TaskManager {
       timestamp: Date.now()
     }
 
-    await Promise.all(
-      blocks
-        .filter(
-          block =>
-            task.waitForReviewDiffBlockIds.includes(block.id) &&
-            block.type !== 'no-change'
-        )
-        .map(async block => {
-          const blocksWithRange =
-            await this.diffProcessor.getDiffBlocksWithDisplayRange(task)
-          const range = await this.diffProcessor.getDiffBlockDisplayRange(
-            blocksWithRange,
-            block
-          )
+    blocks.forEach(block => {
+      if (
+        !task.waitForReviewDiffBlockIds.includes(block.id) ||
+        block.type === 'no-change'
+      )
+        return
 
-          let newText = ''
-          let oldText = ''
+      task.waitForReviewDiffBlockIds = task.waitForReviewDiffBlockIds.filter(
+        id => id !== block.id
+      )
 
-          if (block.type === 'add') {
-            oldText = ''
-            newText = block.newLines.join('\n')
-          } else if (block.type === 'remove') {
-            oldText = block.oldLines.join('\n')
-            newText = ''
-          }
+      action.edits.push({
+        blockId: block.id,
+        editType: 'accept'
+      })
+    })
 
-          try {
-            action.edits.push({
-              blockId: block.id,
-              editType: 'accept',
-              range,
-              oldText,
-              newText
-            })
+    task.history.push(action)
 
-            task.history.push(action)
+    try {
+      const blocksWithRange =
+        await this.diffProcessor.getDiffBlocksWithDisplayRange(task)
+      await this.applyToDocumentAndRefresh(task, blocksWithRange)
 
-            task.waitForReviewDiffBlockIds =
-              task.waitForReviewDiffBlockIds.filter(id => id !== block.id)
-
-            const blocksWithRange =
-              await this.diffProcessor.getDiffBlocksWithDisplayRange(task)
-            await this.applyToDocumentAndRefresh(task, blocksWithRange)
-
-            if (task.waitForReviewDiffBlockIds.length === 0) {
-              this.updateTaskState(task, InlineDiffTaskState.Finished)
-            }
-          } catch (error) {
-            logger.error('Error accepting diff', error)
-            throw error
-          }
-        })
-    )
+      if (task.waitForReviewDiffBlockIds.length === 0) {
+        this.updateTaskState(task, InlineDiffTaskState.Finished)
+        const editor = await this.diffProcessor.getEditor(task)
+        await editor.document.save()
+      }
+    } catch (error) {
+      logger.error('Error accepting diff', error)
+      throw error
+    }
   }
 
   async rejectDiffs(
@@ -303,58 +283,39 @@ export class TaskManager {
       timestamp: Date.now()
     }
 
-    await Promise.all(
-      blocks
-        .filter(
-          block =>
-            task.waitForReviewDiffBlockIds.includes(block.id) &&
-            block.type !== 'no-change'
-        )
-        .map(async block => {
-          const blocksWithRange =
-            await this.diffProcessor.getDiffBlocksWithDisplayRange(task)
-          const range = await this.diffProcessor.getDiffBlockDisplayRange(
-            blocksWithRange,
-            block
-          )
-          let newText = ''
-          let oldText = ''
+    blocks.forEach(block => {
+      if (
+        !task.waitForReviewDiffBlockIds.includes(block.id) ||
+        block.type === 'no-change'
+      )
+        return
 
-          if (block.type === 'add') {
-            oldText = block.newLines.join('\n')
-            newText = ''
-          } else if (block.type === 'remove') {
-            oldText = ''
-            newText = block.oldLines.join('\n')
-          }
+      task.waitForReviewDiffBlockIds = task.waitForReviewDiffBlockIds.filter(
+        id => id !== block.id
+      )
 
-          try {
-            action.edits.push({
-              blockId: block.id,
-              editType: 'reject',
-              range,
-              oldText,
-              newText
-            })
+      action.edits.push({
+        blockId: block.id,
+        editType: 'reject'
+      })
+    })
 
-            task.history.push(action)
+    task.history.push(action)
 
-            task.waitForReviewDiffBlockIds =
-              task.waitForReviewDiffBlockIds.filter(id => id !== block.id)
+    try {
+      const blocksWithRange =
+        await this.diffProcessor.getDiffBlocksWithDisplayRange(task)
+      await this.applyToDocumentAndRefresh(task, blocksWithRange)
 
-            const blocksWithRange =
-              await this.diffProcessor.getDiffBlocksWithDisplayRange(task)
-            await this.applyToDocumentAndRefresh(task, blocksWithRange)
-
-            if (task.waitForReviewDiffBlockIds.length === 0) {
-              this.updateTaskState(task, InlineDiffTaskState.Rejected)
-            }
-          } catch (error) {
-            logger.error('Error rejecting diff', error)
-            throw error
-          }
-        })
-    )
+      if (task.waitForReviewDiffBlockIds.length === 0) {
+        this.updateTaskState(task, InlineDiffTaskState.Rejected)
+        const editor = await this.diffProcessor.getEditor(task)
+        await editor.document.save()
+      }
+    } catch (error) {
+      logger.error('Error rejecting diff', error)
+      throw error
+    }
   }
 
   setupDocumentChangeListener(task: InlineDiffTask) {
@@ -412,7 +373,7 @@ export class TaskManager {
 
       if (task.waitForReviewDiffBlockIds.length === 0) {
         const allAccepted = task.history
-          .getAllEdits()
+          .getEditsUpToCurrent()
           .every(edit => edit.editType === 'accept')
 
         this.updateTaskState(

@@ -44,8 +44,10 @@ export class HistoryManager {
     return this.actions.slice(0, this.position + 1)
   }
 
-  getAllEdits(): DiffEdit[] {
-    return this.actions.flatMap(action => action.edits)
+  getEditsUpToCurrent(): DiffEdit[] {
+    return this.actions
+      .slice(0, this.position + 1)
+      .flatMap(action => action.edits)
   }
 
   clear() {
