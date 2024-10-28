@@ -1,6 +1,6 @@
 import { useRef, type FC } from 'react'
 import { GearIcon, MagnifyingGlassIcon, PlusIcon } from '@radix-ui/react-icons'
-import { useChatContext, withChatContext } from '@webview/contexts/chat-context'
+import { useChatContext } from '@webview/contexts/chat-context'
 import { useGlobalSearch } from '@webview/contexts/global-search-context'
 import { useChatState } from '@webview/hooks/chat/use-chat-state'
 import { api } from '@webview/services/api-client'
@@ -15,7 +15,7 @@ import { ChatInput, type ChatInputRef } from './editor/chat-input'
 import { ChatMessages } from './messages/chat-messages'
 import { ChatSidebar } from './sidebar/chat-sidebar'
 
-const _ChatUI: FC = () => {
+export const ChatUI: FC = () => {
   const navigate = useNavigate()
   const {
     context,
@@ -149,5 +149,3 @@ const _ChatUI: FC = () => {
     </SidebarLayout>
   )
 }
-
-export const ChatUI = withChatContext(_ChatUI)

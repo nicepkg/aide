@@ -1,6 +1,9 @@
 import { clsx, type ClassValue } from 'clsx'
+import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 import { ZodError } from 'zod'
+
+import { logger } from './logger'
 
 export const cn = (...inputs: ClassValue[]) => twMerge(clsx(inputs))
 
@@ -14,4 +17,9 @@ export const getErrorMsg = (error: any) => {
   }
 
   return errorMessage
+}
+
+export const logAndToastError = (message: string, error?: any) => {
+  logger.error(message, error)
+  toast.error(error ? `${message}: ${getErrorMsg(error)}` : message)
 }

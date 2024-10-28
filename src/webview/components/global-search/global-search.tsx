@@ -26,17 +26,19 @@ import {
   KeyboardShortcutsInfo,
   type ShortcutInfo
 } from '../keyboard-shortcuts-info'
+import {
+  SearchResultItem,
+  type SearchResultItemProps
+} from './search-result-item'
 
-interface SearchCategory {
+export interface SearchCategory {
   id: string
   name: string
   items: SearchItem[]
 }
 
-interface SearchItem {
+export interface SearchItem extends Partial<SearchResultItemProps> {
   id: string
-  label: string
-  icon?: React.ReactNode
   keywords?: string[]
   onSelect: () => void
   renderPreview?: () => React.ReactNode
@@ -106,7 +108,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({
         items.filter(item => {
           const searchLower = searchQuery?.toLowerCase() || ''
           return (
-            item.label.toLowerCase().includes(searchLower) ||
+            item.title?.toLowerCase().includes(searchLower) ||
             item.keywords?.some(keyword =>
               keyword.toLowerCase().includes(searchLower)
             )
@@ -144,7 +146,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({
 
   return (
     <CommandDialog open={isOpen} onOpenChange={handleOpenChange}>
-      <div className="flex flex-col">
+      <div className="flex flex-col" onKeyDown={handleKeyDown}>
         <Command
           loop
           shouldFilter={!categoriesIsResult}
@@ -152,7 +154,6 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({
             const target = filteredItems.find(item => item.id === val)
             target && setFocusedItem(target)
           }}
-          onKeyDown={handleKeyDown}
         >
           <CommandInput
             placeholder="Type to search..."
@@ -160,14 +161,14 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({
             onValueChange={setSearchQuery}
           />
           <Tabs
-            className="h-[300px] overflow-auto"
+            className="h-[300px] flex flex-col overflow-hidden"
             value={activeCategory}
             onValueChange={val => {
               setActiveCategory(val)
               setFocusedIndex(finalCategories.findIndex(t => t.id === val))
             }}
           >
-            <TabsList mode="underlined">
+            <TabsList mode="underlined" className="shrink-0">
               {finalCategories.map(category => (
                 <TabsTrigger
                   mode="underlined"
@@ -180,8 +181,15 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({
             </TabsList>
 
             {finalCategories.map(category => (
-              <TabsContent key={category.id} value={category.id}>
-                <SearchResultList filteredItems={filteredItems} />
+              <TabsContent
+                className="flex-1 overflow-hidden"
+                key={category.id}
+                value={category.id}
+              >
+                <SearchResultList
+                  filteredItems={filteredItems}
+                  onSelect={() => setIsOpen(false)}
+                />
               </TabsContent>
             ))}
           </Tabs>
@@ -211,8 +219,9 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({
 
 const SearchResultList: React.FC<{
   filteredItems: SearchItem[]
-}> = ({ filteredItems }) => (
-  <CommandList className="py-2">
+  onSelect?: () => void
+}> = ({ filteredItems, onSelect }) => (
+  <CommandList>
     {!filteredItems?.length ? (
       <CommandEmpty>No results found.</CommandEmpty>
     ) : (
@@ -225,15 +234,21 @@ const SearchResultList: React.FC<{
           defaultValue={item.id}
           value={item.id}
           keywords={item.keywords}
-          onSelect={item.onSelect}
+          onSelect={() => {
+            item.onSelect()
+            onSelect?.()
+          }}
         >
           {item.renderItem ? (
             item.renderItem()
           ) : (
-            <div className="flex items-center">
-              {item.icon && <span className="mr-2">{item.icon}</span>}
-              <span>{item.label}</span>
-            </div>
+            <SearchResultItem
+              icon={item.icon}
+              breadcrumbs={item.breadcrumbs || []}
+              title={item.title || ''}
+              description={item.description}
+              className={item.className}
+            />
           )}
         </CommandItem>
       ))

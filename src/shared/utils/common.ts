@@ -66,3 +66,6 @@ export const settledPromiseResults = async <T>(
     .sort((a, b) => a.index - b.index)
     .map(item => (item.result as PromiseFulfilledResult<T>).value)
 }
+
+export const capitalizeFirstLetter = (str: string) =>
+  str.charAt(0).toUpperCase() + str.slice(1)

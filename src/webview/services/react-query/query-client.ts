@@ -1,6 +1,5 @@
 import { QueryCache, QueryClient } from '@tanstack/react-query'
-import { getErrorMsg } from '@webview/utils/common'
-import { toast } from 'sonner'
+import { logAndToastError } from '@webview/utils/common'
 
 const retryDelay = (attemptIndex: number) =>
   Math.min(1000 * 2 ** attemptIndex, 30000)
@@ -31,8 +30,7 @@ export const createQueryClient = () =>
         )
           return
 
-        const errMsg = getErrorMsg(error)
-        toast.error(errMsg)
+        logAndToastError('Query error', error)
       }
     })
   })

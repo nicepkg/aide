@@ -12,6 +12,7 @@ import { CodebaseController } from './controllers/codebase.controller'
 import { DocController } from './controllers/doc.controller'
 import { FileController } from './controllers/file.controller'
 import { GitController } from './controllers/git.controller'
+import { SettingsController } from './controllers/settings.controller'
 import { SystemController } from './controllers/system.controller'
 import type {
   Controller,
@@ -127,7 +128,8 @@ export const controllers = [
   SystemController,
   DocController,
   ChatSessionController,
-  ApplyController
+  ApplyController,
+  SettingsController
 ] as const
 export type Controllers = typeof controllers
 

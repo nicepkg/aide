@@ -31,6 +31,7 @@ import {
 } from '@webview/components/ui/tooltip'
 import { api } from '@webview/services/api-client'
 import type { ProgressInfo } from '@webview/types/chat'
+import { logAndToastError } from '@webview/utils/common'
 import { logger } from '@webview/utils/logger'
 import { toast } from 'sonner'
 
@@ -92,8 +93,7 @@ export const DocManagement = () => {
       await loadDocSites()
       setIsDialogOpen(false)
     } catch (error) {
-      logger.error('Failed to save doc site:', error)
-      toast.error('Failed to save doc site')
+      logAndToastError('Failed to save doc site', error)
     } finally {
       toggleLoading('save', false)
     }
@@ -112,8 +112,7 @@ export const DocManagement = () => {
       loadDocSites()
       toast.success('Doc site removed successfully')
     } catch (error) {
-      logger.error('Failed to remove doc site:', error)
-      toast.error('Failed to remove doc site')
+      logAndToastError('Failed to remove doc site', error)
     }
   }
 
@@ -137,8 +136,7 @@ export const DocManagement = () => {
       )
       toast.success('Document crawling completed')
     } catch (error) {
-      logger.error('Crawling failed:', error)
-      toast.error('Document crawling failed')
+      logAndToastError('Crawling failed', error)
     } finally {
       toggleLoading(id, false)
       loadDocSites()
@@ -155,8 +153,7 @@ export const DocManagement = () => {
       )
       toast.success('Document reindexing completed')
     } catch (error) {
-      logger.error('Reindexing failed:', error)
-      toast.error('Document reindexing failed')
+      logAndToastError('Reindexing failed', error)
     } finally {
       toggleLoading(id, false)
       loadDocSites()

@@ -6,6 +6,7 @@ import { Toaster } from '@webview/components/ui/sonner'
 import { createQueryClient } from '@webview/services/react-query/query-client'
 import { ThemeProvider as NextThemesProvider } from 'next-themes'
 
+import { ChatContextProvider } from './chat-context'
 import { GlobalSearchProvider } from './global-search-context'
 
 export function Providers({ children }: React.PropsWithChildren) {
@@ -24,7 +25,9 @@ export function Providers({ children }: React.PropsWithChildren) {
       <Toaster position="top-center" />
       <TooltipProvider>
         <QueryClientProvider client={queryClientRef.current}>
-          <GlobalSearchProvider>{children}</GlobalSearchProvider>
+          <ChatContextProvider>
+            <GlobalSearchProvider>{children}</GlobalSearchProvider>
+          </ChatContextProvider>
         </QueryClientProvider>
       </TooltipProvider>
     </NextThemesProvider>

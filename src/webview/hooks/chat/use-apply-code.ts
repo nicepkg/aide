@@ -4,7 +4,7 @@ import {
   InlineDiffTaskState
 } from '@extension/registers/inline-diff-register/types'
 import { api } from '@webview/services/api-client'
-import { logger } from '@webview/utils/logger'
+import { logAndToastError } from '@webview/utils/common'
 import { toast } from 'sonner'
 
 export const useApplyCode = (
@@ -22,7 +22,7 @@ export const useApplyCode = (
     setApplyStatus(task.state)
 
     if (task.state === InlineDiffTaskState.Error) {
-      toast.error('Failed to apply code')
+      logAndToastError('Failed to apply code')
     }
   }
 
@@ -41,8 +41,7 @@ export const useApplyCode = (
       )
     } catch (error) {
       setApplyStatus(InlineDiffTaskState.Error)
-      logger.error('Failed to apply code', error)
-      toast.error('Failed to apply code')
+      logAndToastError('Failed to apply code', error)
     } finally {
       setIsApplying(false)
     }

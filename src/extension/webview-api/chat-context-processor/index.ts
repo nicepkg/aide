@@ -13,7 +13,7 @@ import type {
 } from './strategies/base-strategy'
 import { ChatStrategy } from './strategies/chat-strategy'
 import { ComposerStrategy } from './strategies/composer-strategy'
-import { V0Strategy } from './strategies/v0-strategy'
+import { UIDesignerStrategy } from './strategies/ui-designer-strategy'
 
 export class ChatContextProcessor {
   private strategyMap: Map<ChatContextType, BaseStrategy>
@@ -37,7 +37,7 @@ export class ChatContextProcessor {
     this.strategyMap = new Map([
       [ChatContextType.Chat, new ChatStrategy(baseStrategyOptions)],
       [ChatContextType.Composer, new ComposerStrategy(baseStrategyOptions)],
-      [ChatContextType.V0, new V0Strategy(baseStrategyOptions)],
+      [ChatContextType.UIDesigner, new UIDesignerStrategy(baseStrategyOptions)],
       [ChatContextType.AutoTask, new AutoTaskStrategy(baseStrategyOptions)]
     ])
   }

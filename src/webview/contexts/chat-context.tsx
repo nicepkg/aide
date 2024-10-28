@@ -38,17 +38,3 @@ export const ChatContextProvider: FC<React.PropsWithChildren> = ({
     </ChatContext.Provider>
   )
 }
-
-export const withChatContext = <P extends object>(
-  WrappedComponent: React.ComponentType<P>
-) => {
-  const WithChatContext: FC<P> = props => (
-    <ChatContextProvider>
-      <WrappedComponent {...props} />
-    </ChatContextProvider>
-  )
-
-  WithChatContext.displayName = `WithChatContext(${WrappedComponent.displayName || WrappedComponent.name || 'Component'})`
-
-  return WithChatContext
-}

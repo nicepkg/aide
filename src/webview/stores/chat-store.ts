@@ -5,10 +5,9 @@ import {
   ChatSession,
   Conversation
 } from '@webview/types/chat'
-import { getErrorMsg } from '@webview/utils/common'
+import { logAndToastError } from '@webview/utils/common'
 import { logger } from '@webview/utils/logger'
 import { produce } from 'immer'
-import { toast } from 'sonner'
 import type { DraftFunction } from 'use-immer'
 import { v4 as uuidv4 } from 'uuid'
 import { create } from 'zustand'
@@ -90,8 +89,7 @@ export const useChatStore = create<ChatStore>()(
         })
         await get().refreshChatSessions()
       } catch (error) {
-        logger.error('Failed to save session', error)
-        toast.error(`Failed to save session: ${getErrorMsg(error)}`)
+        logAndToastError('Failed to save session', error)
       }
     },
     refreshChatSessions: async () => {
@@ -103,8 +101,7 @@ export const useChatStore = create<ChatStore>()(
           )
         })
       } catch (error) {
-        logger.error('Failed to refresh chat sessions', error)
-        toast.error(`Failed to refresh chat sessions: ${getErrorMsg(error)}`)
+        logAndToastError('Failed to refresh chat sessions', error)
       }
     },
     createAndSwitchToNewSession: async () => {
@@ -142,10 +139,7 @@ export const useChatStore = create<ChatStore>()(
         if (!fullChatContext) throw new Error('Chat context not found')
         set({ context: fullChatContext })
       } catch (error) {
-        logger.error(`Failed to switch to session ${sessionId}`, error)
-        toast.error(
-          `Failed to switch to session ${sessionId}: ${getErrorMsg(error)}`
-        )
+        logAndToastError(`Failed to switch to session ${sessionId}`, error)
       }
     }
   }))

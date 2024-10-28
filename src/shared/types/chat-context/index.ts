@@ -10,7 +10,7 @@ export type {
 export enum ChatContextType {
   Chat = 'chat',
   Composer = 'composer',
-  V0 = 'v0',
+  UIDesigner = 'UIDesigner',
   AutoTask = 'auto-task'
 }
 
