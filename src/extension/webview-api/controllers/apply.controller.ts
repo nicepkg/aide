@@ -27,7 +27,7 @@ export class ApplyController extends Controller {
     const taskId = req.path
 
     if (req.cleanLast) {
-      await this.inlineDiffProvider.cancelAndRemoveTask(taskId)
+      await this.inlineDiffProvider.resetAndCleanHistory(taskId)
     }
 
     const buildAiStream = async (abortController: AbortController) => {
@@ -75,6 +75,6 @@ Don't reply with anything except the code.
     if (!req.path || !this.inlineDiffProvider) return
 
     const taskId = req.path
-    await this.inlineDiffProvider.cancelAndRemoveTask(taskId)
+    await this.inlineDiffProvider.resetAndCleanHistory(taskId)
   }
 }

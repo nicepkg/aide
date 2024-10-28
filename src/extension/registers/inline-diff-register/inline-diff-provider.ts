@@ -216,8 +216,8 @@ export class InlineDiffProvider implements vscode.CodeLensProvider {
     this.taskManager.updateTaskState(task, InlineDiffTaskState.Rejected)
   }
 
-  async cancelAndRemoveTask(taskId: string) {
-    await this.taskManager.cancelAndRemoveTask(taskId)
+  async resetAndCleanHistory(taskId: string) {
+    await this.taskManager.resetAndCleanHistory(taskId)
   }
 
   dispose() {

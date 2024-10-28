@@ -181,18 +181,28 @@ export class TaskManager {
     logger.error('Error in task', error)
   }
 
-  async cancelAndRemoveTask(taskId: string) {
+  async resetAndCleanHistory(taskId: string) {
     const task = this.getTask(taskId)
     if (!task) return
 
     task.abortController?.abort()
+    task.history.clear()
+    task.waitForReviewDiffBlockIds = []
     task.diffBlocks = []
-
-    const blocksWithRange =
-      await this.diffProcessor.getDiffBlocksWithDisplayRange(task)
-    await this.updateDecorationsAndCodeLenses(task, blocksWithRange)
+    task.replacementContent = ''
 
     this.updateTaskState(task, InlineDiffTaskState.Idle)
+    const blocksWithRange =
+      await this.diffProcessor.getDiffBlocksWithDisplayRange(task)
+    await this.applyToDocumentAndRefresh(task, blocksWithRange)
+    await this.updateDecorationsAndCodeLenses(task, blocksWithRange)
+
+    const editor = await this.diffProcessor.getEditor(task)
+    editor.edit(editBuilder => {
+      editBuilder.replace(task.selectionRange, task.selectionContent)
+    })
+    editor.document.save()
+
     this.tasks.delete(taskId)
   }
 
