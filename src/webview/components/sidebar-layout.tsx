@@ -57,6 +57,7 @@ interface SidebarLayoutProps {
   children: React.ReactNode
   className?: string
   headerLeft?: React.ReactNode
+  headerRight?: React.ReactNode
   showBackButton?: boolean
 }
 
@@ -66,6 +67,7 @@ export const SidebarLayout: React.FC<SidebarLayoutProps> = ({
   children,
   className,
   headerLeft,
+  headerRight,
   showBackButton
 }) => {
   const [openSidebar, setOpenSidebar] = useState(false)
@@ -98,6 +100,7 @@ export const SidebarLayout: React.FC<SidebarLayoutProps> = ({
                 {headerLeft}
               </>
             }
+            headerRight={headerRight}
           />
         </div>
         <div className="flex flex-1 flex-col overflow-auto">{children}</div>

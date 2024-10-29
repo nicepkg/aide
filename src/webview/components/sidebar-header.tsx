@@ -8,12 +8,14 @@ export interface SidebarHeaderProps
   extends React.HTMLAttributes<HTMLHeadElement> {
   title: string
   headerLeft?: React.ReactNode
+  headerRight?: React.ReactNode
   showBackButton?: boolean
 }
 export const SidebarHeader: React.FC<SidebarHeaderProps> = ({
   className,
   title,
   headerLeft,
+  headerRight,
   showBackButton,
   ...props
 }) => {
@@ -53,7 +55,8 @@ export const SidebarHeader: React.FC<SidebarHeaderProps> = ({
         {headerLeft}
       </div>
 
-      <div className="flex flex-shrink-0 items-center">
+      <div className="flex flex-shrink-0 items-center pr-1">
+        {headerRight}
         <h1 className="flex-1 text-md font-semibold text-center select-none">
           {title}
         </h1>

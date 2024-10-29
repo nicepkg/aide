@@ -80,7 +80,7 @@ export const ChatMessages: React.FC<ChatMessagesProps> = props => {
     <div
       ref={containerRef}
       className={cn(
-        'chat-messages flex-1 flex flex-col w-full overflow-y-auto gap-2',
+        'chat-messages flex-1 flex flex-col w-full overflow-y-auto gap-2 pt-4',
         className
       )}
       style={style}

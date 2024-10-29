@@ -1,5 +1,6 @@
 import { useRef, type FC } from 'react'
 import { GearIcon, MagnifyingGlassIcon, PlusIcon } from '@radix-ui/react-icons'
+import { ChatContextType } from '@shared/types/chat-context'
 import { useChatContext } from '@webview/contexts/chat-context'
 import { useGlobalSearch } from '@webview/contexts/global-search-context'
 import { useChatState } from '@webview/hooks/chat/use-chat-state'
@@ -11,9 +12,23 @@ import { useNavigate } from 'react-router'
 import { ButtonWithTooltip } from '../button-with-tooltip'
 import { GlowingCard } from '../glowing-card'
 import { SidebarLayout } from '../sidebar-layout'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '../ui/select'
 import { ChatInput, type ChatInputRef } from './editor/chat-input'
 import { ChatMessages } from './messages/chat-messages'
 import { ChatSidebar } from './sidebar/chat-sidebar'
+
+const CHAT_TYPES = [
+  { value: ChatContextType.Chat, label: 'Chat' },
+  { value: ChatContextType.Composer, label: 'Composer' },
+  { value: ChatContextType.AutoTask, label: 'Auto Task' },
+  { value: ChatContextType.UIDesigner, label: 'UI Designer' }
+] as const
 
 export const ChatUI: FC = () => {
   const navigate = useNavigate()
@@ -80,9 +95,16 @@ export const ChatUI: FC = () => {
     toggleConversationEditMode(conversation.id, isEditMode)
   }
 
+  const handleContextTypeChange = (value: string) => {
+    setContext(draft => {
+      draft.type = value as ChatContextType
+    })
+    saveSession()
+  }
+
   return (
     <SidebarLayout
-      title="Chat"
+      title=""
       sidebar={<ChatSidebar />}
       headerLeft={
         <>
@@ -119,6 +141,20 @@ export const ChatUI: FC = () => {
             <GearIcon className="size-3" />
           </ButtonWithTooltip>
         </>
+      }
+      headerRight={
+        <Select value={context.type} onValueChange={handleContextTypeChange}>
+          <SelectTrigger className="h-6 w-[150px]">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {CHAT_TYPES.map(({ value, label }) => (
+              <SelectItem key={value} value={value}>
+                {label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       }
       className="chat-ui"
     >
