@@ -49,6 +49,13 @@ export class BaseDB<T extends BaseItem> {
     return null
   }
 
+  async batchUpdate(updates: (Partial<T> & { id: string })[]) {
+    await this.load()
+    for (const update of updates) {
+      await this.update(update.id, update)
+    }
+  }
+
   async createOrUpdate(item: T): Promise<T> {
     await this.load()
     const existingItem = this.db.data.items.find(i => i.id === item.id)

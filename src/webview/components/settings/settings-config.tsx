@@ -4,6 +4,7 @@ import {
   type SettingsConfigItem
 } from '@shared/utils/settings-config'
 
+import { AIModelManagement } from './custom-renders/ai-model-management'
 import { CodebaseIndexing } from './custom-renders/codebase'
 import { DocManagement } from './custom-renders/doc-management'
 import type { SettingItem, SettingsConfig } from './types'
@@ -47,8 +48,35 @@ const convertToUIConfig = () => {
       label: 'Chat',
       categories: [
         {
-          id: 'chatGeneral',
-          label: 'General',
+          id: 'chatModel',
+          label: 'AI Models',
+          settings: [
+            {
+              key: 'model',
+              label: 'AI Models',
+              description: 'Add, remove, and manage AI models',
+              type: 'custom',
+              customRenderer: () => <AIModelManagement />
+            }
+          ]
+        },
+        {
+          id: 'chatDoc',
+          label: 'Doc Sites Indexing',
+          settings: [
+            {
+              key: 'doc',
+              label: 'Doc Sites Indexing',
+              description:
+                'Add, remove, and manage documentation sites for indexing',
+              type: 'custom',
+              customRenderer: () => <DocManagement />
+            }
+          ]
+        },
+        {
+          id: 'chatCodebase',
+          label: 'Codebase Indexing',
           settings: [
             {
               key: 'codebase',
@@ -56,26 +84,6 @@ const convertToUIConfig = () => {
               description: 'Manage codebase indexing for AI features',
               type: 'custom',
               customRenderer: () => <CodebaseIndexing />
-            }
-          ]
-        }
-      ]
-    },
-    {
-      id: 'management',
-      label: 'Management',
-      categories: [
-        {
-          id: 'docManagement',
-          label: 'Doc Management',
-          settings: [
-            {
-              key: 'docManagement',
-              label: 'Manage Documentation Sites',
-              description:
-                'Add, remove, and manage documentation sites for indexing',
-              type: 'custom',
-              customRenderer: () => <DocManagement />
             }
           ]
         }

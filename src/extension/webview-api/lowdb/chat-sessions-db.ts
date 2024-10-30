@@ -16,12 +16,6 @@ class ChatSessionsDB extends BaseDB<ChatSession> {
     super(path.join(aidePaths.getWorkspaceLowdbPath(), 'sessions.json'))
   }
 
-  async add(
-    item: Omit<ChatSession, 'id'> & { id?: string }
-  ): Promise<ChatSession> {
-    return super.add(item)
-  }
-
   async search(query: string): Promise<ChatSession[]> {
     const sessions = await this.getAll()
     return sessions.filter(session =>
