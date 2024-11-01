@@ -4,7 +4,7 @@ import {
   type SettingsConfigItem
 } from '@shared/utils/settings-config'
 
-import { AIModelManagement } from './custom-renders/ai-model-management'
+import { AIProviderManagement } from './custom-renders/ai-provider-management'
 import { CodebaseIndexing } from './custom-renders/codebase'
 import { DocManagement } from './custom-renders/doc-management'
 import type { SettingItem, SettingsConfig } from './types'
@@ -56,7 +56,7 @@ const convertToUIConfig = () => {
               label: 'AI Models',
               description: 'Add, remove, and manage AI models',
               type: 'custom',
-              customRenderer: () => <AIModelManagement />
+              customRenderer: () => <AIProviderManagement />
             }
           ]
         },

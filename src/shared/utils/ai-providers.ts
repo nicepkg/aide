@@ -1,15 +1,41 @@
-export interface AIModelProvider {
+export type AIModelSupport = boolean | 'unknown'
+export interface AIModel {
+  id: string
+  // if the provider is a third party OpenAI-like provider, the value is the base URL
+  providerOrBaseUrl: AIProviderType | string
+  name: string
+  imageSupport: AIModelSupport
+  audioSupport: AIModelSupport
+  toolsCallSupport: AIModelSupport
+}
+
+export type AIModelFeature = keyof Pick<
+  AIModel,
+  'imageSupport' | 'audioSupport' | 'toolsCallSupport'
+>
+
+export const aiModelFeatures = [
+  'imageSupport',
+  'audioSupport',
+  'toolsCallSupport'
+] as const satisfies AIModelFeature[]
+
+export interface AIProvider {
   id: string
   name: string
   type: AIProviderType
-  extraFields: Record<string, string>
   order: number
+  extraFields: Record<string, string>
+  allowRealTimeModels: boolean
+  realTimeModels: string[]
+  manualModels: string[]
 }
 
 export enum AIProviderType {
   OpenAI = 'openai',
   AzureOpenAI = 'azure-openai',
-  Anthropic = 'anthropic'
+  Anthropic = 'anthropic',
+  Custom = 'custom'
 }
 
 interface AIProviderConfig {
@@ -24,7 +50,7 @@ interface AIProviderConfig {
   }[]
 }
 
-export const AI_PROVIDER_CONFIGS: Record<AIProviderType, AIProviderConfig> = {
+export const aiProviderConfigs: Record<AIProviderType, AIProviderConfig> = {
   [AIProviderType.OpenAI]: {
     name: 'OpenAI',
     fields: [
@@ -82,6 +108,22 @@ export const AI_PROVIDER_CONFIGS: Record<AIProviderType, AIProviderConfig> = {
       {
         key: 'anthropicApiKey',
         label: 'Anthropic API Key',
+        required: true,
+        isSecret: true
+      }
+    ]
+  },
+  [AIProviderType.Custom]: {
+    name: 'Custom',
+    fields: [
+      {
+        key: 'customBaseUrl',
+        label: 'Custom Third-Party Base URL',
+        required: true
+      },
+      {
+        key: 'customApiKey',
+        label: 'Custom Third-Party API Key',
         required: true,
         isSecret: true
       }
