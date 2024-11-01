@@ -1,3 +1,5 @@
+import { v4 as uuidv4 } from 'uuid'
+
 export type AIModelSupport = boolean | 'unknown'
 export interface AIModel {
   id: string
@@ -8,6 +10,19 @@ export interface AIModel {
   audioSupport: AIModelSupport
   toolsCallSupport: AIModelSupport
 }
+
+export const getDefaultAIModel = (
+  name: string,
+  providerOrBaseUrl: AIProviderType | string
+) =>
+  ({
+    id: uuidv4(),
+    providerOrBaseUrl,
+    name,
+    imageSupport: 'unknown',
+    audioSupport: 'unknown',
+    toolsCallSupport: 'unknown'
+  }) satisfies AIModel
 
 export type AIModelFeature = keyof Pick<
   AIModel,

@@ -74,9 +74,10 @@ export const ProviderForm = ({
       setValue(key as keyof AIProvider, value)
     })
   }
-
   useEffect(() => {
-    reset(initProvider)
+    if (initProvider) {
+      reset(initProvider)
+    }
   }, [initProvider, reset])
 
   const type = watch('type')
@@ -195,7 +196,7 @@ export const ProviderForm = ({
     <Tabs
       value={activeTab}
       onValueChange={val => setActiveTab(val as ProviderFormTab)}
-      className="h-[500px] flex flex-col"
+      className="h-full flex flex-col flex-1 overflow-auto"
     >
       <TabsList mode="underlined" className="shrink-0">
         <TabsTrigger mode="underlined" value={ProviderFormTab.Provider}>
@@ -210,7 +211,10 @@ export const ProviderForm = ({
         </TabsTrigger>
       </TabsList>
 
-      <TabsContent value={ProviderFormTab.Provider} className="flex-1">
+      <TabsContent
+        value={ProviderFormTab.Provider}
+        className="flex-1 overflow-auto"
+      >
         <form
           onSubmit={handleSubmit(
             isEditMode ? handleUpdateProvider : handleNextStep
@@ -228,19 +232,23 @@ export const ProviderForm = ({
         </form>
       </TabsContent>
 
-      <TabsContent value={ProviderFormTab.Models} className="flex-1">
-        <div className="flex flex-col justify-between h-full">
+      <TabsContent
+        value={ProviderFormTab.Models}
+        className="flex-1 overflow-auto"
+      >
+        <div className="flex flex-col justify-between h-full overflow-hidden">
           {draftProvider && (
             <>
               <AIModelManagement
                 provider={draftProvider as AIProvider}
                 setProvider={setDraftProvider}
+                className="flex-1 h-full overflow-y-auto"
               />
               <Button
                 onClick={
                   isEditMode ? handleUpdateProvider : handleCreateProvider
                 }
-                className="w-full text-sm mt-4"
+                className="w-full text-sm mt-4 shrink-0"
                 disabled={!formState.isValid}
               >
                 {isEditMode ? 'Update Provider' : 'Create Provider'}

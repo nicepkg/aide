@@ -51,23 +51,17 @@ export class AIModelController extends Controller {
     await aiModelDB.remove(req.id)
   }
 
-  async fetchRemoteModels(req: { provider: AIProvider }) {
+  async fetchRemoteModelNames(req: { provider: AIProvider }) {
     try {
       // TODO: here we need to get the models from the remote API
       const response = await fetch(
         `${req.provider.extraFields.openaiBaseUrl}/models`
       )
       const data = await response.json()
-      return data.models.map((model: any) => ({
-        id: model.id,
-        name: model.id,
-        imageSupport: 'unknown',
-        audioSupport: 'unknown',
-        toolsCallSupport: 'unknown'
-      })) as AIModel[]
+      return data.models.map((model: any) => model.id) as string[]
     } catch (error) {
       logger.error('Failed to fetch remote models:', error)
-      return [] as AIModel[]
+      return [] as string[]
     }
   }
 

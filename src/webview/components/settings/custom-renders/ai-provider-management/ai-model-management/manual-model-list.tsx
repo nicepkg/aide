@@ -25,6 +25,7 @@ export const ManualModelList = ({
     title="Manual Models"
     draggable
     expandable
+    minCardWidth={200}
     onReorderItems={onReorderModels}
     onDeleteItems={onDeleteModels}
     onCreateItem={onCreateModel}

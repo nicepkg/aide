@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import {
   AIProviderType,
+  getDefaultAIModel,
   type AIModel,
   type AIModelFeature,
   type AIProvider
@@ -8,6 +9,7 @@ import {
 import { removeDuplicates } from '@shared/utils/common'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { api } from '@webview/services/api-client'
+import { cn, logAndToastError } from '@webview/utils/common'
 import { toast } from 'sonner'
 
 import { CreateModelDialog } from './create-model-dialog'
@@ -15,9 +17,11 @@ import { ManualModelList } from './manual-model-list'
 import { RemoteModelList } from './remote-model-list'
 
 export const AIModelManagement = ({
+  className,
   provider,
   setProvider
 }: {
+  className?: string
   provider: AIProvider
   setProvider: (data: AIProvider) => void
 }) => {
@@ -45,11 +49,35 @@ export const AIModelManagement = ({
     enabled: !!providerOrBaseUrl
   })
 
-  const { data: remoteModels = [], refetch: refetchRemoteModels } = useQuery({
-    queryKey: ['remoteModels', provider],
-    queryFn: () => api.aiModel.fetchRemoteModels({ provider }),
-    enabled: useRemote
+  const updateProviderRemoteModelsMutation = useMutation({
+    mutationFn: async () => {
+      const remoteModelNames = await api.aiModel.fetchRemoteModelNames({
+        provider
+      })
+      setProvider({
+        ...provider,
+        realTimeModels: remoteModelNames
+      })
+    },
+    onSuccess: () => {
+      toast.success('Provider remote models updated successfully')
+    },
+    onError: error => {
+      logAndToastError('Failed to update provider remote models', error)
+    }
   })
+
+  const manualModels = provider.manualModels.map(
+    name =>
+      models.find(m => m.name === name) ||
+      getDefaultAIModel(name, providerOrBaseUrl!)
+  )
+
+  const remoteModels = provider.realTimeModels.map(
+    name =>
+      models.find(m => m.name === name) ||
+      getDefaultAIModel(name, providerOrBaseUrl!)
+  )
 
   const updateModelMutation = useMutation({
     mutationFn: (model: AIModel) => api.aiModel.updateModel(model),
@@ -58,29 +86,7 @@ export const AIModelManagement = ({
     }
   })
 
-  const addModelMutation = useMutation({
-    mutationFn: (model: Omit<AIModel, 'id'>) => api.aiModel.addModel(model),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['aiModels'] })
-    }
-  })
-
   const handleAddModels = (modelNames: string[]) => {
-    if (!providerOrBaseUrl) {
-      toast.error('Provider or base URL is not set')
-      return
-    }
-
-    modelNames.forEach(name => {
-      addModelMutation.mutate({
-        name,
-        providerOrBaseUrl,
-        imageSupport: 'unknown',
-        audioSupport: 'unknown',
-        toolsCallSupport: 'unknown'
-      })
-    })
-
     setProvider({
       ...provider,
       manualModels: removeDuplicates([...provider.manualModels, ...modelNames])
@@ -97,8 +103,6 @@ export const AIModelManagement = ({
   }
 
   const handleReorderModels = (models: AIModel[]) => {
-    queryClient.setQueryData(['aiModels', providerOrBaseUrl], models)
-
     setProvider({
       ...provider,
       manualModels: models.map(m => m.name)
@@ -117,12 +121,12 @@ export const AIModelManagement = ({
   }
 
   const handleRefreshRemoteModels = () => {
-    refetchRemoteModels()
+    updateProviderRemoteModelsMutation.mutate()
     toast.success('Refreshing remote models...')
   }
 
   return (
-    <div className="space-y-4">
+    <div className={cn('space-y-4', className)}>
       <CreateModelDialog
         open={isCreateDialogOpen}
         onOpenChange={setIsCreateDialogOpen}
@@ -130,7 +134,7 @@ export const AIModelManagement = ({
       />
 
       <ManualModelList
-        models={models}
+        models={manualModels}
         onReorderModels={handleReorderModels}
         onDeleteModels={models => {
           handleDeleteModels(models.map(m => m.name))

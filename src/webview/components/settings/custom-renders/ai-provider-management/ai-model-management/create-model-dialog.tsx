@@ -3,6 +3,7 @@ import { Button } from '@webview/components/ui/button'
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle
 } from '@webview/components/ui/dialog'
@@ -33,13 +34,18 @@ export const CreateModelDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="w-[calc(100vw-2rem)] rounded-lg">
         <DialogHeader>
           <DialogTitle>Add Models</DialogTitle>
+          <DialogDescription />
         </DialogHeader>
         <div className="space-y-4 py-4">
           <Textarea
-            placeholder="Enter model names (one per line)"
+            placeholder={`Enter model names (one per line), example:
+gpt-4o-mini
+gpt-4o
+claude-3-5-20241022
+`}
             value={input}
             onChange={e => setInput(e.target.value)}
             className="min-h-[200px]"

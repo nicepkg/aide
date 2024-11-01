@@ -30,8 +30,8 @@ import {
   AccordionItem,
   AccordionTrigger
 } from '@webview/components/ui/accordion'
+import { Button } from '@webview/components/ui/button'
 
-import { Button } from '../button'
 import { SortableCard } from './sortable-card'
 
 export interface CardListProps<T> {
@@ -68,6 +68,12 @@ export interface CardListProps<T> {
   // Optional actions in header
   headerLeftActions?: React.ReactNode
   headerRightActions?: React.ReactNode
+
+  // Add minCardWidth prop with default value
+  minCardWidth?: number
+
+  // Add emptyContent prop
+  emptyContent?: React.ReactNode
 }
 
 export function CardList<T>({
@@ -78,6 +84,7 @@ export function CardList<T>({
   showDragOverlay = true,
   selectable = true,
   expandable = false,
+  minCardWidth = 300,
   defaultExpandedIds = [],
   onExpandedChange,
   onCreateItem,
@@ -86,7 +93,8 @@ export function CardList<T>({
   renderCard,
   renderExpandedContent,
   headerLeftActions,
-  headerRightActions
+  headerRightActions,
+  emptyContent
 }: CardListProps<T>) {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [activeId, setActiveId] = useState<string | null>(null)
@@ -239,6 +247,21 @@ export function CardList<T>({
     })
   }
 
+  // Add default empty state component
+  const renderDefaultEmptyContent = () => (
+    <div className="flex flex-col items-center justify-center p-8 text-center border-2 border-dashed rounded-lg bg-muted/50">
+      <div className="space-y-3">
+        <h3 className="text-lg font-medium">No items yet</h3>
+        {onCreateItem && (
+          <Button onClick={onCreateItem} size="sm">
+            <PlusIcon className="size-4 mr-2" />
+            Create Item
+          </Button>
+        )}
+      </div>
+    </div>
+  )
+
   return (
     <div className="space-y-4">
       {/* Header */}
@@ -253,10 +276,11 @@ export function CardList<T>({
 
           {selectable && (
             <div className="flex items-center gap-2">
-              <Button
+              <ButtonWithTooltip
                 variant="outline"
                 size="xs"
                 className="flex justify-between px-1 gap-2"
+                tooltip={`You have selected ${selectedIds.size} items`}
                 onClick={() => {
                   const { checked } = getSelectAllState()
                   handleSelectAll(!checked)
@@ -274,17 +298,19 @@ export function CardList<T>({
                   className="custom-checkbox !border-primary"
                 />
                 <span className="text-sm">{selectedIds.size}</span>
-              </Button>
-
-              <ButtonWithTooltip
-                variant="outline"
-                size="iconXs"
-                onClick={handleDeleteSelected}
-                tooltip="Delete selected items"
-                disabled={selectedIds.size === 0}
-              >
-                <TrashIcon className="size-4" />
               </ButtonWithTooltip>
+
+              {onDeleteItems && (
+                <ButtonWithTooltip
+                  variant="outline"
+                  size="iconXs"
+                  onClick={handleDeleteSelected}
+                  tooltip="Delete selected items"
+                  disabled={selectedIds.size === 0}
+                >
+                  <TrashIcon className="size-4" />
+                </ButtonWithTooltip>
+              )}
             </div>
           )}
 
@@ -300,48 +326,56 @@ export function CardList<T>({
         </div>
       </div>
 
-      {/* Card Grid */}
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragStart={draggable ? handleDragStart : undefined}
-        onDragEnd={draggable ? handleDragEnd : undefined}
-        measuring={measuring}
-      >
-        <SortableContext
-          items={items.map(item => String(item[idField]))}
-          strategy={rectSortingStrategy}
+      {items.length === 0 ? (
+        emptyContent || renderDefaultEmptyContent()
+      ) : (
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragStart={draggable ? handleDragStart : undefined}
+          onDragEnd={draggable ? handleDragEnd : undefined}
+          measuring={measuring}
         >
-          <div className="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-2">
-            {items.map(item => {
-              const id = String(item[idField])
-              return (
-                <SortableCard key={id} id={id} draggable={draggable}>
-                  {dragHandleProps =>
-                    renderCardWithExpansion(
-                      item,
-                      selectedIds.has(id),
-                      dragHandleProps
-                    )
-                  }
-                </SortableCard>
-              )
-            })}
-          </div>
-        </SortableContext>
-
-        {draggable && showDragOverlay && (
-          <DragOverlay dropAnimation={dropAnimation}>
-            {activeId
-              ? renderCardWithExpansion(
-                  items.find(item => String(item[idField]) === activeId) as T,
-                  selectedIds.has(activeId),
-                  undefined
+          <SortableContext
+            items={items.map(item => String(item[idField]))}
+            strategy={rectSortingStrategy}
+          >
+            <div
+              className="grid gap-2"
+              style={{
+                gridTemplateColumns: `repeat(auto-fit, minmax(min(100%, ${minCardWidth}px), 1fr))`
+              }}
+            >
+              {items.map(item => {
+                const id = String(item[idField])
+                return (
+                  <SortableCard key={id} id={id} draggable={draggable}>
+                    {dragHandleProps =>
+                      renderCardWithExpansion(
+                        item,
+                        selectedIds.has(id),
+                        dragHandleProps
+                      )
+                    }
+                  </SortableCard>
                 )
-              : null}
-          </DragOverlay>
-        )}
-      </DndContext>
+              })}
+            </div>
+          </SortableContext>
+
+          {draggable && showDragOverlay && (
+            <DragOverlay dropAnimation={dropAnimation}>
+              {activeId
+                ? renderCardWithExpansion(
+                    items.find(item => String(item[idField]) === activeId) as T,
+                    selectedIds.has(activeId),
+                    undefined
+                  )
+                : null}
+            </DragOverlay>
+          )}
+        </DndContext>
+      )}
     </div>
   )
 }

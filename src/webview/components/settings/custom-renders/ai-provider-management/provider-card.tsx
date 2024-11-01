@@ -1,35 +1,27 @@
 import { useState } from 'react'
+import type { SyntheticListenerMap } from '@dnd-kit/core/dist/hooks/utilities'
 import {
   DragHandleDots2Icon,
   EyeClosedIcon,
   EyeOpenIcon,
-  Pencil2Icon,
-  TrashIcon
+  Pencil2Icon
 } from '@radix-ui/react-icons'
 import { aiProviderConfigs, type AIProvider } from '@shared/utils/ai-providers'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger
-} from '@webview/components/ui/alert-dialog'
 import { Button } from '@webview/components/ui/button'
+import { Checkbox } from '@webview/components/ui/checkbox'
 
 export const ProviderCard = ({
   provider,
   onEdit,
-  onRemove,
-  dragHandleProps
+  dragHandleProps,
+  isSelected,
+  onSelect
 }: {
   provider: AIProvider
   onEdit: (provider: AIProvider) => void
-  onRemove: (id: string) => void
-  dragHandleProps?: any
+  dragHandleProps?: SyntheticListenerMap
+  isSelected?: boolean
+  onSelect?: (selected: boolean) => void
 }) => {
   const [visibleFields, setVisibleFields] = useState<Record<string, boolean>>(
     {}
@@ -44,50 +36,35 @@ export const ProviderCard = ({
 
   return (
     <div className="border rounded-lg p-4 shadow-sm bg-card hover:shadow-md transition-shadow">
-      <div className="flex justify-between items-start mb-3">
+      <div className="flex justify-between items-center mb-3">
         <div className="flex items-center gap-2">
-          <div
-            {...dragHandleProps}
-            className="cursor-grab active:cursor-grabbing"
-          >
-            <DragHandleDots2Icon className="h-4 w-4 text-muted-foreground" />
-          </div>
+          {onSelect && (
+            <Checkbox
+              checked={isSelected}
+              onCheckedChange={onSelect}
+              className="translate-y-[1px]"
+            />
+          )}
+          {dragHandleProps && (
+            <div
+              {...dragHandleProps}
+              className="cursor-grab active:cursor-grabbing"
+            >
+              <DragHandleDots2Icon className="h-4 w-4 text-muted-foreground" />
+            </div>
+          )}
           <div>
             <h3 className="font-medium text-primary">{provider.name}</h3>
           </div>
         </div>
-        <div className="flex gap-1">
-          <Button
-            variant="ghost"
-            onClick={() => onEdit(provider)}
-            size="sm"
-            className="h-7 w-7 p-0 hover:bg-muted"
-          >
-            <Pencil2Icon className="h-3.5 w-3.5" />
-          </Button>
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant="ghost" size="sm" className="h-7 w-7 p-0">
-                <TrashIcon className="h-3.5 w-3.5" />
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  This action cannot be undone. This will permanently delete the
-                  provider.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={() => onRemove(provider.id)}>
-                  Delete
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        </div>
+        <Button
+          variant="ghost"
+          onClick={() => onEdit(provider)}
+          size="sm"
+          className="h-7 w-7 p-0 hover:bg-muted"
+        >
+          <Pencil2Icon className="h-3.5 w-3.5" />
+        </Button>
       </div>
 
       <div className="space-y-4 text-sm">

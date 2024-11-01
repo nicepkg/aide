@@ -27,8 +27,10 @@ export const RemoteModelList = ({
     items={models}
     title="Remote Models"
     draggable={false}
+    selectable={false}
     expandable
-    headerLeftActions={
+    minCardWidth={200}
+    headerRightActions={
       <div className="flex items-center gap-2">
         <Switch checked={enabled} onCheckedChange={onEnabledChange} />
         <Button variant="ghost" size="iconXs" onClick={onRefreshModels}>
