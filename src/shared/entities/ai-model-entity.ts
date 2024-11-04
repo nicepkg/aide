@@ -17,7 +17,7 @@ export class AIModelEntity extends BaseEntity<AIModel> {
     return {
       id: uuidv4(),
       providerOrBaseUrl: AIProviderType.OpenAI,
-      name: 'unknown',
+      name: '',
       imageSupport: 'unknown',
       audioSupport: 'unknown',
       toolsCallSupport: 'unknown'

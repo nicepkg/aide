@@ -76,30 +76,17 @@ export const AIProviderManagement = () => {
 
       return await api.aiProvider.updateProviders(updates)
     },
-    onMutate: async newProviders => {
-      // see: https://tanstack.com/query/latest/docs/framework/react/guides/optimistic-updates
-      // Cancel any outgoing refetches
-      // (so they don't overwrite our optimistic update)
-      await queryClient.cancelQueries({ queryKey: providerQueryKey })
-      const previousProviders = queryClient.getQueryData(providerQueryKey)
-      queryClient.setQueryData(providerQueryKey, newProviders)
-
-      return { previousProviders, newProviders }
-    },
-    onError: (err, newProviders, context) => {
-      queryClient.setQueryData(
-        providerQueryKey,
-        context?.previousProviders || []
-      )
-      logAndToastError('Failed to update provider order', err)
-    },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: providerQueryKey })
     }
   })
 
+  const optimizeProviders = reorderProvidersMutation.isPending
+    ? reorderProvidersMutation.variables
+    : providers
+
   const handleSubmit = async (data: Partial<AIProvider>) => {
-    const order = providers.length + 1
+    const order = optimizeProviders.length + 1
     if (editingProvider) {
       updateProviderMutation.mutate({
         ...data,
@@ -119,6 +106,10 @@ export const AIProviderManagement = () => {
   const handleEditProvider = (provider: AIProvider) => {
     setEditingProvider(provider)
     setIsDialogOpen(true)
+  }
+
+  const handleRemoveProvider = (provider: AIProvider) => {
+    removeProviderMutation.mutate([provider])
   }
 
   const handleCloseDialog = () => {
@@ -158,7 +149,7 @@ export const AIProviderManagement = () => {
       </Dialog>
 
       <CardList
-        items={providers}
+        items={optimizeProviders}
         idField="id"
         draggable
         selectable
@@ -174,6 +165,7 @@ export const AIProviderManagement = () => {
           <ProviderCard
             provider={provider}
             onEdit={handleEditProvider}
+            onRemove={handleRemoveProvider}
             dragHandleProps={dragHandleProps}
             isSelected={isSelected}
             onSelect={onSelect}

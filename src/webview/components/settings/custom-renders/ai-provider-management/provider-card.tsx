@@ -4,21 +4,25 @@ import {
   DragHandleDots2Icon,
   EyeClosedIcon,
   EyeOpenIcon,
-  Pencil2Icon
+  Pencil2Icon,
+  TrashIcon
 } from '@radix-ui/react-icons'
 import { aiProviderConfigs, type AIProvider } from '@shared/entities'
+import { AlertAction } from '@webview/components/ui/alert-action'
 import { Button } from '@webview/components/ui/button'
 import { Checkbox } from '@webview/components/ui/checkbox'
 
 export const ProviderCard = ({
   provider,
   onEdit,
+  onRemove,
   dragHandleProps,
   isSelected,
   onSelect
 }: {
   provider: AIProvider
   onEdit: (provider: AIProvider) => void
+  onRemove: (provider: AIProvider) => void
   dragHandleProps?: SyntheticListenerMap
   isSelected?: boolean
   onSelect?: (selected: boolean) => void
@@ -59,14 +63,31 @@ export const ProviderCard = ({
             </h3>
           </div>
         </div>
-        <Button
-          variant="ghost"
-          onClick={() => onEdit(provider)}
-          size="sm"
-          className="h-7 w-7 p-0 hover:bg-muted"
-        >
-          <Pencil2Icon className="h-3.5 w-3.5" />
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            variant="ghost"
+            onClick={() => onEdit(provider)}
+            size="sm"
+            className="h-7 w-7 p-0 hover:bg-muted"
+          >
+            <Pencil2Icon className="h-3.5 w-3.5" />
+          </Button>
+          <AlertAction
+            title="Delete Provider"
+            description={`Are you sure you want to delete provider "${provider.name}"?`}
+            variant="destructive"
+            confirmText="Delete"
+            onConfirm={() => onRemove(provider)}
+          >
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 w-7 p-0 hover:bg-muted text-destructive hover:text-destructive"
+            >
+              <TrashIcon className="h-3.5 w-3.5" />
+            </Button>
+          </AlertAction>
+        </div>
       </div>
 
       <div className="space-y-4 text-sm">

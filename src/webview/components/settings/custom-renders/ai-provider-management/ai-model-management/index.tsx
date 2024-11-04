@@ -134,6 +134,25 @@ export const AIModelManagement = ({
     toast.success('Refreshing remote models...')
   }
 
+  const handleDeleteModel = (model: AIModel) => {
+    setProvider({
+      ...provider,
+      manualModels: provider.manualModels.filter(name => name !== model.name)
+    })
+  }
+
+  const handleAddToManual = (model: AIModel) => {
+    if (!provider.manualModels.includes(model.name)) {
+      setProvider({
+        ...provider,
+        manualModels: [...provider.manualModels, model.name]
+      })
+      toast.success(`Added ${model.name} to manual models`)
+    } else {
+      toast.warning(`${model.name} is already in manual models`)
+    }
+  }
+
   return (
     <div className={cn('space-y-4', className)}>
       <CreateModelDialog
@@ -148,6 +167,7 @@ export const AIModelManagement = ({
         onDeleteModels={models => {
           handleDeleteModels(models.map(m => m.name))
         }}
+        onDeleteModel={handleDeleteModel}
         onCreateModel={() => setIsCreateDialogOpen(true)}
         onTestModels={handleTestModel}
       />
@@ -158,6 +178,7 @@ export const AIModelManagement = ({
         onEnabledChange={setUseRemote}
         onRefreshModels={handleRefreshRemoteModels}
         onTestModels={handleTestModel}
+        onAddToManual={handleAddToManual}
       />
     </div>
   )

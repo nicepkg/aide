@@ -3,8 +3,9 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { EyeClosedIcon, EyeOpenIcon } from '@radix-ui/react-icons'
 import {
   aiProviderConfigs,
-  AIProviderType,
-  type AIProvider
+  AIProviderEntity,
+  type AIProvider,
+  type AIProviderType
 } from '@shared/entities'
 import { Button } from '@webview/components/ui/button'
 import { Input } from '@webview/components/ui/input'
@@ -26,11 +27,7 @@ import { useCallbackRef } from '@webview/hooks/use-callback-ref'
 import { Controller, useForm } from 'react-hook-form'
 
 import { AIModelManagement } from './ai-model-management'
-import {
-  getDefaultExtraFields,
-  getDefaultProviderValues,
-  providerFormSchema
-} from './utils'
+import { providerFormSchema } from './utils'
 
 enum ProviderFormTab {
   Provider = 'provider',
@@ -58,7 +55,7 @@ export const ProviderForm = ({
   )
 
   const getDefaultProvider = useCallbackRef(
-    () => initProvider || getDefaultProviderValues(AIProviderType.OpenAI)
+    () => initProvider || new AIProviderEntity().entity
   )
 
   const { control, handleSubmit, reset, setValue, watch, formState } = useForm<
@@ -86,7 +83,7 @@ export const ProviderForm = ({
       'extraFields',
       type === getDefaultProvider()?.type
         ? getDefaultProvider().extraFields
-        : getDefaultExtraFields(type as AIProviderType)
+        : new AIProviderEntity({ type }).entity.extraFields
     )
   }, [type, setValue, getDefaultProvider])
 
@@ -122,7 +119,8 @@ export const ProviderForm = ({
                 onChange(val)
                 setValue(
                   'extraFields',
-                  getDefaultExtraFields(val as AIProviderType)
+                  new AIProviderEntity({ type: val as AIProviderType }).entity
+                    .extraFields
                 )
               }}
             >
@@ -196,7 +194,7 @@ export const ProviderForm = ({
     <Tabs
       value={activeTab}
       onValueChange={val => setActiveTab(val as ProviderFormTab)}
-      className="h-full flex flex-col flex-1 overflow-auto"
+      className="h-full flex flex-col flex-1 overflow-y-auto"
     >
       <TabsList mode="underlined" className="shrink-0">
         <TabsTrigger mode="underlined" value={ProviderFormTab.Provider}>
@@ -213,7 +211,7 @@ export const ProviderForm = ({
 
       <TabsContent
         value={ProviderFormTab.Provider}
-        className="flex-1 overflow-auto"
+        className="flex-1 overflow-y-auto"
       >
         <form
           onSubmit={handleSubmit(
@@ -234,7 +232,7 @@ export const ProviderForm = ({
 
       <TabsContent
         value={ProviderFormTab.Models}
-        className="flex-1 overflow-auto"
+        className="flex-1 overflow-y-auto"
       >
         <div className="flex flex-col justify-between h-full overflow-hidden">
           {draftProvider && (

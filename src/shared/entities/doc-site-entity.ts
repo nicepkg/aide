@@ -13,7 +13,7 @@ export class DocSiteEntity extends BaseEntity<DocSite> {
   protected getDefaults(): DocSite {
     return {
       id: uuidv4(),
-      name: 'unknown',
+      name: '',
       url: '',
       isCrawled: false,
       isIndexed: false

@@ -30,6 +30,7 @@ import {
   AccordionItem,
   AccordionTrigger
 } from '@webview/components/ui/accordion'
+import { AlertAction } from '@webview/components/ui/alert-action'
 import { Button } from '@webview/components/ui/button'
 
 import { SortableCard } from './sortable-card'
@@ -301,15 +302,25 @@ export function CardList<T>({
               </ButtonWithTooltip>
 
               {onDeleteItems && (
-                <ButtonWithTooltip
-                  variant="outline"
-                  size="iconXs"
-                  onClick={handleDeleteSelected}
-                  tooltip="Delete selected items"
+                <AlertAction
+                  title="Delete Items"
+                  description={`Are you sure you want to delete ${selectedIds.size} selected item${
+                    selectedIds.size > 1 ? 's' : ''
+                  }?`}
+                  variant="destructive"
+                  confirmText="Delete"
+                  onConfirm={handleDeleteSelected}
                   disabled={selectedIds.size === 0}
                 >
-                  <TrashIcon className="size-4" />
-                </ButtonWithTooltip>
+                  <ButtonWithTooltip
+                    variant="outline"
+                    size="iconXs"
+                    tooltip="Delete selected items"
+                    disabled={selectedIds.size === 0}
+                  >
+                    <TrashIcon className="size-4 text-destructive" />
+                  </ButtonWithTooltip>
+                </AlertAction>
               )}
             </div>
           )}

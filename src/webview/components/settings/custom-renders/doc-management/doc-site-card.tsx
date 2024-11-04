@@ -5,6 +5,7 @@ import {
   TrashIcon
 } from '@radix-ui/react-icons'
 import type { DocSite } from '@shared/entities'
+import { AlertAction } from '@webview/components/ui/alert-action'
 import { Button } from '@webview/components/ui/button'
 import { Checkbox } from '@webview/components/ui/checkbox'
 import { Progress } from '@webview/components/ui/progress'
@@ -97,14 +98,21 @@ export const DocSiteCard = ({
           >
             <Pencil2Icon className="h-3.5 w-3.5" />
           </Button>
-          <Button
-            variant="ghost"
-            onClick={() => onRemove(site.id)}
-            size="sm"
-            className="h-7 w-7 p-0 hover:bg-muted text-destructive hover:text-destructive"
+          <AlertAction
+            title="Delete Documentation Site"
+            description={`Are you sure you want to delete "${site.name}"? This will remove all crawled and indexed data.`}
+            variant="destructive"
+            confirmText="Delete"
+            onConfirm={() => onRemove(site.id)}
           >
-            <TrashIcon className="h-3.5 w-3.5" />
-          </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 w-7 p-0 hover:bg-muted text-destructive hover:text-destructive"
+            >
+              <TrashIcon className="h-3.5 w-3.5" />
+            </Button>
+          </AlertAction>
         </div>
       </div>
 

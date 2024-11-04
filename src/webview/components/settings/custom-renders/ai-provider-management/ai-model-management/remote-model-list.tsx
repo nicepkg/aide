@@ -13,6 +13,7 @@ interface RemoteModelListProps {
   onEnabledChange: (enabled: boolean) => void
   onRefreshModels: () => void
   onTestModels: (model: AIModel, features: AIModelFeature[]) => void
+  onAddToManual: (model: AIModel) => void
 }
 
 export const RemoteModelList = ({
@@ -20,7 +21,8 @@ export const RemoteModelList = ({
   enabled,
   onEnabledChange,
   onRefreshModels,
-  onTestModels
+  onTestModels,
+  onAddToManual
 }: RemoteModelListProps) => (
   <CardList
     idField="id"
@@ -44,6 +46,7 @@ export const RemoteModelList = ({
         isRemote
         isSelected={isSelected}
         onSelect={onSelect}
+        onAdd={onAddToManual}
       />
     )}
     renderExpandedContent={model => (

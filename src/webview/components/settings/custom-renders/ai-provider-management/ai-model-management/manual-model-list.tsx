@@ -8,6 +8,7 @@ interface ManualModelListProps {
   models: AIModel[]
   onReorderModels: (models: AIModel[]) => void
   onDeleteModels: (models: AIModel[]) => void
+  onDeleteModel: (model: AIModel) => void
   onCreateModel: () => void
   onTestModels: (model: AIModel, features: AIModelFeature[]) => void
 }
@@ -16,6 +17,7 @@ export const ManualModelList = ({
   models,
   onReorderModels,
   onDeleteModels,
+  onDeleteModel,
   onCreateModel,
   onTestModels
 }: ManualModelListProps) => (
@@ -35,6 +37,7 @@ export const ManualModelList = ({
         dragHandleProps={dragHandleProps}
         isSelected={isSelected}
         onSelect={onSelect}
+        onDelete={onDeleteModel}
       />
     )}
     renderExpandedContent={model => (

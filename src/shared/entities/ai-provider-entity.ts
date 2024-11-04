@@ -13,17 +13,32 @@ export interface AIProvider extends IBaseEntity {
 }
 
 export class AIProviderEntity extends BaseEntity<AIProvider> {
-  protected getDefaults(): AIProvider {
+  protected getDefaults(data: Partial<AIProvider>): AIProvider {
+    const type = data.type || AIProviderType.OpenAI
     return {
       id: uuidv4(),
-      name: 'unknown',
-      type: AIProviderType.OpenAI,
-      order: 0,
-      extraFields: {},
+      name: '',
+      type,
+      order: -1,
+      extraFields: this.getDefaultExtraFields(type),
       allowRealTimeModels: true,
       realTimeModels: [],
       manualModels: []
     }
+  }
+
+  private getDefaultExtraFields(type: AIProviderType) {
+    const config = aiProviderConfigs[type]
+    if (!config) return {}
+    return config.fields.reduce(
+      (acc, field) => {
+        if (field.defaultValue) {
+          acc[field.key] = field.defaultValue
+        }
+        return acc
+      },
+      {} as Record<string, string>
+    )
   }
 }
 
