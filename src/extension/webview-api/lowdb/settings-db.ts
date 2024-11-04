@@ -2,21 +2,23 @@ import path from 'path'
 import { aidePaths } from '@extension/file-utils/paths'
 import {
   settingsConfig,
+  SettingsEntity,
   type SettingCategory,
   type SettingKey,
+  type Settings,
   type SettingValue
-} from '@shared/utils/settings-config'
+} from '@shared/entities/settings-entity'
 
-import { BaseDB, BaseItem } from './base-db'
-
-export interface Settings extends BaseItem {
-  key: SettingKey
-  value: SettingValue<SettingKey>
-  category: SettingCategory
-  updatedAt: number
-}
+import { BaseDB } from './base-db'
 
 class SettingsDB extends BaseDB<Settings> {
+  static readonly schemaVersion = 1
+
+  constructor(filePath: string) {
+    const defaults = new SettingsEntity().getDefaults()
+    super(filePath, defaults, SettingsDB.schemaVersion)
+  }
+
   async setSetting<K extends SettingKey>(
     key: K,
     value: SettingValue<K>
@@ -32,12 +34,13 @@ class SettingsDB extends BaseDB<Settings> {
       }) as Promise<Settings>
     }
 
-    return this.add({
+    const setting = new SettingsEntity({
       key,
       value,
       category: config.category,
       updatedAt: Date.now()
     })
+    return this.add(setting)
   }
 
   async getSetting<K extends SettingKey>(

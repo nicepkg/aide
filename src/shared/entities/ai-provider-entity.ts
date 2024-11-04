@@ -1,42 +1,8 @@
 import { v4 as uuidv4 } from 'uuid'
 
-export type AIModelSupport = boolean | 'unknown'
-export interface AIModel {
-  id: string
-  // if the provider is a third party OpenAI-like provider, the value is the base URL
-  providerOrBaseUrl: AIProviderType | string
-  name: string
-  imageSupport: AIModelSupport
-  audioSupport: AIModelSupport
-  toolsCallSupport: AIModelSupport
-}
+import { BaseEntity, type IBaseEntity } from './base-entity'
 
-export const getDefaultAIModel = (
-  name: string,
-  providerOrBaseUrl: AIProviderType | string
-) =>
-  ({
-    id: uuidv4(),
-    providerOrBaseUrl,
-    name,
-    imageSupport: 'unknown',
-    audioSupport: 'unknown',
-    toolsCallSupport: 'unknown'
-  }) satisfies AIModel
-
-export type AIModelFeature = keyof Pick<
-  AIModel,
-  'imageSupport' | 'audioSupport' | 'toolsCallSupport'
->
-
-export const aiModelFeatures = [
-  'imageSupport',
-  'audioSupport',
-  'toolsCallSupport'
-] as const satisfies AIModelFeature[]
-
-export interface AIProvider {
-  id: string
+export interface AIProvider extends IBaseEntity {
   name: string
   type: AIProviderType
   order: number
@@ -44,6 +10,40 @@ export interface AIProvider {
   allowRealTimeModels: boolean
   realTimeModels: string[]
   manualModels: string[]
+}
+
+export class AIProviderEntity
+  extends BaseEntity<AIProvider>
+  implements AIProvider
+{
+  id!: string
+
+  name!: string
+
+  type!: AIProviderType
+
+  order!: number
+
+  extraFields!: Record<string, string>
+
+  allowRealTimeModels!: boolean
+
+  realTimeModels!: string[]
+
+  manualModels!: string[]
+
+  getDefaults(): AIProvider {
+    return {
+      id: uuidv4(),
+      name: 'unknown',
+      type: AIProviderType.OpenAI,
+      order: 0,
+      extraFields: {},
+      allowRealTimeModels: true,
+      realTimeModels: [],
+      manualModels: []
+    }
+  }
 }
 
 export enum AIProviderType {

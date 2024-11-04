@@ -1,5 +1,5 @@
+import type { Conversation } from '@shared/types/chat-context'
 import { getDefaultConversation } from '@shared/utils/get-default-conversation'
-import type { Conversation } from '@webview/types/chat'
 import { useImmer } from 'use-immer'
 
 export const useConversation = (

@@ -2,7 +2,7 @@ import {
   aiProviderConfigs,
   AIProviderType,
   type AIProvider
-} from '@shared/utils/ai-providers'
+} from '@shared/entities'
 import { v4 as uuidv4 } from 'uuid'
 import { z } from 'zod'
 

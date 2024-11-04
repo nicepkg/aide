@@ -1,4 +1,4 @@
-import type { ChatSession } from '@extension/webview-api/lowdb/chat-sessions-db'
+import type { ChatSession } from '@shared/entities'
 import type { SettingItem } from '@webview/components/settings/types'
 
 export interface SearchResult {

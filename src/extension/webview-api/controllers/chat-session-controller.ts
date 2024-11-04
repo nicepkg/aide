@@ -1,10 +1,11 @@
 import { aidePaths } from '@extension/file-utils/paths'
 import { VsCodeFS } from '@extension/file-utils/vscode-fs'
 import { logger } from '@extension/logger'
+import type { ChatSession } from '@shared/entities'
 import type { ChatContext, Conversation } from '@shared/types/chat-context'
 import { convertChatContextToChatSession } from '@shared/utils/convert-chat-context-to-chat-session'
 
-import { ChatSession, chatSessionsDB } from '../lowdb/chat-sessions-db'
+import { chatSessionsDB } from '../lowdb/chat-sessions-db'
 import { Controller } from '../types'
 
 export class ChatSessionController extends Controller {

@@ -1,4 +1,5 @@
 import { useEffect, useRef, type CSSProperties, type FC } from 'react'
+import type { Conversation } from '@shared/types/chat-context'
 import {
   ChatInput,
   ChatInputMode,
@@ -7,7 +8,7 @@ import {
 } from '@webview/components/chat/editor/chat-input'
 import { GlowingCard } from '@webview/components/glowing-card'
 import { useConversation } from '@webview/hooks/chat/use-conversation'
-import type { Conversation, ConversationUIState } from '@webview/types/chat'
+import type { ConversationUIState } from '@webview/types/chat'
 import { cn } from '@webview/utils/common'
 
 export interface ChatHumanMessageProps

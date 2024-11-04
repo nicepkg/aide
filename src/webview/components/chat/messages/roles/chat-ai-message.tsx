@@ -1,7 +1,8 @@
 import type { CSSProperties, FC } from 'react'
+import type { Conversation } from '@shared/types/chat-context'
 import { getAllTextFromLangchainMessageContents } from '@shared/utils/get-all-text-from-langchain-message-contents'
 import { GlowingCard } from '@webview/components/glowing-card'
-import type { Conversation, ConversationUIState } from '@webview/types/chat'
+import type { ConversationUIState } from '@webview/types/chat'
 import { cn } from '@webview/utils/common'
 
 import { Markdown } from '../markdown'

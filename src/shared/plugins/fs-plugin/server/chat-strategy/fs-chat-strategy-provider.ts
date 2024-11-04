@@ -3,7 +3,10 @@ import {
   IGNORE_FILETYPES_WITHOUT_IMG
 } from '@extension/constants'
 import { createShouldIgnore } from '@extension/file-utils/ignore-patterns'
-import { traverseFileOrFolders } from '@extension/file-utils/traverse-fs'
+import {
+  traverseFileOrFolders,
+  type FileInfo
+} from '@extension/file-utils/traverse-fs'
 import { VsCodeFS } from '@extension/file-utils/vscode-fs'
 import { logger } from '@extension/logger'
 import { getWorkspaceFolder } from '@extension/utils'
@@ -18,9 +21,9 @@ import type { StructuredTool } from '@langchain/core/tools'
 import type { ChatStrategyProvider } from '@shared/plugins/base/server/create-provider-manager'
 import { PluginId } from '@shared/plugins/base/types'
 import { mergeCodeSnippets } from '@shared/plugins/fs-plugin/server/merge-code-snippets'
+import type { ChatContext } from '@shared/types/chat-context'
 import type { Conversation } from '@shared/types/chat-context/conversation'
 import { removeDuplicates } from '@shared/utils/common'
-import type { ChatContext, FileInfo } from '@webview/types/chat'
 
 import type { FsPluginState } from '../../types'
 import {

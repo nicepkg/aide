@@ -10,7 +10,7 @@ import {
   aiModelFeatures,
   type AIModel,
   type AIModelFeature
-} from '@shared/utils/ai-providers'
+} from '@shared/entities'
 import { Button } from '@webview/components/ui/button'
 
 interface ModelFeatureListProps {

@@ -2,7 +2,7 @@ import {
   settingsConfig as sharedSettingsConfig,
   type SettingCategory,
   type SettingsConfigItem
-} from '@shared/utils/settings-config'
+} from '@shared/entities'
 
 import { AIProviderManagement } from './custom-renders/ai-provider-management'
 import { CodebaseIndexing } from './custom-renders/codebase'

@@ -1,3 +1,36 @@
+import { v4 as uuidv4 } from 'uuid'
+
+import { BaseEntity, type IBaseEntity } from './base-entity'
+
+export interface Settings extends IBaseEntity {
+  key: SettingKey
+  value: SettingValue<SettingKey>
+  category: SettingCategory
+  updatedAt: number
+}
+
+export class SettingsEntity extends BaseEntity<Settings> implements Settings {
+  id!: string
+
+  key!: SettingKey
+
+  value!: SettingValue<SettingKey>
+
+  category!: SettingCategory
+
+  updatedAt!: number
+
+  getDefaults(): Settings {
+    return {
+      id: uuidv4(),
+      key: 'unknown' as SettingKey,
+      value: 'unknown',
+      category: 'appearance' as SettingCategory,
+      updatedAt: Date.now()
+    }
+  }
+}
+
 export type SettingsSaveType = 'global' | 'workspace'
 export type SettingsOption = string | { label: string; value: string }
 

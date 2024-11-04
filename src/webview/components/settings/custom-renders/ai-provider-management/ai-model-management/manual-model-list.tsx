@@ -1,4 +1,4 @@
-import { type AIModel, type AIModelFeature } from '@shared/utils/ai-providers'
+import type { AIModel, AIModelFeature } from '@shared/entities'
 import { CardList } from '@webview/components/ui/card-list'
 
 import { ModelFeatureList } from './model-feature-list'

@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import type { SettingsSaveType } from '@shared/utils/settings-config'
+import type { SettingsSaveType } from '@shared/entities'
 import { api } from '@webview/services/api-client'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 

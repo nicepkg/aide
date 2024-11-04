@@ -1,13 +1,10 @@
 /* eslint-disable unused-imports/no-unused-vars */
 import React, { useState } from 'react'
 import { ImageIcon } from '@radix-ui/react-icons'
+import type { ChatContext, Conversation } from '@shared/types/chat-context'
 import { Button } from '@webview/components/ui/button'
 import { usePluginImagesSelectorProviders } from '@webview/hooks/chat/use-plugin-providers'
-import {
-  type ChatContext,
-  type Conversation,
-  type ModelOption
-} from '@webview/types/chat'
+import { type ModelOption } from '@webview/types/chat'
 import type { Updater } from 'use-immer'
 
 import { ModelSelector } from './model-selector'

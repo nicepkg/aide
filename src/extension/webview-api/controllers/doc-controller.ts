@@ -31,6 +31,11 @@ export class DocController extends Controller {
     this.disposeResources(request.id)
   }
 
+  async removeDocSites(request: { ids: string[] }) {
+    await docSitesDB.batchRemove(request.ids)
+    request.ids.forEach(id => this.disposeResources(id))
+  }
+
   async *crawlDocs(request: {
     id: string
     options?: Partial<CrawlerOptions>

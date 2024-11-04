@@ -1,4 +1,4 @@
-import type { Controllers } from '@extension/webview-api'
+import type { Controllers } from '@extension/webview-api/controllers'
 import type { ControllerClass } from '@extension/webview-api/types'
 import { io, Socket } from 'socket.io-client'
 

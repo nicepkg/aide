@@ -1,4 +1,4 @@
-import type { SettingKey, SettingValue } from '@shared/utils/settings-config'
+import type { SettingKey, SettingValue } from '@shared/entities'
 
 import { globalSettingsDB, workspaceSettingsDB } from '../lowdb/settings-db'
 import { Controller } from '../types'

@@ -1,4 +1,4 @@
-import type { SettingsSaveType } from '@shared/utils/settings-config'
+import type { SettingsSaveType } from '@shared/entities'
 
 export interface SettingItem {
   saveType: SettingsSaveType

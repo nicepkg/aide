@@ -1,18 +1,19 @@
 import path from 'path'
 import { aidePaths } from '@extension/file-utils/paths'
+import { DocSiteEntity, type DocSite } from '@shared/entities/doc-site-entity'
 
-import { BaseDB, BaseItem } from './base-db'
-
-export interface DocSite extends BaseItem {
-  name: string
-  url: string
-  isCrawled: boolean
-  isIndexed: boolean
-}
+import { BaseDB } from './base-db'
 
 class DocSitesDB extends BaseDB<DocSite> {
+  static readonly schemaVersion = 1
+
   constructor() {
-    super(path.join(aidePaths.getGlobalLowdbPath(), 'doc-sites.json'))
+    const defaults = new DocSiteEntity().getDefaults()
+    super(
+      path.join(aidePaths.getGlobalLowdbPath(), 'doc-sites.json'),
+      defaults,
+      DocSitesDB.schemaVersion
+    )
   }
 
   async add(
@@ -20,11 +21,17 @@ class DocSitesDB extends BaseDB<DocSite> {
       id?: string
     }
   ): Promise<DocSite> {
-    return super.add({
-      ...item,
-      isCrawled: false,
-      isIndexed: false
-    })
+    const docSite = new DocSiteEntity(item)
+    return super.add(docSite)
+  }
+
+  async batchAdd(
+    items: (Omit<DocSite, 'id' | 'isCrawled' | 'isIndexed'> & {
+      id?: string
+    })[]
+  ): Promise<DocSite[]> {
+    const docSites = items.map(item => new DocSiteEntity(item))
+    return super.batchAdd(docSites)
   }
 
   async updateStatus(

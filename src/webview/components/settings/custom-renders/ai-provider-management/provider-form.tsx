@@ -5,7 +5,7 @@ import {
   aiProviderConfigs,
   AIProviderType,
   type AIProvider
-} from '@shared/utils/ai-providers'
+} from '@shared/entities'
 import { Button } from '@webview/components/ui/button'
 import { Input } from '@webview/components/ui/input'
 import { Label } from '@webview/components/ui/label'

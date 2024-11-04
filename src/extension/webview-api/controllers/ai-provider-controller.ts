@@ -1,4 +1,4 @@
-import { AIProvider } from '@shared/utils/ai-providers'
+import type { AIProvider } from '@shared/entities'
 
 import { aiProviderDB } from '../lowdb/ai-provider-db'
 import { Controller } from '../types'

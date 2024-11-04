@@ -1,12 +1,21 @@
 import path from 'path'
 import { aidePaths } from '@extension/file-utils/paths'
-import { AIModel } from '@shared/utils/ai-providers'
+import { AIModelEntity, type AIModel } from '@shared/entities/ai-model-entity'
 
 import { BaseDB } from './base-db'
 
 class AIModelDB extends BaseDB<AIModel> {
+  static readonly schemaVersion = 1
+
   constructor() {
-    super(path.join(aidePaths.getGlobalLowdbPath(), 'ai-models.json'))
+    // Use entity's defaults
+    const defaults = new AIModelEntity().getDefaults()
+
+    super(
+      path.join(aidePaths.getGlobalLowdbPath(), 'ai-models.json'),
+      defaults,
+      AIModelDB.schemaVersion
+    )
   }
 }
 

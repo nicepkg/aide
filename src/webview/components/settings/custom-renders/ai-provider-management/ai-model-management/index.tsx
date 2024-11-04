@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import {
+  AIModelEntity,
   AIProviderType,
-  getDefaultAIModel,
   type AIModel,
   type AIModelFeature,
   type AIProvider
-} from '@shared/utils/ai-providers'
+} from '@shared/entities'
 import { removeDuplicates } from '@shared/utils/common'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { api } from '@webview/services/api-client'
@@ -15,6 +15,15 @@ import { toast } from 'sonner'
 import { CreateModelDialog } from './create-model-dialog'
 import { ManualModelList } from './manual-model-list'
 import { RemoteModelList } from './remote-model-list'
+
+const getDefaultAIModel = (
+  name: string,
+  providerOrBaseUrl: AIProviderType | string
+): AIModel =>
+  new AIModelEntity({
+    name,
+    providerOrBaseUrl
+  })
 
 export const AIModelManagement = ({
   className,

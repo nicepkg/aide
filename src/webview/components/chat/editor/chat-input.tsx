@@ -1,5 +1,6 @@
 import { useEffect, useRef, type FC } from 'react'
 import type { PluginId } from '@shared/plugins/base/types'
+import type { ChatContext, Conversation } from '@shared/types/chat-context'
 import { tryParseJSON, tryStringifyJSON } from '@shared/utils/common'
 import { convertToLangchainMessageContents } from '@shared/utils/convert-to-langchain-message-contents'
 import { getAllTextFromLangchainMessageContents } from '@shared/utils/get-all-text-from-langchain-message-contents'
@@ -12,11 +13,7 @@ import {
 import { useMentionOptions } from '@webview/hooks/chat/use-mention-options'
 import { usePluginFilesSelectorProviders } from '@webview/hooks/chat/use-plugin-providers'
 import { useCloneState } from '@webview/hooks/use-clone-state'
-import {
-  type ChatContext,
-  type Conversation,
-  type FileInfo
-} from '@webview/types/chat'
+import { type FileInfo } from '@webview/types/chat'
 import { cn } from '@webview/utils/common'
 import { updatePluginStatesFromEditorState } from '@webview/utils/plugin-states'
 import {

@@ -1,10 +1,10 @@
 import { logger } from '@extension/logger'
-import {
+import type {
   AIModel,
-  type AIModelFeature,
-  type AIProvider,
-  type AIProviderType
-} from '@shared/utils/ai-providers'
+  AIModelFeature,
+  AIProvider,
+  AIProviderType
+} from '@shared/entities'
 
 import { aiModelDB } from '../lowdb/ai-model-db'
 import { Controller } from '../types'

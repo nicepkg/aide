@@ -1,6 +1,6 @@
 import type { SyntheticListenerMap } from '@dnd-kit/core/dist/hooks/utilities'
 import { DragHandleDots2Icon } from '@radix-ui/react-icons'
-import { type AIModel } from '@shared/utils/ai-providers'
+import type { AIModel } from '@shared/entities'
 import { Checkbox } from '@webview/components/ui/checkbox'
 
 interface ModelItemProps {

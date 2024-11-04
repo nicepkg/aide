@@ -1,11 +1,10 @@
 import { useRef, type FC } from 'react'
 import { GearIcon, MagnifyingGlassIcon, PlusIcon } from '@radix-ui/react-icons'
-import { ChatContextType } from '@shared/types/chat-context'
+import { ChatContextType, type Conversation } from '@shared/types/chat-context'
 import { useChatContext } from '@webview/contexts/chat-context'
 import { useGlobalSearch } from '@webview/contexts/global-search-context'
 import { useChatState } from '@webview/hooks/chat/use-chat-state'
 import { api } from '@webview/services/api-client'
-import type { Conversation } from '@webview/types/chat'
 import { logger } from '@webview/utils/logger'
 import { useNavigate } from 'react-router'
 

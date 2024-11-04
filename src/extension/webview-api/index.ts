@@ -5,17 +5,7 @@ import findFreePorts from 'find-free-ports'
 import { Server } from 'socket.io'
 import * as vscode from 'vscode'
 
-import { AIModelController } from './controllers/ai-model.controller'
-import { AIProviderController } from './controllers/ai-provider.controller'
-import { ApplyController } from './controllers/apply.controller'
-import { ChatSessionController } from './controllers/chat-session.controller'
-import { ChatController } from './controllers/chat.controller'
-import { CodebaseController } from './controllers/codebase.controller'
-import { DocController } from './controllers/doc.controller'
-import { FileController } from './controllers/file.controller'
-import { GitController } from './controllers/git.controller'
-import { SettingsController } from './controllers/settings.controller'
-import { SystemController } from './controllers/system.controller'
+import { controllers } from './controllers'
 import type {
   Controller,
   ControllerClass,
@@ -121,21 +111,6 @@ class APIManager {
     this.io.close()
   }
 }
-
-export const controllers = [
-  ChatController,
-  CodebaseController,
-  FileController,
-  GitController,
-  SystemController,
-  DocController,
-  ChatSessionController,
-  ApplyController,
-  SettingsController,
-  AIProviderController,
-  AIModelController
-] as const
-export type Controllers = typeof controllers
 
 export const setupWebviewAPIManager = async (
   context: vscode.ExtensionContext,

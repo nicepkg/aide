@@ -1,5 +1,5 @@
+import type { ChatSession } from '@shared/entities'
 import { type ChatContext } from '@shared/types/chat-context'
-import type { ChatSession } from '@webview/types/chat'
 
 import { getTitleFromConversations } from './get-title-from-conversations'
 

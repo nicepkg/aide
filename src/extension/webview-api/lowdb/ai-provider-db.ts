@@ -1,11 +1,11 @@
 import path from 'path'
 import { aidePaths } from '@extension/file-utils/paths'
+import { AIModelEntity, type AIModel } from '@shared/entities/ai-model-entity'
 import {
-  AIProvider,
+  AIProviderEntity,
   AIProviderType,
-  getDefaultAIModel,
-  type AIModel
-} from '@shared/utils/ai-providers'
+  type AIProvider
+} from '@shared/entities/ai-provider-entity'
 
 import { aiModelDB } from './ai-model-db'
 import { BaseDB } from './base-db'
@@ -26,12 +26,27 @@ const findNewModel = async (
   // Filter out models that don't exist yet
   return modelsName
     .filter(name => !existingModelSet.has(name))
-    .map(name => getDefaultAIModel(name, providerOrBaseUrl))
+    .map(
+      name =>
+        new AIModelEntity({
+          name,
+          providerOrBaseUrl
+        })
+    )
 }
 
 class AIProviderDB extends BaseDB<AIProvider> {
+  static readonly schemaVersion = 1
+
   constructor() {
-    super(path.join(aidePaths.getGlobalLowdbPath(), 'ai-providers.json'))
+    // Use entity's defaults
+    const defaults = new AIProviderEntity().getDefaults()
+
+    super(
+      path.join(aidePaths.getGlobalLowdbPath(), 'ai-providers.json'),
+      defaults,
+      AIProviderDB.schemaVersion
+    )
   }
 
   async add(
@@ -53,9 +68,7 @@ class AIProviderDB extends BaseDB<AIProvider> {
     )
 
     // Add models one by one to avoid type error
-    for (const model of newModels) {
-      await aiModelDB.add(model)
-    }
+    await aiModelDB.batchAdd(newModels)
 
     return await super.add(item)
   }

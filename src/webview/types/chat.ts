@@ -2,10 +2,7 @@ import type { FC } from 'react'
 import type { Conversation } from '@shared/types/chat-context'
 import type { MentionItemLayoutProps } from '@webview/components/chat/selectors/mention-selector/mention-item-layout'
 
-export type { ChatSession } from '@extension/webview-api/lowdb/chat-sessions-db'
-export type { DocSite } from '@extension/webview-api/lowdb/doc-sites-db'
 export type { ProgressInfo } from '@extension/webview-api/chat-context-processor/utils/progress-reporter'
-export * from '@shared/types/chat-context'
 export type { FileInfo, FolderInfo } from '@extension/file-utils/traverse-fs'
 
 export interface ModelOption {

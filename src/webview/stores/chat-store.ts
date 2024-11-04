@@ -1,10 +1,10 @@
-import { api } from '@webview/services/api-client'
+import type { ChatSession } from '@shared/entities'
 import {
-  ChatContext,
   ChatContextType,
-  ChatSession,
-  Conversation
-} from '@webview/types/chat'
+  type ChatContext,
+  type Conversation
+} from '@shared/types/chat-context'
+import { api } from '@webview/services/api-client'
 import { logAndToastError } from '@webview/utils/common'
 import { logger } from '@webview/utils/logger'
 import { produce } from 'immer'

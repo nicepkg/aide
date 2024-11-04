@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { type AIProvider } from '@shared/utils/ai-providers'
+import type { AIProvider } from '@shared/entities'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { CardList } from '@webview/components/ui/card-list'
 import {

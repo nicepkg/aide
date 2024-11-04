@@ -6,7 +6,7 @@ import {
   EyeOpenIcon,
   Pencil2Icon
 } from '@radix-ui/react-icons'
-import { aiProviderConfigs, type AIProvider } from '@shared/utils/ai-providers'
+import { aiProviderConfigs, type AIProvider } from '@shared/entities'
 import { Button } from '@webview/components/ui/button'
 import { Checkbox } from '@webview/components/ui/checkbox'
 
@@ -54,7 +54,9 @@ export const ProviderCard = ({
             </div>
           )}
           <div>
-            <h3 className="font-medium text-primary">{provider.name}</h3>
+            <h3 className="font-medium text-foreground text-base">
+              {provider.name}
+            </h3>
           </div>
         </div>
         <Button

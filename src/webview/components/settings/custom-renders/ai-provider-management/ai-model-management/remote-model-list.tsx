@@ -1,5 +1,5 @@
 import { ReloadIcon } from '@radix-ui/react-icons'
-import { type AIModel, type AIModelFeature } from '@shared/utils/ai-providers'
+import type { AIModel, AIModelFeature } from '@shared/entities'
 import { Button } from '@webview/components/ui/button'
 import { CardList } from '@webview/components/ui/card-list'
 import { Switch } from '@webview/components/ui/switch'

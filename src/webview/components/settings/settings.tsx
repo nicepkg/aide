@@ -1,6 +1,6 @@
 import { useEffect, useState, type FC } from 'react'
 import { ChevronDownIcon, ChevronRightIcon } from '@radix-ui/react-icons'
-import type { SettingsSaveType } from '@shared/utils/settings-config'
+import type { SettingsSaveType } from '@shared/entities'
 import { Button } from '@webview/components/ui/button'
 import { Input } from '@webview/components/ui/input'
 import { ScrollArea } from '@webview/components/ui/scroll-area'
