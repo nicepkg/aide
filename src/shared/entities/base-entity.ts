@@ -4,9 +4,11 @@ export interface IBaseEntity {
 }
 
 export abstract class BaseEntity<T extends IBaseEntity> {
+  entity: T
+
   constructor(data?: Partial<T>) {
-    Object.assign(this, this.getDefaults(), data ?? {})
+    this.entity = { ...this.getDefaults(), ...(data ?? {}) }
   }
 
-  abstract getDefaults(): Partial<T>
+  protected abstract getDefaults(): T
 }

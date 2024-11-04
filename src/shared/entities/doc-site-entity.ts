@@ -9,18 +9,8 @@ export interface DocSite extends IBaseEntity {
   isIndexed: boolean
 }
 
-export class DocSiteEntity extends BaseEntity<DocSite> implements DocSite {
-  id!: string
-
-  name!: string
-
-  url!: string
-
-  isCrawled!: boolean
-
-  isIndexed!: boolean
-
-  getDefaults(): DocSite {
+export class DocSiteEntity extends BaseEntity<DocSite> {
+  protected getDefaults(): DocSite {
     return {
       id: uuidv4(),
       name: 'unknown',

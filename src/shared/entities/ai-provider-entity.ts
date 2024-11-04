@@ -12,27 +12,8 @@ export interface AIProvider extends IBaseEntity {
   manualModels: string[]
 }
 
-export class AIProviderEntity
-  extends BaseEntity<AIProvider>
-  implements AIProvider
-{
-  id!: string
-
-  name!: string
-
-  type!: AIProviderType
-
-  order!: number
-
-  extraFields!: Record<string, string>
-
-  allowRealTimeModels!: boolean
-
-  realTimeModels!: string[]
-
-  manualModels!: string[]
-
-  getDefaults(): AIProvider {
+export class AIProviderEntity extends BaseEntity<AIProvider> {
+  protected getDefaults(): AIProvider {
     return {
       id: uuidv4(),
       name: 'unknown',

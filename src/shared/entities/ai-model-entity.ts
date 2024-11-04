@@ -12,20 +12,8 @@ export interface AIModel extends IBaseEntity {
   toolsCallSupport: AIModelSupport
 }
 
-export class AIModelEntity extends BaseEntity<AIModel> implements AIModel {
-  id!: string
-
-  providerOrBaseUrl!: AIProviderType | string
-
-  name!: string
-
-  imageSupport!: AIModelSupport
-
-  audioSupport!: AIModelSupport
-
-  toolsCallSupport!: AIModelSupport
-
-  getDefaults(): AIModel {
+export class AIModelEntity extends BaseEntity<AIModel> {
+  protected getDefaults(): AIModel {
     return {
       id: uuidv4(),
       providerOrBaseUrl: AIProviderType.OpenAI,

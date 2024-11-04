@@ -1,5 +1,5 @@
+import { ConversationEntity } from '@shared/entities/conversation-entity'
 import type { Conversation } from '@shared/types/chat-context'
-import { getDefaultConversation } from '@shared/utils/get-default-conversation'
 import { useImmer } from 'use-immer'
 
 export const useConversation = (
@@ -7,11 +7,11 @@ export const useConversation = (
   initConversation?: Conversation
 ) => {
   const [conversation, setConversation] = useImmer<Conversation>(
-    () => initConversation ?? getDefaultConversation(role)
+    () => initConversation ?? new ConversationEntity({ role }).entity
   )
 
   const resetConversation = () => {
-    setConversation(getDefaultConversation(role))
+    setConversation(new ConversationEntity({ role }).entity)
   }
 
   return {

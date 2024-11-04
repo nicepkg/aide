@@ -1,32 +1,13 @@
 import type { ChatSession } from '@shared/entities'
-import {
-  ChatContextType,
-  type ChatContext,
-  type Conversation
-} from '@shared/types/chat-context'
+import { ChatContextEntity } from '@shared/entities/chat-context-entity'
+import { type ChatContext, type Conversation } from '@shared/types/chat-context'
 import { api } from '@webview/services/api-client'
 import { logAndToastError } from '@webview/utils/common'
 import { logger } from '@webview/utils/logger'
 import { produce } from 'immer'
 import type { DraftFunction } from 'use-immer'
-import { v4 as uuidv4 } from 'uuid'
 import { create } from 'zustand'
 import { immer } from 'zustand/middleware/immer'
-
-const createDefaultContext = (): ChatContext => ({
-  id: uuidv4(),
-  type: ChatContextType.Chat,
-  createdAt: Date.now(),
-  updatedAt: Date.now(),
-  settings: {
-    allowLongFileScan: false,
-    explicitContext: '总是用中文回复',
-    fastApplyModelName: 'gpt-4o-mini',
-    modelName: 'gpt-4o',
-    useFastApply: true
-  },
-  conversations: []
-})
 
 export type ChatStore = {
   context: ChatContext
@@ -48,7 +29,7 @@ export type ChatStore = {
 
 export const useChatStore = create<ChatStore>()(
   immer((set, get) => ({
-    context: createDefaultContext(),
+    context: new ChatContextEntity().entity,
     chatSessions: [] as ChatSession[],
     setContext: contextOrUpdater => {
       if (typeof contextOrUpdater === 'function') {
@@ -81,7 +62,7 @@ export const useChatStore = create<ChatStore>()(
           c => c.id !== id
         )
       }),
-    resetContext: () => set({ context: createDefaultContext() }),
+    resetContext: () => set({ context: new ChatContextEntity().entity }),
     saveSession: async () => {
       try {
         await api.chatSession.createOrUpdateSession({
@@ -106,7 +87,7 @@ export const useChatStore = create<ChatStore>()(
     },
     createAndSwitchToNewSession: async () => {
       try {
-        const newContext = createDefaultContext()
+        const newContext = new ChatContextEntity().entity
         const newSession = await api.chatSession.createSession({
           chatContext: newContext
         })

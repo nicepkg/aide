@@ -23,7 +23,7 @@ const getDefaultAIModel = (
   new AIModelEntity({
     name,
     providerOrBaseUrl
-  })
+  }).entity
 
 export const AIModelManagement = ({
   className,

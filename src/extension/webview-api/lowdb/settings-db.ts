@@ -15,7 +15,7 @@ class SettingsDB extends BaseDB<Settings> {
   static readonly schemaVersion = 1
 
   constructor(filePath: string) {
-    const defaults = new SettingsEntity().getDefaults()
+    const defaults = new SettingsEntity().entity
     super(filePath, defaults, SettingsDB.schemaVersion)
   }
 
@@ -39,7 +39,8 @@ class SettingsDB extends BaseDB<Settings> {
       value,
       category: config.category,
       updatedAt: Date.now()
-    })
+    }).entity
+
     return this.add(setting)
   }
 

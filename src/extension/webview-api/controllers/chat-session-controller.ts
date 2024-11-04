@@ -1,9 +1,8 @@
 import { aidePaths } from '@extension/file-utils/paths'
 import { VsCodeFS } from '@extension/file-utils/vscode-fs'
 import { logger } from '@extension/logger'
-import type { ChatSession } from '@shared/entities'
+import { ChatContextEntity, type ChatSession } from '@shared/entities'
 import type { ChatContext, Conversation } from '@shared/types/chat-context'
-import { convertChatContextToChatSession } from '@shared/utils/convert-chat-context-to-chat-session'
 
 import { chatSessionsDB } from '../lowdb/chat-sessions-db'
 import { Controller } from '../types'
@@ -16,7 +15,7 @@ export class ChatSessionController extends Controller {
   }
 
   async createSession(req: { chatContext: ChatContext }): Promise<ChatSession> {
-    const chatSession = convertChatContextToChatSession(req.chatContext)
+    const chatSession = new ChatContextEntity(req.chatContext).toChatSession()
     const now = new Date().getTime()
     const session = await chatSessionsDB.add({
       ...chatSession,
@@ -48,7 +47,7 @@ export class ChatSessionController extends Controller {
   async updateSession(req: { chatContext: ChatContext }): Promise<void> {
     const now = new Date().getTime()
     const session = await chatSessionsDB.update(req.chatContext.id, {
-      ...convertChatContextToChatSession(req.chatContext),
+      ...new ChatContextEntity(req.chatContext).toChatSession(),
       updatedAt: now
     })
 
@@ -65,7 +64,7 @@ export class ChatSessionController extends Controller {
   }): Promise<void> {
     const now = new Date().getTime()
     const session = await chatSessionsDB.createOrUpdate({
-      ...convertChatContextToChatSession(req.chatContext),
+      ...new ChatContextEntity(req.chatContext).toChatSession(),
       updatedAt: now
     })
 

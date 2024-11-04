@@ -9,18 +9,8 @@ export interface Settings extends IBaseEntity {
   updatedAt: number
 }
 
-export class SettingsEntity extends BaseEntity<Settings> implements Settings {
-  id!: string
-
-  key!: SettingKey
-
-  value!: SettingValue<SettingKey>
-
-  category!: SettingCategory
-
-  updatedAt!: number
-
-  getDefaults(): Settings {
+export class SettingsEntity extends BaseEntity<Settings> {
+  protected getDefaults(): Settings {
     return {
       id: uuidv4(),
       key: 'unknown' as SettingKey,

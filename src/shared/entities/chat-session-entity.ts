@@ -10,21 +10,8 @@ export interface ChatSession extends IBaseEntity {
   title: string
 }
 
-export class ChatSessionEntity
-  extends BaseEntity<ChatSession>
-  implements ChatSession
-{
-  id!: string
-
-  type!: ChatContextType
-
-  createdAt!: number
-
-  updatedAt!: number
-
-  title!: string
-
-  getDefaults(): ChatSession {
+export class ChatSessionEntity extends BaseEntity<ChatSession> {
+  protected getDefaults(): ChatSession {
     const now = Date.now()
     return {
       id: uuidv4(),

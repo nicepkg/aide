@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { convertChatContextToChatSession } from '@shared/utils/convert-chat-context-to-chat-session'
+import { ChatContextEntity } from '@shared/entities'
 import { useChatContext } from '@webview/contexts/chat-context'
 
 export const useChatSessionsUI = () => {
@@ -8,7 +8,7 @@ export const useChatSessionsUI = () => {
   const isCurrentSessionInChatSessions =
     chatSessions?.some(session => session.id === context.id) ?? false
 
-  const currentSession = convertChatContextToChatSession(context)
+  const currentSession = new ChatContextEntity(context).toChatSession()
 
   const chatSessionForRender = (
     isCurrentSessionInChatSessions ? [...chatSessions]! : [currentSession]

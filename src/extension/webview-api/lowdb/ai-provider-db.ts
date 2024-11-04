@@ -31,7 +31,7 @@ const findNewModel = async (
         new AIModelEntity({
           name,
           providerOrBaseUrl
-        })
+        }).entity
     )
 }
 
@@ -39,8 +39,7 @@ class AIProviderDB extends BaseDB<AIProvider> {
   static readonly schemaVersion = 1
 
   constructor() {
-    // Use entity's defaults
-    const defaults = new AIProviderEntity().getDefaults()
+    const defaults = new AIProviderEntity().entity
 
     super(
       path.join(aidePaths.getGlobalLowdbPath(), 'ai-providers.json'),

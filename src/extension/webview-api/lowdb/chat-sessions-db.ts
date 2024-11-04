@@ -11,8 +11,7 @@ class ChatSessionsDB extends BaseDB<ChatSession> {
   static readonly schemaVersion = 1
 
   constructor() {
-    // Use entity's defaults
-    const defaults = new ChatSessionEntity().getDefaults()
+    const defaults = new ChatSessionEntity().entity
 
     super(
       path.join(aidePaths.getWorkspaceLowdbPath(), 'sessions.json'),

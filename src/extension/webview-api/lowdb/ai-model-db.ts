@@ -8,8 +8,7 @@ class AIModelDB extends BaseDB<AIModel> {
   static readonly schemaVersion = 1
 
   constructor() {
-    // Use entity's defaults
-    const defaults = new AIModelEntity().getDefaults()
+    const defaults = new AIModelEntity().entity
 
     super(
       path.join(aidePaths.getGlobalLowdbPath(), 'ai-models.json'),

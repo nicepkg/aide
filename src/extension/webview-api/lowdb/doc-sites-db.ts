@@ -8,7 +8,7 @@ class DocSitesDB extends BaseDB<DocSite> {
   static readonly schemaVersion = 1
 
   constructor() {
-    const defaults = new DocSiteEntity().getDefaults()
+    const defaults = new DocSiteEntity().entity
     super(
       path.join(aidePaths.getGlobalLowdbPath(), 'doc-sites.json'),
       defaults,
@@ -21,7 +21,7 @@ class DocSitesDB extends BaseDB<DocSite> {
       id?: string
     }
   ): Promise<DocSite> {
-    const docSite = new DocSiteEntity(item)
+    const docSite = new DocSiteEntity(item).entity
     return super.add(docSite)
   }
 
@@ -30,7 +30,7 @@ class DocSitesDB extends BaseDB<DocSite> {
       id?: string
     })[]
   ): Promise<DocSite[]> {
-    const docSites = items.map(item => new DocSiteEntity(item))
+    const docSites = items.map(item => new DocSiteEntity(item).entity)
     return super.batchAdd(docSites)
   }
 
