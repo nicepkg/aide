@@ -17,21 +17,21 @@ const enableFetchPolyfill = async () => {
 
   // fuck, vscode fetch not working on v1.92.0
   // we add a polyfill here
-  const {
-    default: fetch,
-    Headers,
-    Request,
-    Response
-  } = await import('node-fetch')
-  const { default: FormData } = await import('form-data')
+  // const {
+  //   default: fetch,
+  //   Headers,
+  //   Request,
+  //   Response
+  // } = await import('node-fetch')
+  // const { default: FormData } = await import('form-data')
 
-  Object.assign(globalThis, {
-    fetch,
-    FormData,
-    Headers,
-    Request,
-    Response
-  })
+  // Object.assign(globalThis, {
+  //   fetch,
+  //   FormData,
+  //   Headers,
+  //   Request,
+  //   Response
+  // })
 }
 
 export const enablePolyfill = async () => {
