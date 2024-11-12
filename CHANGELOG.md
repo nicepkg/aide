@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.19.1](https://github.com/nicepkg/aide/compare/aide-v1.19.0...aide-v1.19.1) (2024-11-12)
+
+
+### Bug Fixes
+
+* hotfix fetch bug and not working with copilot ([17d62a9](https://github.com/nicepkg/aide/commit/17d62a9bc19b58b2d6e05c9ff6ac8b7120c498fa))
+
 ## [1.19.0](https://github.com/nicepkg/aide/compare/aide-v1.18.0...aide-v1.19.0) (2024-08-15)
 
 
