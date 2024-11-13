@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, type CSSProperties, type FC } from 'react'
+import { AnimatedList } from '@webview/components/ui/animated-list'
 import type { ConversationWithUIState } from '@webview/types/chat'
 import { cn } from '@webview/utils/common'
-import { AnimatePresence, motion } from 'framer-motion'
 
 import { ChatAIMessage, type ChatAIMessageProps } from './roles/chat-ai-message'
 import {
@@ -86,7 +86,7 @@ export const ChatMessages: React.FC<ChatMessagesProps> = props => {
       style={style}
     >
       {/* Chat messages */}
-      <AnimatePresence>
+      <AnimatedList>
         {conversationsWithUIState.map(conversationWithUIState => {
           const { uiState, ...conversation } = conversationWithUIState
           return (
@@ -103,7 +103,7 @@ export const ChatMessages: React.FC<ChatMessagesProps> = props => {
             />
           )
         })}
-      </AnimatePresence>
+      </AnimatedList>
     </div>
   )
 }
@@ -128,52 +128,35 @@ const InnerMessage: FC<InnerMessageProps> = props => {
   } = props
 
   return (
-    <motion.div
-      layout
-      initial={false}
-      animate={{ opacity: 1, y: 0, x: 0 }}
-      exit={{ opacity: 0, y: 10 }}
-      transition={{
-        opacity: { duration: 0.2 },
-        y: { duration: 0.2 },
-        x: { duration: 0.2 },
-        layout: {
-          type: 'spring',
-          bounce: 0.1,
-          duration: 0.3
-        }
-      }}
-      style={{ originX: 0.5, originY: 0.5, ...style }}
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      className={cn('flex flex-col', className)}
+    <div
+      key={conversation.id}
+      className={cn(
+        'flex relative max-w-full w-full items-center mb-2',
+        className
+      )}
+      style={style}
     >
-      <div
-        key={conversation.id}
-        className="flex relative max-w-full w-full items-center mb-2"
-      >
-        {conversation.role === 'ai' && (
-          <ChatAIMessage
-            conversation={conversation}
-            isLoading={isLoading}
-            isEditMode={isEditMode}
-            onEditModeChange={onEditModeChange}
-          />
-        )}
+      {conversation.role === 'ai' && (
+        <ChatAIMessage
+          conversation={conversation}
+          isLoading={isLoading}
+          isEditMode={isEditMode}
+          onEditModeChange={onEditModeChange}
+        />
+      )}
 
-        {conversation.role === 'human' && (
-          <ChatHumanMessage
-            context={context}
-            setContext={setContext}
-            conversation={conversation}
-            onSend={onSend}
-            isLoading={isLoading}
-            isEditMode={isEditMode}
-            sendButtonDisabled={sendButtonDisabled}
-            onEditModeChange={onEditModeChange}
-          />
-        )}
-      </div>
-    </motion.div>
+      {conversation.role === 'human' && (
+        <ChatHumanMessage
+          context={context}
+          setContext={setContext}
+          conversation={conversation}
+          onSend={onSend}
+          isLoading={isLoading}
+          isEditMode={isEditMode}
+          sendButtonDisabled={sendButtonDisabled}
+          onEditModeChange={onEditModeChange}
+        />
+      )}
+    </div>
   )
 }

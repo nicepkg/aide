@@ -1,12 +1,12 @@
 import { MessageBuilder } from '@extension/webview-api/chat-context-processor/utils/message-builder'
 import { HumanMessage } from '@langchain/core/messages'
-import type { ChatStrategyProvider } from '@shared/plugins/base/server/create-provider-manager'
-import type { ChatContext } from '@shared/types/chat-context'
-import type { Conversation } from '@shared/types/chat-context/conversation'
 import type {
+  ChatContext,
+  Conversation,
   LangchainMessage,
   LangchainMessageContents
-} from '@shared/types/chat-context/langchain-message'
+} from '@shared/entities'
+import type { ChatStrategyProvider } from '@shared/plugins/base/server/create-provider-manager'
 
 interface ConversationMessageConstructorOptions {
   chatContext: ChatContext

@@ -9,7 +9,7 @@ import { ThemeProvider as NextThemesProvider } from 'next-themes'
 import { ChatContextProvider } from './chat-context'
 import { GlobalSearchProvider } from './global-search-context'
 
-export function Providers({ children }: React.PropsWithChildren) {
+export const Providers = ({ children }: React.PropsWithChildren) => {
   const queryClientRef = useRef<QueryClient>(null)
   if (!queryClientRef.current) {
     queryClientRef.current = createQueryClient()

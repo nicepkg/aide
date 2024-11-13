@@ -4,9 +4,9 @@ import type {
   ChatGraphState
 } from '@extension/webview-api/chat-context-processor/strategies/chat-strategy/nodes/state'
 import type { StructuredTool } from '@langchain/core/tools'
+import type { Conversation } from '@shared/entities'
 import type { ChatStrategyProvider } from '@shared/plugins/base/server/create-provider-manager'
 import { PluginId } from '@shared/plugins/base/types'
-import type { Conversation } from '@shared/types/chat-context/conversation'
 
 import type { DocPluginState } from '../../types'
 import {

@@ -2,10 +2,7 @@ import { Suspense } from 'react'
 import routes from '~react-pages'
 import { useRoutes } from 'react-router-dom'
 
-import './styles/global.css'
-
 import { LoadingSpinner } from './components/loading-spinner'
-import { ThemeSync } from './components/theme-sync'
 import { Providers } from './contexts/providers'
 
 export default function App() {
@@ -27,7 +24,6 @@ export default function App() {
         </div>
         {/* <TailwindIndicator /> */}
       </Providers>
-      <ThemeSync />
     </div>
   )
 }

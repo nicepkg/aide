@@ -18,11 +18,10 @@ import type {
 import { formatCodeSnippet } from '@extension/webview-api/chat-context-processor/utils/code-snippet-formatter'
 import { getFileContent } from '@extension/webview-api/chat-context-processor/utils/get-file-content'
 import type { StructuredTool } from '@langchain/core/tools'
+import type { ChatContext, Conversation } from '@shared/entities'
 import type { ChatStrategyProvider } from '@shared/plugins/base/server/create-provider-manager'
 import { PluginId } from '@shared/plugins/base/types'
 import { mergeCodeSnippets } from '@shared/plugins/fs-plugin/server/merge-code-snippets'
-import type { ChatContext } from '@shared/types/chat-context'
-import type { Conversation } from '@shared/types/chat-context/conversation'
 import { removeDuplicates } from '@shared/utils/common'
 
 import type { FsPluginState } from '../../types'
@@ -333,7 +332,7 @@ The user can see the entire file, so they prefer to only read the updates to the
 
 7. When writing out code blocks for an existing file, please also specify the file path after the initial backticks and restate the method / class your codeblock belongs to, like so:
 \`\`\`typescript:app/components/Ref.tsx
-function AIChatHistory() {
+AIChatHistory() {
     ...
     {{ code }}
     ...

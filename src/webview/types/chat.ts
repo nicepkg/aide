@@ -1,5 +1,5 @@
 import type { FC } from 'react'
-import type { Conversation } from '@shared/types/chat-context'
+import type { Conversation } from '@shared/entities'
 import type { MentionItemLayoutProps } from '@webview/components/chat/selectors/mention-selector/mention-item-layout'
 
 export type { ProgressInfo } from '@extension/webview-api/chat-context-processor/utils/progress-reporter'

@@ -1,3 +1,5 @@
+import type { FC } from 'react'
+import type { ConversationLog } from '@shared/entities'
 import type { ImageInfo } from '@shared/plugins/fs-plugin/types'
 import type { FileInfo, MentionOption } from '@webview/types/chat'
 
@@ -18,5 +20,8 @@ export const createProviderManagers = () =>
       getSelectedImages: () => ImageInfo[]
       addSelectedImage: (image: ImageInfo) => void
       removeSelectedImage: (image: ImageInfo) => void
+    }>(),
+    message: new ProviderManager<{
+      customRenderLogPreview: FC<{ log: ConversationLog }>
     }>()
   }) as const satisfies Record<string, ProviderManager<any>>

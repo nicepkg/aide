@@ -1,5 +1,6 @@
 import { createModelProvider } from '@extension/ai/helpers'
-import { convertLangchainMessageToConversation } from '@extension/webview-api/chat-context-processor/utils/convert-langchain-message-to-conversation'
+import type { LangchainMessageContents } from '@shared/entities'
+import { convertToLangchainMessageContents } from '@shared/utils/convert-to-langchain-message-contents'
 import { produce } from 'immer'
 
 import { ChatMessagesConstructor } from '../messages-constructors/chat-messages-constructor'
@@ -7,7 +8,6 @@ import type { CreateChatGraphNode } from './state'
 
 export const createGenerateNode: CreateChatGraphNode =
   options => async state => {
-    const { chatContext } = state
     const modelProvider = await createModelProvider()
     const aiModelAbortController = new AbortController()
     const aiModel = await modelProvider.getModel()
@@ -24,12 +24,15 @@ export const createGenerateNode: CreateChatGraphNode =
       .bind({ signal: aiModelAbortController.signal })
       .invoke(messagesFromChatContext)
 
-    const finalChatContext = produce(chatContext, draft => {
-      draft.conversations.push(convertLangchainMessageToConversation(response))
+    const newConversations = produce(state.newConversations, draft => {
+      const contents: LangchainMessageContents =
+        convertToLangchainMessageContents(response.content)
+
+      draft.at(-1)!.contents.push(...contents)
     })
 
     return {
       messages: [response],
-      chatContext: finalChatContext
+      newConversations
     }
   }

@@ -1,6 +1,6 @@
+import type { Conversation } from '@shared/entities'
 import type { ChatStrategyProvider } from '@shared/plugins/base/server/create-provider-manager'
 import { PluginId } from '@shared/plugins/base/types'
-import type { Conversation } from '@shared/types/chat-context/conversation'
 import { removeDuplicates } from '@shared/utils/common'
 
 import type { GitDiff, GitPluginState } from '../../types'

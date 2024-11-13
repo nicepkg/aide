@@ -1,6 +1,5 @@
 import { ChatBubbleIcon, GearIcon } from '@radix-ui/react-icons'
-import type { ChatSession } from '@shared/entities'
-import { ChatContextType } from '@shared/types/chat-context'
+import { ChatContextType, type ChatSession } from '@shared/entities'
 import type {
   SearchCategory,
   SearchItem

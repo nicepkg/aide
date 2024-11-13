@@ -1,4 +1,4 @@
-import type { ChatContext, Conversation } from '@shared/types/chat-context'
+import type { ChatContext, Conversation } from '@shared/entities'
 
 import { ChatContextProcessor } from '../chat-context-processor'
 import { Controller } from '../types'

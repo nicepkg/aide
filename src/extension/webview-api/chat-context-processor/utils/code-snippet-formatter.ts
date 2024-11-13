@@ -10,10 +10,10 @@ export interface CodeSnippetInfo {
   endLine?: number
 }
 
-export function formatCodeSnippet(
+export const formatCodeSnippet = (
   snippet: CodeSnippetInfo,
   isEspeciallyRelevant?: boolean
-): string {
+): string => {
   const languageId = snippet.relativePath
     ? getLanguageId(path.extname(snippet.relativePath).slice(1))
     : snippet.language || ''

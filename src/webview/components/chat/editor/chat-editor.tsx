@@ -11,6 +11,7 @@ import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin'
 import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin'
 import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin'
 import { TabIndentationPlugin } from '@lexical/react/LexicalTabIndentationPlugin'
+import { TypedText } from '@webview/components/ui/typed-text'
 import { MentionNode } from '@webview/lexical/nodes/mention-node'
 import {
   MentionPlugin,
@@ -39,7 +40,7 @@ export interface ChatEditorProps
   className?: string
   contentEditableClassName?: string
   initialConfig?: Partial<InitialConfigType>
-  placeholder?: string
+  placeholder?: string | string[]
   autoFocus?: boolean
   onComplete?: (
     editorState: EditorState,
@@ -200,14 +201,24 @@ const ChatEditorInner: FC<ChatEditorProps> = ({
         contentEditable={
           <ContentEditable
             className={cn(
-              'editor-input min-h-24 min-w-full p-2 outline-none',
+              'editor-input min-h-24 min-w-full py-2 outline-none',
               contentEditableClassName
             )}
           />
         }
         placeholder={
-          <div className="editor-placeholder absolute pointer-events-none top-2 left-2 text-foreground/50">
-            {placeholder}
+          <div className="editor-placeholder absolute pointer-events-none top-2 left-0 text-foreground/50">
+            <TypedText
+              strings={
+                Array.isArray(placeholder) ? placeholder : [placeholder || '']
+              }
+              typeSpeed={40}
+              backSpeed={30}
+              backDelay={2000}
+              loop={Array.isArray(placeholder)}
+              showCursor={Array.isArray(placeholder)}
+              cursorChar=""
+            />
           </div>
         }
         ErrorBoundary={LexicalErrorBoundary}

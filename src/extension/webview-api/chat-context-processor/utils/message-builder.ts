@@ -4,11 +4,10 @@ import {
   SystemMessage,
   type MessageType
 } from '@langchain/core/messages'
-
 import type {
   LangchainMessage,
   LangchainMessageContents
-} from '../../../../shared/types/chat-context/langchain-message'
+} from '@shared/entities'
 
 export class MessageBuilder {
   static createMessage(

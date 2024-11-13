@@ -1,15 +1,16 @@
 import type { QueryClient } from '@tanstack/react-query'
 import { logger } from '@webview/utils/logger'
-import { produce } from 'immer'
+import type { DraftFunction, Updater } from 'use-immer'
 
-import type { PluginId, PluginState, ValidRecipeReturnType } from '../types'
+import type { PluginId, PluginState } from '../types'
 import { ClientPluginContext, type ClientPlugin } from './client-plugin-context'
 import { createProviderManagers } from './create-provider-manager'
 
-interface ClientPluginRegistryOptions {
+interface ClientPluginRegistryInitOptions {
   queryClient: QueryClient
-  getState: (pluginId: PluginId) => any
-  setState: (pluginId: PluginId, newState: any) => void
+  // getState: () => Record<PluginId, PluginState>
+  state: Record<PluginId, PluginState>
+  setState: Updater<Record<PluginId, PluginState>>
 }
 
 export class ClientPluginRegistry {
@@ -19,35 +20,45 @@ export class ClientPluginRegistry {
 
   private commands: Map<string, (...args: any[]) => void> = new Map()
 
-  queryClient: QueryClient
+  queryClient!: QueryClient
 
   providerManagers = createProviderManagers()
 
-  getState: (pluginId: PluginId) => any
+  isInitialized: boolean = false
 
-  setState: <State extends PluginState>(
+  private state!: Record<PluginId, PluginState>
+
+  getState!: <State extends PluginState>(pluginId: PluginId) => State
+
+  setState!: <State extends PluginState>(
     pluginId: PluginId,
-    updater: State | ((draft: State) => ValidRecipeReturnType<State>)
+    updater: State | DraftFunction<State>
   ) => void
 
-  constructor(options: ClientPluginRegistryOptions) {
+  init(options: ClientPluginRegistryInitOptions): void {
     this.queryClient = options.queryClient
-    this.getState = options.getState
-    this.setState = this.createStateSetter(options)
-  }
+    this.state = options.state
 
-  private createStateSetter(options: ClientPluginRegistryOptions) {
-    return (
+    this.getState = <State extends PluginState>(pluginId: PluginId) =>
+      (this.state[pluginId] || {}) as State
+
+    this.setState = (
       pluginId: PluginId,
-      updater:
-        | PluginState
-        | ((draft: PluginState) => ValidRecipeReturnType<PluginState>)
+      updater: PluginState | DraftFunction<PluginState>
     ) => {
-      const currentState = this.getState(pluginId)
-      const newState =
-        typeof updater === 'function' ? produce(currentState, updater) : updater
-      options.setState(pluginId, newState)
+      options.setState(draft => {
+        if (!draft[pluginId]) {
+          draft[pluginId] = {}
+        }
+
+        if (typeof updater === 'function') {
+          updater(draft[pluginId])
+        } else {
+          draft[pluginId] = updater
+        }
+      })
     }
+    this.isInitialized = true
   }
 
   private checkDependencies(plugin: ClientPlugin): boolean {
@@ -55,6 +66,36 @@ export class ClientPluginRegistry {
       !plugin.dependencies ||
       plugin.dependencies.every(depId => this.plugins.has(depId))
     )
+  }
+
+  private handleError(error: Error, pluginId: PluginId | null): void {
+    logger.error(`Error in plugin ${pluginId}:`, error)
+  }
+
+  usePluginState<State extends PluginState>(pluginId: PluginId) {
+    const state = this.getState<State>(pluginId)
+    const setState = (updater: DraftFunction<State>) =>
+      this.setState(pluginId, updater)
+
+    const resetState = () => {
+      const plugin = this.plugins.get(pluginId)
+      if (plugin) this.setState(pluginId, plugin.getInitState())
+    }
+
+    return [state, setState, resetState] as const
+  }
+
+  registerCommand(command: string, callback: (...args: any[]) => void): void {
+    this.commands.set(command, callback)
+  }
+
+  executeCommand(command: string, ...args: any[]): void {
+    const callback = this.commands.get(command)
+    if (callback) callback(...args)
+  }
+
+  getPlugin<T extends ClientPlugin>(pluginId: PluginId): T | undefined {
+    return this.plugins.get(pluginId) as T
   }
 
   async loadPlugin<State extends PluginState>(
@@ -81,37 +122,6 @@ export class ClientPluginRegistry {
     } finally {
       currentPluginId = null
     }
-  }
-
-  private handleError(error: Error, pluginId: PluginId | null): void {
-    logger.error(`Error in plugin ${pluginId}:`, error)
-  }
-
-  usePluginState<State extends PluginState>(pluginId: PluginId) {
-    const state = this.getState(pluginId) as State
-    const setState = (
-      updater: State | ((draft: State) => ValidRecipeReturnType<State>)
-    ) => this.setState(pluginId, updater)
-
-    const resetState = () => {
-      const plugin = this.plugins.get(pluginId)
-      if (plugin) this.setState(pluginId, plugin.getInitState())
-    }
-
-    return [state, setState, resetState] as const
-  }
-
-  registerCommand(command: string, callback: (...args: any[]) => void): void {
-    this.commands.set(command, callback)
-  }
-
-  executeCommand(command: string, ...args: any[]): void {
-    const callback = this.commands.get(command)
-    if (callback) callback(...args)
-  }
-
-  getPlugin<T extends ClientPlugin>(pluginId: PluginId): T | undefined {
-    return this.plugins.get(pluginId) as T
   }
 
   async unloadPlugin(pluginId: PluginId): Promise<void> {

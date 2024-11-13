@@ -1,7 +1,7 @@
 /* eslint-disable unused-imports/no-unused-vars */
 import React, { useState } from 'react'
 import { ImageIcon } from '@radix-ui/react-icons'
-import type { ChatContext, Conversation } from '@shared/types/chat-context'
+import type { ChatContext, Conversation } from '@shared/entities'
 import { Button } from '@webview/components/ui/button'
 import { usePluginImagesSelectorProviders } from '@webview/hooks/chat/use-plugin-providers'
 import { type ModelOption } from '@webview/types/chat'

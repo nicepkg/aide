@@ -1,8 +1,11 @@
 import type { BaseMessage } from '@langchain/core/messages'
 import { Annotation } from '@langchain/langgraph'
-import type { ChatContext } from '@shared/types/chat-context'
+import {
+  ConversationEntity,
+  type ChatContext,
+  type Conversation
+} from '@shared/entities'
 
-import { baseState } from '../../base-state'
 import type { BaseStrategyOptions } from '../../base-strategy'
 
 export enum ChatGraphNodeName {
@@ -19,11 +22,14 @@ export const chatGraphState = Annotation.Root({
   chatContext: Annotation<ChatContext>({
     reducer: (x, y) => y ?? x
   }),
+  newConversations: Annotation<[Conversation, ...Conversation[]]>({
+    reducer: (x, y) => y ?? x,
+    default: () => [new ConversationEntity({ role: 'ai' }).entity]
+  }),
   shouldContinue: Annotation<boolean>({
     reducer: (x, y) => y ?? x,
     default: () => true
-  }),
-  ...baseState
+  })
 })
 
 export type ChatGraphState = typeof chatGraphState.State

@@ -11,13 +11,14 @@ import { CheerioWebBaseLoader } from '@langchain/community/document_loaders/web/
 import type { Document } from '@langchain/core/documents'
 import { HumanMessage, type ToolMessage } from '@langchain/core/messages'
 import { DynamicStructuredTool } from '@langchain/core/tools'
+import type { ConversationLog, LangchainTool } from '@shared/entities'
 import { PluginId } from '@shared/plugins/base/types'
-import type { LangchainTool } from '@shared/types/chat-context/langchain-message'
 import { settledPromiseResults } from '@shared/utils/common'
 import { produce } from 'immer'
+import { v4 as uuidv4 } from 'uuid'
 import { z } from 'zod'
 
-import type { WebDocInfo, WebPluginState } from '../../types'
+import type { WebDocInfo, WebPluginLog, WebPluginState } from '../../types'
 
 interface WebSearchToolResult {
   relevantContent: string
@@ -30,8 +31,7 @@ export const createWebSearchTool = async (
   options: BaseStrategyOptions,
   state: ChatGraphState
 ) => {
-  const { chatContext } = state
-  const { conversations } = chatContext
+  const { conversations } = state.chatContext
   const lastConversation = conversations.at(-1)
 
   const webPluginState = lastConversation?.pluginStates?.[PluginId.Web] as
@@ -123,12 +123,12 @@ Please provide a relevant and focused summary based on this content and the user
 
 export const createWebSearchNode: CreateChatGraphNode =
   options => async state => {
-    const { messages, chatContext } = state
-    const { conversations } = chatContext
+    const { conversations } = state.chatContext
     const lastConversation = conversations.at(-1)
     const webPluginState = lastConversation?.pluginStates?.[PluginId.Web] as
       | Partial<WebPluginState>
       | undefined
+    const logs: ConversationLog[] = []
 
     if (!webPluginState?.enableWebSearchAgent) return {}
 
@@ -137,7 +137,7 @@ export const createWebSearchNode: CreateChatGraphNode =
     if (!webRetrieverTool) return {}
 
     const tools: LangchainTool[] = [webRetrieverTool]
-    const lastMessage = messages.at(-1)
+    const lastMessage = state.messages.at(-1)
     const toolCalls = findCurrentToolsCallParams(lastMessage, tools)
 
     if (!toolCalls.length) return {}
@@ -172,11 +172,24 @@ export const createWebSearchNode: CreateChatGraphNode =
           draft.webSearchResultsFromAgent.push(...result.webSearchResults)
         }
       )
+
+      logs.push({
+        id: uuidv4(),
+        createdAt: Date.now(),
+        pluginId: PluginId.Web,
+        title: 'Search web',
+        webSearchResultsFromAgent: result.webSearchResults
+      } satisfies WebPluginLog)
     })
 
     await settledPromiseResults(toolCallsPromises)
 
+    const newConversations = produce(state.newConversations, draft => {
+      draft.at(-1)!.logs.push(...logs)
+    })
+
     return {
-      chatContext
+      chatContext: state.chatContext,
+      newConversations
     }
   }

@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import type { Conversation } from '@shared/types/chat-context'
+import type { Conversation } from '@shared/entities'
 import { useChatContext } from '@webview/contexts/chat-context'
 import type { ConversationUIState } from '@webview/types/chat'
 import type { DraftFunction } from 'use-immer'

@@ -48,7 +48,7 @@ const LIGHT_ADJUSTMENTS = {
   '--ring': -0.1
 }
 
-export function ThemeSync() {
+export const ThemeSync = () => {
   const [themeLoaded, setThemeLoaded] = useState(false)
 
   useEffect(() => {

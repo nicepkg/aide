@@ -8,13 +8,14 @@ import { DocCrawler } from '@extension/webview-api/chat-context-processor/utils/
 import { findCurrentToolsCallParams } from '@extension/webview-api/chat-context-processor/utils/find-current-tools-call-params'
 import type { ToolMessage } from '@langchain/core/messages'
 import { DynamicStructuredTool } from '@langchain/core/tools'
+import type { ConversationLog, LangchainTool } from '@shared/entities'
 import { PluginId } from '@shared/plugins/base/types'
-import type { LangchainTool } from '@shared/types/chat-context/langchain-message'
 import { settledPromiseResults } from '@shared/utils/common'
 import { produce } from 'immer'
+import { v4 as uuidv4 } from 'uuid'
 import { z } from 'zod'
 
-import type { WebDocInfo, WebPluginState } from '../../types'
+import type { WebDocInfo, WebPluginLog, WebPluginState } from '../../types'
 
 interface WebVisitToolResult {
   contents: WebDocInfo[]
@@ -56,12 +57,12 @@ export const createWebVisitTool = async (
 
 export const createWebVisitNode: CreateChatGraphNode =
   options => async state => {
-    const { messages, chatContext } = state
-    const { conversations } = chatContext
+    const { conversations } = state.chatContext
     const lastConversation = conversations.at(-1)
     const webPluginState = lastConversation?.pluginStates?.[PluginId.Web] as
       | Partial<WebPluginState>
       | undefined
+    const logs: ConversationLog[] = []
 
     if (!webPluginState?.enableWebVisitAgent) return {}
 
@@ -70,7 +71,7 @@ export const createWebVisitNode: CreateChatGraphNode =
     if (!webVisitTool) return {}
 
     const tools: LangchainTool[] = [webVisitTool]
-    const lastMessage = messages.at(-1)
+    const lastMessage = state.messages.at(-1)
     const toolCalls = findCurrentToolsCallParams(lastMessage, tools)
 
     if (!toolCalls.length) return {}
@@ -94,11 +95,24 @@ export const createWebVisitNode: CreateChatGraphNode =
           draft.webVisitResultsFromAgent.push(...result.contents)
         }
       )
+
+      logs.push({
+        id: uuidv4(),
+        createdAt: Date.now(),
+        pluginId: PluginId.Web,
+        title: 'Visit web',
+        webVisitResultsFromAgent: result.contents
+      } satisfies WebPluginLog)
     })
 
     await settledPromiseResults(toolCallsPromises)
 
+    const newConversations = produce(state.newConversations, draft => {
+      draft.at(-1)!.logs.push(...logs)
+    })
+
     return {
-      chatContext
+      chatContext: state.chatContext,
+      newConversations
     }
   }

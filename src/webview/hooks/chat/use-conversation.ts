@@ -1,5 +1,4 @@
-import { ConversationEntity } from '@shared/entities/conversation-entity'
-import type { Conversation } from '@shared/types/chat-context'
+import { ConversationEntity, type Conversation } from '@shared/entities'
 import { useImmer } from 'use-immer'
 
 export const useConversation = (

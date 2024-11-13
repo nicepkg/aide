@@ -1,6 +1,5 @@
-import type { ChatSession } from '@shared/entities'
-import { ChatContextEntity } from '@shared/entities/chat-context-entity'
-import { type ChatContext, type Conversation } from '@shared/types/chat-context'
+import type { ChatContext, ChatSession, Conversation } from '@shared/entities'
+import { ChatContextEntity } from '@shared/entities'
 import { api } from '@webview/services/api-client'
 import { logAndToastError } from '@webview/utils/common'
 import { logger } from '@webview/utils/logger'

@@ -4,8 +4,7 @@ import type {
   ChatGraphState
 } from '@extension/webview-api/chat-context-processor/strategies/chat-strategy/nodes/state'
 import type { StructuredTool } from '@langchain/core/tools'
-import type { ChatContext } from '@shared/types/chat-context'
-import type { Conversation } from '@shared/types/chat-context/conversation'
+import type { ChatContext, Conversation } from '@shared/entities'
 
 import { ProviderManager } from '../provider-manager'
 

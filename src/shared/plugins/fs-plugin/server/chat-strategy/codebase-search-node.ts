@@ -7,14 +7,15 @@ import {
 import { findCurrentToolsCallParams } from '@extension/webview-api/chat-context-processor/utils/find-current-tools-call-params'
 import type { ToolMessage } from '@langchain/core/messages'
 import { DynamicStructuredTool } from '@langchain/core/tools'
+import type { ConversationLog, LangchainTool } from '@shared/entities'
 import { PluginId } from '@shared/plugins/base/types'
 import { mergeCodeSnippets } from '@shared/plugins/fs-plugin/server/merge-code-snippets'
-import type { LangchainTool } from '@shared/types/chat-context/langchain-message'
 import { settledPromiseResults } from '@shared/utils/common'
 import { produce } from 'immer'
+import { v4 as uuidv4 } from 'uuid'
 import { z } from 'zod'
 
-import type { CodeSnippet, FsPluginState } from '../../types'
+import type { CodeSnippet, FsPluginLog, FsPluginState } from '../../types'
 
 interface CodebaseSearchToolResult {
   codeSnippets: CodeSnippet[]
@@ -24,8 +25,7 @@ export const createCodebaseSearchTool = async (
   options: BaseStrategyOptions,
   state: ChatGraphState
 ) => {
-  const { chatContext } = state
-  const { conversations } = chatContext
+  const { conversations } = state.chatContext
   const lastConversation = conversations.at(-1)
   const fsPluginState = lastConversation?.pluginStates?.[PluginId.Fs] as
     | Partial<FsPluginState>
@@ -37,8 +37,7 @@ export const createCodebaseSearchTool = async (
     state: ChatGraphState,
     queryParts?: string[]
   ): Promise<CodebaseSearchToolResult> => {
-    const { registerManager } = state
-    const indexer = registerManager.getRegister(
+    const indexer = options.registerManager.getRegister(
       CodebaseWatcherRegister
     )?.indexer
     const searchResults: CodebaseSearchToolResult = {
@@ -93,12 +92,12 @@ export const createCodebaseSearchTool = async (
 
 export const createCodebaseSearchNode: CreateChatGraphNode =
   options => async state => {
-    const { messages, chatContext } = state
-    const { conversations } = chatContext
+    const { conversations } = state.chatContext
     const lastConversation = conversations.at(-1)
     const fsPluginState = lastConversation?.pluginStates?.[PluginId.Fs] as
       | Partial<FsPluginState>
       | undefined
+    const logs: ConversationLog[] = []
 
     if (!fsPluginState?.enableCodebaseAgent) return {}
 
@@ -107,7 +106,7 @@ export const createCodebaseSearchNode: CreateChatGraphNode =
     if (!codebaseSearchTool) return {}
 
     const tools: LangchainTool[] = [codebaseSearchTool]
-    const lastMessage = messages.at(-1)
+    const lastMessage = state.messages.at(-1)
     const toolCalls = findCurrentToolsCallParams(lastMessage, tools)
 
     if (!toolCalls.length) return {}
@@ -131,11 +130,24 @@ export const createCodebaseSearchNode: CreateChatGraphNode =
           draft.codeSnippetFromAgent.push(...result.codeSnippets)
         }
       )
+
+      logs.push({
+        id: uuidv4(),
+        createdAt: Date.now(),
+        pluginId: PluginId.Fs,
+        title: 'Search codebase',
+        codeSnippets: result.codeSnippets
+      } satisfies FsPluginLog)
     })
 
     await settledPromiseResults(toolCallsPromises)
 
+    const newConversations = produce(state.newConversations, draft => {
+      draft.at(-1)!.logs.push(...logs)
+    })
+
     return {
-      chatContext
+      chatContext: state.chatContext,
+      newConversations
     }
   }

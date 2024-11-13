@@ -1,6 +1,6 @@
 import type { CommandManager } from '@extension/commands/command-manager'
 import type { RegisterManager } from '@extension/registers/register-manager'
-import type { ChatContext, Conversation } from '@shared/types/chat-context'
+import type { ChatContext, Conversation } from '@shared/entities'
 
 export interface BaseStrategyOptions {
   registerManager: RegisterManager

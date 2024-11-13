@@ -1,11 +1,12 @@
 import type { CSSProperties, FC } from 'react'
-import type { Conversation } from '@shared/types/chat-context'
+import type { Conversation } from '@shared/entities'
 import { getAllTextFromLangchainMessageContents } from '@shared/utils/get-all-text-from-langchain-message-contents'
-import { GlowingCard } from '@webview/components/glowing-card'
+import { WithPluginRegistryProvider } from '@webview/contexts/plugin-registry-context'
 import type { ConversationUIState } from '@webview/types/chat'
 import { cn } from '@webview/utils/common'
 
 import { Markdown } from '../markdown'
+import { ChatAIMessageLogAccordion } from './chat-log-preview'
 
 export interface ChatAIMessageProps extends ConversationUIState {
   className?: string
@@ -14,7 +15,7 @@ export interface ChatAIMessageProps extends ConversationUIState {
   onEditModeChange?: (isEditMode: boolean, conversation: Conversation) => void
 }
 
-export const ChatAIMessage: FC<ChatAIMessageProps> = props => {
+const _ChatAIMessage: FC<ChatAIMessageProps> = props => {
   const {
     conversation,
     isLoading,
@@ -27,7 +28,7 @@ export const ChatAIMessage: FC<ChatAIMessageProps> = props => {
     <div className="w-full flex">
       <div
         className={cn(
-          'ml-4 mr-auto bg-background text-foreground border rounded-tl-2xl rounded-br-2xl rounded-tr-2xl overflow-hidden',
+          'ml-4 mr-auto relative bg-background text-foreground border overflow-hidden rounded-md rounded-bl-[0px]',
           isEditMode && 'w-full',
           className
         )}
@@ -38,17 +39,22 @@ export const ChatAIMessage: FC<ChatAIMessageProps> = props => {
           // onEditModeChange?.(true, conversation)
         }}
       >
-        <GlowingCard isAnimated={isLoading}>
-          {/* {conversation.content} */}
-          <Markdown
-            variant="chat"
-            className={cn('px-2', !conversation.contents && 'opacity-50')}
-          >
-            {getAllTextFromLangchainMessageContents(conversation.contents)}
-          </Markdown>
-        </GlowingCard>
+        <div className="flex items-center p-2 w-full">
+          <ChatAIMessageLogAccordion
+            conversation={conversation}
+            isLoading={!!isLoading}
+          />
+        </div>
+        <Markdown
+          variant="chat"
+          className={cn('px-2', !conversation.contents && 'opacity-50')}
+        >
+          {getAllTextFromLangchainMessageContents(conversation.contents)}
+        </Markdown>
       </div>
       <div className="w-4 shrink-0" />
     </div>
   )
 }
+
+export const ChatAIMessage = WithPluginRegistryProvider(_ChatAIMessage)

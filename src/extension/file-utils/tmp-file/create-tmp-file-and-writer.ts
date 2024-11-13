@@ -94,16 +94,16 @@ export const writeTextToDocument = async (
   await vscode.workspace.applyEdit(edit)
 }
 
-async function appendTextToDocument(
+const appendTextToDocument = async (
   document: vscode.TextDocument,
   textPart: string
-): Promise<void> {
+): Promise<void> => {
   const edit = new vscode.WorkspaceEdit()
   const position = new vscode.Position(document.lineCount, 0)
   edit.insert(document.uri, position, textPart)
   await vscode.workspace.applyEdit(edit)
 }
 
-async function closeDocument(uri: vscode.Uri): Promise<void> {
+const closeDocument = async (uri: vscode.Uri): Promise<void> => {
   await vscode.commands.executeCommand('aide.quickCloseFileWithoutSave', uri)
 }

@@ -1,9 +1,8 @@
-import { ChatContextType, type Conversation } from '@shared/types/chat-context'
-import type { SettingsContext } from '@shared/types/chat-context/settings-context'
 import { v4 as uuidv4 } from 'uuid'
 
 import { BaseEntity, type IBaseEntity } from './base-entity'
 import { ChatSessionEntity, type ChatSession } from './chat-session-entity'
+import { type Conversation } from './conversation-entity'
 
 export interface ChatContext extends IBaseEntity {
   type: ChatContextType
@@ -62,4 +61,19 @@ export class ChatContextEntity extends BaseEntity<ChatContext> {
 
     return firstHumanMessageText || defaultTitle
   }
+}
+
+export interface SettingsContext {
+  modelName: string
+  useFastApply: boolean
+  fastApplyModelName?: string
+  explicitContext: string
+  allowLongFileScan: boolean
+}
+
+export enum ChatContextType {
+  Chat = 'chat',
+  Composer = 'composer',
+  UIDesigner = 'UIDesigner',
+  AutoTask = 'auto-task'
 }

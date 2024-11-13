@@ -38,10 +38,10 @@ export class BaseDB<T extends IBaseEntity> {
   }
 
   protected async migrateData() {
-    const currentVersion = this.db.data.schemaVersion || 1
+    const schemaVersion = this.db.data.schemaVersion || 1
 
-    if (currentVersion < this.currentVersion) {
-      for (let v = currentVersion; v < this.currentVersion; v++) {
+    if (schemaVersion < this.currentVersion) {
+      for (let v = schemaVersion; v < this.currentVersion; v++) {
         await this.applyMigration(v)
       }
     }

@@ -1,6 +1,6 @@
 import { useRef, type FC } from 'react'
 import { GearIcon, MagnifyingGlassIcon, PlusIcon } from '@radix-ui/react-icons'
-import { ChatContextType, type Conversation } from '@shared/types/chat-context'
+import { ChatContextType, type Conversation } from '@shared/entities'
 import { useChatContext } from '@webview/contexts/chat-context'
 import { useGlobalSearch } from '@webview/contexts/global-search-context'
 import { useChatState } from '@webview/hooks/chat/use-chat-state'
@@ -9,7 +9,6 @@ import { logger } from '@webview/utils/logger'
 import { useNavigate } from 'react-router'
 
 import { ButtonWithTooltip } from '../button-with-tooltip'
-import { GlowingCard } from '../glowing-card'
 import { SidebarLayout } from '../sidebar-layout'
 import {
   Select,
@@ -62,6 +61,7 @@ export const ChatUI: FC = () => {
       replaceConversationAndTrimHistory(conversation)
       prepareUIForSending(conversation.id)
       await saveSession()
+
       await api.chat.streamChat(
         {
           chatContext: getContext()
@@ -165,22 +165,22 @@ export const ChatUI: FC = () => {
         onEditModeChange={handleEditModeChange}
       />
 
-      <GlowingCard isAnimated={newConversationUIState.isLoading}>
-        <ChatInput
-          ref={chatInputRef}
-          autoFocus
-          context={context}
-          setContext={setContext}
-          conversation={newConversation}
-          setConversation={setNewConversation}
-          sendButtonDisabled={
-            newConversationUIState.isLoading ??
-            newConversationUIState.sendButtonDisabled ??
-            false
-          }
-          onSend={handleSend}
-        />
-      </GlowingCard>
+      <ChatInput
+        ref={chatInputRef}
+        autoFocus
+        className="rounded-tl-xl rounded-tr-xl"
+        context={context}
+        setContext={setContext}
+        conversation={newConversation}
+        setConversation={setNewConversation}
+        borderAnimation={newConversationUIState.isLoading}
+        sendButtonDisabled={
+          newConversationUIState.isLoading ??
+          newConversationUIState.sendButtonDisabled ??
+          false
+        }
+        onSend={handleSend}
+      />
     </SidebarLayout>
   )
 }

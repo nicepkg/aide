@@ -5,7 +5,7 @@ import { fontFamily } from 'tailwindcss/defaultTheme'
 
 const config = {
   darkMode: ['class'],
-  content: ['./src/webview/**/*.{ts,tsx}'],
+  content: ['./src/webview/**/*.{ts,tsx}', './src/shared/**/*.{ts,tsx}'],
   prefix: '',
   theme: {
     container: {
@@ -76,11 +76,29 @@ const config = {
           to: {
             height: '0'
           }
+        },
+        'border-beam': {
+          '100%': {
+            'offset-distance': '100%'
+          }
+        },
+        shine: {
+          '0%': {
+            'background-position': '0% 0%'
+          },
+          '50%': {
+            'background-position': '100% 100%'
+          },
+          to: {
+            'background-position': '0% 0%'
+          }
         }
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
-        'accordion-up': 'accordion-up 0.2s ease-out'
+        'accordion-up': 'accordion-up 0.2s ease-out',
+        'border-beam': 'border-beam calc(var(--duration)*1s) infinite linear',
+        shine: 'shine var(--duration) infinite linear'
       },
       fontFamily: {
         sans: ['var(--font-sans)', ...fontFamily.sans]

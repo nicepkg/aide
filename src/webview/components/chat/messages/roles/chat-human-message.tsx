@@ -1,12 +1,12 @@
 import { useEffect, useRef, type CSSProperties, type FC } from 'react'
-import type { Conversation } from '@shared/types/chat-context'
+import type { Conversation } from '@shared/entities'
 import {
   ChatInput,
   ChatInputMode,
   type ChatInputProps,
   type ChatInputRef
 } from '@webview/components/chat/editor/chat-input'
-import { GlowingCard } from '@webview/components/glowing-card'
+import { BorderBeam } from '@webview/components/ui/border-beam'
 import { useConversation } from '@webview/hooks/chat/use-conversation'
 import type { ConversationUIState } from '@webview/types/chat'
 import { cn } from '@webview/utils/common'
@@ -42,10 +42,6 @@ export const ChatHumanMessage: FC<ChatHumanMessageProps> = props => {
     initialConversation
   )
 
-  const handleSend = () => {
-    onSend(conversation)
-  }
-
   useEffect(() => {
     if (isEditMode) {
       // i don't know why this is needed
@@ -60,7 +56,7 @@ export const ChatHumanMessage: FC<ChatHumanMessageProps> = props => {
       <div className="w-4 shrink-0" />
       <div
         className={cn(
-          'mr-4 ml-auto bg-background text-foreground border rounded-tl-2xl rounded-bl-2xl rounded-tr-2xl overflow-hidden',
+          'relative mr-4 ml-auto bg-background text-foreground border rounded-tl-2xl rounded-bl-2xl rounded-tr-2xl overflow-hidden',
           isEditMode && 'w-full',
           className
         )}
@@ -70,22 +66,22 @@ export const ChatHumanMessage: FC<ChatHumanMessageProps> = props => {
           onEditModeChange?.(true, conversation)
         }}
       >
-        <GlowingCard isAnimated={isLoading}>
-          <ChatInput
-            ref={chatInputRef}
-            mode={
-              isEditMode
-                ? ChatInputMode.MessageEdit
-                : ChatInputMode.MessageReadonly
-            }
-            context={context}
-            setContext={setContext}
-            conversation={conversation}
-            setConversation={setConversation}
-            sendButtonDisabled={isLoading ?? sendButtonDisabled ?? false}
-            onSend={handleSend}
-          />
-        </GlowingCard>
+        <ChatInput
+          ref={chatInputRef}
+          mode={
+            isEditMode
+              ? ChatInputMode.MessageEdit
+              : ChatInputMode.MessageReadonly
+          }
+          editorClassName="px-2"
+          context={context}
+          setContext={setContext}
+          conversation={conversation}
+          setConversation={setConversation}
+          sendButtonDisabled={isLoading ?? sendButtonDisabled ?? false}
+          onSend={onSend}
+        />
+        {isLoading && <BorderBeam duration={2} delay={0.5} />}
       </div>
     </div>
   )

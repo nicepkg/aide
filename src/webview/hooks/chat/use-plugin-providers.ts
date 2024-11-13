@@ -2,22 +2,30 @@ import { useMemo } from 'react'
 import { usePluginRegistry } from '@webview/contexts/plugin-registry-context'
 
 export const usePluginEditorProviders = () => {
-  const { pluginRegistryRef, isPluginRegistryLoaded } = usePluginRegistry()
+  const { pluginRegistry } = usePluginRegistry()
   const merged = useMemo(
-    () => pluginRegistryRef.current?.providerManagers.editor.mergeAll() || {},
-    [isPluginRegistryLoaded]
+    () => pluginRegistry?.providerManagers.editor.mergeAll() || {},
+    [pluginRegistry]
+  )
+
+  return merged
+}
+
+export const usePluginMessageProviders = () => {
+  const { pluginRegistry } = usePluginRegistry()
+  const merged = useMemo(
+    () => pluginRegistry?.providerManagers.message.mergeAll() || {},
+    [pluginRegistry]
   )
 
   return merged
 }
 
 export const usePluginFilesSelectorProviders = () => {
-  const { pluginRegistryRef, isPluginRegistryLoaded } = usePluginRegistry()
+  const { pluginRegistry } = usePluginRegistry()
   const merged = useMemo(
-    () =>
-      pluginRegistryRef.current?.providerManagers.filesSelector.mergeAll() ||
-      {},
-    [isPluginRegistryLoaded]
+    () => pluginRegistry?.providerManagers.filesSelector.mergeAll() || {},
+    [pluginRegistry]
   )
 
   const selectedFiles = merged.getSelectedFiles?.() || []
@@ -26,22 +34,20 @@ export const usePluginFilesSelectorProviders = () => {
 }
 
 export const usePluginImagesSelectorProviders = () => {
-  const { pluginRegistryRef, isPluginRegistryLoaded } = usePluginRegistry()
+  const { pluginRegistry } = usePluginRegistry()
   const merged = useMemo(
-    () =>
-      pluginRegistryRef.current?.providerManagers.imagesSelector.mergeAll() ||
-      {},
-    [isPluginRegistryLoaded]
+    () => pluginRegistry?.providerManagers.imagesSelector.mergeAll() || {},
+    [pluginRegistry]
   )
 
   return merged
 }
 
 export const usePluginStates = () => {
-  const { pluginRegistryRef, isPluginRegistryLoaded } = usePluginRegistry()
+  const { pluginRegistry } = usePluginRegistry()
   const states = useMemo(
-    () => pluginRegistryRef.current?.providerManagers.state.getAll() || {},
-    [isPluginRegistryLoaded]
+    () => pluginRegistry?.providerManagers.state.getAll() || {},
+    [pluginRegistry]
   )
 
   return states

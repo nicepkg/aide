@@ -4,7 +4,7 @@ import {
   ChatContextType,
   type ChatContext,
   type Conversation
-} from '@shared/types/chat-context'
+} from '@shared/entities'
 
 import { AutoTaskStrategy } from './strategies/auto-task-strategy'
 import type {

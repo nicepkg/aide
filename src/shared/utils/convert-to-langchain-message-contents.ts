@@ -1,5 +1,5 @@
 import type { MessageContentComplex } from '@langchain/core/messages'
-import type { LangchainMessageContents } from '@shared/types/chat-context/langchain-message'
+import type { LangchainMessageContents } from '@shared/entities'
 
 export const convertToLangchainMessageContents = (
   content:

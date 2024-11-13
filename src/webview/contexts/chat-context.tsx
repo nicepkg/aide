@@ -1,5 +1,5 @@
 import React, { createContext, FC, useContext, useEffect } from 'react'
-import type { ChatContext as IChatContext } from '@shared/types/chat-context'
+import type { ChatContext as IChatContext } from '@shared/entities'
 import { useCallbackRef } from '@webview/hooks/use-callback-ref'
 import { useChatStore, type ChatStore } from '@webview/stores/chat-store'
 import { useChatUIStore, type ChatUIStore } from '@webview/stores/chat-ui-store'

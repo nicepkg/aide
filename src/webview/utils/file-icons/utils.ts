@@ -18,10 +18,10 @@ const icons: Record<string, SvgComponent> = import.meta.glob(
  * @param iconName icon name
  * @returns react component
  */
-export function getIconComponentByIconName(
+export const getIconComponentByIconName = (
   iconName: string,
   isOpen = false
-): SvgComponent | undefined {
+): SvgComponent | undefined => {
   if (isOpen) {
     const openIconName =
       icons[`./material-icons/${`${iconName}-open`}.svg`] ?? undefined
@@ -36,7 +36,7 @@ export function getIconComponentByIconName(
  * Get the mapping table of file name and icon name
  * Get the mapping table of file extension name and icon name
  */
-export function getFileIconMap(fileIcons: FileIcons) {
+export const getFileIconMap = (fileIcons: FileIcons) => {
   const fileNameIconMap = new Map<string, string>()
   const fileExtIconMap = new Map<string, string>()
   for (const iconConfig of fileIcons.icons!) {
@@ -54,7 +54,7 @@ export function getFileIconMap(fileIcons: FileIcons) {
  * Get the icon name based on the file name
  */
 const { fileNameIconMap, fileExtIconMap } = getFileIconMap(fileIcons)
-export function getFileIconByFileName(filename: string): string {
+export const getFileIconByFileName = (filename: string): string => {
   const ext = filename.split('.').pop()!
   const fileIcon = fileNameIconMap.get(filename)
   const extIcon = fileExtIconMap.get(ext)
@@ -66,7 +66,7 @@ export function getFileIconByFileName(filename: string): string {
 /**
  * get the mapping table of folder name and icon name
  */
-export function getFolderNameIconMap(folderIcons: FolderTheme) {
+export const getFolderNameIconMap = (folderIcons: FolderTheme) => {
   const map = new Map<string, string>()
   for (const iconConfig of folderIcons.icons!) {
     for (const folderName of iconConfig.folderNames)
@@ -79,7 +79,10 @@ export function getFolderNameIconMap(folderIcons: FolderTheme) {
  * Get the icon name based on the folder name
  */
 const folderNameIconMap = getFolderNameIconMap(folderIcons)
-export function getFolderIconByFolderName(folderName: string, isOpen = false) {
+export const getFolderIconByFolderName = (
+  folderName: string,
+  isOpen = false
+) => {
   const defaultIconName = folderIcons.defaultIcon.name
   const defaultOpenIconName = `${folderIcons.defaultIcon.name}-open`
   return (
@@ -93,11 +96,11 @@ export interface GetIconComponentProps {
   isOpen?: boolean
   isFolder?: boolean
 }
-export function getIconComponent({
+export const getIconComponent = ({
   name,
   isOpen,
   isFolder
-}: GetIconComponentProps): SvgComponent | undefined {
+}: GetIconComponentProps): SvgComponent | undefined => {
   if (isFolder)
     return getIconComponentByIconName(getFolderIconByFolderName(name), isOpen)
   return getIconComponentByIconName(getFileIconByFileName(name))

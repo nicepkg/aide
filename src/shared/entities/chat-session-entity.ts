@@ -1,7 +1,7 @@
-import { ChatContextType } from '@shared/types/chat-context'
 import { v4 as uuidv4 } from 'uuid'
 
 import { BaseEntity, type IBaseEntity } from './base-entity'
+import { ChatContextType } from './chat-context-entity'
 
 export interface ChatSession extends IBaseEntity {
   type: ChatContextType

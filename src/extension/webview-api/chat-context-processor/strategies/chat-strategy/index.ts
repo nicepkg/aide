@@ -1,8 +1,10 @@
-import type { ChatContext, Conversation } from '@shared/types/chat-context'
+import { type ChatContext, type Conversation } from '@shared/entities'
 import { UnPromise } from '@shared/types/common'
+import { produce } from 'immer'
 
 import { BaseStrategy } from '../base-strategy'
 import { createChatWorkflow } from './chat-workflow'
+import type { ChatGraphState } from './nodes/state'
 
 export class ChatStrategy extends BaseStrategy {
   private _chatWorkflow: UnPromise<
@@ -27,23 +29,22 @@ export class ChatStrategy extends BaseStrategy {
     const graph = chatWorkflow.compile()
 
     const stream = await graph.stream({
-      registerManager: this.registerManager,
-      commandManager: this.commandManager,
       chatContext
     })
 
-    const oldConversationIds = new Set<string>(
-      chatContext.conversations.map(conversation => conversation.id)
-    )
+    const state: Partial<ChatGraphState> = {}
 
     for await (const outputMap of stream) {
       for (const [nodeName] of Object.entries(outputMap)) {
-        const conversations =
-          outputMap[nodeName]?.chatContext?.conversations || []
-        const lastConversation = conversations?.at(-1)
+        const returnsState = outputMap[nodeName] as ChatGraphState
+        Object.assign(state, returnsState)
 
-        if (lastConversation && !oldConversationIds.has(lastConversation.id)) {
-          yield conversations
+        if (state.chatContext && state.newConversations?.length) {
+          const newChatContext = produce(state.chatContext, draft => {
+            draft.conversations.push(...(state.newConversations ?? []))
+          })
+
+          yield newChatContext.conversations
         }
       }
     }

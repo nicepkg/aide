@@ -22,6 +22,7 @@ import {
 import { getFileNameFromPath } from '@webview/utils/path'
 
 import type { FsPluginState, ImageInfo } from '../types'
+import { FsLogPreview } from './fs-log-preview'
 import { MentionFilePreview } from './mention-file-preview'
 import { MentionFolderPreview } from './mention-folder-preview'
 
@@ -60,6 +61,9 @@ export class FsClientPlugin implements ClientPlugin<FsPluginState> {
       getSelectedImages: this.getSelectedImages.bind(this),
       addSelectedImage: this.addSelectedImage.bind(this),
       removeSelectedImage: this.removeSelectedImage.bind(this)
+    }))
+    this.context.registerProvider('message', () => ({
+      customRenderLogPreview: FsLogPreview
     }))
   }
 
@@ -248,11 +252,13 @@ export class FsClientPlugin implements ClientPlugin<FsPluginState> {
         onAddOne: () => {
           this.context?.setState(draft => {
             draft.enableCodebaseAgent = true
+            draft.codeSnippetFromAgent = []
           })
         },
         onReplaceAll: (dataArr: true[]) => {
           this.context?.setState(draft => {
             draft.enableCodebaseAgent = dataArr.length > 0
+            draft.codeSnippetFromAgent = []
           })
         },
         topLevelSort: 6,

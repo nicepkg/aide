@@ -25,10 +25,17 @@ export class ClientPluginContext<State extends PluginState = PluginState> {
     const { pluginId, registry } = options
     this.pluginId = pluginId
     this.registry = registry
+
+    if (!this.registry.isInitialized)
+      throw new Error('ClientPluginRegistry is not initialized')
   }
 
   get state(): Readonly<State> {
-    return this.registry.getState(this.pluginId)
+    return this.registry.getState(this.pluginId) as Readonly<State>
+  }
+
+  getState(): Readonly<State> {
+    return this.registry.getState(this.pluginId) as Readonly<State>
   }
 
   setState(

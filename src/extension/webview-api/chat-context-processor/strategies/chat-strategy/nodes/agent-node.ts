@@ -1,8 +1,8 @@
 import { createModelProvider } from '@extension/ai/helpers'
 import { ServerPluginRegister } from '@extension/registers/server-plugin-register'
-import { convertLangchainMessageToConversation } from '@extension/webview-api/chat-context-processor/utils/convert-langchain-message-to-conversation'
 import { getToolCallsFromMessage } from '@extension/webview-api/chat-context-processor/utils/get-tool-calls-from-message'
-import type { LangchainTool } from '@shared/types/chat-context/langchain-message'
+import type { LangchainMessageContents, LangchainTool } from '@shared/entities'
+import { convertToLangchainMessageContents } from '@shared/utils/convert-to-langchain-message-contents'
 import { produce } from 'immer'
 
 import { ChatMessagesConstructor } from '../messages-constructors/chat-messages-constructor'
@@ -36,12 +36,15 @@ export const createAgentNode: CreateChatGraphNode = options => async state => {
   const toolCalls = getToolCallsFromMessage(response)
 
   if (!toolCalls.length) {
-    const finalChatContext = produce(state.chatContext, draft => {
-      draft.conversations.push(convertLangchainMessageToConversation(response))
+    const newConversations = produce(state.newConversations, draft => {
+      const contents: LangchainMessageContents =
+        convertToLangchainMessageContents(response.content)
+
+      draft.at(-1)!.contents.push(...contents)
     })
 
     return {
-      chatContext: finalChatContext,
+      newConversations,
       shouldContinue: false
     }
   }

@@ -10,13 +10,14 @@ import { DocIndexer } from '@extension/webview-api/chat-context-processor/vector
 import { docSitesDB } from '@extension/webview-api/lowdb/doc-sites-db'
 import type { ToolMessage } from '@langchain/core/messages'
 import { DynamicStructuredTool } from '@langchain/core/tools'
+import type { ConversationLog, LangchainTool } from '@shared/entities'
 import { PluginId } from '@shared/plugins/base/types'
-import type { LangchainTool } from '@shared/types/chat-context/langchain-message'
 import { removeDuplicates, settledPromiseResults } from '@shared/utils/common'
 import { produce } from 'immer'
+import { v4 as uuidv4 } from 'uuid'
 import { z } from 'zod'
 
-import type { DocInfo, DocPluginState } from '../../types'
+import type { DocInfo, DocPluginLog, DocPluginState } from '../../types'
 
 interface DocRetrieverToolResult {
   relevantDocs: DocInfo[]
@@ -26,9 +27,7 @@ export const createDocRetrieverTool = async (
   options: BaseStrategyOptions,
   state: ChatGraphState
 ) => {
-  const { chatContext } = state
-  const { conversations } = chatContext
-  const lastConversation = conversations.at(-1)
+  const lastConversation = state.chatContext.conversations.at(-1)
 
   const docPluginState = lastConversation?.pluginStates?.[PluginId.Doc] as
     | Partial<DocPluginState>
@@ -112,9 +111,8 @@ export const createDocRetrieverTool = async (
 
 export const createDocRetrieverNode: CreateChatGraphNode =
   options => async state => {
-    const { messages, chatContext } = state
-    const { conversations } = chatContext
-    const lastConversation = conversations.at(-1)
+    const lastConversation = state.chatContext.conversations.at(-1)
+    const logs: ConversationLog[] = []
 
     const docPluginState = lastConversation?.pluginStates?.[PluginId.Doc] as
       | Partial<DocPluginState>
@@ -127,7 +125,7 @@ export const createDocRetrieverNode: CreateChatGraphNode =
     if (!docRetrieverTool) return {}
 
     const tools: LangchainTool[] = [docRetrieverTool]
-    const lastMessage = messages.at(-1)
+    const lastMessage = state.messages.at(-1)
     const toolCalls = findCurrentToolsCallParams(lastMessage, tools)
 
     if (!toolCalls.length) return {}
@@ -153,11 +151,24 @@ export const createDocRetrieverNode: CreateChatGraphNode =
           draft.relevantDocsFromAgent.push(...result.relevantDocs)
         }
       )
+
+      logs.push({
+        id: uuidv4(),
+        createdAt: Date.now(),
+        pluginId: PluginId.Doc,
+        title: 'Search documentation',
+        relevantDocsFromAgent: result.relevantDocs
+      } satisfies DocPluginLog)
     })
 
     await settledPromiseResults(toolCallsPromises)
 
+    const newConversations = produce(state.newConversations, draft => {
+      draft.at(-1)!.logs.push(...logs)
+    })
+
     return {
-      chatContext
+      chatContext: state.chatContext,
+      newConversations
     }
   }

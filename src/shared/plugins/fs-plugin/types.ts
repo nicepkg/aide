@@ -1,4 +1,7 @@
 import type { FileInfo, FolderInfo } from '@extension/file-utils/traverse-fs'
+import type { BaseConversationLog } from '@shared/entities'
+
+import type { PluginId } from '../base/types'
 
 export interface CodeSnippet {
   fileHash: string
@@ -33,4 +36,9 @@ export interface FsPluginState {
   codeChunksFromEditor: CodeChunk[]
   codeSnippetFromAgent: CodeSnippet[]
   enableCodebaseAgent: boolean
+}
+
+export interface FsPluginLog extends BaseConversationLog {
+  pluginId: PluginId.Fs
+  codeSnippets?: CodeSnippet[]
 }

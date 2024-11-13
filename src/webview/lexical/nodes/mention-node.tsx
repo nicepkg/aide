@@ -25,9 +25,9 @@ export type SerializedMentionNode = Spread<
   SerializedLexicalNode
 >
 
-function convertMentionElement(
+const convertMentionElement = (
   domNode: HTMLElement
-): DOMConversionOutput | null {
+): DOMConversionOutput | null => {
   const mentionType = domNode.getAttribute(
     'data-lexical-mention-type'
   ) as string
@@ -200,16 +200,13 @@ export class MentionNode extends DecoratorNode<React.ReactNode> {
   }
 }
 
-export function $createMentionNode(
+export const $createMentionNode = (
   mentionType: string,
   mentionData: any,
   text: string
-): MentionNode {
-  return $applyNodeReplacement(new MentionNode(mentionType, mentionData, text))
-}
+): MentionNode =>
+  $applyNodeReplacement(new MentionNode(mentionType, mentionData, text))
 
-export function $isMentionNode(
+export const $isMentionNode = (
   node: LexicalNode | null | undefined
-): node is MentionNode {
-  return node instanceof MentionNode
-}
+): node is MentionNode => node instanceof MentionNode
