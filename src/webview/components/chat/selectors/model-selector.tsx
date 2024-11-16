@@ -228,6 +228,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
           updatePositionStrategy="optimized"
           side="bottom"
           align="start"
+          withBlur
         >
           <QueryStateWrapper
             isLoading={isLoading}

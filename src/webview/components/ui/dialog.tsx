@@ -28,13 +28,29 @@ DialogOverlay.displayName = DialogPrimitive.Overlay.displayName
 const DialogContent: React.FC<
   React.ComponentPropsWithRef<typeof DialogPrimitive.Content> & {
     hideClose?: boolean
+    withBlur?: boolean
+    blurClassName?: string
   }
-> = ({ ref, className, children, hideClose, ...props }) => {
+> = ({
+  ref,
+  className,
+  children,
+  hideClose,
+  withBlur = true,
+  blurClassName,
+  ...props
+}) => {
   const contentRef = React.useRef<HTMLDivElement>(null)
 
   return (
     <DialogPortal>
-      <DialogOverlay />
+      {withBlur ? (
+        <DialogOverlay
+          className={cn('backdrop-blur-[4px] bg-black/10', blurClassName)}
+        />
+      ) : (
+        <DialogOverlay />
+      )}
       <div
         className="fixed top-0 left-0 z-50 flex h-full w-full items-center justify-center duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95"
         ref={el => {
