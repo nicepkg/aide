@@ -1,8 +1,9 @@
 import path from 'path'
-import { createModelProvider } from '@extension/ai/helpers'
+import { ModelProviderFactory } from '@extension/ai/model-providers/helpers/factory'
 import { AbortError } from '@extension/constants'
 import { traverseFileOrFolders } from '@extension/file-utils/traverse-fs'
 import { getWorkspaceFolder, toPlatformPath } from '@extension/utils'
+import { FeatureModelSettingKey } from '@shared/entities'
 import { z } from 'zod'
 
 export interface PreProcessInfo {
@@ -40,11 +41,13 @@ export const getPreProcessInfo = async ({
     }
   })
 
-  const modelProvider = await createModelProvider()
+  const modelProvider = await ModelProviderFactory.getModelProvider(
+    FeatureModelSettingKey.BatchProcessor
+  )
   const aiRunnable = await modelProvider.createStructuredOutputRunnable({
     signal: abortController?.signal,
     useHistory: false,
-    zodSchema: z.object({
+    schema: z.object({
       processFilePathInfo: z
         .array(
           z.object({

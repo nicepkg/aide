@@ -1,4 +1,4 @@
-import { createModelProvider } from '@extension/ai/helpers'
+import { ModelProviderFactory } from '@extension/ai/model-providers/helpers/factory'
 import type { BaseStrategyOptions } from '@extension/webview-api/chat-context-processor/strategies/base-strategy'
 import { ChatMessagesConstructor } from '@extension/webview-api/chat-context-processor/strategies/chat-strategy/messages-constructors/chat-messages-constructor'
 import {
@@ -11,6 +11,7 @@ import { CheerioWebBaseLoader } from '@langchain/community/document_loaders/web/
 import type { Document } from '@langchain/core/documents'
 import { HumanMessage, type ToolMessage } from '@langchain/core/messages'
 import { DynamicStructuredTool } from '@langchain/core/tools'
+import { FeatureModelSettingKey } from '@shared/entities'
 import type { ConversationLog, LangchainTool } from '@shared/entities'
 import { PluginId } from '@shared/plugins/base/types'
 import { settledPromiseResults } from '@shared/utils/common'
@@ -65,9 +66,11 @@ export const createWebSearchTool = async (
     const messagesFromChatContext =
       await chatMessagesConstructor.constructMessages()
 
-    const modelProvider = await createModelProvider()
+    const modelProvider = await ModelProviderFactory.getModelProvider(
+      FeatureModelSettingKey.Chat
+    )
     const aiModelAbortController = new AbortController()
-    const aiModel = await modelProvider.getModel()
+    const aiModel = await modelProvider.createLangChainModel()
 
     const response = await aiModel
       .bind({ signal: aiModelAbortController.signal })

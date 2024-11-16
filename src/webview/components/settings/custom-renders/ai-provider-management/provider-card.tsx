@@ -7,7 +7,7 @@ import {
   Pencil2Icon,
   TrashIcon
 } from '@radix-ui/react-icons'
-import { aiProviderConfigs, type AIProvider } from '@shared/entities'
+import { getAllAIProviderConfigMap, type AIProvider } from '@shared/entities'
 import { AlertAction } from '@webview/components/ui/alert-action'
 import { Button } from '@webview/components/ui/button'
 import { Checkbox } from '@webview/components/ui/checkbox'
@@ -30,6 +30,8 @@ export const ProviderCard = ({
   const [visibleFields, setVisibleFields] = useState<Record<string, boolean>>(
     {}
   )
+
+  const aiProviderConfigs = getAllAIProviderConfigMap()
 
   const toggleFieldVisibility = (fieldKey: string) => {
     setVisibleFields(prev => ({

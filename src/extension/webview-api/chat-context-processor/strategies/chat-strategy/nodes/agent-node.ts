@@ -1,7 +1,11 @@
-import { createModelProvider } from '@extension/ai/helpers'
+import { ModelProviderFactory } from '@extension/ai/model-providers/helpers/factory'
 import { ServerPluginRegister } from '@extension/registers/server-plugin-register'
 import { getToolCallsFromMessage } from '@extension/webview-api/chat-context-processor/utils/get-tool-calls-from-message'
-import type { LangchainMessageContents, LangchainTool } from '@shared/entities'
+import {
+  FeatureModelSettingKey,
+  type LangchainMessageContents,
+  type LangchainTool
+} from '@shared/entities'
 import { convertToLangchainMessageContents } from '@shared/utils/convert-to-langchain-message-contents'
 import { produce } from 'immer'
 
@@ -9,9 +13,11 @@ import { ChatMessagesConstructor } from '../messages-constructors/chat-messages-
 import type { CreateChatGraphNode } from './state'
 
 export const createAgentNode: CreateChatGraphNode = options => async state => {
-  const modelProvider = await createModelProvider()
+  const modelProvider = await ModelProviderFactory.getModelProvider(
+    FeatureModelSettingKey.Chat
+  )
   const aiModelAbortController = new AbortController()
-  const aiModel = await modelProvider.getModel()
+  const aiModel = await modelProvider.createLangChainModel()
   const chatStrategyProvider = options.registerManager
     .getRegister(ServerPluginRegister)
     ?.serverPluginRegistry?.providerManagers.chatStrategy.mergeAll()

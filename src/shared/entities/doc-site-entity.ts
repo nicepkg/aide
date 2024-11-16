@@ -10,13 +10,14 @@ export interface DocSite extends IBaseEntity {
 }
 
 export class DocSiteEntity extends BaseEntity<DocSite> {
-  protected getDefaults(): DocSite {
+  protected getDefaults(data?: Partial<DocSite>): DocSite {
     return {
       id: uuidv4(),
       name: '',
       url: '',
       isCrawled: false,
-      isIndexed: false
+      isIndexed: false,
+      ...data
     }
   }
 }

@@ -2,14 +2,16 @@ import { useEffect, useState } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { EyeClosedIcon, EyeOpenIcon } from '@radix-ui/react-icons'
 import {
-  aiProviderConfigs,
-  AIProviderEntity,
-  type AIProvider,
-  type AIProviderType
+  AIProviderType,
+  createAIProviderEntity,
+  getAllAIProviderConfigMap,
+  OpenAIProviderEntity,
+  type AIProvider
 } from '@shared/entities'
 import { Button } from '@webview/components/ui/button'
 import { Input } from '@webview/components/ui/input'
 import { Label } from '@webview/components/ui/label'
+import { ScrollArea } from '@webview/components/ui/scroll-area'
 import {
   Select,
   SelectContent,
@@ -24,7 +26,7 @@ import {
   TabsTrigger
 } from '@webview/components/ui/tabs'
 import { useCallbackRef } from '@webview/hooks/use-callback-ref'
-import { Controller, useForm } from 'react-hook-form'
+import { Controller, useForm, useWatch } from 'react-hook-form'
 
 import { AIModelManagement } from './ai-model-management'
 import { providerFormSchema } from './utils'
@@ -53,37 +55,33 @@ export const ProviderForm = ({
   const [visibleFields, setVisibleFields] = useState<Record<string, boolean>>(
     {}
   )
+  const aiProviderConfigs = getAllAIProviderConfigMap()
 
   const getDefaultProvider = useCallbackRef(
-    () => initProvider || new AIProviderEntity().entity
+    () => initProvider || new OpenAIProviderEntity().entity
   )
 
-  const { control, handleSubmit, reset, setValue, watch, formState } = useForm<
+  const { control, handleSubmit, reset, setValue, formState } = useForm<
     Partial<AIProvider>
   >({
     defaultValues: getDefaultProvider(),
     resolver: zodResolver(providerFormSchema)
   })
 
-  const draftProvider = watch()
+  const draftProvider = useWatch({ control })
   const setDraftProvider = (data: Partial<AIProvider>) => {
     Object.entries(data).forEach(([key, value]) => {
       setValue(key as keyof AIProvider, value)
     })
   }
-  useEffect(() => {
-    if (initProvider) {
-      reset(initProvider)
-    }
-  }, [initProvider, reset])
 
-  const type = watch('type')
+  const type = draftProvider.type || AIProviderType.OpenAI
   useEffect(() => {
     setValue(
       'extraFields',
       type === getDefaultProvider()?.type
         ? getDefaultProvider().extraFields
-        : new AIProviderEntity({ type }).entity.extraFields
+        : createAIProviderEntity(type).entity.extraFields
     )
   }, [type, setValue, getDefaultProvider])
 
@@ -92,11 +90,13 @@ export const ProviderForm = ({
   }
 
   const handleUpdateProvider = async () => {
-    await onSubmit(draftProvider)
+    if (!formState.isValid) return
+    await onSubmit(draftProvider as Partial<AIProvider>)
   }
 
   const handleCreateProvider = async () => {
-    await onSubmit(draftProvider)
+    if (!formState.isValid) return
+    await onSubmit(draftProvider as Partial<AIProvider>)
     reset()
     onClose()
   }
@@ -119,7 +119,7 @@ export const ProviderForm = ({
                 onChange(val)
                 setValue(
                   'extraFields',
-                  new AIProviderEntity({ type: val as AIProviderType }).entity
+                  createAIProviderEntity(val as AIProviderType).entity
                     .extraFields
                 )
               }}
@@ -200,26 +200,30 @@ export const ProviderForm = ({
         <TabsTrigger mode="underlined" value={ProviderFormTab.Provider}>
           Provider
         </TabsTrigger>
-        <TabsTrigger
-          mode="underlined"
-          value={ProviderFormTab.Models}
-          disabled={!isEditMode && !draftProvider}
-        >
-          Models
-        </TabsTrigger>
+        {formState.isValid && (
+          <TabsTrigger
+            mode="underlined"
+            value={ProviderFormTab.Models}
+            disabled={!formState.isValid && !draftProvider}
+          >
+            Models
+          </TabsTrigger>
+        )}
       </TabsList>
 
       <TabsContent
         value={ProviderFormTab.Provider}
-        className="flex-1 overflow-y-auto"
+        className="flex-1 overflow-hidden"
       >
         <form
           onSubmit={handleSubmit(
             isEditMode ? handleUpdateProvider : handleNextStep
           )}
-          className="flex flex-col justify-between h-full"
+          className="flex flex-col justify-between h-full overflow-hidden"
         >
-          <div className="flex-1">{renderProviderFields()}</div>
+          <ScrollArea className="flex-1">
+            <div className="flex-1">{renderProviderFields()}</div>
+          </ScrollArea>
           <Button
             type="submit"
             className="w-full text-sm"
@@ -232,16 +236,18 @@ export const ProviderForm = ({
 
       <TabsContent
         value={ProviderFormTab.Models}
-        className="flex-1 overflow-y-auto"
+        className="flex-1 overflow-hidden"
       >
         <div className="flex flex-col justify-between h-full overflow-hidden">
-          {draftProvider && (
+          {formState.isValid && (
             <>
-              <AIModelManagement
-                provider={draftProvider as AIProvider}
-                setProvider={setDraftProvider}
-                className="flex-1 h-full overflow-y-auto"
-              />
+              <ScrollArea className="flex-1">
+                <AIModelManagement
+                  provider={draftProvider as AIProvider}
+                  setProvider={setDraftProvider}
+                  className="flex-1 h-full overflow-hidden"
+                />
+              </ScrollArea>
               <Button
                 onClick={
                   isEditMode ? handleUpdateProvider : handleCreateProvider

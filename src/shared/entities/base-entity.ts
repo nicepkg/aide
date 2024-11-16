@@ -7,8 +7,8 @@ export abstract class BaseEntity<T extends IBaseEntity> {
   entity: T
 
   constructor(data?: Partial<T>) {
-    this.entity = { ...this.getDefaults(data || {}), ...(data ?? {}) }
+    this.entity = { ...this.getDefaults(data || {}) }
   }
 
-  protected abstract getDefaults(data: Partial<T>): T
+  protected abstract getDefaults(data?: Partial<T>): T
 }

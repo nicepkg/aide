@@ -1,7 +1,7 @@
 import type { SyntheticListenerMap } from '@dnd-kit/core/dist/hooks/utilities'
 import { DragHandleDots2Icon, PlusIcon, TrashIcon } from '@radix-ui/react-icons'
 import type { AIModel } from '@shared/entities'
-import { Button } from '@webview/components/ui/button'
+import { ButtonWithTooltip } from '@webview/components/button-with-tooltip'
 import { Checkbox } from '@webview/components/ui/checkbox'
 
 interface ModelItemProps {
@@ -23,7 +23,7 @@ export const ModelItem: React.FC<ModelItemProps> = ({
   onDelete,
   onAdd
 }) => (
-  <div className="flex items-center gap-2 p-2 w-full">
+  <div className="flex items-center gap-2 w-full">
     {onSelect && (
       <Checkbox
         checked={isSelected}
@@ -36,12 +36,13 @@ export const ModelItem: React.FC<ModelItemProps> = ({
         <DragHandleDots2Icon className="size-4 text-muted-foreground" />
       </div>
     )}
-    <div className="flex-1">{model.name}</div>
+    <div className="flex-1 text-foreground/80">{model.name}</div>
     <div className="flex gap-2">
       {!isRemote && onDelete && (
-        <Button
+        <ButtonWithTooltip
           variant="ghost"
           size="sm"
+          tooltip="Delete"
           className="h-7 w-7 p-0 hover:bg-muted text-destructive hover:text-destructive"
           onClick={e => {
             e.stopPropagation()
@@ -49,12 +50,13 @@ export const ModelItem: React.FC<ModelItemProps> = ({
           }}
         >
           <TrashIcon className="h-3.5 w-3.5" />
-        </Button>
+        </ButtonWithTooltip>
       )}
       {isRemote && onAdd && (
-        <Button
+        <ButtonWithTooltip
           variant="ghost"
           size="sm"
+          tooltip="Add to manual"
           className="h-7 w-7 p-0 hover:bg-muted"
           onClick={e => {
             e.stopPropagation()
@@ -62,7 +64,7 @@ export const ModelItem: React.FC<ModelItemProps> = ({
           }}
         >
           <PlusIcon className="h-3.5 w-3.5" />
-        </Button>
+        </ButtonWithTooltip>
       )}
     </div>
   </div>

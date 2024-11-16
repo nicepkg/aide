@@ -1,4 +1,4 @@
-import { getCurrentModelProvider } from '@extension/ai/helpers'
+import { ModelProviderFactory } from '@extension/ai/model-providers/helpers/factory'
 import { createLoading } from '@extension/loading'
 import {
   removeCodeBlockEndSyntax,
@@ -38,7 +38,6 @@ export const tmpFileWriter = async (
   } = options
 
   const writer = await createTmpFileAndWriter(tmpFileOptions)
-  const ModelProvider = await getCurrentModelProvider()
   const { showProcessLoading, hideProcessLoading } = createLoading()
 
   try {
@@ -46,12 +45,7 @@ export const tmpFileWriter = async (
       showProcessLoading({ onCancel })
     }
 
-    await processAiStream(
-      writer,
-      ModelProvider,
-      buildAiStream,
-      stopWriteWhenClosed
-    )
+    await processAiStream(writer, buildAiStream, stopWriteWhenClosed)
 
     if (autoSaveWhenDone) {
       await writer.save()
@@ -71,7 +65,6 @@ export const tmpFileWriter = async (
 
 const processAiStream = async (
   writer: WriteTmpFileResult,
-  ModelProvider: any,
   buildAiStream: () => Promise<IterableReadableStream<AIMessageChunk>>,
   stopWriteWhenClosed: boolean
 ) => {
@@ -82,7 +75,7 @@ const processAiStream = async (
       return
     }
 
-    const text = ModelProvider.answerContentToText(chunk.content)
+    const text = ModelProviderFactory.formatMessageContent(chunk.content)
     await writer.writeTextPart(text)
 
     await cleanCodeBlockSyntax(writer)

@@ -15,8 +15,11 @@ class SettingsDB extends BaseDB<Settings> {
   static readonly schemaVersion = 1
 
   constructor(filePath: string) {
-    const defaults = new SettingsEntity().entity
-    super(filePath, defaults, SettingsDB.schemaVersion)
+    super(filePath, SettingsDB.schemaVersion)
+  }
+
+  getDefaults(): Partial<Settings> {
+    return new SettingsEntity().entity
   }
 
   async setSetting<K extends SettingKey>(

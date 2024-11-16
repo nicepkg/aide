@@ -1,13 +1,12 @@
-import {
-  createModelProvider,
-  getCurrentSessionIdHistoriesMap
-} from '@extension/ai/helpers'
+import { ChatHistoryManager } from '@extension/ai/model-providers/helpers/chat-history-manager'
+import { ModelProviderFactory } from '@extension/ai/model-providers/helpers/factory'
 import { showContinueMessage } from '@extension/file-utils/show-continue-message'
 import { getOriginalFileUri } from '@extension/file-utils/tmp-file/get-original-file-uri'
 import { getTmpFileInfo } from '@extension/file-utils/tmp-file/get-tmp-file-info'
 import { tmpFileWriter } from '@extension/file-utils/tmp-file/tmp-file-writer'
 import { t } from '@extension/i18n'
 import type { RunnableConfig } from '@langchain/core/runnables'
+import { FeatureModelSettingKey } from '@shared/entities'
 import * as vscode from 'vscode'
 
 import { BaseCommand } from '../base.command'
@@ -22,7 +21,9 @@ export class CodeViewerHelperCommand extends BaseCommand {
     const originalFileUri = getOriginalFileUri()
     const tmpFileInfo = await getTmpFileInfo(originalFileUri)
 
-    const modelProvider = await createModelProvider()
+    const modelProvider = await ModelProviderFactory.getModelProvider(
+      FeatureModelSettingKey.CodeViewerHelper
+    )
     const aiRunnableAbortController = new AbortController()
     const aiRunnable = await modelProvider.createRunnable({
       signal: aiRunnableAbortController.signal
@@ -33,9 +34,8 @@ export class CodeViewerHelperCommand extends BaseCommand {
         sessionId
       }
     }
-    const sessionIdHistoriesMap = await getCurrentSessionIdHistoriesMap()
-    const isSessionHistoryExists = !!sessionIdHistoriesMap[sessionId]
-    const isContinue = tmpFileInfo.isTmpFileHasContent && isSessionHistoryExists
+    const isChatExists = await ChatHistoryManager.isChatExist(sessionId)
+    const isContinue = tmpFileInfo.isTmpFileHasContent && isChatExists
 
     const prompt = await buildGeneratePrompt({
       sourceLanguage: tmpFileInfo.originalFileLanguageId,
@@ -52,7 +52,7 @@ export class CodeViewerHelperCommand extends BaseCommand {
       },
       buildAiStream: async () => {
         if (!isContinue) {
-          delete sessionIdHistoriesMap[sessionId]
+          await ChatHistoryManager.clearChatHistory(sessionId)
           return aiRunnable.stream({ input: prompt }, aiRunnableConfig)
         }
         return aiRunnable.stream(
@@ -80,12 +80,12 @@ export class CodeViewerHelperCommand extends BaseCommand {
       vscode.workspace.textDocuments.map(doc => doc.uri.fsPath)
     )
 
-    const sessionIdHistoriesMap = await getCurrentSessionIdHistoriesMap()
-    Object.keys(sessionIdHistoriesMap).forEach(sessionId => {
+    const chatHistories = ChatHistoryManager.getChatHistories()
+    Object.keys(chatHistories).forEach(sessionId => {
       const path = sessionId.match(/^codeViewerHelper:(.*)$/)?.[1]
 
       if (path && !openDocumentPaths.has(path)) {
-        delete sessionIdHistoriesMap[sessionId]
+        ChatHistoryManager.deleteChatHistory(sessionId)
       }
     })
   }

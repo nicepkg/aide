@@ -6,6 +6,7 @@ import { insertTextAtSelection } from '@extension/file-utils/insert-text-at-sele
 import { t } from '@extension/i18n'
 import { cacheFn } from '@extension/storage'
 import { HumanMessage, type BaseMessage } from '@langchain/core/messages'
+import { FeatureModelSettingKey } from '@shared/entities'
 import * as vscode from 'vscode'
 
 // cache for 5 minutes
@@ -51,7 +52,11 @@ export const buildConvertChatMessages = async ({
 
   // reference file content
   const { referenceFileRelativePaths, dependenceFileRelativePath } =
-    await cacheGetReferenceFilePaths({ currentFilePath, abortController })
+    await cacheGetReferenceFilePaths({
+      featureModelSettingKey: FeatureModelSettingKey.SmartPaste,
+      currentFilePath,
+      abortController
+    })
   const referencePaths = [
     ...new Set([dependenceFileRelativePath, ...referenceFileRelativePaths])
   ]

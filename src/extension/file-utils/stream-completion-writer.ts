@@ -1,4 +1,4 @@
-import { getCurrentModelProvider } from '@extension/ai/helpers'
+import { ModelProviderFactory } from '@extension/ai/model-providers/helpers/factory'
 import { createLoading } from '@extension/loading'
 import {
   removeCodeBlockEndSyntax,
@@ -20,7 +20,6 @@ export const streamingCompletionWriter = async (
   options: StreamingCompletionWriterOptions
 ): Promise<void> => {
   const { editor, buildAiStream, onCancel } = options
-  const ModelProvider = await getCurrentModelProvider()
   const { showProcessLoading, hideProcessLoading } = createLoading()
   const initialPosition = editor.selection.active
   const writer = new EditorWriter(editor, initialPosition)
@@ -28,7 +27,7 @@ export const streamingCompletionWriter = async (
   try {
     showProcessLoading({ onCancel })
     const aiStream = await buildAiStream()
-    await processAiStream(aiStream, ModelProvider, writer)
+    await processAiStream(aiStream, writer)
     await finalizeEditing(editor)
   } finally {
     hideProcessLoading()
@@ -37,7 +36,6 @@ export const streamingCompletionWriter = async (
 
 export const processAiStream = async (
   aiStream: IterableReadableStream<AIMessageChunk>,
-  ModelProvider: any,
   writer: EditorWriter
 ): Promise<void> => {
   let fullText = ''
@@ -46,7 +44,7 @@ export const processAiStream = async (
       return
     }
 
-    const text = ModelProvider.answerContentToText(chunk.content)
+    const text = ModelProviderFactory.formatMessageContent(chunk.content)
     if (!text) continue
 
     fullText += text

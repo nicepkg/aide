@@ -1,10 +1,13 @@
 /* eslint-disable unused-imports/no-unused-vars */
-import React, { useState } from 'react'
+import React from 'react'
 import { ImageIcon } from '@radix-ui/react-icons'
-import type { ChatContext, Conversation } from '@shared/entities'
-import { Button } from '@webview/components/ui/button'
+import {
+  chatContextTypeModelSettingKeyMap,
+  type ChatContext,
+  type Conversation
+} from '@shared/entities'
+import { ButtonWithTooltip } from '@webview/components/button-with-tooltip'
 import { usePluginImagesSelectorProviders } from '@webview/hooks/chat/use-plugin-providers'
-import { type ModelOption } from '@webview/types/chat'
 import type { Updater } from 'use-immer'
 
 import { ModelSelector } from './model-selector'
@@ -26,20 +29,7 @@ export const ContextSelector: React.FC<ContextSelectorProps> = ({
   onClose,
   onClickMentionSelector
 }) => {
-  const [modelOptions] = useState<ModelOption[]>([
-    { value: 'gpt-4', label: 'GPT-4' },
-    { value: 'gpt-3.5-turbo', label: 'GPT-3.5 Turbo' }
-  ])
-
-  const [selectedModel, setSelectedModel] = useState(modelOptions[0])
   const { addSelectedImage } = usePluginImagesSelectorProviders()
-
-  const handleSelectModel = (model: ModelOption) => {
-    setSelectedModel(model)
-    setContext(draft => {
-      draft.settings.modelName = model.value
-    })
-  }
 
   const handleSelectImage = () => {
     const input = document.createElement('input')
@@ -62,21 +52,36 @@ export const ContextSelector: React.FC<ContextSelectorProps> = ({
   return (
     <div className="context-selector flex items-center flex-1">
       <ModelSelector
-        onSelect={handleSelectModel}
-        modelOptions={modelOptions}
+        featureModelSettingKey={chatContextTypeModelSettingKeyMap[context.type]}
         onOpenChange={isOpen => !isOpen && onClose?.()}
+        renderTrigger={({ activeModel, activeProvider }) => (
+          <ButtonWithTooltip
+            tooltip={
+              `${activeProvider?.name} > ${activeModel?.name}` || 'Select Model'
+            }
+            variant="ghost"
+            size="xs"
+          >
+            {activeModel?.name || 'Select Model'}
+          </ButtonWithTooltip>
+        )}
+      />
+      <ButtonWithTooltip
+        tooltip="Add mention"
+        variant="ghost"
+        size="xs"
+        onClick={onClickMentionSelector}
       >
-        <Button variant="ghost" size="xs">
-          {selectedModel?.label}
-        </Button>
-      </ModelSelector>
-      <Button variant="ghost" size="xs" onClick={onClickMentionSelector}>
-        @ Mention
-      </Button>
-      <Button variant="ghost" size="xs" onClick={handleSelectImage}>
+        @
+      </ButtonWithTooltip>
+      <ButtonWithTooltip
+        tooltip="Add image"
+        variant="ghost"
+        size="xs"
+        onClick={handleSelectImage}
+      >
         <ImageIcon className="h-3 w-3 mr-1" />
-        Image
-      </Button>
+      </ButtonWithTooltip>
     </div>
   )
 }

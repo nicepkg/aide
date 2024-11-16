@@ -1,5 +1,5 @@
 import path from 'path'
-import { getCurrentModelProvider } from '@extension/ai/helpers'
+import { ModelProviderFactory } from '@extension/ai/model-providers/helpers/factory'
 import { createLoading } from '@extension/loading'
 import { logger } from '@extension/logger'
 import {
@@ -108,13 +108,12 @@ export class TmpFile {
     this.status = TmpFileStatus.PROCESSING
     this.abortController = new AbortController()
 
-    const ModelProvider = await getCurrentModelProvider()
     const { showProcessLoading, hideProcessLoading } = createLoading()
 
     try {
       showLoading && showProcessLoading({})
       const aiStream = await buildAiStream(this.abortController)
-      yield* this.processStream(aiStream, ModelProvider)
+      yield* this.processStream(aiStream)
       this.status = TmpFileStatus.COMPLETED
       logger.log(
         `Finished processing AI stream for: ${this.originalFileUri.fsPath}`
@@ -130,8 +129,7 @@ export class TmpFile {
   }
 
   private async *processStream(
-    aiStream: IterableReadableStream<AIMessageChunk>,
-    ModelProvider: any
+    aiStream: IterableReadableStream<AIMessageChunk>
   ): AsyncGenerator<TmpFileYieldedChunk> {
     let generatedContent = ''
 
@@ -139,10 +137,7 @@ export class TmpFile {
       await this.showDiff()
     }
 
-    for await (const chunk of this.processStreamChunks(
-      aiStream,
-      ModelProvider
-    )) {
+    for await (const chunk of this.processStreamChunks(aiStream)) {
       if (this.abortController?.signal.aborted) {
         this.status = TmpFileStatus.INTERRUPTED
         logger.log(`Processing interrupted for: ${this.originalFileUri.fsPath}`)
@@ -174,11 +169,10 @@ export class TmpFile {
   }
 
   private async *processStreamChunks(
-    aiStream: IterableReadableStream<AIMessageChunk>,
-    ModelProvider: any
+    aiStream: IterableReadableStream<AIMessageChunk>
   ): AsyncIterableIterator<string> {
     for await (const chunk of aiStream) {
-      yield ModelProvider.answerContentToText(chunk.content)
+      yield ModelProviderFactory.formatMessageContent(chunk.content)
     }
   }
 

@@ -8,13 +8,14 @@ class AIModelDB extends BaseDB<AIModel> {
   static readonly schemaVersion = 1
 
   constructor() {
-    const defaults = new AIModelEntity().entity
-
     super(
       path.join(aidePaths.getGlobalLowdbPath(), 'ai-models.json'),
-      defaults,
       AIModelDB.schemaVersion
     )
+  }
+
+  getDefaults(): Partial<AIModel> {
+    return new AIModelEntity().entity
   }
 }
 

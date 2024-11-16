@@ -3,23 +3,18 @@ import { Low } from 'lowdb'
 import { JSONFile } from 'lowdb/node'
 import { v4 as uuidv4 } from 'uuid'
 
-export class BaseDB<T extends IBaseEntity> {
+export abstract class BaseDB<T extends IBaseEntity> {
   protected db: Low<{ items: T[]; schemaVersion?: number }>
 
   protected currentVersion: number = 1
 
-  protected defaults: Partial<T> = {}
+  abstract getDefaults(): Partial<T>
 
-  constructor(
-    filePath: string,
-    defaults: Partial<T> = {},
-    currentVersion: number = 1
-  ) {
+  constructor(filePath: string, currentVersion: number = 1) {
     const adapter = new JSONFile<{ items: T[]; schemaVersion?: number }>(
       filePath
     )
     this.db = new Low(adapter, { items: [] })
-    this.defaults = defaults
     this.currentVersion = currentVersion
   }
 
@@ -32,7 +27,7 @@ export class BaseDB<T extends IBaseEntity> {
     }
 
     this.db.data.items = this.db.data.items.map(item => ({
-      ...this.defaults,
+      ...this.getDefaults(),
       ...item
     }))
   }
@@ -111,12 +106,26 @@ export class BaseDB<T extends IBaseEntity> {
     }
   }
 
-  async createOrUpdate(item: T): Promise<T> {
+  async createOrUpdate(item: Partial<T>): Promise<T> {
     await this.load()
-    const existingItem = this.db.data.items.find(i => i.id === item.id)
-    if (existingItem) {
-      return (await this.update(item.id, item)) as T
+
+    if (item.id) {
+      const existingItem = this.db.data.items.find(i => i.id === item.id)
+      if (existingItem) {
+        return (await this.update(item.id, item)) as T
+      }
     }
-    return this.add(item)
+
+    return await this.add({
+      ...this.getDefaults(),
+      ...item
+    } as T)
+  }
+
+  async batchCreateOrUpdate(items: Partial<T>[]) {
+    await this.load()
+    for (const item of items) {
+      await this.createOrUpdate(item)
+    }
   }
 }

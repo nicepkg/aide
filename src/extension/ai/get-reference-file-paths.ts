@@ -1,10 +1,11 @@
 import { AbortError } from '@extension/constants'
 import { traverseFileOrFolders } from '@extension/file-utils/traverse-fs'
 import { getWorkspaceFolder, toPlatformPath } from '@extension/utils'
+import { FeatureModelSettingKey } from '@shared/entities'
 import * as vscode from 'vscode'
 import { z } from 'zod'
 
-import { createModelProvider } from './helpers'
+import { ModelProviderFactory } from './model-providers/helpers/factory'
 
 export interface ReferenceFilePaths {
   referenceFileRelativePaths: string[]
@@ -12,9 +13,11 @@ export interface ReferenceFilePaths {
 }
 
 export const getReferenceFilePaths = async ({
+  featureModelSettingKey,
   currentFilePath,
   abortController
 }: {
+  featureModelSettingKey: FeatureModelSettingKey
   currentFilePath: string
   abortController?: AbortController
 }): Promise<ReferenceFilePaths> => {
@@ -33,11 +36,14 @@ export const getReferenceFilePaths = async ({
   const currentFileRelativePath =
     vscode.workspace.asRelativePath(currentFilePath)
 
-  const modelProvider = await createModelProvider()
+  const modelProvider = await ModelProviderFactory.getModelProvider(
+    featureModelSettingKey
+  )
+
   const aiRunnable = await modelProvider.createStructuredOutputRunnable({
     signal: abortController?.signal,
     useHistory: false,
-    zodSchema: z.object({
+    schema: z.object({
       referenceFileRelativePaths: z.array(z.string()).min(0).max(3).describe(`
         Required! The relative paths array of the up to three most useful files related to the currently edited file. This can include 0 to 3 files.
       `),

@@ -1,6 +1,6 @@
 import * as vscode from 'vscode'
 
-import { BaseModelProvider } from './ai/model-providers/base'
+import { ChatHistoryManager } from './ai/model-providers/helpers/chat-history-manager'
 import { registerCommands } from './commands'
 import { CommandManager } from './commands/command-manager'
 import { setContext } from './context'
@@ -29,7 +29,7 @@ export const activate = async (context: vscode.ExtensionContext) => {
 
 export const deactivate = () => {
   // clear the session history map
-  BaseModelProvider.sessionIdHistoriesMap = {}
+  ChatHistoryManager.clearAllHistories()
 
   // clear the state storage
   stateStorage.clear()

@@ -11,13 +11,14 @@ class ChatSessionsDB extends BaseDB<ChatSession> {
   static readonly schemaVersion = 1
 
   constructor() {
-    const defaults = new ChatSessionEntity().entity
-
     super(
       path.join(aidePaths.getWorkspaceLowdbPath(), 'sessions.json'),
-      defaults,
       ChatSessionsDB.schemaVersion
     )
+  }
+
+  getDefaults(): Partial<ChatSession> {
+    return new ChatSessionEntity().entity
   }
 
   async search(query: string): Promise<ChatSession[]> {

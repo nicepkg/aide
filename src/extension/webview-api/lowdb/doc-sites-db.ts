@@ -8,12 +8,14 @@ class DocSitesDB extends BaseDB<DocSite> {
   static readonly schemaVersion = 1
 
   constructor() {
-    const defaults = new DocSiteEntity().entity
     super(
       path.join(aidePaths.getGlobalLowdbPath(), 'doc-sites.json'),
-      defaults,
       DocSitesDB.schemaVersion
     )
+  }
+
+  getDefaults(): Partial<DocSite> {
+    return new DocSiteEntity().entity
   }
 
   async add(

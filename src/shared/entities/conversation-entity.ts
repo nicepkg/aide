@@ -24,14 +24,15 @@ export interface Conversation extends IBaseEntity {
 }
 
 export class ConversationEntity extends BaseEntity<Conversation> {
-  protected getDefaults(): Conversation {
+  protected getDefaults(data?: Partial<Conversation>): Conversation {
     return {
       id: uuidv4(),
       createdAt: Date.now(),
       role: 'human',
       contents: [],
       pluginStates: {},
-      logs: []
+      logs: [],
+      ...data
     }
   }
 }

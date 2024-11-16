@@ -1,7 +1,5 @@
-import {
-  createModelProvider,
-  getCurrentSessionIdHistoriesMap
-} from '@extension/ai/helpers'
+import { ChatHistoryManager } from '@extension/ai/model-providers/helpers/chat-history-manager'
+import { ModelProviderFactory } from '@extension/ai/model-providers/helpers/factory'
 import { showContinueMessage } from '@extension/file-utils/show-continue-message'
 import { getOriginalFileUri } from '@extension/file-utils/tmp-file/get-original-file-uri'
 import { getTmpFileInfo } from '@extension/file-utils/tmp-file/get-tmp-file-info'
@@ -9,6 +7,7 @@ import { tmpFileWriter } from '@extension/file-utils/tmp-file/tmp-file-writer'
 import { t } from '@extension/i18n'
 import { getWorkspaceFolder } from '@extension/utils'
 import type { RunnableConfig } from '@langchain/core/runnables'
+import { FeatureModelSettingKey } from '@shared/entities'
 import * as vscode from 'vscode'
 
 import { BaseCommand } from '../base.command'
@@ -25,7 +24,9 @@ export class ExpertCodeEnhancerCommand extends BaseCommand {
     const tmpFileInfo = await getTmpFileInfo(originalFileUri)
 
     // ai
-    const modelProvider = await createModelProvider()
+    const modelProvider = await ModelProviderFactory.getModelProvider(
+      FeatureModelSettingKey.ExpertCodeEnhancer
+    )
     const aiRunnableAbortController = new AbortController()
     const aiRunnable = await modelProvider.createRunnable({
       signal: aiRunnableAbortController.signal
@@ -36,9 +37,8 @@ export class ExpertCodeEnhancerCommand extends BaseCommand {
         sessionId
       }
     }
-    const sessionIdHistoriesMap = await getCurrentSessionIdHistoriesMap()
-    const isSessionHistoryExists = !!sessionIdHistoriesMap[sessionId]
-    const isContinue = tmpFileInfo.isTmpFileHasContent && isSessionHistoryExists
+    const isChatExists = await ChatHistoryManager.isChatExist(sessionId)
+    const isContinue = tmpFileInfo.isTmpFileHasContent && isChatExists
 
     const prompt = await buildGeneratePrompt({
       workspaceFolder,
@@ -58,7 +58,7 @@ export class ExpertCodeEnhancerCommand extends BaseCommand {
       },
       buildAiStream: async () => {
         if (!isContinue) {
-          delete sessionIdHistoriesMap[sessionId]
+          await ChatHistoryManager.clearChatHistory(sessionId)
           return aiRunnable.stream({ input: prompt }, aiRunnableConfig)
         }
 
@@ -88,13 +88,13 @@ export class ExpertCodeEnhancerCommand extends BaseCommand {
     const openDocumentPaths = new Set(
       vscode.workspace.textDocuments.map(doc => doc.uri.fsPath)
     )
-    const sessionIdHistoriesMap = await getCurrentSessionIdHistoriesMap()
+    const chatHistories = ChatHistoryManager.getChatHistories()
 
-    Object.keys(sessionIdHistoriesMap).forEach(sessionId => {
+    Object.keys(chatHistories).forEach(sessionId => {
       const path = sessionId.match(/^expertCodeEnhancer:(.*)$/)?.[1]
 
       if (path && !openDocumentPaths.has(path)) {
-        delete sessionIdHistoriesMap[sessionId]
+        ChatHistoryManager.deleteChatHistory(sessionId)
       }
     })
   }

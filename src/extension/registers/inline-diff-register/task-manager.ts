@@ -1,4 +1,4 @@
-import { BaseModelProvider } from '@extension/ai/model-providers/base'
+import { ModelProviderFactory } from '@extension/ai/model-providers/helpers/factory'
 import { logger } from '@extension/logger'
 import {
   removeCodeBlockEndSyntax,
@@ -152,7 +152,7 @@ export class TaskManager {
     aiStream: IterableReadableStream<AIMessageChunk>
   ): AsyncIterableIterator<string> {
     for await (const chunk of aiStream) {
-      yield BaseModelProvider.answerContentToText(chunk.content)
+      yield ModelProviderFactory.formatMessageContent(chunk.content)
     }
   }
 

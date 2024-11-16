@@ -2,19 +2,12 @@ import { useState } from 'react'
 import type { AIProvider } from '@shared/entities'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { CardList } from '@webview/components/ui/card-list'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle
-} from '@webview/components/ui/dialog'
 import { api } from '@webview/services/api-client'
 import { logAndToastError } from '@webview/utils/common'
 import { toast } from 'sonner'
 
 import { ProviderCard } from './provider-card'
-import { ProviderForm } from './provider-form'
+import { ProviderDialog } from './provider-dialog'
 import { providerQueryKey } from './utils'
 
 export const AIProviderManagement = () => {
@@ -131,22 +124,12 @@ export const AIProviderManagement = () => {
 
   return (
     <div className="space-y-6">
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="w-[calc(100vw-2rem)] h-[calc(100vh-2rem)] max-h-1000px rounded-lg flex flex-col">
-          <DialogHeader>
-            <DialogTitle>
-              {editingProvider ? 'Edit Provider' : 'Add New Provider'}
-            </DialogTitle>
-            <DialogDescription />
-          </DialogHeader>
-          <ProviderForm
-            isEditMode={!!editingProvider}
-            initProvider={editingProvider}
-            onSubmit={handleSubmit}
-            onClose={handleCloseDialog}
-          />
-        </DialogContent>
-      </Dialog>
+      <ProviderDialog
+        open={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+        provider={editingProvider}
+        onSubmit={handleSubmit}
+      />
 
       <CardList
         items={optimizeProviders}

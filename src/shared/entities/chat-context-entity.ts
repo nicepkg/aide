@@ -13,7 +13,7 @@ export interface ChatContext extends IBaseEntity {
 }
 
 export class ChatContextEntity extends BaseEntity<ChatContext> {
-  getDefaults(): ChatContext {
+  getDefaults(data?: Partial<ChatContext>): ChatContext {
     const now = Date.now()
     return {
       id: uuidv4(),
@@ -22,12 +22,9 @@ export class ChatContextEntity extends BaseEntity<ChatContext> {
       updatedAt: now,
       conversations: [],
       settings: {
-        allowLongFileScan: false,
-        explicitContext: '总是用中文回复',
-        fastApplyModelName: 'gpt-4o-mini',
-        modelName: 'gpt-4o',
-        useFastApply: true
-      }
+        explicitContext: '总是用中文回复'
+      },
+      ...data
     }
   }
 
@@ -64,11 +61,7 @@ export class ChatContextEntity extends BaseEntity<ChatContext> {
 }
 
 export interface SettingsContext {
-  modelName: string
-  useFastApply: boolean
-  fastApplyModelName?: string
   explicitContext: string
-  allowLongFileScan: boolean
 }
 
 export enum ChatContextType {

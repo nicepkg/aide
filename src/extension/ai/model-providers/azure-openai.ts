@@ -1,54 +1,54 @@
 /* eslint-disable no-useless-escape */
-import { getConfigKey } from '@extension/config'
-import { t } from '@extension/i18n'
-import {
-  AzureChatOpenAI,
-  ChatOpenAI,
-  type ChatOpenAICallOptions
-} from '@langchain/openai'
+import { AzureChatOpenAI } from '@langchain/openai'
+import type { AzureOpenAIProvider } from '@shared/entities/ai-provider-entity'
+import { AzureClientOptions, AzureOpenAI } from 'openai'
 
-import { parseModelBaseUrl } from '../parse-model-base-url'
-import { BaseModelProvider } from './base'
+import { BaseModelProvider } from './helpers/base'
 
-export class AzureOpenAIModelProvider extends BaseModelProvider<
-  ChatOpenAI<ChatOpenAICallOptions>
-> {
-  async createModel() {
-    const { url: openaiBaseUrl } = await parseModelBaseUrl()
-    const openaiKey = await getConfigKey('openaiKey')
+export class AzureOpenAIModelProvider extends BaseModelProvider<AzureChatOpenAI> {
+  createAzureOpenaiClient(options?: AzureClientOptions) {
+    const { extraFields } = this.aiProvider as AzureOpenAIProvider
+    const azureOpenai = new AzureOpenAI({
+      baseURL: extraFields.azureOpenaiBasePath,
+      apiKey: extraFields.azureOpenaiApiKey,
+      apiVersion: extraFields.azureOpenaiApiVersion,
+      deployment: extraFields.azureOpenaiApiDeploymentName,
+      fetch,
+      ...options
+    })
 
-    const regex =
-      /https:\/\/(.+?)\/openai\/deployments\/([^\/]+)(?:\/[^?]+)?\?api-version=(.+)/
-    const match = openaiBaseUrl.match(regex)
+    return azureOpenai
+  }
 
-    if (!match) throw new Error(t('error.invalidAzureOpenaiBaseUrl'))
+  async createLangChainModel() {
+    if (!this.aiModel?.name) {
+      throw new Error(
+        'Model name is required, Please check your AI model settings'
+      )
+    }
 
-    const azureOpenAIBasePath = `https://${match[1]}/openai/deployments`
-    const azureOpenAIApiDeploymentName = match[2] || ''
-    const azureOpenAIApiVersion = match[3] || ''
-
-    // final request url example:
-    // https://azure-llm.openai.azure.com/openai/deployments/text-embedding-ada-002/embeddings?api-version=2022-12-01
-    // https://westeurope.api.microsoft.com/openai/deployments/[azureOpenAIApiDeploymentName]/chat/completions?api-version=[azureOpenAIApiVersion]
-    // basePath is:
-    // https://westeurope.api.microsoft.com/openai/deployments
-    // so user need to configure modelApiBaseUrl to:
-    // https://westeurope.api.microsoft.com/openai/deployments/[azureOpenAIApiDeploymentName]?api-version=[azureOpenAIApiVersion]
-    // https://westeurope.api.microsoft.com/openai/deployments/gpt-4o-xxx/chat/completions?api-version=2024-07-15
+    const { extraFields } = this.aiProvider as AzureOpenAIProvider
 
     const model = new AzureChatOpenAI({
-      azureOpenAIBasePath,
-      azureOpenAIApiKey: openaiKey,
-      azureOpenAIApiVersion,
-      azureOpenAIApiDeploymentName,
+      azureOpenAIBasePath: extraFields.azureOpenaiBasePath,
+      azureOpenAIApiKey: extraFields.azureOpenaiApiKey,
+      azureOpenAIApiVersion: extraFields.azureOpenaiApiVersion,
+      azureOpenAIApiDeploymentName: extraFields.azureOpenaiApiDeploymentName,
       configuration: {
         fetch
       },
-      temperature: 0.95, // never use 1.0, some models do not support it
+      temperature: 0.95,
       verbose: this.isDev,
       maxRetries: 3
     })
-    ;('https://westeurope.api.microsoft.com/openai/deployments/devName/chat/completions?api-version=AVersion')
+
     return model
+  }
+
+  async getSupportModelNames() {
+    const azureOpenai = this.createAzureOpenaiClient()
+    const list = await azureOpenai.models.list()
+
+    return list.data.map(model => model.id)
   }
 }

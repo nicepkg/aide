@@ -1,8 +1,9 @@
-import { createModelProvider } from '@extension/ai/helpers'
+import { ModelProviderFactory } from '@extension/ai/model-providers/helpers/factory'
 import { VsCodeFS } from '@extension/file-utils/vscode-fs'
 import { InlineDiffRegister } from '@extension/registers/inline-diff-register'
 import type { InlineDiffTask } from '@extension/registers/inline-diff-register/types'
 import { HumanMessage, SystemMessage } from '@langchain/core/messages'
+import { FeatureModelSettingKey } from '@shared/entities'
 import * as vscode from 'vscode'
 
 import { Controller } from '../types'
@@ -31,8 +32,10 @@ export class ApplyController extends Controller {
     }
 
     const buildAiStream = async (abortController: AbortController) => {
-      const modelProvider = await createModelProvider()
-      const aiModel = (await modelProvider.getModel()).bind({
+      const modelProvider = await ModelProviderFactory.getModelProvider(
+        FeatureModelSettingKey.ApplyFile
+      )
+      const aiModel = (await modelProvider.createLangChainModel()).bind({
         signal: abortController.signal
       })
       const aiStream = aiModel.stream([

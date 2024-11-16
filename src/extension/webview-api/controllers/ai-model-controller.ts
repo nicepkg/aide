@@ -1,12 +1,16 @@
+import { ModelProviderFactory } from '@extension/ai/model-providers/helpers/factory'
 import { logger } from '@extension/logger'
-import type {
-  AIModel,
-  AIModelFeature,
-  AIProvider,
-  AIProviderType
+import {
+  AIProviderType,
+  type AIModel,
+  type AIModelFeature,
+  type AIProvider,
+  type FeatureModelSettingKey,
+  type FeatureModelSettingValue
 } from '@shared/entities'
 
 import { aiModelDB } from '../lowdb/ai-model-db'
+import { aiProviderDB } from '../lowdb/ai-provider-db'
 import { Controller } from '../types'
 
 export class AIModelController extends Controller {
@@ -38,13 +42,12 @@ export class AIModelController extends Controller {
     return await aiModelDB.add(req)
   }
 
-  async updateModel(req: Partial<AIModel> & { id: string }) {
-    const { id, ...updates } = req
-    return await aiModelDB.update(id, updates)
+  async createOrUpdateModel(req: Partial<AIModel>) {
+    return await aiModelDB.createOrUpdate(req)
   }
 
-  async updateModels(req: (Partial<AIModel> & { id: string })[]) {
-    return await aiModelDB.batchUpdate(req)
+  async batchCreateOrUpdateModels(req: Partial<AIModel>[]) {
+    return await aiModelDB.batchCreateOrUpdate(req)
   }
 
   async removeModel(req: { id: string }) {
@@ -53,25 +56,79 @@ export class AIModelController extends Controller {
 
   async fetchRemoteModelNames(req: { provider: AIProvider }) {
     try {
-      // TODO: here we need to get the models from the remote API
-      const response = await fetch(
-        `${req.provider.extraFields.openaiBaseUrl}/models`
+      const modelProvider = ModelProviderFactory.createProvider(
+        req.provider,
+        undefined
       )
-      const data = await response.json()
-      return data.models.map((model: any) => model.id) as string[]
+      return await modelProvider.getSupportModelNames()
     } catch (error) {
       logger.error('Failed to fetch remote models:', error)
       return [] as string[]
     }
   }
 
-  async testModel(req: { model: AIModel; features: AIModelFeature[] }) {
-    const results: Partial<AIModel> = {}
+  async testModelFeatures(req: {
+    provider: AIProvider
+    model: AIModel
+    features: AIModelFeature[]
+  }) {
+    const modelProvider = ModelProviderFactory.createProvider(
+      req.provider,
+      req.model
+    )
 
-    for (const feature of req.features) {
-      results[feature] = Math.random() > 0.5
+    return await modelProvider.testModelFeatures(req.features)
+  }
+
+  async getProviderAndModelForFeature(req: {
+    key: FeatureModelSettingKey
+  }): Promise<{ provider?: AIProvider; model?: AIModel }> {
+    const defaultResult = { provider: undefined, model: undefined }
+    const setting = await ModelProviderFactory.getModelSettingForFeature(
+      req.key
+    )
+
+    if (!setting) {
+      return defaultResult
     }
 
-    return results
+    const provider = (await aiProviderDB.getAll()).find(
+      p => p.id === setting.providerId
+    )
+
+    if (!provider) {
+      return defaultResult
+    }
+
+    const model = (await aiModelDB.getAll()).find(
+      m =>
+        m.name === setting.modelName &&
+        m.providerOrBaseUrl ===
+          (provider.type === AIProviderType.Custom
+            ? provider.extraFields.customBaseUrl
+            : provider.type)
+    )
+
+    if (!model) {
+      return {
+        ...defaultResult,
+        provider
+      }
+    }
+
+    return {
+      provider,
+      model
+    }
+  }
+
+  async setModelSettingForFeature(req: {
+    key: FeatureModelSettingKey
+    value: FeatureModelSettingValue
+  }) {
+    return await ModelProviderFactory.setModelSettingForFeature(
+      req.key,
+      req.value
+    )
   }
 }

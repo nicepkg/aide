@@ -1,11 +1,12 @@
 import path from 'path'
-import { createModelProvider } from '@extension/ai/helpers'
+import { ModelProviderFactory } from '@extension/ai/model-providers/helpers/factory'
 import { AbortError } from '@extension/constants'
 import { getTmpFileUri } from '@extension/file-utils/tmp-file/get-tmp-file-uri'
 import { tmpFileWriter } from '@extension/file-utils/tmp-file/tmp-file-writer'
 import { VsCodeFS } from '@extension/file-utils/vscode-fs'
 import { logger } from '@extension/logger'
 import { HumanMessage } from '@langchain/core/messages'
+import { FeatureModelSettingKey } from '@shared/entities'
 import { getLanguageId } from '@shared/utils/vscode-lang'
 import * as vscode from 'vscode'
 
@@ -28,8 +29,10 @@ export const writeAndSaveTmpFile = async ({
 }) => {
   logger.log(`writeAndSaveTmpFile...: ${sourceFileRelativePath}`)
   // ai
-  const modelProvider = await createModelProvider()
-  const aiModel = (await modelProvider.getModel()).bind({
+  const modelProvider = await ModelProviderFactory.getModelProvider(
+    FeatureModelSettingKey.BatchProcessor
+  )
+  const aiModel = (await modelProvider.createLangChainModel()).bind({
     signal: abortController?.signal
   })
 

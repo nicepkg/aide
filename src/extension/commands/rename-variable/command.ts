@@ -1,9 +1,10 @@
 import path from 'path'
-import { createModelProvider } from '@extension/ai/helpers'
+import { ModelProviderFactory } from '@extension/ai/model-providers/helpers/factory'
 import { AbortError } from '@extension/constants'
 import { t } from '@extension/i18n'
 import { createLoading } from '@extension/loading'
 import { getActiveEditor, getWorkspaceFolder } from '@extension/utils'
+import { FeatureModelSettingKey } from '@shared/entities'
 import * as vscode from 'vscode'
 import { z } from 'zod'
 
@@ -38,13 +39,15 @@ export class RenameVariableCommand extends BaseCommand {
     const activeEditor = getActiveEditor()
     const { selection } = activeEditor
     const variableName = activeEditor.document.getText(selection)
-    const modelProvider = await createModelProvider()
+    const modelProvider = await ModelProviderFactory.getModelProvider(
+      FeatureModelSettingKey.RenameVariable
+    )
     const { showProcessLoading, hideProcessLoading } = createLoading()
 
     const abortController = new AbortController()
     const aiRunnable = await modelProvider.createStructuredOutputRunnable({
       signal: abortController.signal,
-      zodSchema: renameSuggestionZodSchema,
+      schema: renameSuggestionZodSchema,
       useHistory: false
     })
 

@@ -69,14 +69,17 @@ export const useChatState = () => {
     })
   }
 
-  const resetUIAfterSending = (conversationId: string) => {
+  const resetUIAfterSending = (conversationId?: string) => {
     setAllConversationsUIState(draft => {
       draft.sendButtonDisabled = false
-    })
-    setConversationUIState(context.id, conversationId, draft => {
       draft.isLoading = false
-      draft.isEditMode = false
     })
+
+    if (conversationId) {
+      setConversationUIState(context.id, conversationId, draft => {
+        draft.isEditMode = false
+      })
+    }
   }
 
   const toggleConversationEditMode = (

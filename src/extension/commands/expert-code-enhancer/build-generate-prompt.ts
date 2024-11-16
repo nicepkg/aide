@@ -7,6 +7,7 @@ import { createLoading } from '@extension/loading'
 import { cacheFn } from '@extension/storage'
 import { showQuickPickWithCustomInput } from '@extension/utils'
 import type { BaseLanguageModelInput } from '@langchain/core/language_models/base'
+import { FeatureModelSettingKey } from '@shared/entities'
 import { Minimatch, type MinimatchOptions } from 'minimatch'
 import * as vscode from 'vscode'
 
@@ -154,7 +155,11 @@ export const buildGeneratePrompt = async ({
     })
 
     const { referenceFileRelativePaths, dependenceFileRelativePath } =
-      await cacheGetReferenceFilePaths({ currentFilePath, abortController })
+      await cacheGetReferenceFilePaths({
+        featureModelSettingKey: FeatureModelSettingKey.ExpertCodeEnhancer,
+        currentFilePath,
+        abortController
+      })
 
     const referencePaths = [
       ...new Set([dependenceFileRelativePath, ...referenceFileRelativePaths])

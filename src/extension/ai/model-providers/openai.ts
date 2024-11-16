@@ -1,37 +1,62 @@
-import { getConfigKey } from '@extension/config'
-import { ChatOpenAI, type ChatOpenAICallOptions } from '@langchain/openai'
+import {
+  ChatOpenAI,
+  type ChatOpenAICallOptions,
+  type ClientOptions
+} from '@langchain/openai'
+import type { OpenAIProvider } from '@shared/entities/ai-provider-entity'
+import OpenAI from 'openai'
 
-import { parseModelBaseUrl } from '../parse-model-base-url'
-import { BaseModelProvider } from './base'
+import { BaseModelProvider } from './helpers/base'
 
 export class OpenAIModelProvider extends BaseModelProvider<
   ChatOpenAI<ChatOpenAICallOptions>
 > {
-  async createModel() {
-    const { url: openaiBaseUrl } = await parseModelBaseUrl()
-    const openaiKey = await getConfigKey('openaiKey')
-    const openaiModel = await getConfigKey('openaiModel')
+  createOpenaiClient(options?: ClientOptions) {
+    const { extraFields } = this.aiProvider as OpenAIProvider
+    const openai = new OpenAI({
+      baseURL: extraFields.openaiBaseUrl,
+      apiKey: extraFields.openaiApiKey,
+      fetch,
+      ...options
+    })
+
+    return openai
+  }
+
+  async createLangChainModel() {
+    if (!this.aiModel?.name) {
+      throw new Error(
+        'Model name is required, Please check your AI model settings'
+      )
+    }
+
+    const { extraFields } = this.aiProvider as OpenAIProvider
 
     const model = new ChatOpenAI({
-      apiKey: openaiKey,
+      apiKey: extraFields.openaiApiKey,
       configuration: {
-        baseURL: openaiBaseUrl,
+        baseURL: extraFields.openaiBaseUrl,
         fetch
       },
-      model: openaiModel,
-      temperature: 0.95, // never use 1.0, some models do not support it
+      modelName: this.aiModel.name,
+      temperature: 0.95,
       maxRetries: 3,
       verbose: this.isDev
     })
 
-    // some third-party language models are not compatible with the openAI specification,
-    // they do not support some parameters, and langchain takes the initiative to add these parameters,
-    // resulting in request failure, so here you need to clear these parameters
+    // Clear incompatible parameters for third-party models
     model.frequencyPenalty = undefined as any
     model.n = undefined as any
     model.presencePenalty = undefined as any
     model.topP = undefined as any
 
     return model
+  }
+
+  async getSupportModelNames() {
+    const openai = this.createOpenaiClient()
+    const list = await openai.models.list()
+
+    return list.data.map(model => model.id)
   }
 }

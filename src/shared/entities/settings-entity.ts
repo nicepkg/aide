@@ -10,13 +10,14 @@ export interface Settings extends IBaseEntity {
 }
 
 export class SettingsEntity extends BaseEntity<Settings> {
-  protected getDefaults(): Settings {
+  protected getDefaults(data?: Partial<Settings>): Settings {
     return {
       id: uuidv4(),
       key: 'unknown' as SettingKey,
       value: 'unknown',
       category: 'appearance' as SettingCategory,
-      updatedAt: Date.now()
+      updatedAt: Date.now(),
+      ...data
     }
   }
 }
@@ -32,10 +33,20 @@ export interface SettingsConfigItem {
   options?: SettingsOption[]
   defaultValue: any
   category: string
+  isCustomRender?: boolean
 }
 
 export const settingsConfig = {
   // General Settings
+  models: {
+    saveType: 'global',
+    label: 'Models',
+    description: 'Models',
+    type: 'object',
+    defaultValue: {},
+    category: 'general',
+    isCustomRender: true
+  },
   openaiKey: {
     saveType: 'global',
     label: 'OpenAI Key',

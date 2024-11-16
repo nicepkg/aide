@@ -7,7 +7,7 @@ import {
   type AIProvider
 } from '@shared/entities'
 import { removeDuplicates } from '@shared/utils/common'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { api } from '@webview/services/api-client'
 import { cn, logAndToastError } from '@webview/utils/common'
 import { toast } from 'sonner'
@@ -35,7 +35,6 @@ export const AIModelManagement = ({
   setProvider: (data: AIProvider) => void
 }) => {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
-  const queryClient = useQueryClient()
   const providerOrBaseUrl =
     provider.type === AIProviderType.Custom
       ? provider.extraFields.customBaseUrl
@@ -49,7 +48,7 @@ export const AIModelManagement = ({
     })
   }
 
-  const { data: models = [] } = useQuery({
+  const { data: models = [], refetch: refetchModels } = useQuery({
     queryKey: ['aiModels', providerOrBaseUrl],
     queryFn: () =>
       api.aiModel.getModelsByProviderOrBaseUrl({
@@ -82,16 +81,18 @@ export const AIModelManagement = ({
       getDefaultAIModel(name, providerOrBaseUrl!)
   )
 
-  const remoteModels = provider.realTimeModels.map(
-    name =>
-      models.find(m => m.name === name) ||
-      getDefaultAIModel(name, providerOrBaseUrl!)
-  )
+  const remoteModels = provider.realTimeModels
+    .map(
+      name =>
+        models.find(m => m.name === name) ||
+        getDefaultAIModel(name, providerOrBaseUrl!)
+    )
+    .sort((a, b) => a.name.localeCompare(b.name))
 
   const updateModelMutation = useMutation({
-    mutationFn: (model: AIModel) => api.aiModel.updateModel(model),
+    mutationFn: (model: AIModel) => api.aiModel.createOrUpdateModel(model),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['aiModels'] })
+      refetchModels()
     }
   })
 
@@ -122,7 +123,12 @@ export const AIModelManagement = ({
     model: AIModel,
     features: AIModelFeature[]
   ) => {
-    const result = await api.aiModel.testModel({ model, features })
+    const result = await api.aiModel.testModelFeatures({
+      provider,
+      model,
+      features
+    })
+
     updateModelMutation.mutate({
       ...model,
       ...result

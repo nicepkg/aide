@@ -2,10 +2,11 @@ import path from 'path'
 import { aidePaths } from '@extension/file-utils/paths'
 import { AIModelEntity, type AIModel } from '@shared/entities/ai-model-entity'
 import {
-  AIProviderEntity,
   AIProviderType,
+  UnknownAIProviderEntity,
   type AIProvider
 } from '@shared/entities/ai-provider-entity'
+import { removeDuplicates } from '@shared/utils/common'
 
 import { aiModelDB } from './ai-model-db'
 import { BaseDB } from './base-db'
@@ -39,13 +40,14 @@ class AIProviderDB extends BaseDB<AIProvider> {
   static readonly schemaVersion = 1
 
   constructor() {
-    const defaults = new AIProviderEntity().entity
-
     super(
       path.join(aidePaths.getGlobalLowdbPath(), 'ai-providers.json'),
-      defaults,
       AIProviderDB.schemaVersion
     )
+  }
+
+  getDefaults(): Partial<AIProvider> {
+    return new UnknownAIProviderEntity().entity
   }
 
   async add(
@@ -62,7 +64,7 @@ class AIProviderDB extends BaseDB<AIProvider> {
     }
 
     const newModels = await findNewModel(
-      [...item.manualModels, ...item.realTimeModels],
+      removeDuplicates([...item.manualModels, ...item.realTimeModels]),
       providerOrBaseUrl
     )
 

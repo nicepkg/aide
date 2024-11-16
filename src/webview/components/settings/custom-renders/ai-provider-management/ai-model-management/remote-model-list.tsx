@@ -40,14 +40,8 @@ export const RemoteModelList = ({
         </Button>
       </div>
     }
-    renderCard={({ item: model, isSelected, onSelect }) => (
-      <ModelItem
-        model={model}
-        isRemote
-        isSelected={isSelected}
-        onSelect={onSelect}
-        onAdd={onAddToManual}
-      />
+    renderCard={({ item: model }) => (
+      <ModelItem model={model} isRemote onAdd={onAddToManual} />
     )}
     renderExpandedContent={model => (
       <ModelFeatureList model={model} onTest={onTestModels} />

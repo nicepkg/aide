@@ -7,20 +7,27 @@ export interface AIModel extends IBaseEntity {
   // if the provider is a third party OpenAI-like provider, the value is the base URL
   providerOrBaseUrl: AIProviderType | string
   name: string
-  imageSupport: AIModelSupport
-  audioSupport: AIModelSupport
+  chatSupport: AIModelSupport
+  imageInputSupport: AIModelSupport
+  imageOutputSupport: AIModelSupport
+  audioInputSupport: AIModelSupport
+  audioOutputSupport: AIModelSupport
   toolsCallSupport: AIModelSupport
 }
 
 export class AIModelEntity extends BaseEntity<AIModel> {
-  protected getDefaults(): AIModel {
+  protected getDefaults(data?: Partial<AIModel>): AIModel {
     return {
       id: uuidv4(),
       providerOrBaseUrl: AIProviderType.OpenAI,
       name: '',
-      imageSupport: 'unknown',
-      audioSupport: 'unknown',
-      toolsCallSupport: 'unknown'
+      chatSupport: 'unknown',
+      imageInputSupport: 'unknown',
+      imageOutputSupport: 'unknown',
+      audioInputSupport: 'unknown',
+      audioOutputSupport: 'unknown',
+      toolsCallSupport: 'unknown',
+      ...data
     }
   }
 }
@@ -29,11 +36,19 @@ export type AIModelSupport = boolean | 'unknown'
 
 export type AIModelFeature = keyof Pick<
   AIModel,
-  'imageSupport' | 'audioSupport' | 'toolsCallSupport'
+  | 'chatSupport'
+  | 'imageInputSupport'
+  | 'imageOutputSupport'
+  | 'audioInputSupport'
+  | 'audioOutputSupport'
+  | 'toolsCallSupport'
 >
 
 export const aiModelFeatures = [
-  'imageSupport',
-  'audioSupport',
+  'chatSupport',
+  'imageInputSupport',
+  'imageOutputSupport',
+  'audioInputSupport',
+  'audioOutputSupport',
   'toolsCallSupport'
 ] as const satisfies AIModelFeature[]

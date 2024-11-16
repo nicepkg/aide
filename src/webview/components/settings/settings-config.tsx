@@ -10,23 +10,32 @@ import { DocManagement } from './custom-renders/doc-management'
 import type { SettingItem, SettingsConfig } from './types'
 
 const convertToUIConfig = () => {
-  const settingsByCategory = Object.entries(sharedSettingsConfig).reduce(
+  const settingsByCategory = Object.entries(
+    sharedSettingsConfig as Record<string, SettingsConfigItem>
+  ).reduce(
     (acc, [key, setting]) => {
       const { category } = setting
       if (!acc[category]) {
         acc[category] = []
       }
-      acc[category]!.push({
-        saveType: setting.saveType,
-        key,
-        label: setting.label,
-        description: setting.description,
-        type: setting.type,
-        options: ((setting as SettingsConfigItem)?.options ?? []).map(option =>
-          typeof option === 'string' ? { label: option, value: option } : option
-        ),
-        defaultValue: setting.defaultValue
-      })
+
+      if (!setting.isCustomRender) {
+        acc[category]!.push({
+          saveType: setting.saveType,
+          key,
+          label: setting.label,
+          description: setting.description,
+          type: setting.type,
+          options: ((setting as SettingsConfigItem)?.options ?? []).map(
+            option =>
+              typeof option === 'string'
+                ? { label: option, value: option }
+                : option
+          ),
+          defaultValue: setting.defaultValue
+        })
+      }
+
       return acc
     },
     {} as Record<string, SettingItem[]>

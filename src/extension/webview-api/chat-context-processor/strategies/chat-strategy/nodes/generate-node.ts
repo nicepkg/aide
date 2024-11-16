@@ -1,5 +1,8 @@
-import { createModelProvider } from '@extension/ai/helpers'
-import type { LangchainMessageContents } from '@shared/entities'
+import { ModelProviderFactory } from '@extension/ai/model-providers/helpers/factory'
+import {
+  FeatureModelSettingKey,
+  type LangchainMessageContents
+} from '@shared/entities'
 import { convertToLangchainMessageContents } from '@shared/utils/convert-to-langchain-message-contents'
 import { produce } from 'immer'
 
@@ -8,9 +11,11 @@ import type { CreateChatGraphNode } from './state'
 
 export const createGenerateNode: CreateChatGraphNode =
   options => async state => {
-    const modelProvider = await createModelProvider()
+    const modelProvider = await ModelProviderFactory.getModelProvider(
+      FeatureModelSettingKey.Chat
+    )
     const aiModelAbortController = new AbortController()
-    const aiModel = await modelProvider.getModel()
+    const aiModel = await modelProvider.createLangChainModel()
 
     const chatMessagesConstructor = new ChatMessagesConstructor({
       ...options,

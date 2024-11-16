@@ -1,10 +1,9 @@
-import {
-  createModelProvider,
-  getCurrentSessionIdHistoriesMap
-} from '@extension/ai/helpers'
+import { ChatHistoryManager } from '@extension/ai/model-providers/helpers/chat-history-manager'
+import { ModelProviderFactory } from '@extension/ai/model-providers/helpers/factory'
 import { streamingCompletionWriter } from '@extension/file-utils/stream-completion-writer'
 import { getActiveEditor, getWorkspaceFolder } from '@extension/utils'
 import type { BaseMessage } from '@langchain/core/messages'
+import { FeatureModelSettingKey } from '@shared/entities'
 import * as vscode from 'vscode'
 
 import { BaseCommand } from '../base.command'
@@ -21,17 +20,18 @@ export class SmartPasteCommand extends BaseCommand {
     const currentFilePath = activeEditor.document.uri.fsPath
 
     // ai
-    const modelProvider = await createModelProvider()
+    const modelProvider = await ModelProviderFactory.getModelProvider(
+      FeatureModelSettingKey.SmartPaste
+    )
     const aiModelAbortController = new AbortController()
-    const aiModel = (await modelProvider.getModel()).bind({
+    const aiModel = (await modelProvider.createLangChainModel()).bind({
       signal: aiModelAbortController.signal
     })
 
     const sessionId = `smartPaste:${currentFilePath}}`
-    const sessionIdHistoriesMap = await getCurrentSessionIdHistoriesMap()
 
     // TODO: remove and support continue generate in the future
-    delete sessionIdHistoriesMap[sessionId]
+    await ChatHistoryManager.clearChatHistory(sessionId)
 
     await streamingCompletionWriter({
       editor: activeEditor,
@@ -46,7 +46,7 @@ export class SmartPasteCommand extends BaseCommand {
           abortController: aiModelAbortController
         })
 
-        const history = await modelProvider.getHistory(sessionId)
+        const history = await ChatHistoryManager.getChatHistory(sessionId)
         const historyMessages = await history.getMessages()
         const currentMessages: BaseMessage[] = convertMessages
         const aiStream = aiModel.stream([
@@ -60,20 +60,20 @@ export class SmartPasteCommand extends BaseCommand {
     })
 
     // TODO: remove and support continue generate in the future
-    delete sessionIdHistoriesMap[sessionId]
+    await ChatHistoryManager.clearChatHistory(sessionId)
   }
 
   async dispose(): Promise<void> {
     const openDocumentPaths = new Set(
       vscode.workspace.textDocuments.map(doc => doc.uri.fsPath)
     )
-    const sessionIdHistoriesMap = await getCurrentSessionIdHistoriesMap()
+    const chatHistories = ChatHistoryManager.getChatHistories()
 
-    Object.keys(sessionIdHistoriesMap).forEach(sessionId => {
+    Object.keys(chatHistories).forEach(sessionId => {
       const path = sessionId.match(/^smartPaste:(.*)$/)?.[1]
 
       if (path && !openDocumentPaths.has(path)) {
-        delete sessionIdHistoriesMap[sessionId]
+        ChatHistoryManager.deleteChatHistory(sessionId)
       }
     })
   }

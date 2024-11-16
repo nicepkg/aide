@@ -71,6 +71,7 @@ export const ChatUI: FC = () => {
           setContext(draft => {
             draft.conversations = conversations
           })
+          prepareUIForSending(conversations.at(-1)!.id)
         }
       )
 
