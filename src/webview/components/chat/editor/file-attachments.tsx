@@ -1,7 +1,7 @@
 import React from 'react'
 import { Cross1Icon, PlusIcon } from '@radix-ui/react-icons'
+import { ButtonWithTooltip } from '@webview/components/button-with-tooltip'
 import { FileIcon } from '@webview/components/file-icon'
-import { Button } from '@webview/components/ui/button'
 import type { FileInfo } from '@webview/types/chat'
 import { cn } from '@webview/utils/common'
 import { getFileNameFromPath } from '@webview/utils/path'
@@ -43,14 +43,15 @@ export const FileAttachments: React.FC<FileAttachmentsProps> = ({
           selectedFiles={selectedFiles}
           onOpenChange={isOpen => onOpenChange?.(isOpen)}
         >
-          <Button
+          <ButtonWithTooltip
             variant="outline"
             size="xsss"
             className="mr-2 mt-2 self-start"
+            tooltip="Add files"
           >
             <PlusIcon className="size-2.5 mr-1" />
             Files
-          </Button>
+          </ButtonWithTooltip>
         </FileSelector>
       )}
 

@@ -36,11 +36,12 @@ export class ChatStrategy extends BaseStrategy {
 
     for await (const outputMap of stream) {
       for (const [nodeName] of Object.entries(outputMap)) {
-        const returnsState = outputMap[nodeName] as ChatGraphState
+        const returnsState = outputMap[nodeName] as Partial<ChatGraphState>
         Object.assign(state, returnsState)
+        const currentChatContext = state.chatContext || chatContext
 
-        if (state.chatContext && state.newConversations?.length) {
-          const newChatContext = produce(state.chatContext, draft => {
+        if (state.newConversations?.length) {
+          const newChatContext = produce(currentChatContext, draft => {
             draft.conversations.push(...(state.newConversations ?? []))
           })
 

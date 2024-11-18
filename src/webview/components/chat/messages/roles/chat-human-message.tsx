@@ -10,6 +10,7 @@ import { BorderBeam } from '@webview/components/ui/border-beam'
 import { useConversation } from '@webview/hooks/chat/use-conversation'
 import type { ConversationUIState } from '@webview/types/chat'
 import { cn } from '@webview/utils/common'
+import { motion } from 'framer-motion'
 
 export interface ChatHumanMessageProps
   extends Pick<
@@ -54,7 +55,15 @@ export const ChatHumanMessage: FC<ChatHumanMessageProps> = props => {
   return (
     <div className="w-full flex">
       <div className="w-4 shrink-0" />
-      <div
+      <motion.div
+        layout
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        layoutId={`human-message-${conversation.id}`}
+        transition={{
+          layout: { duration: 0.3, ease: 'easeInOut' },
+          opacity: { duration: 0.2 }
+        }}
         className={cn(
           'relative mr-4 ml-auto bg-background text-foreground border rounded-tl-2xl rounded-bl-2xl rounded-tr-2xl overflow-hidden',
           isEditMode && 'w-full',
@@ -66,23 +75,31 @@ export const ChatHumanMessage: FC<ChatHumanMessageProps> = props => {
           onEditModeChange?.(true, conversation)
         }}
       >
-        <ChatInput
-          ref={chatInputRef}
-          mode={
-            isEditMode
-              ? ChatInputMode.MessageEdit
-              : ChatInputMode.MessageReadonly
-          }
-          editorClassName="px-2"
-          context={context}
-          setContext={setContext}
-          conversation={conversation}
-          setConversation={setConversation}
-          sendButtonDisabled={isLoading ?? sendButtonDisabled ?? false}
-          onSend={onSend}
-        />
+        <motion.div
+          layout="preserve-aspect"
+          transition={{ duration: 0.3, ease: 'easeInOut' }}
+        >
+          <ChatInput
+            ref={chatInputRef}
+            mode={
+              isEditMode
+                ? ChatInputMode.MessageEdit
+                : ChatInputMode.MessageReadonly
+            }
+            editorClassName="px-2"
+            context={context}
+            setContext={setContext}
+            conversation={conversation}
+            setConversation={setConversation}
+            sendButtonDisabled={isLoading ?? sendButtonDisabled ?? false}
+            onSend={onSend}
+            onExitEditMode={() => {
+              onEditModeChange?.(false, conversation)
+            }}
+          />
+        </motion.div>
         {isLoading && <BorderBeam duration={2} delay={0.5} />}
-      </div>
+      </motion.div>
     </div>
   )
 }

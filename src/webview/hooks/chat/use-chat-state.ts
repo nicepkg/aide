@@ -4,6 +4,7 @@ import { useChatContext } from '@webview/contexts/chat-context'
 import type { ConversationUIState } from '@webview/types/chat'
 import type { DraftFunction } from 'use-immer'
 
+import { useCallbackRef } from '../use-callback-ref'
 import { useConversation } from './use-conversation'
 
 export const useChatState = () => {
@@ -13,7 +14,8 @@ export const useChatState = () => {
     addConversation,
     getConversationUIState,
     setConversationUIState,
-    batchSetConversationUIState
+    batchSetConversationUIState,
+    saveSession
   } = useChatContext()
 
   const {
@@ -23,6 +25,7 @@ export const useChatState = () => {
   } = useConversation('human')
 
   const allConversations = [...context.conversations, newConversation]
+  const getAllConversations = useCallbackRef(() => allConversations)
 
   const conversationsWithUIState = allConversations.map(conversation => ({
     ...conversation,
@@ -38,7 +41,17 @@ export const useChatState = () => {
     [context, newConversation.id]
   )
 
-  const replaceConversationAndTrimHistory = (conversation: Conversation) => {
+  const setAllConversationsUIState = (
+    uiStateOrUpdater: ConversationUIState | DraftFunction<ConversationUIState>
+  ) => {
+    batchSetConversationUIState(
+      context.id,
+      getAllConversations().map(c => c.id),
+      uiStateOrUpdater
+    )
+  }
+
+  const handleConversationUpdate = async (conversation: Conversation) => {
     setContext(draft => {
       const index = draft.conversations.findIndex(c => c.id === conversation.id)
 
@@ -48,19 +61,10 @@ export const useChatState = () => {
       // add new conversation
       draft.conversations.push(conversation)
     })
+    return await saveSession()
   }
 
-  const setAllConversationsUIState = (
-    uiStateOrUpdater: ConversationUIState | DraftFunction<ConversationUIState>
-  ) => {
-    batchSetConversationUIState(
-      context.id,
-      allConversations.map(c => c.id),
-      uiStateOrUpdater
-    )
-  }
-
-  const prepareUIForSending = (conversationId: string) => {
+  const handleUIStateBeforeSend = (conversationId: string) => {
     setAllConversationsUIState(draft => {
       draft.sendButtonDisabled = true
     })
@@ -69,16 +73,17 @@ export const useChatState = () => {
     })
   }
 
-  const resetUIAfterSending = (conversationId?: string) => {
+  const handleUIStateAfterSend = () => {
     setAllConversationsUIState(draft => {
       draft.sendButtonDisabled = false
       draft.isLoading = false
+      draft.isEditMode = false
     })
+  }
 
-    if (conversationId) {
-      setConversationUIState(context.id, conversationId, draft => {
-        draft.isEditMode = false
-      })
+  const resetConversationInput = (conversationId: string) => {
+    if (conversationId === newConversation.id) {
+      resetNewConversation()
     }
   }
 
@@ -109,9 +114,10 @@ export const useChatState = () => {
     conversationsWithUIState,
     historiesConversationsWithUIState,
     newConversationUIState,
-    replaceConversationAndTrimHistory,
-    prepareUIForSending,
-    resetUIAfterSending,
+    handleConversationUpdate,
+    handleUIStateBeforeSend,
+    handleUIStateAfterSend,
+    resetConversationInput,
     toggleConversationEditMode,
     addConversation
   }

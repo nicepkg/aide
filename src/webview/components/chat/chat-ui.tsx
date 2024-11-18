@@ -4,7 +4,7 @@ import { ChatContextType, type Conversation } from '@shared/entities'
 import { useChatContext } from '@webview/contexts/chat-context'
 import { useGlobalSearch } from '@webview/contexts/global-search-context'
 import { useChatState } from '@webview/hooks/chat/use-chat-state'
-import { api } from '@webview/services/api-client'
+import { useSendMessage } from '@webview/hooks/chat/use-send-message'
 import { logger } from '@webview/utils/logger'
 import { useNavigate } from 'react-router'
 
@@ -30,61 +30,27 @@ const CHAT_TYPES = [
 
 export const ChatUI: FC = () => {
   const navigate = useNavigate()
-  const {
-    context,
-    setContext,
-    getContext,
-    saveSession,
-    createAndSwitchToNewSession
-  } = useChatContext()
+  const { context, setContext, saveSession, createAndSwitchToNewSession } =
+    useChatContext()
   const {
     newConversation,
     setNewConversation,
-    resetNewConversation,
     historiesConversationsWithUIState,
     newConversationUIState,
-    replaceConversationAndTrimHistory,
-    prepareUIForSending,
-    resetUIAfterSending,
     toggleConversationEditMode
   } = useChatState()
   const chatInputRef = useRef<ChatInputRef>(null)
   const { openSearch } = useGlobalSearch()
-
-  const resetNewConversationInput = () => {
-    resetNewConversation()
-    chatInputRef.current?.resetEditor()
-  }
+  const { sendMessage } = useSendMessage()
 
   const handleSend = async (conversation: Conversation) => {
     try {
-      replaceConversationAndTrimHistory(conversation)
-      prepareUIForSending(conversation.id)
-      await saveSession()
-
-      await api.chat.streamChat(
-        {
-          chatContext: getContext()
-        },
-        (conversations: Conversation[]) => {
-          logger.verbose('Received conversations:', conversations)
-          setContext(draft => {
-            draft.conversations = conversations
-          })
-          prepareUIForSending(conversations.at(-1)!.id)
-        }
-      )
-
-      await saveSession()
-      toggleConversationEditMode(conversation.id, false)
-
-      if (conversation.id === newConversation.id) {
-        resetNewConversationInput()
-      }
-
+      await sendMessage(conversation)
       chatInputRef.current?.focusOnEditor()
-    } finally {
-      resetUIAfterSending(conversation.id)
+    } catch (error) {
+      if (error instanceof Error && error.name === 'AbortError') return
+      // Handle error appropriately
+      logger.error('Failed to send message:', error)
     }
   }
 
@@ -165,7 +131,6 @@ export const ChatUI: FC = () => {
         onSend={handleSend}
         onEditModeChange={handleEditModeChange}
       />
-
       <ChatInput
         ref={chatInputRef}
         autoFocus

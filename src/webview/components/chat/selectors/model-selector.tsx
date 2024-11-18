@@ -154,7 +154,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
       <div
         onClick={onSelect}
         className={cn(
-          'flex items-center justify-between w-full rounded-md px-2 py-1.5 text-sm transition-colors',
+          'cursor-pointer flex items-center justify-between w-full rounded-md px-2 py-1.5 text-sm transition-colors',
           'hover:bg-accent hover:text-accent-foreground',
           isSelected
             ? 'bg-accent text-accent-foreground'

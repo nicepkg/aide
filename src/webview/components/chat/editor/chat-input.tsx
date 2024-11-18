@@ -5,8 +5,8 @@ import { tryParseJSON, tryStringifyJSON } from '@shared/utils/common'
 import { convertToLangchainMessageContents } from '@shared/utils/convert-to-langchain-message-contents'
 import { getAllTextFromLangchainMessageContents } from '@shared/utils/get-all-text-from-langchain-message-contents'
 import { mergeLangchainMessageContents } from '@shared/utils/merge-langchain-message-contents'
+import { ButtonWithTooltip } from '@webview/components/button-with-tooltip'
 import { BorderBeam } from '@webview/components/ui/border-beam'
-import { Button } from '@webview/components/ui/button'
 import {
   usePluginRegistry,
   WithPluginRegistryProvider
@@ -19,6 +19,7 @@ import { type FileInfo } from '@webview/types/chat'
 import { cn } from '@webview/utils/common'
 import { logger } from '@webview/utils/logger'
 import { updatePluginStatesFromEditorState } from '@webview/utils/plugin-states'
+import { AnimatePresence, motion } from 'framer-motion'
 import {
   $createParagraphNode,
   $createTextNode,
@@ -43,6 +44,7 @@ export interface ChatInputProps {
   className?: string
   editorClassName?: string
   mode?: ChatInputMode
+  onExitEditMode?: () => void
   autoFocus?: boolean
   context: ChatContext
   borderAnimation?: boolean
@@ -60,6 +62,7 @@ const _ChatInput: FC<ChatInputProps> = ({
   className,
   editorClassName,
   mode = ChatInputMode.Default,
+  onExitEditMode,
   autoFocus = false,
   context,
   borderAnimation = false,
@@ -158,92 +161,124 @@ const _ChatInput: FC<ChatInputProps> = ({
   }, [mode])
 
   return (
-    <div
-      className={cn(
-        'chat-input relative px-4 flex-shrink-0 w-full flex flex-col border-t',
-        [ChatInputMode.MessageReadonly, ChatInputMode.MessageEdit].includes(
-          mode
-        ) && 'border-none px-0',
-        className
-      )}
-    >
-      <FileAttachments
+    <AnimatePresence initial={false}>
+      <motion.div
+        layout
+        transition={{ duration: 0.3, ease: 'easeInOut' }}
         className={cn(
+          'chat-input relative px-4 flex-shrink-0 w-full flex flex-col border-t',
           [ChatInputMode.MessageReadonly, ChatInputMode.MessageEdit].includes(
             mode
-          ) && 'px-2'
+          ) && 'border-none px-0',
+          className
         )}
-        showFileSelector={![ChatInputMode.MessageReadonly].includes(mode)}
-        selectedFiles={selectedFiles}
-        onSelectedFilesChange={handleSelectedFiles}
-        onOpenChange={isOpen => !isOpen && focusOnEditor()}
-      />
-      <div>
-        <ChatEditor
-          ref={node => {
-            ;(editorRef as any).current = node
-            if (typeof ref === 'function') {
-              ref(node)
-            } else if (ref) {
-              ref.current = node
-            }
-          }}
-          initialConfig={{
-            editable: ![ChatInputMode.MessageReadonly].includes(mode),
-            editorState: initialEditorState
-          }}
-          onComplete={handleSend}
-          onChange={handleEditorChange}
-          placeholder={[
-            'Type your message here...',
-            '@web which the diff between the react18 and react19?',
-            '@main.ts please review the code'
-          ]}
-          autoFocus={autoFocus}
-          className={cn(
-            'min-h-24 max-h-64 overflow-y-auto rounded-lg bg-background shadow-none focus-visible:ring-0',
-            [ChatInputMode.MessageReadonly, ChatInputMode.MessageEdit].includes(
-              mode
-            ) && 'rounded-none border-none my-0',
-            [ChatInputMode.MessageReadonly].includes(mode) &&
-              'min-h-0 min-w-0 h-auto w-auto',
-            editorClassName
-          )}
-          contentEditableClassName={cn(
-            [ChatInputMode.MessageReadonly].includes(mode) &&
-              'min-h-0 min-w-0 h-auto w-auto'
-          )}
-        />
-        <div
-          className={cn(
-            'chat-input-actions flex justify-between mb-2',
-            [ChatInputMode.MessageReadonly].includes(mode) && 'hidden',
-            [ChatInputMode.MessageEdit].includes(mode) && 'px-2'
-          )}
+      >
+        <motion.div
+          layout="preserve-aspect"
+          transition={{ duration: 0.3, ease: 'easeInOut' }}
         >
-          <ContextSelector
-            context={context}
-            setContext={setContext}
-            conversation={conversation}
-            setConversation={setConversation}
-            onClickMentionSelector={() => {
-              editorRef.current?.insertSpaceAndAt()
-            }}
-            onClose={focusOnEditor}
+          <FileAttachments
+            className={cn(
+              [
+                ChatInputMode.MessageReadonly,
+                ChatInputMode.MessageEdit
+              ].includes(mode) && 'px-2'
+            )}
+            showFileSelector={![ChatInputMode.MessageReadonly].includes(mode)}
+            selectedFiles={selectedFiles}
+            onSelectedFilesChange={handleSelectedFiles}
+            onOpenChange={isOpen => !isOpen && focusOnEditor()}
           />
-          <Button
-            variant="outline"
-            disabled={sendButtonDisabled}
-            size="xs"
-            className="ml-auto"
-            onClick={handleSend}
+        </motion.div>
+
+        <motion.div
+          layout="preserve-aspect"
+          transition={{ duration: 0.3, ease: 'easeInOut' }}
+        >
+          <ChatEditor
+            ref={node => {
+              ;(editorRef as any).current = node
+              if (typeof ref === 'function') {
+                ref(node)
+              } else if (ref) {
+                ref.current = node
+              }
+            }}
+            initialConfig={{
+              editable: ![ChatInputMode.MessageReadonly].includes(mode),
+              editorState: initialEditorState
+            }}
+            onComplete={handleSend}
+            onChange={handleEditorChange}
+            placeholder={[
+              'Type your message here...',
+              '@web which the diff between the react18 and react19?',
+              '@main.ts please review the code'
+            ]}
+            autoFocus={autoFocus}
+            className={cn(
+              'min-h-24 max-h-64 overflow-y-auto rounded-lg bg-background shadow-none focus-visible:ring-0',
+              [
+                ChatInputMode.MessageReadonly,
+                ChatInputMode.MessageEdit
+              ].includes(mode) && 'rounded-none border-none my-0',
+              [ChatInputMode.MessageReadonly].includes(mode) &&
+                'min-h-0 min-w-0 h-auto w-auto',
+              editorClassName
+            )}
+            contentEditableClassName={cn(
+              [ChatInputMode.MessageReadonly].includes(mode) &&
+                'min-h-0 min-w-0 h-auto w-auto'
+            )}
+          />
+
+          <motion.div
+            initial={
+              mode === ChatInputMode.MessageReadonly
+                ? { opacity: 0, height: 0 }
+                : {}
+            }
+            animate={
+              mode === ChatInputMode.MessageReadonly
+                ? { opacity: 0, height: 0 }
+                : { opacity: 1, height: 'auto' }
+            }
+            transition={{ duration: 0.2 }}
+            className={cn(
+              'chat-input-actions flex justify-between',
+              [ChatInputMode.MessageEdit].includes(mode) && 'px-2',
+              [ChatInputMode.MessageEdit, ChatInputMode.Default].includes(
+                mode
+              ) && 'mb-2'
+            )}
           >
-            ⌘↩ Send
-          </Button>
-        </div>
-      </div>
-      {borderAnimation && <BorderBeam duration={2} delay={0.5} />}
-    </div>
+            <ContextSelector
+              context={context}
+              setContext={setContext}
+              conversation={conversation}
+              setConversation={setConversation}
+              onClickMentionSelector={() => {
+                editorRef.current?.insertSpaceAndAt()
+              }}
+              onFocusOnEditor={focusOnEditor}
+              showExitEditModeButton={mode === ChatInputMode.MessageEdit}
+              onExitEditMode={onExitEditMode}
+            />
+            <ButtonWithTooltip
+              variant="outline"
+              disabled={sendButtonDisabled}
+              size="xs"
+              className="ml-auto"
+              onClick={handleSend}
+              tooltip="You can use ⌘↩ to send message"
+            >
+              ⌘↩ Send
+            </ButtonWithTooltip>
+          </motion.div>
+        </motion.div>
+        {borderAnimation && <BorderBeam duration={2} delay={0.5} />}
+      </motion.div>
+    </AnimatePresence>
   )
 }
 

@@ -29,20 +29,22 @@ interface AnimatedListItemProps {
 
 export const AnimatedListItem = ({ children }: AnimatedListItemProps) => {
   const animations = {
-    initial: { scale: 0, opacity: 0 },
+    initial: {
+      opacity: 0,
+      y: 50,
+      scale: 0.9
+    },
     animate: {
-      scale: 1,
       opacity: 1,
-      originY: 0
-    },
-    exit: {
-      scale: 0,
-      opacity: 0
-    },
-    transition: {
-      type: 'spring',
-      stiffness: 350,
-      damping: 40
+      y: 0,
+      scale: 1,
+      transition: {
+        type: 'spring',
+        stiffness: 100,
+        damping: 15,
+        mass: 0.8,
+        delay: 0.1
+      }
     }
   }
 

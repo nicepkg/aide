@@ -1,6 +1,6 @@
 /* eslint-disable unused-imports/no-unused-vars */
 import React from 'react'
-import { ImageIcon } from '@radix-ui/react-icons'
+import { Cross1Icon, ImageIcon } from '@radix-ui/react-icons'
 import {
   chatContextTypeModelSettingKeyMap,
   type ChatContext,
@@ -17,8 +17,10 @@ interface ContextSelectorProps {
   setContext: Updater<ChatContext>
   conversation: Conversation
   setConversation: Updater<Conversation>
-  onClose?: () => void
+  onFocusOnEditor?: () => void
   onClickMentionSelector?: () => void
+  showExitEditModeButton?: boolean
+  onExitEditMode?: () => void
 }
 
 export const ContextSelector: React.FC<ContextSelectorProps> = ({
@@ -26,8 +28,10 @@ export const ContextSelector: React.FC<ContextSelectorProps> = ({
   setContext,
   conversation,
   setConversation,
-  onClose,
-  onClickMentionSelector
+  onFocusOnEditor,
+  onClickMentionSelector,
+  showExitEditModeButton,
+  onExitEditMode
 }) => {
   const { addSelectedImage } = usePluginImagesSelectorProviders()
 
@@ -53,7 +57,7 @@ export const ContextSelector: React.FC<ContextSelectorProps> = ({
     <div className="context-selector flex items-center flex-1">
       <ModelSelector
         featureModelSettingKey={chatContextTypeModelSettingKeyMap[context.type]}
-        onOpenChange={isOpen => !isOpen && onClose?.()}
+        onOpenChange={isOpen => !isOpen && onFocusOnEditor?.()}
         renderTrigger={({ activeModel, activeProvider }) => (
           <ButtonWithTooltip
             tooltip={
@@ -69,7 +73,7 @@ export const ContextSelector: React.FC<ContextSelectorProps> = ({
       <ButtonWithTooltip
         tooltip="Add mention"
         variant="ghost"
-        size="xs"
+        size="iconXs"
         onClick={onClickMentionSelector}
       >
         @
@@ -77,11 +81,21 @@ export const ContextSelector: React.FC<ContextSelectorProps> = ({
       <ButtonWithTooltip
         tooltip="Add image"
         variant="ghost"
-        size="xs"
+        size="iconXs"
         onClick={handleSelectImage}
       >
-        <ImageIcon className="h-3 w-3 mr-1" />
+        <ImageIcon className="size-3" />
       </ButtonWithTooltip>
+      {showExitEditModeButton && (
+        <ButtonWithTooltip
+          tooltip="Exit edit mode"
+          variant="ghost"
+          size="iconXs"
+          onClick={onExitEditMode}
+        >
+          <Cross1Icon className="size-3" />
+        </ButtonWithTooltip>
+      )}
     </div>
   )
 }

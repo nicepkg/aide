@@ -65,12 +65,14 @@ export const useChatUIStore = create<ChatUIStore>()(
       if (typeof uiStateOrUpdater === 'function') {
         const idUIStateMap = conversationIds.map(conversationId => {
           const id = `${sessionId}_${conversationId}`
+          const uiState = produce(
+            get().sessionConversationUIStateMap[id] || {},
+            uiStateOrUpdater
+          )
+
           return {
             id,
-            uiState: produce(
-              get().sessionConversationUIStateMap[id] || {},
-              uiStateOrUpdater
-            )
+            uiState
           }
         })
 

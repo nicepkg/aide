@@ -52,6 +52,7 @@ export const createCodebaseSearchTool = async (
 
     const searchCodeSnippets: CodeSnippet[] = searchPromisesResult
       .flat()
+      .slice(0, 8)
       .map(row => {
         // eslint-disable-next-line unused-imports/no-unused-vars
         const { embedding, ...others } = row
