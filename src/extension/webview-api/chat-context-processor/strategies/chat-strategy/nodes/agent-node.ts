@@ -1,16 +1,13 @@
 import { ModelProviderFactory } from '@extension/ai/model-providers/helpers/factory'
 import { ServerPluginRegister } from '@extension/registers/server-plugin-register'
 import { getToolCallsFromMessage } from '@extension/webview-api/chat-context-processor/utils/get-tool-calls-from-message'
-import {
-  FeatureModelSettingKey,
-  type LangchainMessageContents,
-  type LangchainTool
-} from '@shared/entities'
+import type { AIMessageChunk } from '@langchain/core/messages'
+import { FeatureModelSettingKey, type LangchainTool } from '@shared/entities'
 import { convertToLangchainMessageContents } from '@shared/utils/convert-to-langchain-message-contents'
 import { produce } from 'immer'
 
 import { ChatMessagesConstructor } from '../messages-constructors/chat-messages-constructor'
-import type { CreateChatGraphNode } from './state'
+import { dispatchGraphState, type CreateChatGraphNode } from './state'
 
 export const createAgentNode: CreateChatGraphNode = options => async state => {
   const modelProvider = await ModelProviderFactory.getModelProvider(
@@ -33,28 +30,38 @@ export const createAgentNode: CreateChatGraphNode = options => async state => {
   const messagesFromChatContext =
     await chatMessagesConstructor.constructMessages()
 
-  const response = await aiModel
+  const stream = await aiModel
     .bindTools(tools)
     .bind({ signal: state.abortController?.signal })
-    .invoke(messagesFromChatContext)
+    .stream(messagesFromChatContext)
 
-  const toolCalls = getToolCallsFromMessage(response)
+  let message: AIMessageChunk | undefined
+  let shouldContinue = true
+  let { newConversations } = state
 
-  if (!toolCalls.length) {
-    const newConversations = produce(state.newConversations, draft => {
-      const contents: LangchainMessageContents =
-        convertToLangchainMessageContents(response.content)
+  for await (const chunk of stream) {
+    // stream with tool calls not need to concat chunk
+    message = chunk
 
-      draft.at(-1)!.contents.push(...contents)
-    })
+    const toolCalls = getToolCallsFromMessage(message)
+    const contents = convertToLangchainMessageContents(message.content)
 
-    return {
-      newConversations,
-      shouldContinue: false
+    if (!toolCalls.length && contents.length) {
+      // tool calls unuseable
+      shouldContinue = false
+      newConversations = produce(newConversations, draft => {
+        draft.at(-1)!.contents.push(...contents)
+      })
+      dispatchGraphState({
+        newConversations,
+        chatContext: state.chatContext
+      })
     }
   }
 
   return {
-    messages: [response]
+    shouldContinue,
+    newConversations,
+    messages: message ? [message] : undefined
   }
 }

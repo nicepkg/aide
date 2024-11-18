@@ -1,4 +1,4 @@
-import * as React from 'react'
+import { useEffect, useRef, type FC, type RefAttributes } from 'react'
 import { cn } from '@webview/utils/common'
 import Typed from 'typed.js'
 
@@ -44,15 +44,19 @@ interface TypedTextProps {
    * Class name for the wrapper
    */
   className?: string
+
+  /**
+   * Pause the animation
+   */
+  isPaused?: boolean
+
   /**
    * Callback when typing is complete
    */
   onComplete?: () => void
 }
 
-export const TypedText: React.FC<
-  TypedTextProps & React.RefAttributes<HTMLSpanElement>
-> = ({
+export const TypedText: FC<TypedTextProps & RefAttributes<HTMLSpanElement>> = ({
   strings,
   typeSpeed = 50,
   startDelay = 0,
@@ -64,12 +68,22 @@ export const TypedText: React.FC<
   cursorChar = '|',
   className,
   onComplete,
+  isPaused = false,
   ref
 }) => {
-  const el = React.useRef<HTMLSpanElement>(null)
-  const typed = React.useRef<Typed | null>(null)
+  const el = useRef<HTMLSpanElement>(null)
+  const typed = useRef<Typed | null>(null)
 
-  React.useEffect(() => {
+  // Watch isPaused changes
+  useEffect(() => {
+    if (isPaused) {
+      typed.current?.stop()
+    } else {
+      typed.current?.start()
+    }
+  }, [isPaused])
+
+  useEffect(() => {
     const processedStrings = strings.map(str =>
       typeof str === 'string' ? str : str.text
     )
@@ -89,12 +103,10 @@ export const TypedText: React.FC<
       }
     }
 
-    // 初始化 Typed 实例
     if (el.current) {
       typed.current = new Typed(el.current, options)
     }
 
-    // 清理
     return () => {
       typed.current?.destroy()
     }

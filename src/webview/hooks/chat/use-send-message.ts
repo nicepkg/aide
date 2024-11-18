@@ -27,12 +27,13 @@ export const useSendMessage = () => {
       handleUIStateBeforeSend(conversation.id)
       await handleConversationUpdate(conversation)
 
+      let conversations: Conversation[] = []
       await api.chat.streamChat(
         {
           chatContext: getContext()
         },
-        (conversations: Conversation[]) => {
-          logger.verbose('Received conversations:', conversations)
+        (newConversations: Conversation[]) => {
+          conversations = newConversations
           setContext(draft => {
             draft.conversations = conversations
           })
@@ -41,6 +42,8 @@ export const useSendMessage = () => {
         },
         abortControllerRef.current.signal
       )
+
+      logger.verbose('Received conversations:', conversations)
 
       await saveSession()
 

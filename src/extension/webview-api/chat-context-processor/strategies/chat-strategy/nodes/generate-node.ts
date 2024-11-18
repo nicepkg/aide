@@ -1,13 +1,11 @@
 import { ModelProviderFactory } from '@extension/ai/model-providers/helpers/factory'
-import {
-  FeatureModelSettingKey,
-  type LangchainMessageContents
-} from '@shared/entities'
+import type { AIMessageChunk } from '@langchain/core/messages'
+import { FeatureModelSettingKey } from '@shared/entities'
 import { convertToLangchainMessageContents } from '@shared/utils/convert-to-langchain-message-contents'
 import { produce } from 'immer'
 
 import { ChatMessagesConstructor } from '../messages-constructors/chat-messages-constructor'
-import type { CreateChatGraphNode } from './state'
+import { dispatchGraphState, type CreateChatGraphNode } from './state'
 
 export const createGenerateNode: CreateChatGraphNode =
   options => async state => {
@@ -24,19 +22,37 @@ export const createGenerateNode: CreateChatGraphNode =
     const messagesFromChatContext =
       await chatMessagesConstructor.constructMessages()
 
-    const response = await aiModel
+    const stream = await aiModel
       .bind({ signal: state.abortController?.signal })
-      .invoke(messagesFromChatContext)
+      .stream(messagesFromChatContext)
 
-    const newConversations = produce(state.newConversations, draft => {
-      const contents: LangchainMessageContents =
-        convertToLangchainMessageContents(response.content)
+    let message: AIMessageChunk | undefined
+    let { newConversations } = state
 
-      draft.at(-1)!.contents.push(...contents)
-    })
+    for await (const chunk of stream) {
+      if (!message) {
+        message = chunk
+      } else {
+        // stream without tool calls need to concat chunk
+        message = message.concat(chunk)
+      }
+
+      const contents = convertToLangchainMessageContents(message.content)
+
+      if (contents.length) {
+        newConversations = produce(state.newConversations, draft => {
+          draft.at(-1)!.contents.push(...contents)
+        })
+
+        dispatchGraphState({
+          newConversations,
+          chatContext: state.chatContext
+        })
+      }
+    }
 
     return {
-      messages: [response],
+      messages: message ? [message] : undefined,
       newConversations
     }
   }

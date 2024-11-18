@@ -4,7 +4,7 @@ import { produce } from 'immer'
 
 import { BaseStrategy } from '../base-strategy'
 import { createChatWorkflow } from './chat-workflow'
-import type { ChatGraphState } from './nodes/state'
+import { chatGraphStateEventName, type ChatGraphState } from './nodes/state'
 
 export class ChatStrategy extends BaseStrategy {
   private _chatWorkflow: UnPromise<
@@ -29,16 +29,19 @@ export class ChatStrategy extends BaseStrategy {
     const chatWorkflow = await this.getChatWorkflow()
     const graph = chatWorkflow.compile()
 
-    const stream = await graph.stream({
-      chatContext,
-      abortController
-    })
+    const eventStream = await graph.streamEvents(
+      {
+        chatContext,
+        abortController
+      },
+      { version: 'v2' }
+    )
 
     const state: Partial<ChatGraphState> = {}
 
-    for await (const outputMap of stream) {
-      for (const [nodeName] of Object.entries(outputMap)) {
-        const returnsState = outputMap[nodeName] as Partial<ChatGraphState>
+    for await (const { event, name, data } of eventStream) {
+      if (event === 'on_custom_event' && name === chatGraphStateEventName) {
+        const returnsState = data as Partial<ChatGraphState>
         Object.assign(state, returnsState)
         const currentChatContext = state.chatContext || chatContext
 

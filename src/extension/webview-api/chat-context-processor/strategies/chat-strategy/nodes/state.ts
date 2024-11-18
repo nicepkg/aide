@@ -1,3 +1,4 @@
+import { dispatchCustomEvent } from '@langchain/core/callbacks/dispatch'
 import type { BaseMessage } from '@langchain/core/messages'
 import { Annotation } from '@langchain/langgraph'
 import {
@@ -45,3 +46,8 @@ export type ChatGraphNode = (
 export type CreateChatGraphNode = (
   options: BaseStrategyOptions
 ) => ChatGraphNode
+
+export const chatGraphStateEventName = 'stream-chat-graph-state'
+export const dispatchGraphState = (state: Partial<ChatGraphState>) => {
+  dispatchCustomEvent(chatGraphStateEventName, state)
+}

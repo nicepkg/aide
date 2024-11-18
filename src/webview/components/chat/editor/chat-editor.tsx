@@ -1,4 +1,11 @@
-import { useEffect, useId, useImperativeHandle, type FC, type Ref } from 'react'
+import {
+  useEffect,
+  useId,
+  useImperativeHandle,
+  useState,
+  type FC,
+  type Ref
+} from 'react'
 import { AutoFocusPlugin } from '@lexical/react/LexicalAutoFocusPlugin'
 import {
   LexicalComposer,
@@ -109,6 +116,21 @@ const ChatEditorInner: FC<ChatEditorProps> = ({
   ...otherProps
 }) => {
   const [editor] = useLexicalComposerContext()
+  const [isHovered, setIsHovered] = useState(false)
+  const [showPlaceholder, setShowPlaceholder] = useState(true)
+
+  const handleMouseOver = () => {
+    setIsHovered(true)
+  }
+
+  const handleMouseOut = () => {
+    setIsHovered(false)
+    setShowPlaceholder(true)
+  }
+
+  const handleClick = () => {
+    setShowPlaceholder(false)
+  }
 
   const insertSpaceAndAt = () => {
     editor.focus()
@@ -195,6 +217,9 @@ const ChatEditorInner: FC<ChatEditorProps> = ({
     <div
       className={cn('editor-container relative', className)}
       tabIndex={1}
+      onMouseOver={handleMouseOver}
+      onMouseOut={handleMouseOut}
+      onClick={handleClick}
       {...otherProps}
     >
       <RichTextPlugin
@@ -207,19 +232,22 @@ const ChatEditorInner: FC<ChatEditorProps> = ({
           />
         }
         placeholder={
-          <div className="editor-placeholder absolute pointer-events-none top-2 left-0 text-foreground/50">
-            <TypedText
-              strings={
-                Array.isArray(placeholder) ? placeholder : [placeholder || '']
-              }
-              typeSpeed={40}
-              backSpeed={30}
-              backDelay={2000}
-              loop={Array.isArray(placeholder)}
-              showCursor={Array.isArray(placeholder)}
-              cursorChar=""
-            />
-          </div>
+          showPlaceholder ? (
+            <div className="editor-placeholder absolute pointer-events-none top-2 left-0 text-foreground/50">
+              <TypedText
+                strings={
+                  Array.isArray(placeholder) ? placeholder : [placeholder || '']
+                }
+                typeSpeed={40}
+                backSpeed={30}
+                backDelay={2000}
+                loop={Array.isArray(placeholder)}
+                showCursor={Array.isArray(placeholder)}
+                cursorChar=""
+                isPaused={isHovered}
+              />
+            </div>
+          ) : null
         }
         ErrorBoundary={LexicalErrorBoundary}
       />
