@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import type { Conversation } from '@shared/entities'
 import { useChatContext } from '@webview/contexts/chat-context'
 import { api } from '@webview/services/api-client'
@@ -15,6 +15,7 @@ export const useSendMessage = () => {
     resetConversationInput,
     handleUIStateAfterSend
   } = useChatState()
+  const [isSending, setIsSending] = useState(false)
 
   const sendMessage = async (conversation: Conversation) => {
     // Cancel previous request if exists
@@ -22,29 +23,30 @@ export const useSendMessage = () => {
     abortControllerRef.current = new AbortController()
 
     try {
+      setIsSending(true)
       handleUIStateBeforeSend(conversation.id)
       await handleConversationUpdate(conversation)
 
       await api.chat.streamChat(
         {
           chatContext: getContext()
-          // signal: abortControllerRef.current.signal
         },
         (conversations: Conversation[]) => {
           logger.verbose('Received conversations:', conversations)
           setContext(draft => {
             draft.conversations = conversations
           })
-          console.log('conversations666', conversations)
 
           handleUIStateBeforeSend(conversations.at(-1)!.id)
-        }
+        },
+        abortControllerRef.current.signal
       )
 
       await saveSession()
 
       resetConversationInput(conversation.id)
     } finally {
+      setIsSending(false)
       handleUIStateAfterSend()
     }
   }
@@ -55,6 +57,7 @@ export const useSendMessage = () => {
 
   return {
     sendMessage,
-    cancelSending
+    cancelSending,
+    isSending
   }
 }

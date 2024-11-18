@@ -1,3 +1,4 @@
+import { getErrorMsg, isAbortError } from '@shared/utils/common'
 import * as vscode from 'vscode'
 
 import { getContext } from './context'
@@ -30,18 +31,6 @@ export const executeCommand = async (
   terminal.sendText(command)
 }
 
-export const getErrorMsg = (err: any): string => {
-  if (err instanceof Error) {
-    return err.message
-  }
-
-  if (typeof err === 'string') {
-    return err
-  }
-
-  return 'An error occurred'
-}
-
 export const runWithCathError = async <T extends () => any>(
   fn: T,
   logLabel = 'runWithCathError'
@@ -49,9 +38,7 @@ export const runWithCathError = async <T extends () => any>(
   try {
     return await fn()
   } catch (err) {
-    const errMsg = getErrorMsg(err)
-    // skip abort error
-    if (['AbortError', 'Aborted'].includes(errMsg)) return
+    if (isAbortError(err)) return
 
     logger.warn(logLabel, err)
     vscode.window.showErrorMessage(getErrorMsg(err))

@@ -12,8 +12,13 @@ import {
 } from './nodes/state'
 
 const createSmartRoute =
-  (nextNodeName: ChatGraphNodeName) => (state: ChatGraphState) =>
-    state.shouldContinue ? nextNodeName : END
+  (nextNodeName: ChatGraphNodeName) => (state: ChatGraphState) => {
+    if (state.abortController?.signal.aborted) {
+      return END
+    }
+
+    return state.shouldContinue ? nextNodeName : END
+  }
 
 export const createChatWorkflow = async (options: BaseStrategyOptions) => {
   const chatStrategyProvider = options.registerManager

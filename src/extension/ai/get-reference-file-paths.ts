@@ -1,7 +1,7 @@
-import { AbortError } from '@extension/constants'
 import { traverseFileOrFolders } from '@extension/file-utils/traverse-fs'
 import { getWorkspaceFolder, toPlatformPath } from '@extension/utils'
 import { FeatureModelSettingKey } from '@shared/entities'
+import { AbortError } from '@shared/utils/common'
 import * as vscode from 'vscode'
 import { z } from 'zod'
 

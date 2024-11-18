@@ -98,7 +98,7 @@ export const ChatHumanMessage: FC<ChatHumanMessageProps> = props => {
             }}
           />
         </motion.div>
-        {isLoading && <BorderBeam duration={2} delay={0.5} />}
+        {isLoading && <BorderBeam size={200} duration={2} delay={0.5} />}
       </motion.div>
     </div>
   )

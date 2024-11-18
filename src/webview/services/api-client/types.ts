@@ -28,7 +28,10 @@ export type APIType<T extends readonly ControllerClass[]> = {
   [K in T[number] as InstanceType<K>['name']]: {
     [M in keyof InferControllerMethods<K>]: (
       req: InferMethodParams<InferControllerMethods<K>, M>,
-      onStream?: (chunk: InferStreamChunk<InferControllerMethods<K>, M>) => void
+      onStream?: (
+        chunk: InferStreamChunk<InferControllerMethods<K>, M>
+      ) => void,
+      signal?: AbortSignal
     ) => Promise<InferMethodReturn<InferControllerMethods<K>, M>>
   }
 }

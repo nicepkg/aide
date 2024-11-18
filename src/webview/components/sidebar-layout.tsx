@@ -103,7 +103,9 @@ export const SidebarLayout: React.FC<SidebarLayoutProps> = ({
             headerRight={headerRight}
           />
         </div>
-        <div className="flex flex-1 flex-col overflow-auto">{children}</div>
+        <div className="relative flex flex-1 flex-col overflow-auto">
+          {children}
+        </div>
       </div>
     </div>
   )

@@ -1,22 +1,23 @@
 import type { Controllers } from '@extension/webview-api/controllers'
 import type { ControllerClass } from '@extension/webview-api/types'
+import { AbortError } from '@shared/utils/common'
 import { io, Socket } from 'socket.io-client'
 
 import type { APIType } from './types'
+
+type PendingRequest = {
+  resolve: (value: any) => void
+  reject: (reason: any) => void
+  onStream?: (chunk: string) => void
+  abortController?: AbortController
+}
 
 export class APIClient {
   private messageId = 0
 
   private socket!: Socket
 
-  private pendingRequests: Map<
-    number,
-    {
-      resolve: (value: any) => void
-      reject: (reason: any) => void
-      onStream?: (chunk: string) => void
-    }
-  > = new Map()
+  private pendingRequests: Map<number, PendingRequest> = new Map()
 
   constructor() {
     const port = window.vscodeWebviewState?.socketPort
@@ -65,11 +66,35 @@ export class APIClient {
     controller: string,
     method: string,
     data: TReq,
-    onStream?: (chunk: string) => void
+    onStream?: (chunk: string) => void,
+    signal?: AbortSignal
   ): Promise<TRes> {
     return new Promise((resolve, reject) => {
       const id = this.messageId++
-      this.pendingRequests.set(id, { resolve, reject, onStream })
+      const abortController = signal ? new AbortController() : undefined
+
+      if (signal) {
+        signal.addEventListener(
+          'abort',
+          () => {
+            this.socket.emit(`abort-${id}`, { id })
+            const pending = this.pendingRequests.get(id)
+            if (pending) {
+              pending.reject(AbortError)
+              this.pendingRequests.delete(id)
+            }
+          },
+          { once: true }
+        )
+      }
+
+      this.pendingRequests.set(id, {
+        resolve,
+        reject,
+        onStream,
+        abortController
+      })
+
       this.socket.emit('request', { id, controller, method, data })
     })
   }
@@ -84,8 +109,12 @@ export const createWebviewApi = <T extends readonly ControllerClass[]>() => {
         {
           get:
             (_, method: string) =>
-            (req: any, onStream?: (chunk: string) => void) =>
-              apiClient.request(controllerName, method, req, onStream)
+            (
+              req: any,
+              onStream?: (chunk: string) => void,
+              signal?: AbortSignal
+            ) =>
+              apiClient.request(controllerName, method, req, onStream, signal)
         }
       )
   }) as APIType<T>

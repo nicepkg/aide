@@ -1,15 +1,18 @@
 import { useRef, type FC } from 'react'
 import { GearIcon, MagnifyingGlassIcon, PlusIcon } from '@radix-ui/react-icons'
 import { ChatContextType, type Conversation } from '@shared/entities'
+import { isAbortError } from '@shared/utils/common'
 import { useChatContext } from '@webview/contexts/chat-context'
 import { useGlobalSearch } from '@webview/contexts/global-search-context'
 import { useChatState } from '@webview/hooks/chat/use-chat-state'
 import { useSendMessage } from '@webview/hooks/chat/use-send-message'
 import { logger } from '@webview/utils/logger'
 import { useNavigate } from 'react-router'
+import { useKey } from 'react-use'
 
 import { ButtonWithTooltip } from '../button-with-tooltip'
 import { SidebarLayout } from '../sidebar-layout'
+import { BorderBeam } from '../ui/border-beam'
 import {
   Select,
   SelectContent,
@@ -41,15 +44,25 @@ export const ChatUI: FC = () => {
   } = useChatState()
   const chatInputRef = useRef<ChatInputRef>(null)
   const { openSearch } = useGlobalSearch()
-  const { sendMessage } = useSendMessage()
+  const { sendMessage, cancelSending, isSending } = useSendMessage()
+
+  useKey(
+    event => (event.metaKey || event.ctrlKey) && event.key === 'Delete',
+    () => {
+      if (isSending) {
+        cancelSending()
+      }
+    },
+    { event: 'keydown' }
+  )
 
   const handleSend = async (conversation: Conversation) => {
     try {
       await sendMessage(conversation)
+      chatInputRef.current?.reInitializeEditor()
       chatInputRef.current?.focusOnEditor()
     } catch (error) {
-      if (error instanceof Error && error.name === 'AbortError') return
-      // Handle error appropriately
+      if (isAbortError(error)) return
       logger.error('Failed to send message:', error)
     }
   }
@@ -124,29 +137,45 @@ export const ChatUI: FC = () => {
       }
       className="chat-ui"
     >
-      <ChatMessages
-        conversationsWithUIState={historiesConversationsWithUIState}
-        context={context}
-        setContext={setContext}
-        onSend={handleSend}
-        onEditModeChange={handleEditModeChange}
-      />
-      <ChatInput
-        ref={chatInputRef}
-        autoFocus
-        className="rounded-tl-xl rounded-tr-xl"
-        context={context}
-        setContext={setContext}
-        conversation={newConversation}
-        setConversation={setNewConversation}
-        borderAnimation={newConversationUIState.isLoading}
-        sendButtonDisabled={
-          newConversationUIState.isLoading ??
-          newConversationUIState.sendButtonDisabled ??
-          false
-        }
-        onSend={handleSend}
-      />
+      <div className="relative w-full h-full overflow-hidden flex flex-col">
+        <ChatMessages
+          conversationsWithUIState={historiesConversationsWithUIState}
+          context={context}
+          setContext={setContext}
+          onSend={handleSend}
+          onEditModeChange={handleEditModeChange}
+        />
+        {isSending && (
+          <div className="absolute left-1/2 bottom-[200px] -translate-x-1/2 z-10">
+            <ButtonWithTooltip
+              variant="secondary"
+              size="default"
+              tooltip="Cancel the message generation or pressing ⌘⌫"
+              onClick={cancelSending}
+              className="bg-secondary/50"
+            >
+              ⌘⌫ Cancel
+              <BorderBeam size={50} duration={2} delay={0.5} />
+            </ButtonWithTooltip>
+          </div>
+        )}
+        <ChatInput
+          ref={chatInputRef}
+          autoFocus
+          className="rounded-tl-xl rounded-tr-xl"
+          context={context}
+          setContext={setContext}
+          conversation={newConversation}
+          setConversation={setNewConversation}
+          borderAnimation={newConversationUIState.isLoading}
+          sendButtonDisabled={
+            newConversationUIState.isLoading ??
+            newConversationUIState.sendButtonDisabled ??
+            false
+          }
+          onSend={handleSend}
+        />
+      </div>
     </SidebarLayout>
   )
 }

@@ -1,10 +1,10 @@
 import path from 'path'
 import { ModelProviderFactory } from '@extension/ai/model-providers/helpers/factory'
-import { AbortError } from '@extension/constants'
 import { t } from '@extension/i18n'
 import { createLoading } from '@extension/loading'
 import { getActiveEditor, getWorkspaceFolder } from '@extension/utils'
 import { FeatureModelSettingKey } from '@shared/entities'
+import { AbortError } from '@shared/utils/common'
 import * as vscode from 'vscode'
 import { z } from 'zod'
 

@@ -6,15 +6,21 @@ import { Controller } from '../types'
 export class ChatController extends Controller {
   readonly name = 'chat'
 
-  async *streamChat(req: {
-    chatContext: ChatContext
-  }): AsyncGenerator<Conversation[], void, unknown> {
+  async *streamChat(
+    req: {
+      chatContext: ChatContext
+    },
+    abortController?: AbortController
+  ): AsyncGenerator<Conversation[], void, unknown> {
     const { chatContext } = req
     const chatContextProcessor = new ChatContextProcessor(
       this.registerManager,
       this.commandManager
     )
-    const answerStream = await chatContextProcessor.getAnswers(chatContext)
+    const answerStream = await chatContextProcessor.getAnswers(
+      chatContext,
+      abortController
+    )
 
     for await (const conversations of answerStream) {
       yield conversations

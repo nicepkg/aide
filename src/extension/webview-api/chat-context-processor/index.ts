@@ -50,9 +50,10 @@ export class ChatContextProcessor {
   }
 
   async *getAnswers(
-    context: ChatContext
+    context: ChatContext,
+    abortController?: AbortController
   ): AsyncGenerator<Conversation[], void, unknown> {
     const strategy = this.selectStrategy(context)
-    yield* strategy.getAnswers(context)
+    yield* strategy.getAnswers(context, abortController)
   }
 }

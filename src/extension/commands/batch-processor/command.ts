@@ -1,11 +1,11 @@
 import { getConfigKey } from '@extension/config'
-import { AbortError } from '@extension/constants'
 import { isTmpFileUri } from '@extension/file-utils/tmp-file/is-tmp-file-uri'
 import { traverseFileOrFolders } from '@extension/file-utils/traverse-fs'
 import { t } from '@extension/i18n'
 import { createLoading } from '@extension/loading'
 import { logger } from '@extension/logger'
 import { stateStorage } from '@extension/storage'
+import { AbortError } from '@shared/utils/common'
 import pLimit from 'p-limit'
 import * as vscode from 'vscode'
 

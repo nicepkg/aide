@@ -1,5 +1,5 @@
 import type { CommandManager } from '@extension/commands/command-manager'
-import { getErrorMsg } from '@extension/utils'
+import { getErrorMsg } from '@shared/utils/common'
 import * as vscode from 'vscode'
 
 import { BaseRegister } from '../base-register'

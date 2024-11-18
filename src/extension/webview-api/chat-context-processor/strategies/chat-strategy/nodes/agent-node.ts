@@ -16,7 +16,6 @@ export const createAgentNode: CreateChatGraphNode = options => async state => {
   const modelProvider = await ModelProviderFactory.getModelProvider(
     FeatureModelSettingKey.Chat
   )
-  const aiModelAbortController = new AbortController()
   const aiModel = await modelProvider.createLangChainModel()
   const chatStrategyProvider = options.registerManager
     .getRegister(ServerPluginRegister)
@@ -36,7 +35,7 @@ export const createAgentNode: CreateChatGraphNode = options => async state => {
 
   const response = await aiModel
     .bindTools(tools)
-    .bind({ signal: aiModelAbortController.signal })
+    .bind({ signal: state.abortController?.signal })
     .invoke(messagesFromChatContext)
 
   const toolCalls = getToolCallsFromMessage(response)

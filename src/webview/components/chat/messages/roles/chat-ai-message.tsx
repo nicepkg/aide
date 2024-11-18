@@ -39,12 +39,14 @@ const _ChatAIMessage: FC<ChatAIMessageProps> = props => {
           // onEditModeChange?.(true, conversation)
         }}
       >
-        <div className="flex items-center p-2 w-full">
-          <ChatAIMessageLogAccordion
-            conversation={conversation}
-            isLoading={!!isLoading}
-          />
-        </div>
+        {conversation.logs.length > 0 && (
+          <div className="flex items-center p-2 w-full">
+            <ChatAIMessageLogAccordion
+              conversation={conversation}
+              isLoading={!!isLoading}
+            />
+          </div>
+        )}
         <Markdown
           variant="chat"
           className={cn('px-2', !conversation.contents && 'opacity-50')}

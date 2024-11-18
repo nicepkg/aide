@@ -1,9 +1,10 @@
+import { getErrorMsg } from '@shared/utils/common'
 import * as vscode from 'vscode'
 
 import pkg from '../../package.json'
 import { t, translateVscodeJsonText } from './i18n'
 import { logger } from './logger'
-import { getErrorMsg, getWorkspaceFolder } from './utils'
+import { getWorkspaceFolder } from './utils'
 
 const pkgConfig = pkg.contributes.configuration.properties
 export type ConfigKey = keyof {

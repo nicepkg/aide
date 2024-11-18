@@ -1,9 +1,9 @@
 import path from 'path'
 import { ModelProviderFactory } from '@extension/ai/model-providers/helpers/factory'
-import { AbortError } from '@extension/constants'
 import { traverseFileOrFolders } from '@extension/file-utils/traverse-fs'
 import { getWorkspaceFolder, toPlatformPath } from '@extension/utils'
 import { FeatureModelSettingKey } from '@shared/entities'
+import { AbortError } from '@shared/utils/common'
 import { z } from 'zod'
 
 export interface PreProcessInfo {

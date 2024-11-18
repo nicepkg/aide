@@ -29,6 +29,10 @@ export const chatGraphState = Annotation.Root({
   shouldContinue: Annotation<boolean>({
     reducer: (x, y) => y ?? x,
     default: () => true
+  }),
+  abortController: Annotation<AbortController | null>({
+    reducer: (x, y) => y ?? x,
+    default: () => new AbortController()
   })
 })
 

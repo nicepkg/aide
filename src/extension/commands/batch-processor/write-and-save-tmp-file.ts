@@ -1,12 +1,12 @@
 import path from 'path'
 import { ModelProviderFactory } from '@extension/ai/model-providers/helpers/factory'
-import { AbortError } from '@extension/constants'
 import { getTmpFileUri } from '@extension/file-utils/tmp-file/get-tmp-file-uri'
 import { tmpFileWriter } from '@extension/file-utils/tmp-file/tmp-file-writer'
 import { VsCodeFS } from '@extension/file-utils/vscode-fs'
 import { logger } from '@extension/logger'
 import { HumanMessage } from '@langchain/core/messages'
 import { FeatureModelSettingKey } from '@shared/entities'
+import { AbortError } from '@shared/utils/common'
 import { getLanguageId } from '@shared/utils/vscode-lang'
 import * as vscode from 'vscode'
 

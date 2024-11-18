@@ -1,6 +1,6 @@
 import type { CommandManager } from '@extension/commands/command-manager'
 import type { RegisterManager } from '@extension/registers/register-manager'
-import { getErrorMsg } from '@extension/utils'
+import { getErrorMsg, isAbortError } from '@shared/utils/common'
 import findFreePorts from 'find-free-ports'
 import { Server } from 'socket.io'
 import * as vscode from 'vscode'
@@ -77,6 +77,11 @@ class APIManager {
   private async handleMessage(socket: any, message: any) {
     const { id, controller: controllerName, method, data } = message
     const controller = this.controllers.get(controllerName)
+    const abortController = new AbortController()
+
+    socket.once(`abort-${id}`, () => {
+      abortController.abort()
+    })
 
     if (!controller || !(method in controller)) {
       socket.emit('error', {
@@ -87,16 +92,29 @@ class APIManager {
     }
 
     try {
-      const result = await (controller[method] as ControllerMethod)(data)
+      const result = await (controller[method] as ControllerMethod)(
+        data,
+        abortController
+      )
       if (result && typeof result[Symbol.asyncIterator] === 'function') {
-        for await (const chunk of result as AsyncGenerator<
-          any,
-          void,
-          unknown
-        >) {
-          socket.emit('stream', { id, data: chunk })
+        try {
+          for await (const chunk of result as AsyncGenerator<
+            any,
+            void,
+            unknown
+          >) {
+            if (abortController.signal.aborted) break
+            socket.emit('stream', { id, data: chunk })
+          }
+          socket.emit('end', { id })
+        } catch (error) {
+          // skip abort error
+          if (isAbortError(error)) {
+            socket.emit('aborted', { id })
+          } else {
+            throw error
+          }
         }
-        socket.emit('end', { id })
       } else {
         socket.emit('response', { id, data: result })
       }

@@ -23,13 +23,15 @@ export class ChatStrategy extends BaseStrategy {
   }
 
   async *getAnswers(
-    chatContext: ChatContext
+    chatContext: ChatContext,
+    abortController?: AbortController
   ): AsyncGenerator<Conversation[], void, unknown> {
     const chatWorkflow = await this.getChatWorkflow()
     const graph = chatWorkflow.compile()
 
     const stream = await graph.stream({
-      chatContext
+      chatContext,
+      abortController
     })
 
     const state: Partial<ChatGraphState> = {}

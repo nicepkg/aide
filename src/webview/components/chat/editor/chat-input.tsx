@@ -14,7 +14,6 @@ import {
 import { useMentionOptions } from '@webview/hooks/chat/use-mention-options'
 import { usePluginFilesSelectorProviders } from '@webview/hooks/chat/use-plugin-providers'
 import { useCallbackRef } from '@webview/hooks/use-callback-ref'
-import { useCloneState } from '@webview/hooks/use-clone-state'
 import { type FileInfo } from '@webview/types/chat'
 import { cn } from '@webview/utils/common'
 import { logger } from '@webview/utils/logger'
@@ -55,7 +54,9 @@ export interface ChatInputProps {
   onSend: (conversation: Conversation) => void
 }
 
-export interface ChatInputRef extends ChatEditorRef {}
+export interface ChatInputRef extends ChatEditorRef {
+  reInitializeEditor: () => void
+}
 
 const _ChatInput: FC<ChatInputProps> = ({
   ref,
@@ -67,20 +68,15 @@ const _ChatInput: FC<ChatInputProps> = ({
   context,
   borderAnimation = false,
   setContext,
-  conversation: _conversation,
-  setConversation: _setConversation,
+  conversation,
+  setConversation,
   sendButtonDisabled,
   onSend
 }) => {
   const editorRef = useRef<ChatEditorRef>(null)
-  const { pluginRegistry, getPluginRegistry } = usePluginRegistry()
+  const { getPluginRegistry } = usePluginRegistry()
   const { selectedFiles, setSelectedFiles } = usePluginFilesSelectorProviders()
   const mentionOptions = useMentionOptions()
-
-  const [conversation, setConversation, applyConversation] = useCloneState(
-    _conversation,
-    _setConversation
-  )
 
   // sync conversation plugin states with plugin registry
   useEffect(() => {
@@ -105,11 +101,14 @@ const _ChatInput: FC<ChatInputProps> = ({
 
     updatePluginStatesFromEditorState(editorState, mentionOptions)
     setConversation(draft => {
-      draft.pluginStates = pluginRegistry?.providerManagers.state.getAll() || {}
+      draft.pluginStates =
+        getPluginRegistry()?.providerManagers.state.getAll() || {}
     })
   }
 
-  const initialEditorState = (editor: LexicalEditor) => {
+  const initialEditorState = (editor?: LexicalEditor) => {
+    if (!editor) return
+
     const { richText, contents } = conversation
 
     if (richText) {
@@ -131,6 +130,10 @@ const _ChatInput: FC<ChatInputProps> = ({
         root.clear()
         root.append(paragraph)
       })
+    } else {
+      editor.update(() => {
+        $getRoot().clear()
+      })
     }
   }
 
@@ -143,7 +146,6 @@ const _ChatInput: FC<ChatInputProps> = ({
       await handleEditorChange(editorState)
     }
 
-    applyConversation()
     logger.verbose('send conversation', getConversation())
     onSend(getConversation())
   }
@@ -160,6 +162,29 @@ const _ChatInput: FC<ChatInputProps> = ({
     )
   }, [mode])
 
+  const reInitializeEditor = () => {
+    initialEditorState(editorRef.current?.editor)
+    setConversation(draft => {
+      draft.richText = ''
+      draft.contents = []
+    })
+  }
+
+  const handleRef = (node: ChatEditorRef | null) => {
+    editorRef.current = node
+    if (typeof ref === 'function') {
+      ref({
+        ...node,
+        reInitializeEditor
+      } as ChatInputRef)
+    } else if (ref) {
+      ref.current = {
+        ...node,
+        reInitializeEditor
+      } as ChatInputRef
+    }
+  }
+
   return (
     <AnimatePresence initial={false}>
       <motion.div
@@ -170,40 +195,42 @@ const _ChatInput: FC<ChatInputProps> = ({
           [ChatInputMode.MessageReadonly, ChatInputMode.MessageEdit].includes(
             mode
           ) && 'border-none px-0',
+          [ChatInputMode.MessageReadonly].includes(mode) && 'cursor-pointer',
           className
         )}
       >
-        <motion.div
-          layout="preserve-aspect"
-          transition={{ duration: 0.3, ease: 'easeInOut' }}
-        >
-          <FileAttachments
-            className={cn(
-              [
-                ChatInputMode.MessageReadonly,
-                ChatInputMode.MessageEdit
-              ].includes(mode) && 'px-2'
-            )}
-            showFileSelector={![ChatInputMode.MessageReadonly].includes(mode)}
-            selectedFiles={selectedFiles}
-            onSelectedFilesChange={handleSelectedFiles}
-            onOpenChange={isOpen => !isOpen && focusOnEditor()}
-          />
-        </motion.div>
+        <AnimatePresence mode="wait">
+          {![ChatInputMode.MessageReadonly].includes(mode) && (
+            <motion.div
+              layout="preserve-aspect"
+              initial={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3, ease: 'easeInOut' }}
+            >
+              <FileAttachments
+                className={cn(
+                  [
+                    ChatInputMode.MessageReadonly,
+                    ChatInputMode.MessageEdit
+                  ].includes(mode) && 'px-2'
+                )}
+                showFileSelector={
+                  ![ChatInputMode.MessageReadonly].includes(mode)
+                }
+                selectedFiles={selectedFiles}
+                onSelectedFilesChange={handleSelectedFiles}
+                onOpenChange={isOpen => !isOpen && focusOnEditor()}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         <motion.div
           layout="preserve-aspect"
           transition={{ duration: 0.3, ease: 'easeInOut' }}
         >
           <ChatEditor
-            ref={node => {
-              ;(editorRef as any).current = node
-              if (typeof ref === 'function') {
-                ref(node)
-              } else if (ref) {
-                ref.current = node
-              }
-            }}
+            ref={handleRef}
             initialConfig={{
               editable: ![ChatInputMode.MessageReadonly].includes(mode),
               editorState: initialEditorState
@@ -232,49 +259,45 @@ const _ChatInput: FC<ChatInputProps> = ({
             )}
           />
 
-          <motion.div
-            initial={
-              mode === ChatInputMode.MessageReadonly
-                ? { opacity: 0, height: 0 }
-                : {}
-            }
-            animate={
-              mode === ChatInputMode.MessageReadonly
-                ? { opacity: 0, height: 0 }
-                : { opacity: 1, height: 'auto' }
-            }
-            transition={{ duration: 0.2 }}
-            className={cn(
-              'chat-input-actions flex justify-between',
-              [ChatInputMode.MessageEdit].includes(mode) && 'px-2',
-              [ChatInputMode.MessageEdit, ChatInputMode.Default].includes(
-                mode
-              ) && 'mb-2'
+          <AnimatePresence mode="wait">
+            {![ChatInputMode.MessageReadonly].includes(mode) && (
+              <motion.div
+                initial={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.2 }}
+                className={cn(
+                  'chat-input-actions flex justify-between',
+                  [ChatInputMode.MessageEdit].includes(mode) && 'px-2',
+                  [ChatInputMode.MessageEdit, ChatInputMode.Default].includes(
+                    mode
+                  ) && 'mb-2'
+                )}
+              >
+                <ContextSelector
+                  context={context}
+                  setContext={setContext}
+                  conversation={conversation}
+                  setConversation={setConversation}
+                  onClickMentionSelector={() => {
+                    editorRef.current?.insertSpaceAndAt()
+                  }}
+                  onFocusOnEditor={focusOnEditor}
+                  showExitEditModeButton={mode === ChatInputMode.MessageEdit}
+                  onExitEditMode={onExitEditMode}
+                />
+                <ButtonWithTooltip
+                  variant="outline"
+                  disabled={sendButtonDisabled}
+                  size="xs"
+                  className="ml-auto"
+                  onClick={handleSend}
+                  tooltip="You can use ⌘↩ to send message"
+                >
+                  ⌘↩ Send
+                </ButtonWithTooltip>
+              </motion.div>
             )}
-          >
-            <ContextSelector
-              context={context}
-              setContext={setContext}
-              conversation={conversation}
-              setConversation={setConversation}
-              onClickMentionSelector={() => {
-                editorRef.current?.insertSpaceAndAt()
-              }}
-              onFocusOnEditor={focusOnEditor}
-              showExitEditModeButton={mode === ChatInputMode.MessageEdit}
-              onExitEditMode={onExitEditMode}
-            />
-            <ButtonWithTooltip
-              variant="outline"
-              disabled={sendButtonDisabled}
-              size="xs"
-              className="ml-auto"
-              onClick={handleSend}
-              tooltip="You can use ⌘↩ to send message"
-            >
-              ⌘↩ Send
-            </ButtonWithTooltip>
-          </motion.div>
+          </AnimatePresence>
         </motion.div>
         {borderAnimation && <BorderBeam duration={2} delay={0.5} />}
       </motion.div>

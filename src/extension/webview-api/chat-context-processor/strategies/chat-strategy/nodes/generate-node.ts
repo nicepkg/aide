@@ -14,7 +14,6 @@ export const createGenerateNode: CreateChatGraphNode =
     const modelProvider = await ModelProviderFactory.getModelProvider(
       FeatureModelSettingKey.Chat
     )
-    const aiModelAbortController = new AbortController()
     const aiModel = await modelProvider.createLangChainModel()
 
     const chatMessagesConstructor = new ChatMessagesConstructor({
@@ -26,7 +25,7 @@ export const createGenerateNode: CreateChatGraphNode =
       await chatMessagesConstructor.constructMessages()
 
     const response = await aiModel
-      .bind({ signal: aiModelAbortController.signal })
+      .bind({ signal: state.abortController?.signal })
       .invoke(messagesFromChatContext)
 
     const newConversations = produce(state.newConversations, draft => {

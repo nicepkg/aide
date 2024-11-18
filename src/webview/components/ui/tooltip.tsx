@@ -1,7 +1,13 @@
 import * as React from 'react'
 import * as TooltipPrimitive from '@radix-ui/react-tooltip'
 import { cn } from '@webview/utils/common'
-import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion'
+import {
+  AnimatePresence,
+  motion,
+  useMotionValue,
+  useSpring,
+  useTransform
+} from 'framer-motion'
 
 const TooltipProvider = TooltipPrimitive.Provider
 const Tooltip = TooltipPrimitive.Root
@@ -35,37 +41,39 @@ const TooltipContent: React.FC<AnimatedTooltipProps> = ({
   }, [animated, x])
 
   return (
-    <TooltipPrimitive.Content
-      ref={ref}
-      sideOffset={sideOffset}
-      className="z-50"
-      {...props}
-    >
-      {animated ? (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.6, y: 20 }}
-          animate={{
-            opacity: 1,
-            scale: 1,
-            y: 0,
-            transition: {
-              type: 'spring',
-              stiffness: 260,
-              damping: 10
-            }
-          }}
-          exit={{ opacity: 0, scale: 0.6, y: 20 }}
-          style={{ rotate }}
-          className={cn(tooltipContentStyles, className)}
-        >
-          {props.children}
-        </motion.div>
-      ) : (
-        <div className={cn(tooltipContentStyles, className)}>
-          {props.children}
-        </div>
-      )}
-    </TooltipPrimitive.Content>
+    <AnimatePresence initial={false}>
+      <TooltipPrimitive.Content
+        ref={ref}
+        sideOffset={sideOffset}
+        className="z-50"
+        {...props}
+      >
+        {animated ? (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.6, y: 20 }}
+            animate={{
+              opacity: 1,
+              scale: 1,
+              y: 0,
+              transition: {
+                type: 'spring',
+                stiffness: 260,
+                damping: 10
+              }
+            }}
+            exit={{ opacity: 0, scale: 0.6, y: 20 }}
+            style={{ rotate }}
+            className={cn(tooltipContentStyles, className)}
+          >
+            {props.children}
+          </motion.div>
+        ) : (
+          <div className={cn(tooltipContentStyles, className)}>
+            {props.children}
+          </div>
+        )}
+      </TooltipPrimitive.Content>
+    </AnimatePresence>
   )
 }
 

@@ -1,7 +1,15 @@
-import React, { useEffect, useRef, type CSSProperties, type FC } from 'react'
+import React, {
+  useLayoutEffect,
+  useRef,
+  type CSSProperties,
+  type FC,
+  type Ref
+} from 'react'
 import { AnimatedList } from '@webview/components/ui/animated-list'
+import { ScrollArea } from '@webview/components/ui/scroll-area'
 import type { ConversationWithUIState } from '@webview/types/chat'
 import { cn } from '@webview/utils/common'
+import scrollIntoView from 'scroll-into-view-if-needed'
 
 import { ChatAIMessage, type ChatAIMessageProps } from './roles/chat-ai-message'
 import {
@@ -34,21 +42,29 @@ export const ChatMessages: React.FC<ChatMessagesProps> = props => {
   } = props
 
   const containerRef = useRef<HTMLDivElement>(null)
-  const prevConversationLengthRef = useRef(conversationsWithUIState.length)
+  const endOfMessagesRef = useRef<HTMLDivElement>(null)
+  const prevConversationIdRef = useRef<string>(undefined)
 
-  useEffect(() => {
+  const lastConversationId = conversationsWithUIState.at(-1)?.id
+
+  useLayoutEffect(() => {
     if (!containerRef.current) return
 
-    // only scroll to bottom if new messages are added
-    const currentLength = conversationsWithUIState.length
-    const prevLength = prevConversationLengthRef.current
+    const currentId = lastConversationId
+    const prevId = prevConversationIdRef.current
 
-    if (currentLength > prevLength) {
-      containerRef.current.scrollTop = containerRef.current.scrollHeight
+    if (currentId !== prevId && currentId) {
+      const endOfMessagesElement = endOfMessagesRef.current
+      if (endOfMessagesElement) {
+        scrollIntoView(endOfMessagesElement, {
+          scrollMode: 'if-needed',
+          block: 'end'
+        })
+      }
     }
 
-    prevConversationLengthRef.current = currentLength
-  }, [conversationsWithUIState.length])
+    prevConversationIdRef.current = lastConversationId
+  }, [lastConversationId])
 
   // const handleSetConversation: Updater<Conversation> = (
   //   conversationOrUpdater: Conversation | DraftFunction<Conversation>
@@ -77,7 +93,7 @@ export const ChatMessages: React.FC<ChatMessagesProps> = props => {
   // }
 
   return (
-    <div
+    <ScrollArea
       ref={containerRef}
       className={cn(
         'chat-messages flex-1 flex flex-col w-full overflow-y-auto gap-2 pt-4',
@@ -104,17 +120,20 @@ export const ChatMessages: React.FC<ChatMessagesProps> = props => {
           )
         })}
       </AnimatedList>
-    </div>
+      <div ref={endOfMessagesRef} className="w-full h-2" />
+    </ScrollArea>
   )
 }
 
 interface InnerMessageProps extends ChatAIMessageProps, ChatHumanMessageProps {
+  ref?: Ref<HTMLDivElement>
   className?: string
   style?: CSSProperties
 }
 
 const InnerMessage: FC<InnerMessageProps> = props => {
   const {
+    ref,
     context,
     setContext,
     conversation,
@@ -130,10 +149,8 @@ const InnerMessage: FC<InnerMessageProps> = props => {
   return (
     <div
       key={conversation.id}
-      className={cn(
-        'flex relative max-w-full w-full items-center mb-2',
-        className
-      )}
+      ref={ref}
+      className={cn('flex relative max-w-full w-full items-center', className)}
       style={style}
     >
       {conversation.role === 'ai' && (

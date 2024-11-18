@@ -5,7 +5,6 @@ import type { ConversationUIState } from '@webview/types/chat'
 import type { DraftFunction } from 'use-immer'
 
 import { useCallbackRef } from '../use-callback-ref'
-import { useConversation } from './use-conversation'
 
 export const useChatState = () => {
   const {
@@ -15,14 +14,11 @@ export const useChatState = () => {
     getConversationUIState,
     setConversationUIState,
     batchSetConversationUIState,
-    saveSession
+    saveSession,
+    newConversation,
+    setNewConversation,
+    resetNewConversation
   } = useChatContext()
-
-  const {
-    conversation: newConversation,
-    setConversation: setNewConversation,
-    resetConversation: resetNewConversation
-  } = useConversation('human')
 
   const allConversations = [...context.conversations, newConversation]
   const getAllConversations = useCallbackRef(() => allConversations)
@@ -38,7 +34,7 @@ export const useChatState = () => {
 
   const newConversationUIState = useMemo(
     () => getConversationUIState(context.id, newConversation.id),
-    [context, newConversation.id]
+    [newConversation, conversationsWithUIState]
   )
 
   const setAllConversationsUIState = (
@@ -61,6 +57,7 @@ export const useChatState = () => {
       // add new conversation
       draft.conversations.push(conversation)
     })
+
     return await saveSession()
   }
 

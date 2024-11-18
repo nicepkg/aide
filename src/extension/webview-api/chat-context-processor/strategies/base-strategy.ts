@@ -18,6 +18,7 @@ export abstract class BaseStrategy {
   }
 
   abstract getAnswers(
-    chatContext: ChatContext
+    chatContext: ChatContext,
+    abortController?: AbortController
   ): AsyncGenerator<Conversation[], void, unknown>
 }

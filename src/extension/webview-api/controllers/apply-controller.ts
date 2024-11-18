@@ -16,12 +16,15 @@ export class ApplyController extends Controller {
       ?.inlineDiffProvider
   }
 
-  async *applyCode(req: {
-    path: string
-    code: string
-    selectionRange?: vscode.Range
-    cleanLast?: boolean
-  }): AsyncGenerator<InlineDiffTask> {
+  async *applyCode(
+    req: {
+      path: string
+      code: string
+      selectionRange?: vscode.Range
+      cleanLast?: boolean
+    },
+    abortController?: AbortController
+  ): AsyncGenerator<InlineDiffTask> {
     if (!req.path || !req.code || !this.inlineDiffProvider) return
 
     const originalCode = await VsCodeFS.readFileOrOpenDocumentContent(req.path)
@@ -69,7 +72,13 @@ Don't reply with anything except the code.
     )
     const selectionRange = req.selectionRange || fullRange
 
-    await this.inlineDiffProvider.createTask(taskId, uri, selectionRange, '')
+    await this.inlineDiffProvider.createTask(
+      taskId,
+      uri,
+      selectionRange,
+      '',
+      abortController
+    )
 
     yield* this.inlineDiffProvider.startStreamTask(taskId, buildAiStream)
   }

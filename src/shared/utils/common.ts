@@ -1,3 +1,5 @@
+import { ZodError } from 'zod'
+
 export const sleep = (ms: number) =>
   new Promise(resolve => setTimeout(resolve, ms))
 
@@ -69,3 +71,20 @@ export const settledPromiseResults = async <T>(
 
 export const capitalizeFirstLetter = (str: string) =>
   str.charAt(0).toUpperCase() + str.slice(1)
+
+export const getErrorMsg = (err: any): string => {
+  let errorMessage = String(err?.message || String(err) || '')
+
+  if (err instanceof ZodError) {
+    errorMessage = err.issues
+      .map(issue => `${issue.path.join('.')} ${issue.message}`)
+      .join(', ')
+  }
+
+  return errorMessage || 'An error occurred'
+}
+
+export const AbortError = new Error('AbortError')
+
+export const isAbortError = (error: any) =>
+  ['AbortError', 'Aborted'].includes(getErrorMsg(error))

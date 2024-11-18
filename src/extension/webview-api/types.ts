@@ -9,7 +9,8 @@ export type ControllerMethodResult<T = any> =
   | AsyncGenerator<string, void, unknown>
 
 export type ControllerMethod<TReq = any, TRes = any> = (
-  req: TReq
+  req: TReq,
+  abortController?: AbortController
 ) => ControllerMethodResult<TRes>
 
 export abstract class Controller {

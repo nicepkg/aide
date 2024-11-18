@@ -1,5 +1,3 @@
-export const AbortError = new Error('AbortError')
-
 export const AI_SUPPORT_IMG_EXT = ['jpg', 'jpeg', 'png']
 
 export const DEFAULT_IGNORE_FILETYPES = [
