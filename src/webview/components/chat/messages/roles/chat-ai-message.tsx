@@ -24,6 +24,7 @@ const _ChatAIMessage: FC<ChatAIMessageProps> = props => {
     isEditMode = false,
     onEditModeChange
   } = props
+
   return (
     <div className="w-full flex">
       <div

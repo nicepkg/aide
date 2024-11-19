@@ -3,14 +3,24 @@ import * as ScrollAreaPrimitive from '@radix-ui/react-scroll-area'
 import { cn } from '@webview/utils/common'
 
 const ScrollArea: React.FC<
-  React.ComponentPropsWithRef<typeof ScrollAreaPrimitive.Root>
-> = ({ ref, className, children, ...props }) => (
+  React.ComponentPropsWithRef<typeof ScrollAreaPrimitive.Root> & {
+    viewPortProps?: React.ComponentPropsWithRef<
+      typeof ScrollAreaPrimitive.Viewport
+    >
+  }
+> = ({ ref, className, children, viewPortProps, ...props }) => (
   <ScrollAreaPrimitive.Root
     ref={ref}
     className={cn('relative overflow-hidden', className)}
     {...props}
   >
-    <ScrollAreaPrimitive.Viewport className="h-full w-full rounded-[inherit]">
+    <ScrollAreaPrimitive.Viewport
+      {...viewPortProps}
+      className={cn(
+        'h-full w-full rounded-[inherit]',
+        viewPortProps?.className
+      )}
+    >
       {children}
     </ScrollAreaPrimitive.Viewport>
     <ScrollBar />

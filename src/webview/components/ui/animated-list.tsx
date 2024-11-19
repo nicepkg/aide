@@ -1,4 +1,5 @@
 import React, { Children, ReactElement } from 'react'
+import { cn } from '@webview/utils/common'
 import { AnimatePresence, motion } from 'framer-motion'
 
 export interface AnimatedListProps {
@@ -10,7 +11,7 @@ export const AnimatedList: React.FC<AnimatedListProps> = ({
   className,
   children
 }) => (
-  <div className={`flex flex-col items-center gap-4 ${className}`}>
+  <div className={cn(`flex flex-col items-center gap-4`, className)}>
     <AnimatePresence initial={false}>
       {Children.map(children, child => (
         <AnimatedListItem key={(child as ReactElement).key}>

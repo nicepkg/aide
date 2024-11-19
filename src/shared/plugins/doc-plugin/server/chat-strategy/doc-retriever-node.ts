@@ -1,6 +1,7 @@
 import { aidePaths } from '@extension/file-utils/paths'
 import type { BaseStrategyOptions } from '@extension/webview-api/chat-context-processor/strategies/base-strategy'
 import {
+  dispatchChatGraphState,
   type ChatGraphState,
   type CreateChatGraphNode
 } from '@extension/webview-api/chat-context-processor/strategies/chat-strategy/nodes/state'
@@ -165,6 +166,11 @@ export const createDocRetrieverNode: CreateChatGraphNode =
 
     const newConversations = produce(state.newConversations, draft => {
       draft.at(-1)!.logs.push(...logs)
+    })
+
+    dispatchChatGraphState({
+      newConversations,
+      chatContext: state.chatContext
     })
 
     return {

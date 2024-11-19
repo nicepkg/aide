@@ -1,3 +1,4 @@
+import { logger } from '@extension/logger'
 import * as cheerio from 'cheerio'
 
 import { getRandomHeaders } from './fake-request-headers'
@@ -9,9 +10,10 @@ interface WebSearchResult {
 }
 
 interface SearxngSearchOptions {
-  apiBase: string
+  apiBase?: string
   params?: SearxngSearchParams
   headers?: SearxngCustomHeaders
+  abortController?: AbortController | null
 }
 
 interface SearxngSearchParams {
@@ -84,7 +86,8 @@ export const searxngSearch = async (
   const {
     apiBase = 'https://search.hbubli.cc',
     params = {},
-    headers = {}
+    headers = {},
+    abortController
   } = options || {}
 
   if (!apiBase) {
@@ -128,7 +131,7 @@ export const searxngSearch = async (
         'Upgrade-Insecure-Requests': '1',
         ...headers
       },
-      signal: AbortSignal.timeout(5 * 1000)
+      signal: abortController?.signal
     })
 
     if (!resp.ok) {
@@ -136,11 +139,9 @@ export const searxngSearch = async (
     }
 
     const htmlContent = await resp.text()
-    const res = parseHtml(htmlContent)
-
-    return res
+    return parseHtml(htmlContent)
   } catch (error) {
-    console.error('Error during searxng search:', error)
+    logger.error('Error during searxng search:', error)
     return {
       query: input,
       results: [],

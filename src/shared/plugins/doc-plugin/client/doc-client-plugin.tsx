@@ -9,6 +9,7 @@ import { api } from '@webview/services/api-client'
 import { type MentionOption } from '@webview/types/chat'
 
 import type { DocPluginState } from '../types'
+import { DocLogPreview } from './doc-log-preview'
 
 export class DocClientPlugin implements ClientPlugin<DocPluginState> {
   id = PluginId.Doc
@@ -30,6 +31,10 @@ export class DocClientPlugin implements ClientPlugin<DocPluginState> {
     this.context.registerProvider('state', () => this.context!.state)
     this.context.registerProvider('editor', () => ({
       getMentionOptions: this.getMentionOptions.bind(this)
+    }))
+
+    this.context.registerProvider('message', () => ({
+      customRenderLogPreview: DocLogPreview
     }))
   }
 

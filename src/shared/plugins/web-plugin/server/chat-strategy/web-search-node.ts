@@ -2,6 +2,7 @@ import { ModelProviderFactory } from '@extension/ai/model-providers/helpers/fact
 import type { BaseStrategyOptions } from '@extension/webview-api/chat-context-processor/strategies/base-strategy'
 import { ChatMessagesConstructor } from '@extension/webview-api/chat-context-processor/strategies/chat-strategy/messages-constructors/chat-messages-constructor'
 import {
+  dispatchChatGraphState,
   type ChatGraphState,
   type CreateChatGraphNode
 } from '@extension/webview-api/chat-context-processor/strategies/chat-strategy/nodes/state'
@@ -45,7 +46,9 @@ export const createWebSearchTool = async (
     state: ChatGraphState,
     keywords: string
   ) => {
-    const searxngSearchResult = await searxngSearch(keywords)
+    const searxngSearchResult = await searxngSearch(keywords, {
+      abortController: state.abortController
+    })
     const urls = searxngSearchResult.results.map(result => result.url)
 
     const docsLoadResult = await settledPromiseResults(
@@ -69,11 +72,10 @@ export const createWebSearchTool = async (
     const modelProvider = await ModelProviderFactory.getModelProvider(
       FeatureModelSettingKey.Chat
     )
-    const aiModelAbortController = new AbortController()
     const aiModel = await modelProvider.createLangChainModel()
 
     const response = await aiModel
-      .bind({ signal: aiModelAbortController.signal })
+      .bind({ signal: state.abortController?.signal })
       .invoke([
         ...messagesFromChatContext.slice(-2),
         new HumanMessage({
@@ -149,7 +151,6 @@ export const createWebSearchNode: CreateChatGraphNode =
       const toolMessage = (await webRetrieverTool.invoke(
         toolCall
       )) as ToolMessage
-
       const result = JSON.parse(
         toolMessage?.lc_kwargs.content
       ) as WebSearchToolResult
@@ -189,6 +190,11 @@ export const createWebSearchNode: CreateChatGraphNode =
 
     const newConversations = produce(state.newConversations, draft => {
       draft.at(-1)!.logs.push(...logs)
+    })
+
+    dispatchChatGraphState({
+      newConversations,
+      chatContext: state.chatContext
     })
 
     return {

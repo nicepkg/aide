@@ -101,6 +101,15 @@ export const ChatMessages: React.FC<ChatMessagesProps> = props => {
       )}
       style={style}
     >
+      <style>
+        {`
+        [data-radix-scroll-area-viewport] > div {
+            display:block !important;
+            width: 100%;
+        }
+        `}
+      </style>
+
       {/* Chat messages */}
       <AnimatedList>
         {conversationsWithUIState.map(conversationWithUIState => {

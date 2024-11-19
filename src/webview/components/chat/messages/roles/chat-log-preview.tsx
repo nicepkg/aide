@@ -8,7 +8,7 @@ import {
   SplitAccordionContent,
   SplitAccordionTrigger
 } from '@webview/components/ui/split-accordion'
-import { usePluginMessageProviders } from '@webview/hooks/chat/use-plugin-providers'
+import { usePluginCustomRenderLogPreview } from '@webview/hooks/chat/use-plugin-providers'
 import { cn } from '@webview/utils/common'
 
 import { Markdown } from '../markdown'
@@ -55,7 +55,7 @@ export const ChatAIMessageLogPreview: FC<{ conversation: Conversation }> = ({
   conversation
 }) => {
   const logs = conversation.logs || []
-  const messageProvider = usePluginMessageProviders()
+  const customRenderLogPreview = usePluginCustomRenderLogPreview()
 
   if (logs.length === 0) return null
 
@@ -63,7 +63,7 @@ export const ChatAIMessageLogPreview: FC<{ conversation: Conversation }> = ({
     <div className="mt-2 space-y-2">
       {logs.map((log, index) => (
         <div key={index}>
-          {messageProvider.customRenderLogPreview?.({
+          {customRenderLogPreview?.({
             log
           }) || <ChatLogPreview log={log} />}
         </div>
@@ -77,6 +77,15 @@ export const ChatAIMessageLogAccordion: FC<{
   isLoading: boolean
 }> = ({ conversation, isLoading }) => {
   if (!conversation.logs.length) return null
+
+  const getAccordionTriggerTitle = () => {
+    if (!isLoading) return 'Thought'
+
+    if (conversation.logs.length > 0)
+      return conversation.logs.at(-1)?.title || 'Thinking...'
+
+    return 'Thinking...'
+  }
 
   return (
     <SplitAccordion>
@@ -94,9 +103,7 @@ export const ChatAIMessageLogAccordion: FC<{
           className="border-none"
         >
           <LightningBoltIcon className="size-3" />
-          <span className="select-none">
-            {isLoading ? 'Thinking...' : 'Thought'}
-          </span>
+          <span className="select-none">{getAccordionTriggerTitle()}</span>
         </SplitAccordionTrigger>
       </ShineBorder>
       <SplitAccordionContent value="log" className="mt-2">

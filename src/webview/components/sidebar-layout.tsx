@@ -1,5 +1,4 @@
 /* eslint-disable react/no-unstable-nested-components */
-// src/webview/components/layout/sidebar-layout.tsx
 import React, { useState } from 'react'
 import { TextAlignJustifyIcon } from '@radix-ui/react-icons'
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
@@ -12,6 +11,7 @@ import {
   SheetTitle,
   SheetTrigger
 } from '@webview/components/ui/sheet'
+import { useBreakpoint } from '@webview/hooks/use-breakpoint'
 import { cn } from '@webview/utils/common'
 
 import { SidebarHeader } from './sidebar-header'
@@ -25,13 +25,19 @@ const SidebarHamburger = (
 ) => {
   const { open, setOpen, sidebar, ...otherProps } = props
 
+  const isMd = useBreakpoint('md')
+
+  if (isMd) {
+    return null
+  }
+
   return (
     <Sheet open={open} defaultOpen={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         <Button
           variant="ghost"
           size="iconXs"
-          className="shrink-0"
+          className="shrink-0 md:hidden"
           {...otherProps}
         >
           <TextAlignJustifyIcon className="size-3" />
@@ -92,7 +98,6 @@ export const SidebarLayout: React.FC<SidebarLayoutProps> = ({
             headerLeft={
               <>
                 <SidebarHamburger
-                  className="md:hidden"
                   open={openSidebar}
                   setOpen={setOpenSidebar}
                   sidebar={<Sidebar />}

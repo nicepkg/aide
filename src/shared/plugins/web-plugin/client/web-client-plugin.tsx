@@ -8,6 +8,7 @@ import { pkg } from '@shared/utils/pkg'
 import { type MentionOption } from '@webview/types/chat'
 
 import type { WebPluginState } from '../types'
+import { WebLogPreview } from './web-log-preview'
 
 export class WebClientPlugin implements ClientPlugin<WebPluginState> {
   id = PluginId.Web
@@ -32,6 +33,9 @@ export class WebClientPlugin implements ClientPlugin<WebPluginState> {
     this.context.registerProvider('state', () => this.context!.state)
     this.context.registerProvider('editor', () => ({
       getMentionOptions: this.getMentionOptions.bind(this)
+    }))
+    this.context.registerProvider('message', () => ({
+      customRenderLogPreview: WebLogPreview
     }))
   }
 

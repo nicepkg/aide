@@ -1,4 +1,5 @@
-import { useMemo } from 'react'
+import { Fragment, useMemo, type FC } from 'react'
+import type { ConversationLog } from '@shared/entities'
 import { usePluginRegistry } from '@webview/contexts/plugin-registry-context'
 
 export const usePluginEditorProviders = () => {
@@ -19,6 +20,18 @@ export const usePluginMessageProviders = () => {
   )
 
   return merged
+}
+
+export const usePluginCustomRenderLogPreview = () => {
+  const { pluginRegistry } = usePluginRegistry()
+  const renders = pluginRegistry?.providerManagers.message.getValues(
+    'customRenderLogPreview'
+  )
+
+  const customRenderLogPreview: FC<{ log: ConversationLog }> = ({ log }) =>
+    renders?.map((render, i) => <Fragment key={i}>{render({ log })}</Fragment>)
+
+  return customRenderLogPreview
 }
 
 export const usePluginFilesSelectorProviders = () => {

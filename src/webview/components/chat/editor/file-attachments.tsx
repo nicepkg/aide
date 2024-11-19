@@ -7,7 +7,7 @@ import { cn } from '@webview/utils/common'
 import { getFileNameFromPath } from '@webview/utils/path'
 
 import { FileSelector } from '../selectors/file-selector'
-import { FileInfoPopover } from './file-info-popover'
+import { ContentPreviewPopover } from './content-preview-popover'
 
 interface FileAttachmentsProps {
   className?: string
@@ -56,7 +56,10 @@ export const FileAttachments: React.FC<FileAttachmentsProps> = ({
       )}
 
       {selectedFiles.map(file => (
-        <FileInfoPopover key={file.fullPath} file={file}>
+        <ContentPreviewPopover
+          key={file.fullPath}
+          content={{ type: 'file', path: file.fullPath }}
+        >
           <div className="cursor-pointer flex items-center border text-foreground bg-background mr-2 mt-2 h-5 px-1 py-0.5 text-xs rounded-sm">
             <FileIcon className="size-2.5 mr-1" filePath={file.fullPath} />
             <div>{getFileNameFromPath(file.fullPath)}</div>
@@ -68,7 +71,7 @@ export const FileAttachments: React.FC<FileAttachmentsProps> = ({
               }}
             />
           </div>
-        </FileInfoPopover>
+        </ContentPreviewPopover>
       ))}
     </div>
   )

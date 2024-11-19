@@ -12,6 +12,10 @@ export class ProviderManager<T> {
     this.providers.delete(pluginId)
   }
 
+  getValues(key: keyof T): T[keyof T][] {
+    return Array.from(this.providers.values()).map(provider => provider()[key])
+  }
+
   getAll(): Record<PluginId, Partial<T>> {
     const entries = Array.from(this.providers.entries())
     const results = entries.map(([pluginId, provider]) => {

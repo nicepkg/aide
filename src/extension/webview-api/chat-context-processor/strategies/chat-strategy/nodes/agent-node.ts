@@ -7,7 +7,7 @@ import { convertToLangchainMessageContents } from '@shared/utils/convert-to-lang
 import { produce } from 'immer'
 
 import { ChatMessagesConstructor } from '../messages-constructors/chat-messages-constructor'
-import { dispatchGraphState, type CreateChatGraphNode } from './state'
+import { dispatchChatGraphState, type CreateChatGraphNode } from './state'
 
 export const createAgentNode: CreateChatGraphNode = options => async state => {
   const modelProvider = await ModelProviderFactory.getModelProvider(
@@ -40,19 +40,27 @@ export const createAgentNode: CreateChatGraphNode = options => async state => {
   let { newConversations } = state
 
   for await (const chunk of stream) {
-    // stream with tool calls not need to concat chunk
-    message = chunk
+    if (!message) {
+      message = chunk
+    } else {
+      message = message.concat(chunk)
+      // stream with tool calls not need to concat content
+      message.content = chunk.content
+    }
 
     const toolCalls = getToolCallsFromMessage(message)
     const contents = convertToLangchainMessageContents(message.content)
 
     if (!toolCalls.length && contents.length) {
-      // tool calls unuseable
+      // no tool calls
       shouldContinue = false
       newConversations = produce(newConversations, draft => {
         draft.at(-1)!.contents.push(...contents)
       })
-      dispatchGraphState({
+    }
+
+    if (contents.length) {
+      dispatchChatGraphState({
         newConversations,
         chatContext: state.chatContext
       })

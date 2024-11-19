@@ -6,6 +6,7 @@ import {
   type ChatContext,
   type Conversation
 } from '@shared/entities'
+import { cloneDeep } from 'es-toolkit'
 
 import type { BaseStrategyOptions } from '../../base-strategy'
 
@@ -48,6 +49,7 @@ export type CreateChatGraphNode = (
 ) => ChatGraphNode
 
 export const chatGraphStateEventName = 'stream-chat-graph-state'
-export const dispatchGraphState = (state: Partial<ChatGraphState>) => {
-  dispatchCustomEvent(chatGraphStateEventName, state)
+export const dispatchChatGraphState = (state: Partial<ChatGraphState>) => {
+  const deepClonedState = cloneDeep(state)
+  dispatchCustomEvent(chatGraphStateEventName, deepClonedState)
 }
