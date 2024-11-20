@@ -6,6 +6,7 @@ import {
   type FC,
   type Ref
 } from 'react'
+import { $generateHtmlFromNodes } from '@lexical/html'
 import { AutoFocusPlugin } from '@lexical/react/LexicalAutoFocusPlugin'
 import {
   LexicalComposer,
@@ -66,6 +67,7 @@ export interface ChatEditorRef {
   insertSpaceAndAt: () => void
   focusOnEditor: (autoMoveCursorToEnd?: boolean) => void
   resetEditor: () => void
+  copyWithFormatting: () => void
 }
 
 export const ChatEditor: FC<ChatEditorProps> = ({
@@ -179,6 +181,29 @@ const ChatEditorInner: FC<ChatEditorProps> = ({
     })
   }
 
+  const copyWithFormatting = () => {
+    editor.update(() => {
+      const htmlString = $generateHtmlFromNodes(editor)
+      // Create a temporary element to hold the HTML content
+      const tempElement = document.createElement('div')
+      tempElement.innerHTML = htmlString
+
+      // Create a range and selection
+      const range = document.createRange()
+      range.selectNodeContents(tempElement)
+      const selection = window.getSelection()
+      selection?.removeAllRanges()
+      selection?.addRange(range)
+
+      // Execute copy command
+      document.execCommand('copy')
+
+      // Clean up
+      selection?.removeAllRanges()
+      tempElement.remove()
+    })
+  }
+
   useEffect(() => {
     if (!autoFocus) return
     focusOnEditor()
@@ -187,7 +212,13 @@ const ChatEditorInner: FC<ChatEditorProps> = ({
   useImperativeHandle(
     // eslint-disable-next-line react-compiler/react-compiler
     ref,
-    () => ({ editor, insertSpaceAndAt, focusOnEditor, resetEditor }),
+    () => ({
+      editor,
+      insertSpaceAndAt,
+      focusOnEditor,
+      resetEditor,
+      copyWithFormatting
+    }),
     [editor]
   )
 

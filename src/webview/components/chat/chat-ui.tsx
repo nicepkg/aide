@@ -38,6 +38,7 @@ export const ChatUI: FC = () => {
   const {
     newConversation,
     setNewConversation,
+    deleteConversation,
     historiesConversationsWithUIState,
     newConversationUIState,
     toggleConversationEditMode
@@ -72,6 +73,28 @@ export const ChatUI: FC = () => {
     conversation: Conversation
   ) => {
     toggleConversationEditMode(conversation.id, isEditMode)
+  }
+
+  const handleDelete = (conversation: Conversation) => {
+    // 1. stop generate
+    // 2. delete conversation
+    cancelSending()
+    deleteConversation(conversation.id)
+  }
+
+  const handleRegenerate = async (conversation: Conversation) => {
+    if (conversation.role !== 'ai') return
+    cancelSending()
+
+    // find the previous conversation
+    const currentConversationIndex = context.conversations.findIndex(
+      c => c.id === conversation.id
+    )
+    const previousConversation =
+      context.conversations[currentConversationIndex - 1]
+    if (!previousConversation) return
+
+    await handleSend(previousConversation)
   }
 
   const handleContextTypeChange = (value: string) => {
@@ -144,6 +167,8 @@ export const ChatUI: FC = () => {
           setContext={setContext}
           onSend={handleSend}
           onEditModeChange={handleEditModeChange}
+          onDelete={handleDelete}
+          onRegenerate={handleRegenerate}
         />
         {isSending && (
           <div className="absolute left-1/2 bottom-[200px] -translate-x-1/2 z-10">

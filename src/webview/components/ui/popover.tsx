@@ -48,6 +48,7 @@ const PopoverContent: React.FC<PopoverContentProps> = ({
           )}
           <PopoverPrimitive.Content
             ref={ref}
+            key="content"
             align={align}
             sideOffset={sideOffset}
             className={cn(

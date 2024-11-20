@@ -4,7 +4,7 @@ import {
   useState,
   type FC,
   type ReactNode,
-  type RefObject
+  type Ref
 } from 'react'
 import { CheckIcon } from '@radix-ui/react-icons'
 import { cn } from '@webview/utils/common'
@@ -75,7 +75,7 @@ const DefaultItem: FC<IndexListItemProps> = ({
 )
 
 export interface IndexListProps {
-  ref?: RefObject<HTMLDivElement>
+  ref?: Ref<HTMLDivElement>
   categories: IndexListCategory[]
   items: IndexListItem[]
   className?: string

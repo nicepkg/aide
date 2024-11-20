@@ -3,19 +3,25 @@ import React, {
   useRef,
   type CSSProperties,
   type FC,
-  type Ref
+  type RefObject
 } from 'react'
+import { getAllTextFromLangchainMessageContents } from '@shared/utils/get-all-text-from-langchain-message-contents'
 import { AnimatedList } from '@webview/components/ui/animated-list'
 import { ScrollArea } from '@webview/components/ui/scroll-area'
 import type { ConversationWithUIState } from '@webview/types/chat'
-import { cn } from '@webview/utils/common'
+import { cn, copyToClipboard } from '@webview/utils/common'
 import scrollIntoView from 'scroll-into-view-if-needed'
 
 import { ChatAIMessage, type ChatAIMessageProps } from './roles/chat-ai-message'
 import {
   ChatHumanMessage,
-  type ChatHumanMessageProps
+  type ChatHumanMessageProps,
+  type ChatHumanMessageRef
 } from './roles/chat-human-message'
+import {
+  MessageToolbar,
+  type MessageToolbarEvents
+} from './toolbars/message-toolbars'
 
 interface ChatMessagesProps
   extends Pick<
@@ -26,6 +32,8 @@ interface ChatMessagesProps
     | 'onSend'
     | 'className'
     | 'style'
+    | 'onDelete'
+    | 'onRegenerate'
   > {
   conversationsWithUIState: ConversationWithUIState[]
 }
@@ -38,10 +46,13 @@ export const ChatMessages: React.FC<ChatMessagesProps> = props => {
     onSend,
     onEditModeChange,
     className,
-    style
+    style,
+    onDelete,
+    onRegenerate
   } = props
 
   const containerRef = useRef<HTMLDivElement>(null)
+  const scrollContentRef = useRef<HTMLDivElement>(null)
   const endOfMessagesRef = useRef<HTMLDivElement>(null)
   const prevConversationIdRef = useRef<string>(undefined)
 
@@ -99,11 +110,12 @@ export const ChatMessages: React.FC<ChatMessagesProps> = props => {
         'chat-messages flex-1 flex flex-col w-full overflow-y-auto gap-2 pt-4',
         className
       )}
+      viewPortProps={{ ref: scrollContentRef }}
       style={style}
     >
       <style>
         {`
-        [data-radix-scroll-area-viewport] > div {
+        .chat-messages [data-radix-scroll-area-viewport] > div {
             display:block !important;
             width: 100%;
         }
@@ -117,6 +129,7 @@ export const ChatMessages: React.FC<ChatMessagesProps> = props => {
           return (
             <InnerMessage
               key={conversation.id}
+              scrollContentRef={scrollContentRef}
               conversation={conversation}
               context={context}
               setContext={setContext}
@@ -125,6 +138,8 @@ export const ChatMessages: React.FC<ChatMessagesProps> = props => {
               isLoading={uiState.isLoading}
               sendButtonDisabled={uiState.sendButtonDisabled}
               onEditModeChange={onEditModeChange}
+              onDelete={onDelete}
+              onRegenerate={onRegenerate}
             />
           )
         })}
@@ -134,54 +149,102 @@ export const ChatMessages: React.FC<ChatMessagesProps> = props => {
   )
 }
 
-interface InnerMessageProps extends ChatAIMessageProps, ChatHumanMessageProps {
-  ref?: Ref<HTMLDivElement>
+interface InnerMessageProps
+  extends ChatAIMessageProps,
+    Omit<ChatHumanMessageProps, 'ref'>,
+    Pick<MessageToolbarEvents, 'onDelete' | 'onRegenerate'> {
   className?: string
   style?: CSSProperties
+  scrollContentRef: RefObject<HTMLElement | null>
 }
 
 const InnerMessage: FC<InnerMessageProps> = props => {
+  const messageRef = useRef<ChatHumanMessageRef>(null)
   const {
-    ref,
+    conversation,
+    onEditModeChange,
     context,
     setContext,
-    conversation,
     onSend,
     isLoading,
     isEditMode,
     sendButtonDisabled,
-    onEditModeChange,
     className,
-    style
+    style,
+    scrollContentRef,
+    onDelete,
+    onRegenerate
   } = props
+
+  const isAiMessage = conversation.role === 'ai'
+  const isHumanMessage = conversation.role === 'human'
+
+  const handleCopy = () => {
+    if (isHumanMessage) {
+      messageRef.current?.copy?.()
+    }
+
+    if (isAiMessage) {
+      copyToClipboard(
+        getAllTextFromLangchainMessageContents(conversation.contents)
+      )
+    }
+  }
+
+  const renderMessageToolbar = () => (
+    <MessageToolbar
+      conversation={conversation}
+      scrollContentRef={scrollContentRef}
+      messageRef={messageRef}
+      onEdit={
+        isHumanMessage
+          ? () => onEditModeChange?.(true, conversation)
+          : undefined
+      }
+      onCopy={handleCopy}
+      onDelete={onDelete}
+      onRegenerate={isAiMessage ? onRegenerate : undefined}
+    />
+  )
 
   return (
     <div
       key={conversation.id}
-      ref={ref}
-      className={cn('flex relative max-w-full w-full items-center', className)}
+      className={cn(
+        'flex flex-col relative max-w-full w-full items-start px-4',
+        conversation.role === 'human' && 'items-end',
+        className
+      )}
       style={style}
     >
-      {conversation.role === 'ai' && (
-        <ChatAIMessage
-          conversation={conversation}
-          isLoading={isLoading}
-          isEditMode={isEditMode}
-          onEditModeChange={onEditModeChange}
-        />
+      {isAiMessage && (
+        <>
+          <ChatAIMessage
+            ref={messageRef}
+            conversation={conversation}
+            isLoading={isLoading}
+            isEditMode={isEditMode}
+            // onEditModeChange={onEditModeChange}
+          />
+          {renderMessageToolbar()}
+        </>
       )}
 
-      {conversation.role === 'human' && (
-        <ChatHumanMessage
-          context={context}
-          setContext={setContext}
-          conversation={conversation}
-          onSend={onSend}
-          isLoading={isLoading}
-          isEditMode={isEditMode}
-          sendButtonDisabled={sendButtonDisabled}
-          onEditModeChange={onEditModeChange}
-        />
+      {isHumanMessage && (
+        <>
+          <ChatHumanMessage
+            ref={messageRef}
+            context={context}
+            setContext={setContext}
+            conversation={conversation}
+            onSend={onSend}
+            isLoading={isLoading}
+            isEditMode={isEditMode}
+            sendButtonDisabled={sendButtonDisabled}
+            onEditModeChange={onEditModeChange}
+          />
+          {renderMessageToolbar()}
+        </>
       )}
     </div>
   )

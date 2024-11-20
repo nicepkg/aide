@@ -1,4 +1,11 @@
-import { useEffect, useRef, type CSSProperties, type FC } from 'react'
+import {
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  type CSSProperties,
+  type FC,
+  type Ref
+} from 'react'
 import type { Conversation } from '@shared/entities'
 import {
   ChatInput,
@@ -12,12 +19,17 @@ import type { ConversationUIState } from '@webview/types/chat'
 import { cn } from '@webview/utils/common'
 import { motion } from 'framer-motion'
 
+export interface ChatHumanMessageRef extends HTMLDivElement {
+  copy?: () => void
+}
+
 export interface ChatHumanMessageProps
   extends Pick<
       ChatInputProps,
       'context' | 'setContext' | 'conversation' | 'onSend'
     >,
     ConversationUIState {
+  ref?: Ref<ChatHumanMessageRef>
   className?: string
   style?: CSSProperties
   onEditModeChange?: (isEditMode: boolean, conversation: Conversation) => void
@@ -25,6 +37,7 @@ export interface ChatHumanMessageProps
 
 export const ChatHumanMessage: FC<ChatHumanMessageProps> = props => {
   const {
+    ref,
     isLoading,
     isEditMode = false,
     sendButtonDisabled,
@@ -36,7 +49,15 @@ export const ChatHumanMessage: FC<ChatHumanMessageProps> = props => {
     className,
     style
   } = props
+
   const chatInputRef = useRef<ChatInputRef>(null)
+  const divRef = useRef<HTMLDivElement>(null)
+
+  useImperativeHandle(ref, () =>
+    Object.assign(divRef.current!, {
+      copy: () => chatInputRef.current?.copyWithFormatting()
+    })
+  )
 
   const { conversation, setConversation } = useConversation(
     'human',
@@ -53,8 +74,7 @@ export const ChatHumanMessage: FC<ChatHumanMessageProps> = props => {
   }, [isEditMode])
 
   return (
-    <div className="w-full flex">
-      <div className="w-4 shrink-0" />
+    <div ref={divRef} className="w-full flex">
       <motion.div
         layout
         initial={{ opacity: 0 }}
@@ -65,7 +85,7 @@ export const ChatHumanMessage: FC<ChatHumanMessageProps> = props => {
           opacity: { duration: 0.2 }
         }}
         className={cn(
-          'relative mr-4 ml-auto bg-background text-foreground border rounded-tl-2xl rounded-bl-2xl rounded-tr-2xl overflow-hidden',
+          'relative ml-auto bg-background text-foreground border rounded-tl-2xl rounded-bl-2xl rounded-tr-2xl overflow-hidden',
           isEditMode && 'w-full',
           className
         )}

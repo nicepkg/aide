@@ -4,7 +4,10 @@ import type { AIModel, AIModelFeature } from '@shared/entities/ai-model-entity'
 import type { MaybePromise } from 'mermaid/dist/types'
 import { z } from 'zod'
 
-import { imgUrlForTest, type BaseModelProvider } from './base'
+import { type BaseModelProvider } from './base'
+
+export const imgUrlForTest =
+  'https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg'
 
 export class FeatureTester {
   constructor(private baseModelProvider: BaseModelProvider<BaseChatModel>) {}

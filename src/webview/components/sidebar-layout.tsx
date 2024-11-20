@@ -90,7 +90,7 @@ export const SidebarLayout: React.FC<SidebarLayoutProps> = ({
       <div className="hidden md:block w-[250px] h-full p-4 border-r overflow-y-auto">
         <Sidebar />
       </div>
-      <div className="flex flex-col flex-1 h-full">
+      <div className="flex flex-col flex-1 h-full overflow-x-hidden">
         <div className="flex-shrink-0">
           <SidebarHeader
             title={title}

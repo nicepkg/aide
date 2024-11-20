@@ -11,6 +11,7 @@ export const useChatState = () => {
     context,
     setContext,
     addConversation,
+    deleteConversation,
     getConversationUIState,
     setConversationUIState,
     batchSetConversationUIState,
@@ -116,6 +117,7 @@ export const useChatState = () => {
     handleUIStateAfterSend,
     resetConversationInput,
     toggleConversationEditMode,
-    addConversation
+    addConversation,
+    deleteConversation
   }
 }

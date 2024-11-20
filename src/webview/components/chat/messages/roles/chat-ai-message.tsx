@@ -1,4 +1,4 @@
-import type { CSSProperties, FC } from 'react'
+import type { CSSProperties, FC, Ref } from 'react'
 import type { Conversation } from '@shared/entities'
 import { getAllTextFromLangchainMessageContents } from '@shared/utils/get-all-text-from-langchain-message-contents'
 import { WithPluginRegistryProvider } from '@webview/contexts/plugin-registry-context'
@@ -9,6 +9,7 @@ import { Markdown } from '../markdown'
 import { ChatAIMessageLogAccordion } from './chat-log-preview'
 
 export interface ChatAIMessageProps extends ConversationUIState {
+  ref?: Ref<HTMLDivElement>
   className?: string
   style?: CSSProperties
   conversation: Conversation
@@ -17,6 +18,7 @@ export interface ChatAIMessageProps extends ConversationUIState {
 
 const _ChatAIMessage: FC<ChatAIMessageProps> = props => {
   const {
+    ref,
     conversation,
     isLoading,
     className,
@@ -26,18 +28,17 @@ const _ChatAIMessage: FC<ChatAIMessageProps> = props => {
   } = props
 
   return (
-    <div className="w-full flex">
+    <div ref={ref} className="w-full flex">
       <div
         className={cn(
-          'ml-4 mr-auto relative bg-background text-foreground border overflow-hidden rounded-md rounded-bl-[0px]',
+          'mr-auto relative bg-background text-foreground border overflow-hidden rounded-md rounded-bl-[0px]',
           isEditMode && 'w-full',
           className
         )}
         style={style}
         onClick={() => {
           if (isEditMode) return
-          console.log('edit mode', onEditModeChange)
-          // onEditModeChange?.(true, conversation)
+          onEditModeChange?.(true, conversation)
         }}
       >
         {conversation.logs.length > 0 && (
@@ -55,7 +56,6 @@ const _ChatAIMessage: FC<ChatAIMessageProps> = props => {
           {getAllTextFromLangchainMessageContents(conversation.contents)}
         </Markdown>
       </div>
-      <div className="w-4 shrink-0" />
     </div>
   )
 }

@@ -41,7 +41,7 @@ const TooltipContent: React.FC<AnimatedTooltipProps> = ({
   }, [animated, x])
 
   return (
-    <AnimatePresence initial={false}>
+    <AnimatePresence>
       <TooltipPrimitive.Content
         ref={ref}
         sideOffset={sideOffset}
@@ -57,7 +57,7 @@ const TooltipContent: React.FC<AnimatedTooltipProps> = ({
               y: 0,
               transition: {
                 type: 'spring',
-                stiffness: 260,
+                stiffness: 200,
                 damping: 10
               }
             }}
