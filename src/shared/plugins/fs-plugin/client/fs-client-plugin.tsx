@@ -1,7 +1,6 @@
 import {
   CardStackIcon,
   ChevronRightIcon,
-  CodeIcon,
   CubeIcon,
   FileIcon
 } from '@radix-ui/react-icons'
@@ -233,17 +232,17 @@ export class FsClientPlugin implements ClientPlugin<FsPluginState> {
           label: 'Folders'
         }
       },
-      {
-        id: `${PluginId.Fs}#code`,
-        type: `${PluginId.Fs}#code`,
-        label: 'Code',
-        topLevelSort: 2,
-        searchKeywords: ['code'],
-        itemLayoutProps: {
-          icon: <CodeIcon className="size-4 mr-1" />,
-          label: 'Code'
-        }
-      },
+      // {
+      //   id: `${PluginId.Fs}#code`,
+      //   type: `${PluginId.Fs}#code`,
+      //   label: 'Code',
+      //   topLevelSort: 2,
+      //   searchKeywords: ['code'],
+      //   itemLayoutProps: {
+      //     icon: <CodeIcon className="size-4 mr-1" />,
+      //     label: 'Code'
+      //   }
+      // },
       {
         id: `${PluginId.Fs}#codebase`,
         type: `${PluginId.Fs}#codebase`,

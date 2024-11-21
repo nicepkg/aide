@@ -1,5 +1,13 @@
 /* eslint-disable unused-imports/no-unused-vars */
-import React from 'react'
+import React, { useState, type FC } from 'react'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger
+} from '@webview/components/ui/popover'
+import { useMentionOptions } from '@webview/hooks/chat/use-mention-options'
+import type { MentionOption } from '@webview/types/chat'
+import { findMentionOptionByMentionType } from '@webview/utils/plugin-states'
 import {
   $applyNodeReplacement,
   $createTextNode,
@@ -140,20 +148,26 @@ export class MentionNode extends DecoratorNode<React.ReactNode> {
 
   decorate(editor: LexicalEditor, config: EditorConfig): React.ReactNode {
     return (
-      <span
-        className="mention"
-        style={{
-          backgroundColor: 'hsl(var(--primary))',
-          fontSize: '12px',
-          borderRadius: '4px',
-          margin: '1px 1px',
-          color: 'hsl(var(--primary-foreground))',
-          display: 'inline-block',
-          padding: '0 2px'
-        }}
+      <MentionPreview
+        mentionType={this.__mentionType}
+        mentionData={this.__mentionData}
       >
-        {this.__text}
-      </span>
+        <span
+          className="mention"
+          style={{
+            backgroundColor: 'hsl(var(--primary))',
+            fontSize: '12px',
+            borderRadius: '4px',
+            margin: '1px 1px',
+            color: 'hsl(var(--primary-foreground))',
+            display: 'inline-block',
+            padding: '0 2px',
+            cursor: 'pointer'
+          }}
+        >
+          {this.__text}
+        </span>
+      </MentionPreview>
     )
   }
 
@@ -210,3 +224,46 @@ export const $createMentionNode = (
 export const $isMentionNode = (
   node: LexicalNode | null | undefined
 ): node is MentionNode => node instanceof MentionNode
+
+const MentionPreview: FC<{
+  mentionType: string
+  mentionData: any
+  children: React.ReactNode
+}> = ({ mentionType, mentionData, children }) => {
+  const mentionOptions = useMentionOptions()
+  const option = findMentionOptionByMentionType(mentionOptions, mentionType)
+
+  const currentOption = {
+    ...option,
+    data: mentionData
+  } as MentionOption<any>
+
+  const [isOpen, setIsOpen] = useState(false)
+
+  return (
+    <Popover
+      open={isOpen}
+      onOpenChange={open => {
+        if (!currentOption?.customRenderPreview) {
+          setIsOpen(false)
+        } else {
+          setIsOpen(open)
+        }
+      }}
+    >
+      <PopoverTrigger asChild>{children}</PopoverTrigger>
+      <PopoverContent
+        side="top"
+        align="start"
+        sideOffset={32}
+        className="min-w-[200px] max-w-[400px] w-screen p-0 z-10"
+        onOpenAutoFocus={e => e.preventDefault()}
+        onCloseAutoFocus={e => e.preventDefault()}
+      >
+        {currentOption?.customRenderPreview && (
+          <currentOption.customRenderPreview {...currentOption} />
+        )}
+      </PopoverContent>
+    </Popover>
+  )
+}

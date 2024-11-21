@@ -33,7 +33,7 @@ export const updatePluginStatesFromEditorState = (
     })
   })
 
-const findMentionOptionByMentionType = (
+export const findMentionOptionByMentionType = (
   mentionOptions: MentionOption[],
   mentionType: string
 ): MentionOption | undefined => {

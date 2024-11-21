@@ -67,9 +67,7 @@ export const BaseToolbar: FC<BaseToolbarProps> = ({
   }, [checkShouldFloat])
 
   const toolbarContent = (
-    <div
-      className={cn('relative flex z-10 gap-2 border rounded-lg', className)}
-    >
+    <div className={cn('relative flex z-10 border rounded-lg', className)}>
       {children}
     </div>
   )
