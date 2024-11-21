@@ -5,7 +5,9 @@ import {
   type FolderInfo
 } from '@extension/file-utils/traverse-fs'
 import { VsCodeFS } from '@extension/file-utils/vscode-fs'
+import { logger } from '@extension/logger'
 import { getWorkspaceFolder } from '@extension/utils'
+import type { EditorError } from '@shared/plugins/fs-plugin/types'
 import * as vscode from 'vscode'
 
 import { Controller } from '../types'
@@ -140,5 +142,79 @@ export class FileController extends Controller {
       workspacePath: workspaceFolder.uri.fsPath,
       itemCallback: folderInfo => folderInfo
     })
+  }
+
+  async getCurrentEditorErrors(): Promise<EditorError[]> {
+    const errors: EditorError[] = []
+
+    try {
+      // Get all open text documents
+      const documents = vscode.workspace.textDocuments
+
+      // Collect diagnostics for each document
+      for (const document of documents) {
+        // Skip non-file documents (like output/debug console)
+        if (document.uri.scheme !== 'file') continue
+
+        // Get all diagnostic collections
+        const allDiagnostics: vscode.Diagnostic[] = []
+
+        // Get diagnostics from all providers (TypeScript, ESLint, etc)
+        const collections = vscode.languages.getDiagnostics(document.uri)
+        allDiagnostics.push(...collections)
+
+        // Get diagnostics from other language features
+        const languageFeatures = vscode.languages.getDiagnostics()
+        for (const [uri, diagnostics] of languageFeatures) {
+          if (uri.toString() === document.uri.toString()) {
+            allDiagnostics.push(...diagnostics)
+          }
+        }
+
+        // Convert diagnostics to EditorError format
+        const documentErrors = allDiagnostics.map(d => {
+          // Try to get more specific error source/type
+          const source = d.source || 'unknown'
+          const code = d.code
+            ? typeof d.code === 'object'
+              ? d.code.value
+              : d.code.toString()
+            : undefined
+
+          // Format code with source if available
+          const errorCode = source && code ? `${source}/${code}` : code
+
+          return {
+            message: d.message,
+            code: String(errorCode || ''),
+            severity:
+              d.severity === vscode.DiagnosticSeverity.Error
+                ? 'error'
+                : 'warning',
+            file: vscode.workspace.asRelativePath(document.uri),
+            line: d.range.start.line + 1,
+            column: d.range.start.character + 1
+          } satisfies EditorError
+        })
+
+        errors.push(...documentErrors)
+      }
+
+      // Remove duplicates based on message and location
+      return errors.filter(
+        (error, index, self) =>
+          index ===
+          self.findIndex(
+            e =>
+              e.message === error.message &&
+              e.file === error.file &&
+              e.line === error.line &&
+              e.column === error.column
+          )
+      )
+    } catch (error) {
+      logger.error('Error getting editor diagnostics:', error)
+      return []
+    }
   }
 }

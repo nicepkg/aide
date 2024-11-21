@@ -24,7 +24,7 @@ import { PluginId } from '@shared/plugins/base/types'
 import { mergeCodeSnippets } from '@shared/plugins/fs-plugin/server/merge-code-snippets'
 import { removeDuplicates } from '@shared/utils/common'
 
-import type { FsPluginState } from '../../types'
+import type { EditorError, FsPluginState } from '../../types'
 import {
   createCodebaseSearchNode,
   createCodebaseSearchTool
@@ -56,8 +56,16 @@ export class FsChatStrategyProvider implements ChatStrategyProvider {
     codeSnippetsPrompt &&
       logger.dev.verbose('codeSnippetsPrompt', codeSnippetsPrompt)
 
+    const editorErrorsPrompt = this.buildEditorErrorsPrompt(state)
+    editorErrorsPrompt &&
+      logger.dev.verbose('editorErrorsPrompt', editorErrorsPrompt)
+
     const { currentFilesPrompt } = await this.buildFilePrompts(state)
-    const prompts = [codeSnippetsPrompt, currentFilesPrompt].filter(Boolean)
+    const prompts = [
+      codeSnippetsPrompt,
+      currentFilesPrompt,
+      editorErrorsPrompt
+    ].filter(Boolean)
 
     return prompts.join('\n\n')
   }
@@ -269,6 +277,47 @@ ${CONTENT_SEPARATOR}
       .join('')
 
     return chunksContent
+  }
+
+  private buildEditorErrorsPrompt(state: Partial<FsPluginState>): string {
+    const { editorErrors } = state
+
+    if (!editorErrors?.length) return ''
+
+    // Group errors by file
+    const errorsByFile = editorErrors.reduce(
+      (acc, error) => {
+        if (!acc[error.file]) {
+          acc[error.file] = []
+        }
+        acc[error.file]!.push(error)
+        return acc
+      },
+      {} as Record<string, EditorError[]>
+    )
+
+    // Format errors grouped by file
+    const errorsContent = Object.entries(errorsByFile)
+      .map(([file, errors]) => {
+        const errorsList = errors
+          .map(error => {
+            const severity = error.severity.toUpperCase()
+            const location = `${error.line}:${error.column}`
+            const code = error.code ? `[${error.code}] ` : ''
+            return `  - ${severity}: ${code}${error.message} (at line ${location})`
+          })
+          .join('\n')
+
+        return `File: ${file}\n${errorsList}`
+      })
+      .join('\n\n')
+
+    return `
+## Current Editor Errors and Warnings
+
+${errorsContent}
+${CONTENT_SEPARATOR}
+`
   }
 }
 

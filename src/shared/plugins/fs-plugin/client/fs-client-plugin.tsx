@@ -2,6 +2,7 @@ import {
   CardStackIcon,
   ChevronRightIcon,
   CubeIcon,
+  ExclamationTriangleIcon,
   FileIcon
 } from '@radix-ui/react-icons'
 import type {
@@ -20,7 +21,7 @@ import {
 } from '@webview/types/chat'
 import { getFileNameFromPath } from '@webview/utils/path'
 
-import type { FsPluginState, ImageInfo } from '../types'
+import type { EditorError, FsPluginState, ImageInfo } from '../types'
 import { FsLogPreview } from './fs-log-preview'
 import { MentionFilePreview } from './mention-file-preview'
 import { MentionFolderPreview } from './mention-folder-preview'
@@ -41,7 +42,8 @@ export class FsClientPlugin implements ClientPlugin<FsPluginState> {
       selectedImagesFromOutsideUrl: [],
       codeChunksFromEditor: [],
       codeSnippetFromAgent: [],
-      enableCodebaseAgent: false
+      enableCodebaseAgent: false,
+      editorErrors: []
     }
   }
 
@@ -121,6 +123,11 @@ export class FsClientPlugin implements ClientPlugin<FsPluginState> {
       queryFn: () => api.file.traverseWorkspaceFolders({ folders: ['./'] })
     })
 
+    const editorErrors = await this.context.getQueryClient().fetchQuery({
+      queryKey: ['realtime', 'editorErrors'],
+      queryFn: () => api.file.getCurrentEditorErrors({})
+    })
+
     const filesMentionOptions: MentionOption[] = files.map(
       file =>
         ({
@@ -131,14 +138,6 @@ export class FsClientPlugin implements ClientPlugin<FsPluginState> {
           onAddOne: data => {
             this.context?.setState(draft => {
               draft.selectedFilesFromEditor.push(data)
-            })
-          },
-          onRemoveOne: data => {
-            this.context?.setState(draft => {
-              draft.selectedFilesFromEditor =
-                draft.selectedFilesFromEditor.filter(
-                  f => f.fullPath !== data.fullPath
-                )
             })
           },
           onReplaceAll: dataArr => {
@@ -170,14 +169,6 @@ export class FsClientPlugin implements ClientPlugin<FsPluginState> {
           onAddOne: data => {
             this.context?.setState(draft => {
               draft.selectedFoldersFromEditor.push(data)
-            })
-          },
-          onRemoveOne: data => {
-            this.context?.setState(draft => {
-              draft.selectedFoldersFromEditor =
-                draft.selectedFoldersFromEditor.filter(
-                  f => f.fullPath !== data.fullPath
-                )
             })
           },
           onReplaceAll: dataArr => {
@@ -266,7 +257,36 @@ export class FsClientPlugin implements ClientPlugin<FsPluginState> {
           icon: <CubeIcon className="size-4 mr-1" />,
           label: 'Codebase'
         }
-      }
+      },
+      {
+        id: `${PluginId.Fs}#errors`,
+        type: `${PluginId.Fs}#errors`,
+        label: 'Errors',
+        data: editorErrors,
+        onAddOne: data => {
+          this.context?.setState(draft => {
+            draft.editorErrors = data
+          })
+        },
+        onReplaceAll: dataArr => {
+          this.context?.setState(draft => {
+            draft.editorErrors = dataArr?.[0] ?? []
+          })
+        },
+        topLevelSort: 7,
+        searchKeywords: ['errors', 'warnings', 'diagnostics'],
+        itemLayoutProps: {
+          icon: <ExclamationTriangleIcon className="size-4 mr-1" />,
+          label: (
+            <>
+              Errors
+              <span className="ml-2 overflow-hidden text-ellipsis text-xs text-foreground/50 whitespace-nowrap">
+                ({editorErrors.length})
+              </span>
+            </>
+          )
+        }
+      } satisfies MentionOption<EditorError[]>
     ]
   }
 }

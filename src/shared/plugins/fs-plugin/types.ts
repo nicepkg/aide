@@ -27,6 +27,15 @@ export interface ImageInfo {
   url: string
 }
 
+export interface EditorError {
+  message: string
+  code?: string
+  severity: 'error' | 'warning'
+  file: string
+  line: number
+  column: number
+}
+
 export interface FsPluginState {
   selectedFilesFromFileSelector: FileInfo[]
   selectedFilesFromEditor: FileInfo[]
@@ -36,6 +45,7 @@ export interface FsPluginState {
   codeChunksFromEditor: CodeChunk[]
   codeSnippetFromAgent: CodeSnippet[]
   enableCodebaseAgent: boolean
+  editorErrors: EditorError[]
 }
 
 export interface FsPluginLog extends BaseConversationLog {

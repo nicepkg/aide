@@ -3,7 +3,7 @@ import { TruncateStart } from '@webview/components/truncate-start'
 
 export interface MentionItemLayoutProps {
   icon: React.ReactNode
-  label: string
+  label: string | React.ReactNode
   details?: React.ReactNode
 }
 

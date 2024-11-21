@@ -63,14 +63,6 @@ export class DocClientPlugin implements ClientPlugin<DocPluginState> {
               draft.allowSearchDocSiteNamesFromEditor.push(data)
             })
           },
-          onRemoveOne: data => {
-            this.context?.setState(draft => {
-              draft.allowSearchDocSiteNamesFromEditor =
-                draft.allowSearchDocSiteNamesFromEditor.filter(
-                  name => name !== data
-                )
-            })
-          },
           onReplaceAll: dataArr => {
             this.context?.setState(draft => {
               draft.allowSearchDocSiteNamesFromEditor = dataArr

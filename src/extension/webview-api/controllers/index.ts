@@ -10,11 +10,13 @@ import { FileController } from './file-controller'
 import { GitController } from './git-controller'
 import { SettingsController } from './settings-controller'
 import { SystemController } from './system-controller'
+import { TerminalController } from './terminal-controller'
 
 export const controllers = [
   ChatController,
   CodebaseController,
   FileController,
+  TerminalController,
   GitController,
   SystemController,
   DocController,

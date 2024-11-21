@@ -62,13 +62,6 @@ export class GitClientPlugin implements ClientPlugin<GitPluginState> {
               draft.gitCommitsFromEditor.push(data)
             })
           },
-          onRemoveOne: data => {
-            this.context?.setState(draft => {
-              draft.gitCommitsFromEditor = draft.gitCommitsFromEditor.filter(
-                item => item.sha !== data.sha
-              )
-            })
-          },
           onReplaceAll: dataArr => {
             this.context?.setState(draft => {
               draft.gitCommitsFromEditor = dataArr

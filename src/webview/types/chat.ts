@@ -20,7 +20,6 @@ export interface MentionOption<T = any> {
   label: string
   type?: string
   onAddOne?: (data: T) => void
-  onRemoveOne?: (data: T) => void
   onReplaceAll?: (dataArr: T[]) => void
 
   topLevelSort?: number

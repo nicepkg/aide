@@ -2,7 +2,8 @@ export enum PluginId {
   Fs = 'fsPlugin',
   Web = 'webPlugin',
   Doc = 'docPlugin',
-  Git = 'gitPlugin'
+  Git = 'gitPlugin',
+  Terminal = 'terminalPlugin'
 }
 
 export type PluginState = Record<string, any>

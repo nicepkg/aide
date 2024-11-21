@@ -19,6 +19,7 @@ import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin'
 import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin'
 import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin'
 import { TabIndentationPlugin } from '@lexical/react/LexicalTabIndentationPlugin'
+import { useQueryClient } from '@tanstack/react-query'
 import { TypedText } from '@webview/components/ui/typed-text'
 import { MentionNode } from '@webview/lexical/nodes/mention-node'
 import {
@@ -31,6 +32,7 @@ import {
   $getSelection,
   $isRangeSelection,
   COMMAND_PRIORITY_CRITICAL,
+  FOCUS_COMMAND,
   KEY_ENTER_COMMAND,
   type EditorState,
   type LexicalEditor
@@ -243,6 +245,22 @@ const ChatEditorInner: FC<ChatEditorProps> = ({
       removeKeyEnterListener()
     }
   }, [editor, onComplete])
+
+  const queryClient = useQueryClient()
+  useEffect(
+    () =>
+      editor.registerCommand(
+        FOCUS_COMMAND,
+        () => {
+          queryClient.invalidateQueries({
+            queryKey: ['realtime']
+          })
+          return false // Let other focus handlers run
+        },
+        1 // Low priority to ensure it runs after other focus handlers
+      ),
+    [editor, queryClient]
+  )
 
   return (
     <div

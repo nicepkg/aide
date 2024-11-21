@@ -160,8 +160,8 @@ importers:
         specifier: ^5.0.5
         version: 5.0.5
       '@types/vscode':
-        specifier: 1.82.0
-        version: 1.82.0
+        specifier: 1.93.0
+        version: 1.93.0
       '@types/vscode-webview':
         specifier: ^1.57.5
         version: 1.57.5
@@ -405,6 +405,9 @@ importers:
       sonner:
         specifier: ^1.7.0
         version: 1.7.0(react-dom@19.0.0-rc-ed15d500-20241110(react@19.0.0-rc-ed15d500-20241110))(react@19.0.0-rc-ed15d500-20241110)
+      strip-ansi:
+        specifier: ^7.1.0
+        version: 7.1.0
       tailwind-merge:
         specifier: ^2.5.4
         version: 2.5.4
@@ -3498,8 +3501,8 @@ packages:
   '@types/vscode-webview@1.57.5':
     resolution: {integrity: sha512-iBAUYNYkz+uk1kdsq05fEcoh8gJmwT3lqqFPN7MGyjQ3HVloViMdo7ZJ8DFIP8WOK74PjOEilosqAyxV2iUFUw==}
 
-  '@types/vscode@1.82.0':
-    resolution: {integrity: sha512-VSHV+VnpF8DEm8LNrn8OJ8VuUNcBzN3tMvKrNpbhhfuVjFm82+6v44AbDhLvVFgCzn6vs94EJNTp7w8S6+Q1Rw==}
+  '@types/vscode@1.93.0':
+    resolution: {integrity: sha512-kUK6jAHSR5zY8ps42xuW89NLcBpw1kOabah7yv38J8MyiYuOHxLQBi0e7zeXbQgVefDy/mZZetqEFC+Fl5eIEQ==}
 
   '@types/web-bluetooth@0.0.20':
     resolution: {integrity: sha512-g9gZnnXVq7gM7v3tJCWV/qw7w+KeOlSHAhgF9RytFyifW6AF61hdT2ucrYhPq9hLs5JIryeupHV3qGk95dH9ow==}
@@ -11816,7 +11819,7 @@ snapshots:
 
   '@types/vscode-webview@1.57.5': {}
 
-  '@types/vscode@1.82.0': {}
+  '@types/vscode@1.93.0': {}
 
   '@types/web-bluetooth@0.0.20': {}
 
