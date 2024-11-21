@@ -59,7 +59,9 @@ export const createTmpFileAndWriter = async (
     writeTextPart: (textPart: string) =>
       appendTextToDocument(tmpDocument, textPart),
     getText: () => tmpDocument.getText(),
-    save: () => tmpDocument.save() as Promise<void>,
+    save: async () => {
+      await tmpDocument.save()
+    },
     close: () => closeDocument(tmpFileUri),
     isClosedWithoutSaving: () => tmpDocument.isClosed && !tmpDocument.getText()
   }
