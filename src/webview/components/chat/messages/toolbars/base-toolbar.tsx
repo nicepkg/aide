@@ -7,16 +7,16 @@ export interface BaseToolbarProps {
   messageRef: React.RefObject<HTMLElement | null>
   scrollContentRef: React.RefObject<HTMLElement | null>
   className?: string
-  children: React.ReactNode
   bottomOffset?: number
+  buildChildren: (props: { isFloating: boolean }) => React.ReactNode
 }
 
 export const BaseToolbar: FC<BaseToolbarProps> = ({
   messageRef,
   scrollContentRef,
   className,
-  children,
-  bottomOffset = 16
+  bottomOffset = 16,
+  buildChildren
 }) => {
   const [isFloating, setIsFloating] = useState(false)
   const [floatingPosition, setFloatingPosition] = useState({
@@ -68,7 +68,7 @@ export const BaseToolbar: FC<BaseToolbarProps> = ({
 
   const toolbarContent = (
     <div className={cn('relative flex z-10 border rounded-lg', className)}>
-      {children}
+      {buildChildren({ isFloating })}
     </div>
   )
 

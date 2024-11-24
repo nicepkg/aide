@@ -8,6 +8,7 @@ import {
 import type { Conversation } from '@shared/entities'
 import { ButtonWithTooltip } from '@webview/components/button-with-tooltip'
 import { AlertAction } from '@webview/components/ui/alert-action'
+import type { ButtonProps } from '@webview/components/ui/button'
 
 import { BaseToolbar, type BaseToolbarProps } from './base-toolbar'
 
@@ -32,56 +33,67 @@ export const MessageToolbar: FC<MessageToolbarProps> = ({
   onRegenerate,
   ...props
 }) => (
-  <BaseToolbar {...props}>
-    {/* copy */}
-    {onCopy && (
-      <ButtonWithTooltip
-        tooltip="Copy"
-        variant="ghost"
-        size="iconXs"
-        onClick={() => onCopy(conversation)}
-      >
-        <CopyIcon className="size-3" />
-      </ButtonWithTooltip>
-    )}
+  <BaseToolbar
+    {...props}
+    buildChildren={({ isFloating }) => {
+      const buttonProps: Partial<ButtonProps> = {
+        variant: 'ghost',
+        size: isFloating ? 'iconSm' : 'iconXs'
+      }
 
-    {/* edit */}
-    {onEdit && (
-      <ButtonWithTooltip
-        tooltip="Edit"
-        variant="ghost"
-        size="iconXs"
-        onClick={() => onEdit(conversation)}
-      >
-        <Pencil2Icon className="size-3" />
-      </ButtonWithTooltip>
-    )}
+      const iconClassName = isFloating ? 'size-4' : 'size-3'
 
-    {/* delete */}
-    {onDelete && (
-      <AlertAction
-        title="Delete Items"
-        description="Are you sure?"
-        variant="destructive"
-        confirmText="Delete"
-        onConfirm={() => onDelete(conversation)}
-      >
-        <ButtonWithTooltip tooltip="Delete" variant="ghost" size="iconXs">
-          <TrashIcon className="size-3" />
-        </ButtonWithTooltip>
-      </AlertAction>
-    )}
+      return (
+        <>
+          {/* copy */}
+          {onCopy && (
+            <ButtonWithTooltip
+              tooltip="Copy"
+              {...buttonProps}
+              onClick={() => onCopy(conversation)}
+            >
+              <CopyIcon className={iconClassName} />
+            </ButtonWithTooltip>
+          )}
 
-    {/* regenerate */}
-    {onRegenerate && (
-      <ButtonWithTooltip
-        tooltip="Regenerate"
-        variant="ghost"
-        size="iconXs"
-        onClick={() => onRegenerate(conversation)}
-      >
-        <ReloadIcon className="size-3" />
-      </ButtonWithTooltip>
-    )}
-  </BaseToolbar>
+          {/* edit */}
+          {onEdit && (
+            <ButtonWithTooltip
+              tooltip="Edit"
+              {...buttonProps}
+              onClick={() => onEdit(conversation)}
+            >
+              <Pencil2Icon className={iconClassName} />
+            </ButtonWithTooltip>
+          )}
+
+          {/* delete */}
+          {onDelete && (
+            <AlertAction
+              title="Delete Items"
+              description="Are you sure?"
+              variant="destructive"
+              confirmText="Delete"
+              onConfirm={() => onDelete(conversation)}
+            >
+              <ButtonWithTooltip tooltip="Delete" {...buttonProps}>
+                <TrashIcon className={iconClassName} />
+              </ButtonWithTooltip>
+            </AlertAction>
+          )}
+
+          {/* regenerate */}
+          {onRegenerate && (
+            <ButtonWithTooltip
+              tooltip="Regenerate"
+              {...buttonProps}
+              onClick={() => onRegenerate(conversation)}
+            >
+              <ReloadIcon className={iconClassName} />
+            </ButtonWithTooltip>
+          )}
+        </>
+      )
+    }}
+  />
 )

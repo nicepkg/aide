@@ -19,7 +19,7 @@ export class APIClient {
 
   private pendingRequests: Map<number, PendingRequest> = new Map()
 
-  constructor() {
+  init() {
     const port = window.vscodeWebviewState?.socketPort
 
     if (!port) throw new Error('Socket port not found in VSCode state')
@@ -102,7 +102,7 @@ export class APIClient {
 
 export const createWebviewApi = <T extends readonly ControllerClass[]>() => {
   const apiClient = new APIClient()
-  return new Proxy({} as APIType<T>, {
+  const api = new Proxy({} as APIType<T>, {
     get: (target, controllerName: string) =>
       new Proxy(
         {},
@@ -118,6 +118,10 @@ export const createWebviewApi = <T extends readonly ControllerClass[]>() => {
         }
       )
   }) as APIType<T>
+
+  const initApi = apiClient.init.bind(apiClient)
+
+  return { api, initApi }
 }
 
-export const api = createWebviewApi<Controllers>()
+export const { api, initApi } = createWebviewApi<Controllers>()

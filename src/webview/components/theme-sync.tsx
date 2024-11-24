@@ -60,18 +60,32 @@ export const ThemeSync = () => {
       }
     }, THEME_CHECK_INTERVAL)
 
-    const observer = new MutationObserver(() => {
-      if (themeLoaded) syncTheme()
+    const styleObserver = new MutationObserver(mutations => {
+      for (const mutation of mutations) {
+        if (
+          mutation.type === 'attributes' &&
+          mutation.attributeName === 'style' &&
+          themeLoaded
+        ) {
+          const style = getComputedStyle(document.documentElement)
+          const newBackground = style.getPropertyValue(
+            '--vscode-sideBarTitle-background'
+          )
+          if (newBackground) {
+            syncTheme()
+          }
+        }
+      }
     })
 
-    observer.observe(document.documentElement, {
+    styleObserver.observe(document.documentElement, {
       attributes: true,
-      attributeFilter: ['class']
+      attributeFilter: ['style']
     })
 
     return () => {
       clearInterval(intervalId)
-      observer.disconnect()
+      styleObserver.disconnect()
     }
   }, [themeLoaded])
 

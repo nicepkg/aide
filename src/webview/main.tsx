@@ -6,12 +6,14 @@ import './styles/global.css'
 
 import { ThemeSync } from './components/theme-sync'
 import { SparklesText } from './components/ui/sparkles-text'
+import { GlobalContextProvider } from './contexts/global-context'
 import { getSocketPort } from './services/api-client/get-socket-port'
 
 const root = ReactDOM.createRoot(document.getElementById('app')!)
 
 const AppWrapper = () => {
   const [isLoading, setIsLoading] = useState(true)
+  const [isApiInit, setIsApiInit] = useState(false)
   const [App, setApp] = useState<React.ComponentType | null>(null)
 
   useEffect(() => {
@@ -23,7 +25,9 @@ const AppWrapper = () => {
       }
 
       const { default: AppComponent } = await import('./App')
-      const { api } = await import('./services/api-client')
+      const { api, initApi } = await import('./services/api-client')
+      initApi()
+      setIsApiInit(true)
       window.isWin = await api.system.isWindows({})
 
       setApp(() => AppComponent)
@@ -42,15 +46,17 @@ const AppWrapper = () => {
   }
 
   return (
-    <HashRouter>
-      <App />
-    </HashRouter>
+    <GlobalContextProvider isApiInit={isApiInit}>
+      <HashRouter>
+        <ThemeSync />
+        <App />
+      </HashRouter>
+    </GlobalContextProvider>
   )
 }
 
 root.render(
   <React.StrictMode>
-    <ThemeSync />
     <AppWrapper />
   </React.StrictMode>
 )
