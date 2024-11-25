@@ -6,6 +6,7 @@ import {
   PopoverTrigger
 } from '@webview/components/ui/popover'
 import { SparklesText } from '@webview/components/ui/sparkles-text'
+import { useGlobalContext } from '@webview/contexts/global-context'
 import { useReadFile } from '@webview/hooks/api/use-read-file'
 import { useControllableState } from '@webview/hooks/use-controllable-state'
 import { getExtFromPath } from '@webview/utils/path'
@@ -44,6 +45,7 @@ export const ContentPreviewPopover: React.FC<ContentPreviewPopoverProps> = ({
     defaultProp: false,
     onChange: onOpenChange
   })
+  const { isDarkTheme } = useGlobalContext()
 
   const getFileType = (filePath: string) => {
     const ext = getExtFromPath(filePath)?.toLowerCase() || 'txt'
@@ -126,7 +128,7 @@ export const ContentPreviewPopover: React.FC<ContentPreviewPopoverProps> = ({
         return (
           <ShikiHighlighter
             language={getShikiLanguageFromPath(content.path)}
-            theme="dark-plus"
+            theme={isDarkTheme ? 'dark-plus' : 'light-plus'}
             addDefaultStyles={false}
           >
             {fileContent}
