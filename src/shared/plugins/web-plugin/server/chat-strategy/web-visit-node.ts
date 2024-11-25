@@ -41,7 +41,12 @@ export const createWebVisitTool = async (
   return new DynamicStructuredTool({
     name: 'webVisit',
     description:
-      'Visit specific web pages and retrieve their content. Use this tool when you need to access and analyze the content of one or more web pages.',
+      'A tool for visiting and extracting content from web pages. Use this tool when you need to:\n' +
+      '1. Analyze specific webpage content in detail\n' +
+      '2. Extract information from known URLs\n' +
+      '3. Compare content across multiple web pages\n' +
+      '4. Verify or fact-check information from web sources\n' +
+      'Note: Only use this for specific URLs you want to analyze, not for general web searches.',
     func: async ({ urls }): Promise<WebVisitToolResult> => {
       const contents = await getPageContents(urls)
       return { contents }

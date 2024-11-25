@@ -1,4 +1,5 @@
 import { ModelProviderFactory } from '@extension/ai/model-providers/helpers/factory'
+import { logger } from '@extension/logger'
 import type { BaseStrategyOptions } from '@extension/webview-api/chat-context-processor/strategies/base-strategy'
 import { ChatMessagesConstructor } from '@extension/webview-api/chat-context-processor/strategies/chat-strategy/messages-constructors/chat-messages-constructor'
 import {
@@ -62,6 +63,13 @@ export const createWebSearchTool = async (
       .join('\n')
       .slice(0, MAX_CONTENT_LENGTH)
 
+    if (!docsContent) {
+      logger.warn('No content found in web search results', {
+        keywords,
+        docs
+      })
+      return { relevantContent: '', webSearchResults: [] }
+    }
     const chatMessagesConstructor = new ChatMessagesConstructor({
       ...options,
       chatContext: state.chatContext
@@ -80,22 +88,40 @@ export const createWebSearchTool = async (
         ...messagesFromChatContext.slice(-2),
         new HumanMessage({
           content: `
-I've conducted a web search based on the user's query. Below is the content from various web pages. Your task is to:
+You are an expert information analyst. Your task is to process web search results and create a high-quality, focused summary that will be used in a subsequent AI conversation. Follow these critical guidelines:
 
-1. Analyze this content and identify the most relevant information related to the user's question.
-2. Summarize the key points that directly address the user's query.
-3. If there are multiple perspectives or conflicting information, present them objectively.
-4. Exclude any irrelevant or off-topic information.
-5. Ensure the summary is concise yet comprehensive, focusing on quality over quantity.
+1. RELEVANCE & FOCUS
+- Identify and extract ONLY information that directly addresses the user's query
+- Eliminate tangential or loosely related content
+- Preserve technical details and specific examples when relevant
 
-Here's the content from the web search:
+2. INFORMATION QUALITY
+- Prioritize factual, verifiable information
+- Include specific technical details, numbers, or metrics when present
+- Maintain technical accuracy in specialized topics
+
+3. STRUCTURE & CLARITY
+- Present information in a logical, well-structured format
+- Use clear, precise language
+- Preserve important technical terms and concepts
+
+4. BALANCED PERSPECTIVE
+- Include multiple viewpoints when present
+- Note any significant disagreements or contradictions
+- Indicate if information seems incomplete or uncertain
+
+5. CONTEXT PRESERVATION
+- Maintain crucial context that affects meaning
+- Include relevant dates or version information for technical content
+- Preserve attribution for significant claims or findings
+
+Here's the content to analyze:
 
 """
 ${docsContent}
 """
 
-Please provide a relevant and focused summary based on this content and the user's question.
-          `
+Provide a focused, technical summary that will serve as high-quality context for the next phase of AI conversation.`
         })
       ])
 
@@ -110,7 +136,23 @@ Please provide a relevant and focused summary based on this content and the user
 
   return new DynamicStructuredTool({
     name: 'webSearch',
-    description: 'search web',
+    description:
+      'IMPORTANT: Proactively use this web search tool whenever you:\n' +
+      '1. Need to verify or update your knowledge about recent developments, versions, or current facts\n' +
+      '2. Are unsure about specific technical details or best practices\n' +
+      '3. Need real-world examples or implementation details\n' +
+      '4. Encounter questions about:\n' +
+      '   - Current events or recent updates\n' +
+      '   - Latest software versions or features\n' +
+      '   - Modern best practices or trends\n' +
+      '   - Specific technical implementations\n' +
+      '5. Want to provide evidence-based recommendations\n\n' +
+      'DO NOT rely solely on your training data when users ask about:\n' +
+      '- Recent technologies or updates\n' +
+      '- Current best practices\n' +
+      '- Specific implementation details\n' +
+      '- Version-specific features or APIs\n' +
+      'Instead, use this tool to get up-to-date information.',
     func: async ({ keywords }): Promise<WebSearchToolResult> => {
       const { relevantContent, webSearchResults } =
         await getRelevantContentAndSearchResults(state, keywords)
