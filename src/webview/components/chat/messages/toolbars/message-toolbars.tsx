@@ -20,7 +20,7 @@ export interface MessageToolbarEvents {
 }
 
 export interface MessageToolbarProps
-  extends Omit<BaseToolbarProps, 'children'>,
+  extends Omit<BaseToolbarProps, 'buildChildren'>,
     MessageToolbarEvents {
   conversation: Conversation
 }
