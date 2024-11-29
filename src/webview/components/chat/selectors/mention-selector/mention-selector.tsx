@@ -127,36 +127,32 @@ export const MentionSelector: React.FC<MentionSelectorProps> = ({
       <PopoverTrigger asChild>{children}</PopoverTrigger>
       <PopoverContent
         className={cn(
-          'min-w-[200px] max-w-[400px] w-screen p-0',
+          'min-w-[200px] max-w-[400px] w-screen p-0 bg-transparent shadow-none border-none [&[data-side="bottom"]>div]:flex-col-reverse',
           !isOpen && 'hidden'
         )}
+        innerClassName="flex flex-col gap-4 overflow-hidden"
         updatePositionStrategy="always"
         side="top"
         align="start"
+        animate={false}
         onOpenAutoFocus={e => e.preventDefault()}
         onCloseAutoFocus={e => e.preventDefault()}
         onKeyDown={e => e.stopPropagation()}
       >
-        <div>
-          <Popover open={isOpen && Boolean(focusedOption?.customRenderPreview)}>
-            <PopoverTrigger asChild>
-              <div />
-            </PopoverTrigger>
-            <PopoverContent
-              side="top"
-              align="start"
-              sideOffset={32}
-              className="min-w-[200px] max-w-[400px] max-h-[50vh] overflow-y-auto w-screen p-0 z-10"
-              onOpenAutoFocus={e => e.preventDefault()}
-              onCloseAutoFocus={e => e.preventDefault()}
-              onKeyDown={e => e.stopPropagation()}
-            >
-              {focusedOption?.customRenderPreview && (
-                <focusedOption.customRenderPreview {...focusedOption} />
-              )}
-            </PopoverContent>
-          </Popover>
+        <div
+          className={cn(
+            'w-full max-h-[50vh] flex overflow-y-auto overflow-x-hidden rounded-md shadow-md border-primary border bg-popover text-popover-foreground outline-none',
+            isOpen && Boolean(focusedOption?.customRenderPreview)
+              ? 'block'
+              : 'hidden'
+          )}
+        >
+          {focusedOption?.customRenderPreview && (
+            <focusedOption.customRenderPreview {...focusedOption} />
+          )}
+        </div>
 
+        <div className="w-full rounded-md shadow-md border bg-popover text-popover-foreground outline-none">
           <Command
             loop
             ref={commandRef}

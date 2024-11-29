@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { api } from '@webview/services/api-client'
+import { noop } from 'es-toolkit'
 
 export const useGetFullPath = ({
   path,
@@ -10,6 +11,7 @@ export const useGetFullPath = ({
 }) =>
   useQuery({
     queryKey: ['realtime', 'get-full-path', path],
-    queryFn: () => api.file.getFullPath({ path, returnNullIfNotExists }),
+    queryFn: ({ signal }) =>
+      api.file.getFullPath({ path, returnNullIfNotExists }, noop, signal),
     enabled: !!path
   })

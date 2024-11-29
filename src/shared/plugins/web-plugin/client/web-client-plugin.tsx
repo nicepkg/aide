@@ -66,7 +66,7 @@ export class WebClientPlugin implements ClientPlugin<WebPluginState> {
           })
         },
         topLevelSort: 3,
-        searchKeywords: ['web'],
+        searchKeywords: ['web', 'search'],
         itemLayoutProps: {
           icon: <GlobeIcon className="size-4 mr-1" />,
           label: 'Web'

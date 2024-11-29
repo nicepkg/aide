@@ -1,5 +1,5 @@
 import { t } from '@extension/i18n'
-import type { MaybePromise } from '@extension/types/common'
+import type { MaybePromise } from '@shared/types/common'
 import * as vscode from 'vscode'
 
 /**

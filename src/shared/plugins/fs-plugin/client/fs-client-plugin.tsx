@@ -20,11 +20,13 @@ import {
   type MentionOption
 } from '@webview/types/chat'
 import { getFileNameFromPath } from '@webview/utils/path'
+import { FolderTreeIcon } from 'lucide-react'
 
-import type { EditorError, FsPluginState, ImageInfo } from '../types'
+import type { FsPluginState, ImageInfo, TreeInfo } from '../types'
 import { FsLogPreview } from './fs-log-preview'
 import { MentionFilePreview } from './mention-file-preview'
 import { MentionFolderPreview } from './mention-folder-preview'
+import { MentionTreePreview } from './mention-tree-preview'
 
 export class FsClientPlugin implements ClientPlugin<FsPluginState> {
   id = PluginId.Fs
@@ -37,13 +39,15 @@ export class FsClientPlugin implements ClientPlugin<FsPluginState> {
     return {
       selectedFilesFromFileSelector: [],
       selectedFilesFromEditor: [],
+      selectedFilesFromAgent: [],
       currentFilesFromVSCode: [],
       selectedFoldersFromEditor: [],
       selectedImagesFromOutsideUrl: [],
       codeChunksFromEditor: [],
       codeSnippetFromAgent: [],
       enableCodebaseAgent: false,
-      editorErrors: []
+      editorErrors: [],
+      selectedTreesFromEditor: []
     }
   }
 
@@ -128,75 +132,111 @@ export class FsClientPlugin implements ClientPlugin<FsPluginState> {
       queryFn: () => api.file.getCurrentEditorErrors({})
     })
 
-    const filesMentionOptions: MentionOption[] = files.map(
-      file =>
-        ({
-          id: `${PluginId.Fs}#file#${file.fullPath}`,
-          type: `${PluginId.Fs}#file`,
-          label: getFileNameFromPath(file.fullPath),
-          data: file,
-          onAddOne: data => {
-            this.context?.setState(draft => {
-              draft.selectedFilesFromEditor.push(data)
-            })
-          },
-          onReplaceAll: dataArr => {
-            this.context?.setState(draft => {
-              draft.selectedFilesFromEditor = dataArr
-            })
-          },
+    const treesInfo = await this.context.getQueryClient().fetchQuery({
+      queryKey: ['realtime', 'treesInfo'],
+      queryFn: () => api.file.getWorkspaceTreesInfo({ depth: 5 })
+    })
 
-          searchKeywords: [file.relativePath],
-          searchSortStrategy: SearchSortStrategy.EndMatch,
-          itemLayoutProps: {
-            icon: (
-              <FileIcon2 className="size-4 mr-1" filePath={file.relativePath} />
-            ),
-            label: getFileNameFromPath(file.fullPath),
-            details: file.relativePath
-          },
-          customRenderPreview: MentionFilePreview
-        }) satisfies MentionOption<FileInfo>
-    )
+    const filesMentionOptions: MentionOption[] = files.map(file => {
+      const label = getFileNameFromPath(file.fullPath)
 
-    const foldersMentionOptions: MentionOption[] = folders.map(
-      folder =>
-        ({
-          id: `${PluginId.Fs}#folder#${folder.fullPath}`,
-          type: `${PluginId.Fs}#folder`,
-          label: getFileNameFromPath(folder.fullPath),
-          data: folder,
-          onAddOne: data => {
-            this.context?.setState(draft => {
-              draft.selectedFoldersFromEditor.push(data)
-            })
-          },
-          onReplaceAll: dataArr => {
-            this.context?.setState(draft => {
-              draft.selectedFoldersFromEditor = dataArr
-            })
-          },
+      return {
+        id: `${PluginId.Fs}#file#${file.fullPath}`,
+        type: `${PluginId.Fs}#file`,
+        label,
+        data: file,
+        onAddOne: data => {
+          this.context?.setState(draft => {
+            draft.selectedFilesFromEditor.push(data)
+          })
+        },
+        onReplaceAll: dataArr => {
+          this.context?.setState(draft => {
+            draft.selectedFilesFromEditor = dataArr
+          })
+        },
 
-          searchKeywords: [folder.relativePath],
-          searchSortStrategy: SearchSortStrategy.EndMatch,
-          itemLayoutProps: {
-            icon: (
-              <>
-                <ChevronRightIcon className="size-4 mr-1" />
-                <FileIcon2
-                  className="size-4 mr-1"
-                  isFolder
-                  isOpen={false}
-                  filePath={folder.relativePath}
-                />
-              </>
-            ),
-            label: getFileNameFromPath(folder.fullPath),
-            details: folder.relativePath
-          },
-          customRenderPreview: MentionFolderPreview
-        }) satisfies MentionOption<FolderInfo>
-    )
+        searchKeywords: [file.relativePath, label],
+        searchSortStrategy: SearchSortStrategy.EndMatch,
+        itemLayoutProps: {
+          icon: (
+            <FileIcon2 className="size-4 mr-1" filePath={file.relativePath} />
+          ),
+          label,
+          details: file.relativePath
+        },
+        customRenderPreview: MentionFilePreview
+      } satisfies MentionOption<FileInfo>
+    })
+
+    const foldersMentionOptions: MentionOption[] = folders.map(folder => {
+      const label = getFileNameFromPath(folder.fullPath)
+
+      return {
+        id: `${PluginId.Fs}#folder#${folder.fullPath}`,
+        type: `${PluginId.Fs}#folder`,
+        label,
+        data: folder,
+        onAddOne: data => {
+          this.context?.setState(draft => {
+            draft.selectedFoldersFromEditor.push(data)
+          })
+        },
+        onReplaceAll: dataArr => {
+          this.context?.setState(draft => {
+            draft.selectedFoldersFromEditor = dataArr
+          })
+        },
+
+        searchKeywords: [folder.relativePath, label],
+        searchSortStrategy: SearchSortStrategy.EndMatch,
+        itemLayoutProps: {
+          icon: (
+            <>
+              <ChevronRightIcon className="size-4 mr-1" />
+              <FileIcon2
+                className="size-4 mr-1"
+                isFolder
+                isOpen={false}
+                filePath={folder.relativePath}
+              />
+            </>
+          ),
+          label,
+          details: folder.relativePath
+        },
+        customRenderPreview: MentionFolderPreview
+      } satisfies MentionOption<FolderInfo>
+    })
+
+    const treesMentionOptions: MentionOption[] = treesInfo.map(treeInfo => {
+      const label = getFileNameFromPath(treeInfo.fullPath)
+
+      return {
+        id: `${PluginId.Fs}#tree#${treeInfo.fullPath}`,
+        type: `${PluginId.Fs}#tree`,
+        label,
+        data: treeInfo,
+        onAddOne: data => {
+          this.context?.setState(draft => {
+            draft.selectedTreesFromEditor.push(data)
+          })
+        },
+        onReplaceAll: dataArr => {
+          this.context?.setState(draft => {
+            draft.selectedTreesFromEditor = dataArr
+          })
+        },
+        searchKeywords: [treeInfo.relativePath, label],
+        searchSortStrategy: SearchSortStrategy.EndMatch,
+        itemLayoutProps: {
+          icon: <FolderTreeIcon className="size-4 mr-1" />,
+          label,
+          details: treeInfo.relativePath
+        },
+        customRenderPreview: MentionTreePreview
+      } satisfies MentionOption<TreeInfo>
+    })
 
     return [
       {
@@ -221,6 +261,18 @@ export class FsClientPlugin implements ClientPlugin<FsPluginState> {
         itemLayoutProps: {
           icon: <CardStackIcon className="size-4 mr-1" />,
           label: 'Folders'
+        }
+      },
+      {
+        id: `${PluginId.Fs}#tree`,
+        type: `${PluginId.Fs}#tree`,
+        label: 'Tree',
+        topLevelSort: 2,
+        searchKeywords: ['tree', 'structure'],
+        children: treesMentionOptions,
+        itemLayoutProps: {
+          icon: <FolderTreeIcon className="size-4 mr-1" />,
+          label: 'Tree'
         }
       },
       // {
@@ -286,7 +338,7 @@ export class FsClientPlugin implements ClientPlugin<FsPluginState> {
             </>
           )
         }
-      } satisfies MentionOption<EditorError[]>
+      }
     ]
   }
 }

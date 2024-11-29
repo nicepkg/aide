@@ -1,11 +1,8 @@
-import {
-  CardStackIcon,
-  DesktopIcon,
-  DotFilledIcon
-} from '@radix-ui/react-icons'
+import { DotFilledIcon } from '@radix-ui/react-icons'
 import { TruncateStart } from '@webview/components/truncate-start'
 import type { MentionOption } from '@webview/types/chat'
 import { cn } from '@webview/utils/common'
+import { ChevronRightIcon, SquareTerminalIcon } from 'lucide-react'
 
 import type { TerminalInfo } from '../types'
 
@@ -18,7 +15,7 @@ export const MentionTerminalPreview: React.FC<
     <div className="flex flex-col w-full h-[50vh] overflow-hidden">
       {/* Terminal Header - macOS style */}
       <div className="flex items-center gap-2 px-4 py-2 bg-muted text-muted-foreground text-sm border-b">
-        <DesktopIcon className="size-4" />
+        <SquareTerminalIcon className="size-4" />
         {terminalInfo.name}
       </div>
 
@@ -29,14 +26,14 @@ export const MentionTerminalPreview: React.FC<
               {/* Current Working Directory */}
               {command.cwd && (
                 <div className="flex gap-2 text-xs text-muted-foreground/80">
-                  <CardStackIcon className="size-3.5" />
+                  <ChevronRightIcon className="size-3.5" />
                   <TruncateStart>{command.cwd}</TruncateStart>
                 </div>
               )}
 
               {/* Command Input */}
               <div className="flex items-start gap-2 text-sm">
-                <span className="text-primary select-none">❯</span>
+                <ChevronRightIcon className="size-3.5 text-primary select-none" />
                 <span className="text-foreground/90">{command.input}</span>
               </div>
 

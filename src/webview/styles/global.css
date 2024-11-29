@@ -51,6 +51,8 @@ textarea:focus {
 
 pre.shiki {
   background-color: hsl(var(--background)) !important;
+  padding: 16px;
+  white-space: break-spaces;
 }
 
 pre.shiki > code {
@@ -59,8 +61,8 @@ pre.shiki > code {
 }
 
 span.languageLabel {
-  top: 0;
-  right: 0;
+  top: 16px;
+  right: 16px;
 }
 
 .custom-checkbox {

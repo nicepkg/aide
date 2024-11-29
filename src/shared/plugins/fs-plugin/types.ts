@@ -36,9 +36,18 @@ export interface EditorError {
   column: number
 }
 
+export interface TreeInfo {
+  type: 'tree'
+  fullPath: string // root folder full path
+  relativePath: string // root folder relative path
+  treeString: string // markdown tree string, for user reading
+  listString: string // markdown list string, for ai reading
+}
+
 export interface FsPluginState {
   selectedFilesFromFileSelector: FileInfo[]
   selectedFilesFromEditor: FileInfo[]
+  selectedFilesFromAgent: FileInfo[]
   currentFilesFromVSCode: FileInfo[]
   selectedFoldersFromEditor: FolderInfo[]
   selectedImagesFromOutsideUrl: ImageInfo[]
@@ -46,9 +55,11 @@ export interface FsPluginState {
   codeSnippetFromAgent: CodeSnippet[]
   enableCodebaseAgent: boolean
   editorErrors: EditorError[]
+  selectedTreesFromEditor: TreeInfo[]
 }
 
 export interface FsPluginLog extends BaseConversationLog {
   pluginId: PluginId.Fs
   codeSnippets?: CodeSnippet[]
+  selectedFilesFromAgent?: FileInfo[]
 }

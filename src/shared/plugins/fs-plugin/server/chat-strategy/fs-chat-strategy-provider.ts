@@ -29,11 +29,13 @@ import {
   createCodebaseSearchNode,
   createCodebaseSearchTool
 } from './codebase-search-node'
+import { createFsVisitNode, createFsVisitTool } from './fs-visit-node'
 
 interface BuildFilePromptsResult {
   selectedFilesPrompt: string
   currentFilesPrompt: string
   imageBase64Urls: string[]
+  treePrompt: string
 }
 
 export class FsChatStrategyProvider implements ChatStrategyProvider {
@@ -77,10 +79,12 @@ export class FsChatStrategyProvider implements ChatStrategyProvider {
 
     if (!state) return ''
 
-    const { selectedFilesPrompt } = await this.buildFilePrompts(state)
+    const { selectedFilesPrompt, treePrompt } =
+      await this.buildFilePrompts(state)
     const codeChunksPrompt = this.buildCodeChunksPrompt(state)
 
     return `
+${treePrompt}
 ${selectedFilesPrompt}
 ${codeChunksPrompt}`
   }
@@ -116,14 +120,17 @@ ${codeChunksPrompt}`
     options: BaseStrategyOptions,
     state: ChatGraphState
   ): Promise<StructuredTool[]> {
-    const tools = await Promise.all([createCodebaseSearchTool(options, state)])
+    const tools = await Promise.all([
+      createCodebaseSearchTool(options, state),
+      createFsVisitTool(options, state)
+    ])
     return tools.filter(Boolean) as StructuredTool[]
   }
 
   async buildLanggraphToolNodes(
     options: BaseStrategyOptions
   ): Promise<ChatGraphNode[]> {
-    return [createCodebaseSearchNode(options)]
+    return [createCodebaseSearchNode(options), createFsVisitNode(options)]
   }
 
   private checkForAttachedFiles(chatContext: ChatContext): boolean {
@@ -150,7 +157,8 @@ ${codeChunksPrompt}`
     const result: BuildFilePromptsResult = {
       selectedFilesPrompt: '',
       currentFilesPrompt: '',
-      imageBase64Urls: []
+      imageBase64Urls: [],
+      treePrompt: ''
     }
 
     const workspacePath = getWorkspaceFolder().uri.fsPath
@@ -163,7 +171,8 @@ ${codeChunksPrompt}`
       [
         ...(state.selectedFilesFromEditor || []),
         ...(state.selectedFilesFromFileSelector || []),
-        ...(state.selectedFoldersFromEditor || [])
+        ...(state.selectedFoldersFromEditor || []),
+        ...(state.selectedFilesFromAgent || [])
       ],
       ['fullPath']
     ).map(file => file.fullPath)
@@ -208,6 +217,14 @@ ${codeChunksPrompt}`
         processedFiles.add(fileInfo.fullPath)
       }
     })
+
+    if (state.selectedTreesFromEditor?.length) {
+      result.treePrompt = `
+## Some Project Structure
+
+${state.selectedTreesFromEditor.map(tree => tree.listString).join('\n')}
+`
+    }
 
     if (result.currentFilesPrompt) {
       result.currentFilesPrompt = `

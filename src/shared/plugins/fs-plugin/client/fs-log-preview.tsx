@@ -1,4 +1,5 @@
 import { FC } from 'react'
+import type { FileInfo } from '@extension/file-utils/traverse-fs'
 import type { ConversationLog } from '@shared/entities'
 import { PluginId } from '@shared/plugins/base/types'
 import { ChatLogPreview } from '@webview/components/chat/messages/roles/chat-log-preview'
@@ -20,7 +21,10 @@ export const FsLogPreview: FC<{
     <ChatLogPreview log={log}>
       <div className="mt-2 space-y-1.5">
         {log.codeSnippets?.map((snippet, index) => (
-          <FileSnippetItem key={index} snippet={snippet} />
+          <FileSnippetItem key={index} file={snippet} />
+        ))}
+        {log.selectedFilesFromAgent?.map((file, index) => (
+          <FileSnippetItem key={index} file={file} />
         ))}
       </div>
     </ChatLogPreview>
@@ -28,21 +32,21 @@ export const FsLogPreview: FC<{
 }
 
 interface FileSnippetItemProps {
-  snippet: CodeSnippet
+  file: CodeSnippet | FileInfo
 }
 
-const FileSnippetItem: FC<FileSnippetItemProps> = ({ snippet }) => {
+const FileSnippetItem: FC<FileSnippetItemProps> = ({ file }) => {
   const openFileInEditor = async () => {
-    const fileFullPath = snippet.fullPath
+    const fileFullPath = file.fullPath
 
     if (!fileFullPath) return
     await api.file.openFileInEditor({
       path: fileFullPath,
-      startLine: snippet.startLine
+      startLine: 'startLine' in file ? file.startLine : undefined
     })
   }
 
-  const fileName = getFileNameFromPath(snippet.relativePath)
+  const fileName = getFileNameFromPath(file.relativePath)
 
   return (
     <div
@@ -52,11 +56,11 @@ const FileSnippetItem: FC<FileSnippetItemProps> = ({ snippet }) => {
       onClick={openFileInEditor}
     >
       <div className="flex flex-shrink-0 items-center gap-2">
-        <FileIcon className="size-4" filePath={snippet.fullPath} />
+        <FileIcon className="size-4" filePath={file.fullPath} />
         <span>{fileName}</span>
       </div>
       <TruncateStart className="text-muted-foreground">
-        {snippet.relativePath}
+        {file.relativePath}
       </TruncateStart>
     </div>
   )

@@ -19,6 +19,8 @@ interface PopoverContentProps
   extends React.ComponentPropsWithRef<typeof PopoverPrimitive.Content> {
   withBlur?: boolean
   blurClassName?: string
+  innerClassName?: string
+  animate?: boolean
 }
 
 const PopoverContent: React.FC<PopoverContentProps> = ({
@@ -29,6 +31,8 @@ const PopoverContent: React.FC<PopoverContentProps> = ({
   children,
   withBlur = false,
   blurClassName,
+  innerClassName,
+  animate = true,
   ...props
 }) => {
   const uniqueId = useId()
@@ -40,9 +44,9 @@ const PopoverContent: React.FC<PopoverContentProps> = ({
           {withBlur && (
             <motion.div
               key="blur"
-              initial={{ backdropFilter: 'blur(0px)' }}
-              animate={{ backdropFilter: 'blur(4px)' }}
-              exit={{ backdropFilter: 'blur(0px)' }}
+              initial={animate ? { backdropFilter: 'blur(0px)' } : undefined}
+              animate={animate ? { backdropFilter: 'blur(4px)' } : undefined}
+              exit={animate ? { backdropFilter: 'blur(0px)' } : undefined}
               className={cn('fixed inset-0 z-40', blurClassName)}
             />
           )}
@@ -60,11 +64,11 @@ const PopoverContent: React.FC<PopoverContentProps> = ({
           >
             <motion.div
               key="content"
-              layoutId={`popover-${uniqueId}`}
-              className="w-full"
-              initial={{ opacity: 0, scale: 0.9, y: 10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 10 }}
+              layoutId={animate ? `popover-${uniqueId}` : undefined}
+              className={cn('w-full', innerClassName)}
+              initial={animate ? { opacity: 0, scale: 0.9, y: 10 } : undefined}
+              animate={animate ? { opacity: 1, scale: 1, y: 0 } : undefined}
+              exit={animate ? { opacity: 0, scale: 0.9, y: 10 } : undefined}
             >
               {children}
             </motion.div>

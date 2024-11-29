@@ -59,6 +59,8 @@ export const useChatState = () => {
       draft.conversations.push(conversation)
     })
 
+    resetNewConversation()
+
     return await saveSession()
   }
 
@@ -77,12 +79,6 @@ export const useChatState = () => {
       draft.isLoading = false
       draft.isEditMode = false
     })
-  }
-
-  const resetConversationInput = (conversationId: string) => {
-    if (conversationId === newConversation.id) {
-      resetNewConversation()
-    }
   }
 
   const toggleConversationEditMode = (
@@ -115,7 +111,6 @@ export const useChatState = () => {
     handleConversationUpdate,
     handleUIStateBeforeSend,
     handleUIStateAfterSend,
-    resetConversationInput,
     toggleConversationEditMode,
     addConversation,
     deleteConversation

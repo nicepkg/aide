@@ -1,5 +1,9 @@
 import type { FC, ReactNode } from 'react'
-import { ExclamationTriangleIcon, ReloadIcon } from '@radix-ui/react-icons'
+import {
+  ExclamationTriangleIcon,
+  ReloadIcon,
+  ShadowNoneIcon
+} from '@radix-ui/react-icons'
 import { cn } from '@webview/utils/common'
 
 import { LoadingSpinner } from './loading-spinner'
@@ -26,7 +30,7 @@ export const QueryStateWrapper: FC<QueryStateWrapperProps> = ({
 }) => {
   if (error) {
     return (
-      <div className="flex h-[200px] flex-col items-center justify-center gap-6 rounded-lg border border-destructive/30 bg-destructive/5 p-8">
+      <div className="flex w-full h-full min-h-[200px] flex-col items-center justify-center gap-6 rounded-lg border border-destructive/30 bg-destructive/5 p-8">
         <div className="flex flex-col items-center gap-2 text-center">
           <ExclamationTriangleIcon className="h-8 w-8 text-destructive" />
           <div className="space-y-1">
@@ -49,13 +53,11 @@ export const QueryStateWrapper: FC<QueryStateWrapperProps> = ({
     )
   }
 
-  if (isEmpty) {
+  if (!isLoading && isEmpty) {
     return (
-      <div className="flex h-[200px] flex-col items-center justify-center gap-6 rounded-lg border border-dashed border-muted-foreground/25 bg-muted/5 p-8">
+      <div className="flex w-full h-full min-h-[200px] flex-col items-center justify-center gap-6 rounded-lg border border-dashed border-muted-foreground/25 bg-muted/5 p-8">
         <div className="flex flex-col items-center gap-2 text-center">
-          <div className="rounded-full border-2 border-dashed border-muted-foreground/25 p-3">
-            <div className="h-8 w-8 text-muted-foreground/50" />
-          </div>
+          <ShadowNoneIcon className="h-12 w-12 text-muted-foreground/50" />
           <p className="text-sm text-muted-foreground">{emptyMessage}</p>
         </div>
         {refetch && (
@@ -69,7 +71,7 @@ export const QueryStateWrapper: FC<QueryStateWrapperProps> = ({
   }
 
   return (
-    <div className={cn('relative', className)}>
+    <div className={cn('relative w-full h-full', className)}>
       {children}
       {isLoading && (
         <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-background/50 backdrop-blur-[1px]">

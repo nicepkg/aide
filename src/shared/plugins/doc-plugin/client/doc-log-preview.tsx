@@ -2,10 +2,8 @@ import { FC } from 'react'
 import { FileTextIcon } from '@radix-ui/react-icons'
 import type { ConversationLog } from '@shared/entities'
 import { PluginId } from '@shared/plugins/base/types'
-import {
-  ContentPreviewPopover,
-  PreviewContent
-} from '@webview/components/chat/editor/content-preview-popover'
+import type { PreviewContent } from '@webview/components/chat/editor/content-preview'
+import { ContentPreviewPopover } from '@webview/components/chat/editor/content-preview-popover'
 import { ChatLogPreview } from '@webview/components/chat/messages/roles/chat-log-preview'
 import { api } from '@webview/services/api-client'
 import { cn } from '@webview/utils/common'

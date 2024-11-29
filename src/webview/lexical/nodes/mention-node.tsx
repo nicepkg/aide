@@ -251,7 +251,15 @@ const MentionPreview: FC<{
         }
       }}
     >
-      <PopoverTrigger asChild>{children}</PopoverTrigger>
+      <PopoverTrigger
+        onClick={e => {
+          e.stopPropagation()
+          setIsOpen(true)
+        }}
+        asChild
+      >
+        {children}
+      </PopoverTrigger>
       <PopoverContent
         side="top"
         align="start"

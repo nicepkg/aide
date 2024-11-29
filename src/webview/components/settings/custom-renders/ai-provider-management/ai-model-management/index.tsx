@@ -10,6 +10,7 @@ import { removeDuplicates } from '@shared/utils/common'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { api } from '@webview/services/api-client'
 import { cn, logAndToastError } from '@webview/utils/common'
+import { noop } from 'es-toolkit'
 import { toast } from 'sonner'
 
 import { CreateModelDialog } from './create-model-dialog'
@@ -50,10 +51,14 @@ export const AIModelManagement = ({
 
   const { data: models = [], refetch: refetchModels } = useQuery({
     queryKey: ['aiModels', providerOrBaseUrl],
-    queryFn: () =>
-      api.aiModel.getModelsByProviderOrBaseUrl({
-        providerOrBaseUrl: providerOrBaseUrl!
-      }),
+    queryFn: ({ signal }) =>
+      api.aiModel.getModelsByProviderOrBaseUrl(
+        {
+          providerOrBaseUrl: providerOrBaseUrl!
+        },
+        noop,
+        signal
+      ),
     enabled: !!providerOrBaseUrl
   })
 

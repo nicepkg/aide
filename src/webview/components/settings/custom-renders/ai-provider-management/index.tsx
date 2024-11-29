@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { CardList } from '@webview/components/ui/card-list'
 import { api } from '@webview/services/api-client'
 import { logAndToastError } from '@webview/utils/common'
+import { noop } from 'es-toolkit'
 import { toast } from 'sonner'
 
 import { ProviderCard } from './provider-card'
@@ -19,7 +20,7 @@ export const AIProviderManagement = () => {
 
   const { data: providers = [] } = useQuery({
     queryKey: providerQueryKey,
-    queryFn: () => api.aiProvider.getProviders({})
+    queryFn: ({ signal }) => api.aiProvider.getProviders({}, noop, signal)
   })
 
   const addProviderMutation = useMutation({

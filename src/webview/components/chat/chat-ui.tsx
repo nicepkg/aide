@@ -171,7 +171,7 @@ export const ChatUI: FC = () => {
           onRegenerate={handleRegenerate}
         />
         {isSending && (
-          <div className="absolute left-1/2 bottom-[200px] -translate-x-1/2 z-10">
+          <div className="absolute left-1/2 bottom-[220px] -translate-x-1/2 z-10">
             <ButtonWithTooltip
               variant="secondary"
               size="default"

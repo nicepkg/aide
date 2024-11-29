@@ -1,4 +1,5 @@
 import { ChevronDownIcon } from '@radix-ui/react-icons'
+import { ContentPreview } from '@webview/components/chat/editor/content-preview'
 import { FileIcon } from '@webview/components/file-icon'
 import { Tree, type TreeNodeRenderProps } from '@webview/components/tree'
 import { useFilesTreeItems } from '@webview/hooks/chat/use-files-tree-items'
@@ -37,13 +38,16 @@ export const MentionFilePreview: React.FC<MentionOption> = mentionOption => {
   )
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="flex flex-col flex-1 overflow-auto">
+    <div className="flex flex-col h-[50vh] overflow-hidden">
+      <div className="flex flex-col shrink-0 overflow-auto">
         <Tree
           items={treeItems}
           expandedItemIds={allExpandedIds}
           renderItem={renderItem}
         />
+      </div>
+      <div className="flex-1 overflow-auto">
+        <ContentPreview content={{ type: 'file', path: fileInfo.fullPath }} />
       </div>
     </div>
   )

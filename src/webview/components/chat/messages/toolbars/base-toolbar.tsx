@@ -86,7 +86,7 @@ export const BaseToolbar: FC<BaseToolbarProps> = ({
             left: floatingPosition.left,
             transform: 'translateX(-50%)'
           }}
-          className="z-40 relative shadow-lg mb-2"
+          className="z-40 relative shadow-lg"
         >
           {/* blur overlay */}
           <div

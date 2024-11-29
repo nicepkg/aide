@@ -27,6 +27,7 @@ import {
 import { useControllableState } from '@webview/hooks/use-controllable-state'
 import { api } from '@webview/services/api-client'
 import { cn } from '@webview/utils/common'
+import { noop } from 'es-toolkit'
 import { useNavigate } from 'react-router-dom'
 
 interface ModelSelectorProps {
@@ -81,13 +82,13 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
 
   const { data: providers = [], isLoading: isLoadingProviders } = useQuery({
     queryKey: ['aiProviders'],
-    queryFn: () => api.aiProvider.getProviders({}),
+    queryFn: ({ signal }) => api.aiProvider.getProviders({}, noop, signal),
     refetchOnMount: true
   })
 
   const { data: models = [], isLoading: isLoadingModels } = useQuery({
     queryKey: ['aiModels'],
-    queryFn: () => api.aiModel.getModels({}),
+    queryFn: ({ signal }) => api.aiModel.getModels({}, noop, signal),
     refetchOnMount: true
   })
 

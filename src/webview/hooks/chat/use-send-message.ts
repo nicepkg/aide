@@ -12,7 +12,6 @@ export const useSendMessage = () => {
   const {
     handleUIStateBeforeSend,
     handleConversationUpdate,
-    resetConversationInput,
     handleUIStateAfterSend
   } = useChatState()
   const [isSending, setIsSending] = useState(false)
@@ -47,7 +46,7 @@ export const useSendMessage = () => {
 
       await saveSession()
 
-      resetConversationInput(conversation.id)
+      // resetConversationInput(conversation.id)
     } finally {
       setIsSending(false)
       handleUIStateAfterSend()

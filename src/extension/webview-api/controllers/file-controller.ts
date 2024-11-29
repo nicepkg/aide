@@ -1,5 +1,9 @@
 import path from 'path'
 import {
+  getTreeInfo,
+  getWorkspaceTreesInfo
+} from '@extension/file-utils/generate-tree'
+import {
   traverseFileOrFolders,
   type FileInfo,
   type FolderInfo
@@ -7,7 +11,7 @@ import {
 import { VsCodeFS } from '@extension/file-utils/vscode-fs'
 import { logger } from '@extension/logger'
 import { getWorkspaceFolder } from '@extension/utils'
-import type { EditorError } from '@shared/plugins/fs-plugin/types'
+import type { EditorError, TreeInfo } from '@shared/plugins/fs-plugin/types'
 import * as vscode from 'vscode'
 
 import { Controller } from '../types'
@@ -82,24 +86,29 @@ export class FileController extends Controller {
     relativePath: string
     startLine?: number
     endLine?: number
-  }): Promise<FileInfo | undefined> {
-    const workspaceFolder = getWorkspaceFolder()
-    const fullPath = path.join(workspaceFolder.uri.fsPath, req.relativePath)
-    const fileInfo = await VsCodeFS.stat(fullPath)
+  }): Promise<FileInfo | null> {
+    try {
+      const workspaceFolder = getWorkspaceFolder()
+      const fullPath = path.join(workspaceFolder.uri.fsPath, req.relativePath)
+      const fileInfo = await VsCodeFS.stat(fullPath)
 
-    if (!fileInfo || fileInfo.type !== vscode.FileType.File) return
+      if (!fileInfo || fileInfo.type !== vscode.FileType.File) return null
 
-    const fileContent = await VsCodeFS.readFile(fullPath)
-    const lines = fileContent.split('\n')
-    const startLine = req.startLine ?? 0
-    const endLine = req.endLine ?? lines.length - 1
-    const code = lines.slice(startLine, endLine + 1).join('\n')
+      const fileContent = await VsCodeFS.readFile(fullPath)
+      const lines = fileContent.split('\n')
+      const startLine = req.startLine ?? 0
+      const endLine = req.endLine ?? lines.length - 1
+      const code = lines.slice(startLine, endLine + 1).join('\n')
 
-    return {
-      type: 'file',
-      content: code,
-      relativePath: req.relativePath,
-      fullPath
+      return {
+        type: 'file',
+        content: code,
+        relativePath: req.relativePath,
+        fullPath
+      }
+    } catch (error) {
+      logger.error('Error getting file info for message:', error)
+      return null
     }
   }
 
@@ -214,6 +223,29 @@ export class FileController extends Controller {
       )
     } catch (error) {
       logger.error('Error getting editor diagnostics:', error)
+      return []
+    }
+  }
+
+  async getTreeInfo(req: { path: string }): Promise<TreeInfo | undefined> {
+    try {
+      const workspaceFolder = getWorkspaceFolder()
+      const fullPath = path.isAbsolute(req.path)
+        ? req.path
+        : path.join(workspaceFolder.uri.fsPath, req.path)
+
+      return await getTreeInfo(fullPath)
+    } catch (error) {
+      logger.error('Error getting tree info:', error)
+      return undefined
+    }
+  }
+
+  async getWorkspaceTreesInfo(req: { depth?: number }): Promise<TreeInfo[]> {
+    try {
+      return await getWorkspaceTreesInfo(req.depth)
+    } catch (error) {
+      logger.error('Error getting workspace trees info:', error)
       return []
     }
   }

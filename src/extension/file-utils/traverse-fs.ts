@@ -1,5 +1,5 @@
 import * as path from 'path'
-import type { MaybePromise } from '@extension/types/common'
+import type { MaybePromise } from '@shared/types/common'
 import * as vscode from 'vscode'
 
 import {
@@ -22,9 +22,11 @@ export interface FolderInfo {
   fullPath: string
 }
 
-type FsType = 'file' | 'folder'
+type FsType = 'file' | 'folder' | 'fileOrFolder'
 
-interface TraverseOptions<T, Type extends FsType = 'file'> {
+export type FsItemInfo = FileInfo | FolderInfo
+
+export interface TraverseOptions<T, Type extends FsType = 'file'> {
   type: Type
   filesOrFolders: string[]
   isGetFileContent?: boolean // default is true
@@ -32,7 +34,11 @@ interface TraverseOptions<T, Type extends FsType = 'file'> {
   ignorePatterns?: string[]
   customShouldIgnore?: (fullFilePath: string) => boolean
   itemCallback: (
-    itemInfo: Type extends 'file' ? FileInfo : FolderInfo
+    itemInfo: Type extends 'file'
+      ? FileInfo
+      : Type extends 'folder'
+        ? FolderInfo
+        : FsItemInfo
   ) => MaybePromise<T>
 }
 
@@ -98,7 +104,9 @@ export const traverseFileOrFolders = async <T, Type extends FsType>(
 
     itemPathSet.add(folderPath)
     const folderInfo = await getFolderInfo(folderPath, workspacePath)
-    results.push(await itemCallback(folderInfo as any))
+    if (type === 'folder' || type === 'fileOrFolder') {
+      results.push(await itemCallback(folderInfo as any))
+    }
   }
 
   const processFile = async (filePath: string) => {
@@ -110,14 +118,22 @@ export const traverseFileOrFolders = async <T, Type extends FsType>(
       workspacePath,
       isGetFileContent
     )
-    results.push(await itemCallback(fileInfo as any))
+    if (fileInfo && (type === 'file' || type === 'fileOrFolder')) {
+      results.push(await itemCallback(fileInfo as any))
+    }
   }
 
   const getAllValidItemsWithCustomIgnore = async (dirPath: string) => {
     if (type === 'folder') {
       return getAllValidFolders(dirPath, shouldIgnore)
     }
-    return getAllValidFiles(dirPath, shouldIgnore)
+    if (type === 'file') {
+      return getAllValidFiles(dirPath, shouldIgnore)
+    }
+    // For 'fileOrFolder' type, get both files and folders
+    const files = await getAllValidFiles(dirPath, shouldIgnore)
+    const folders = await getAllValidFolders(dirPath, shouldIgnore)
+    return [...files, ...folders]
   }
 
   await Promise.allSettled(
@@ -128,10 +144,14 @@ export const traverseFileOrFolders = async <T, Type extends FsType>(
       const stat = await VsCodeFS.stat(absolutePath)
 
       if (stat.type === vscode.FileType.Directory) {
+        if (type === 'folder' || type === 'fileOrFolder') {
+          await processFolder(absolutePath)
+        }
         const allItems = await getAllValidItemsWithCustomIgnore(absolutePath)
         await Promise.allSettled(
           allItems.map(async itemPath => {
-            if (type === 'folder') {
+            const itemStat = await VsCodeFS.stat(itemPath)
+            if (itemStat.type === vscode.FileType.Directory) {
               await processFolder(itemPath)
             } else {
               await processFile(itemPath)
@@ -140,7 +160,10 @@ export const traverseFileOrFolders = async <T, Type extends FsType>(
         )
       }
 
-      if (stat.type === vscode.FileType.File && type === 'file') {
+      if (
+        stat.type === vscode.FileType.File &&
+        (type === 'file' || type === 'fileOrFolder')
+      ) {
         await processFile(absolutePath)
       }
     })

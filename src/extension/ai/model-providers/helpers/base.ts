@@ -1,4 +1,3 @@
-import type { MaybePromise } from '@extension/types/common'
 import { getIsDev } from '@extension/utils'
 import type { BaseChatModel } from '@langchain/core/language_models/chat_models'
 import { BaseMessage, type AIMessageChunk } from '@langchain/core/messages'
@@ -14,6 +13,7 @@ import {
 } from '@langchain/core/runnables'
 import type { AIModel, AIModelFeature } from '@shared/entities/ai-model-entity'
 import type { AIProvider } from '@shared/entities/ai-provider-entity'
+import type { MaybePromise } from '@shared/types/common'
 import { z } from 'zod'
 
 import { ChatHistoryManager } from './chat-history-manager'

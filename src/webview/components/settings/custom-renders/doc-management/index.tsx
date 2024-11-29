@@ -6,6 +6,7 @@ import { Input } from '@webview/components/ui/input'
 import { api } from '@webview/services/api-client'
 import type { ProgressInfo } from '@webview/types/chat'
 import { logAndToastError } from '@webview/utils/common'
+import { noop } from 'es-toolkit'
 import { toast } from 'sonner'
 
 import { DocSiteCard } from './doc-site-card'
@@ -31,10 +32,10 @@ export const DocManagement = () => {
   // Queries
   const { data: docSites = [] } = useQuery({
     queryKey: [...docSitesQueryKey, searchQuery],
-    queryFn: () =>
+    queryFn: ({ signal }) =>
       searchQuery
-        ? api.doc.searchDocSites(searchQuery)
-        : api.doc.getDocSites({})
+        ? api.doc.searchDocSites(searchQuery, noop, signal)
+        : api.doc.getDocSites({}, noop, signal)
   })
 
   // Mutations

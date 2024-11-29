@@ -1,4 +1,3 @@
-import { DesktopIcon } from '@radix-ui/react-icons'
 import type {
   ClientPlugin,
   ClientPluginContext
@@ -7,6 +6,7 @@ import { PluginId } from '@shared/plugins/base/types'
 import { pkg } from '@shared/utils/pkg'
 import { api } from '@webview/services/api-client'
 import { type MentionOption } from '@webview/types/chat'
+import { SquareTerminalIcon } from 'lucide-react'
 
 import type { TerminalInfo, TerminalPluginState } from '../types'
 import { MentionTerminalPreview } from './mention-terminal-preview'
@@ -66,7 +66,7 @@ export class TerminalClientPlugin implements ClientPlugin<TerminalPluginState> {
       },
       searchKeywords: [terminal.name],
       itemLayoutProps: {
-        icon: <DesktopIcon className="size-4 mr-1" />,
+        icon: <SquareTerminalIcon className="size-4 mr-1" />,
         label: `${terminal.name} - ${terminal.processId}`,
         details: terminal.commands[0]?.input || 'No commands'
       },
@@ -81,7 +81,7 @@ export class TerminalClientPlugin implements ClientPlugin<TerminalPluginState> {
         topLevelSort: 6,
         searchKeywords: ['terminal', 'shell', 'command'],
         itemLayoutProps: {
-          icon: <DesktopIcon className="size-4 mr-1" />,
+          icon: <SquareTerminalIcon className="size-4 mr-1" />,
           label: 'Terminals'
         },
         children: terminalMentionOptions
