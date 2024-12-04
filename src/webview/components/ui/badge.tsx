@@ -24,10 +24,16 @@ const badgeVariants = cva(
 
 export interface BadgeProps
   extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof badgeVariants> {}
+    VariantProps<typeof badgeVariants> {
+  ref?: React.Ref<HTMLDivElement>
+}
 
-const Badge: React.FC<BadgeProps> = ({ className, variant, ...props }) => (
-  <div className={cn(badgeVariants({ variant }), className)} {...props} />
+const Badge: React.FC<BadgeProps> = ({ className, variant, ref, ...props }) => (
+  <div
+    ref={ref}
+    className={cn(badgeVariants({ variant }), className)}
+    {...props}
+  />
 )
 
 export { Badge, badgeVariants }

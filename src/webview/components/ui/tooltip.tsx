@@ -62,7 +62,7 @@ const TooltipContent: React.FC<AnimatedTooltipProps> = ({
               }
             }}
             exit={{ opacity: 0, scale: 0.6, y: 20 }}
-            style={{ rotate }}
+            style={{ rotate, willChange: 'auto' }}
             className={cn(tooltipContentStyles, className)}
           >
             {props.children}

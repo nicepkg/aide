@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import type { AIProvider } from '@shared/entities'
+import { FeatureModelSettingKey, type AIProvider } from '@shared/entities'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { CardList } from '@webview/components/ui/card-list'
 import { api } from '@webview/services/api-client'
@@ -7,6 +7,7 @@ import { logAndToastError } from '@webview/utils/common'
 import { noop } from 'es-toolkit'
 import { toast } from 'sonner'
 
+import { ModelSettings } from './model-settings'
 import { ProviderCard } from './provider-card'
 import { ProviderDialog } from './provider-dialog'
 import { providerQueryKey } from './utils'
@@ -130,6 +131,11 @@ export const AIProviderManagement = () => {
         onOpenChange={setIsDialogOpen}
         provider={editingProvider}
         onSubmit={handleSubmit}
+      />
+
+      <ModelSettings
+        className="mt-4"
+        pinnedKeys={[FeatureModelSettingKey.Default]}
       />
 
       <CardList

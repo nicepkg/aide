@@ -23,6 +23,7 @@ export interface IndexListItem {
   id: string
   categoryId: string
   content: ReactNode
+  contentFooter?: ReactNode
 }
 
 export interface IndexListCategoryProps {
@@ -61,16 +62,19 @@ const DefaultItem: FC<IndexListItemProps> = ({
   isSelected,
   onSelect
 }) => (
-  <div
-    onClick={onSelect}
-    className={cn(
-      'rounded-md transition-colors cursor-pointer',
-      'flex items-center justify-between px-2 py-1.5',
-      isSelected && 'bg-accent text-accent-foreground'
-    )}
-  >
-    <div>{item.content}</div>
-    {isSelected && <CheckIcon className="h-4 w-4 shrink-0 ml-2" />}
+  <div className="flex flex-col">
+    <div
+      onClick={onSelect}
+      className={cn(
+        'rounded-md transition-colors cursor-pointer',
+        'flex items-center justify-between px-2 py-1.5 hover:bg-accent hover:text-accent-foreground',
+        isSelected && 'bg-primary text-primary-foreground'
+      )}
+    >
+      <div>{item.content}</div>
+      {isSelected && <CheckIcon className="h-4 w-4 shrink-0 ml-2" />}
+    </div>
+    {item.contentFooter && <div className="mt-2">{item.contentFooter}</div>}
   </div>
 )
 
@@ -105,7 +109,7 @@ export const IndexList: FC<IndexListProps> = ({
 }) => {
   const containerRef = useRef<HTMLDivElement>(null)
   const categoryRefs = useRef<Record<string, HTMLDivElement | null>>({})
-  const categoryLabelRefs = useRef<Record<string, HTMLDivElement | null>>({})
+  const categoryLabelRefs = useRef<Record<string, Element | null>>({})
   const itemRefs = useRef<Record<string, HTMLDivElement | null>>({})
   const [activeCategory, setActiveCategory] = useState<string>(
     selectedCategoryId || categories[0]?.id || ''
@@ -232,7 +236,7 @@ export const IndexList: FC<IndexListProps> = ({
                     ref={el => {
                       categoryLabelRefs.current[category.id] = el
                     }}
-                    className="text-lg font-semibold"
+                    className="text-xl font-semibold"
                   >
                     {category.label}
                   </h3>

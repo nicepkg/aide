@@ -90,14 +90,18 @@ export class ModelProviderFactory {
     return await this.create(setting)
   }
 
-  static async getModelSettingForFeature(key: FeatureModelSettingKey) {
+  static async getModelSettingForFeature(
+    key: FeatureModelSettingKey,
+    useDefault = true
+  ) {
     const settings: Record<
       FeatureModelSettingKey,
       FeatureModelSettingValue
     > | null = await globalSettingsDB.getSetting('models')
 
     const setting =
-      settings?.[key] || settings?.[FeatureModelSettingKey.Default]
+      settings?.[key] ||
+      (useDefault ? settings?.[FeatureModelSettingKey.Default] : undefined)
 
     return setting
   }

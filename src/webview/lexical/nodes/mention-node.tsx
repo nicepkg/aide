@@ -264,7 +264,7 @@ const MentionPreview: FC<{
         side="top"
         align="start"
         sideOffset={32}
-        className="min-w-[200px] max-w-[400px] w-screen p-0 z-10"
+        className="min-w-[200px] max-w-[400px] w-screen p-0 z-10 border-primary border"
         onOpenAutoFocus={e => e.preventDefault()}
         onCloseAutoFocus={e => e.preventDefault()}
       >

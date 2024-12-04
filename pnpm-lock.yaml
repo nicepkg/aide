@@ -345,6 +345,9 @@ importers:
       react-dom:
         specifier: 19.0.0-rc-ed15d500-20241110
         version: 19.0.0-rc-ed15d500-20241110(react@19.0.0-rc-ed15d500-20241110)
+      react-error-boundary:
+        specifier: ^4.1.2
+        version: 4.1.2(react@19.0.0-rc-ed15d500-20241110)
       react-hook-form:
         specifier: ^7.53.2
         version: 7.53.2(react@19.0.0-rc-ed15d500-20241110)
@@ -7514,6 +7517,11 @@ packages:
   react-error-boundary@3.1.4:
     resolution: {integrity: sha512-uM9uPzZJTF6wRQORmSrvOIgt4lJ9MC1sNgEOj2XGsDTRE4kmpWxg7ENK9EWNKJRMAOY9z0MuF4yIfl6gp4sotA==}
     engines: {node: '>=10', npm: '>=6'}
+    peerDependencies:
+      react: '>=16.13.1'
+
+  react-error-boundary@4.1.2:
+    resolution: {integrity: sha512-GQDxZ5Jd+Aq/qUxbCm1UtzmL/s++V7zKgE8yMktJiCQXCCFZnMZh9ng+6/Ne6PjNSXH0L9CjeOEREfRnq6Duag==}
     peerDependencies:
       react: '>=16.13.1'
 
@@ -16751,6 +16759,11 @@ snapshots:
       scheduler: 0.25.0-rc-ed15d500-20241110
 
   react-error-boundary@3.1.4(react@19.0.0-rc-ed15d500-20241110):
+    dependencies:
+      '@babel/runtime': 7.24.7
+      react: 19.0.0-rc-ed15d500-20241110
+
+  react-error-boundary@4.1.2(react@19.0.0-rc-ed15d500-20241110):
     dependencies:
       '@babel/runtime': 7.24.7
       react: 19.0.0-rc-ed15d500-20241110

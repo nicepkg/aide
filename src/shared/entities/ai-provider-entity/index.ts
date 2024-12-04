@@ -81,8 +81,8 @@ export enum FeatureModelSettingKey {
 }
 
 export interface FeatureModelSettingValue {
-  providerId: string
-  modelName: string
+  providerId: string | undefined
+  modelName: string | undefined
 }
 
 export const chatContextTypeModelSettingKeyMap: Record<
@@ -93,4 +93,20 @@ export const chatContextTypeModelSettingKeyMap: Record<
   [ChatContextType.Composer]: FeatureModelSettingKey.Composer,
   [ChatContextType.UIDesigner]: FeatureModelSettingKey.UIDesigner,
   [ChatContextType.AutoTask]: FeatureModelSettingKey.AutoTask
+}
+
+export const modelSettingKeyTitleMap: Record<FeatureModelSettingKey, string> = {
+  [FeatureModelSettingKey.Default]: 'Default Model',
+  [FeatureModelSettingKey.Chat]: 'Chat Model',
+  [FeatureModelSettingKey.Composer]: 'Composer Model',
+  [FeatureModelSettingKey.UIDesigner]: 'UI Designer Model',
+  [FeatureModelSettingKey.AutoTask]: 'Auto Task Model',
+  [FeatureModelSettingKey.Completion]: 'Completion Model',
+  [FeatureModelSettingKey.ApplyFile]: 'Apply File Model',
+  [FeatureModelSettingKey.BatchProcessor]: 'Batch Processor Model',
+  [FeatureModelSettingKey.CodeConvert]: 'Code Convert Model',
+  [FeatureModelSettingKey.CodeViewerHelper]: 'Code Viewer Helper Model',
+  [FeatureModelSettingKey.ExpertCodeEnhancer]: 'Expert Code Enhancer Model',
+  [FeatureModelSettingKey.RenameVariable]: 'Rename Variable Model',
+  [FeatureModelSettingKey.SmartPaste]: 'Smart Paste Model'
 }

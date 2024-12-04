@@ -58,15 +58,9 @@ export const ContextSelector: React.FC<ContextSelectorProps> = ({
       <ModelSelector
         featureModelSettingKey={chatContextTypeModelSettingKeyMap[context.type]}
         onOpenChange={isOpen => !isOpen && onFocusOnEditor?.()}
-        renderTrigger={({ activeModel, activeProvider }) => (
-          <ButtonWithTooltip
-            tooltip={
-              `${activeProvider?.name} > ${activeModel?.name}` || 'Select Model'
-            }
-            variant="ghost"
-            size="xs"
-          >
-            {activeModel?.name || 'Select Model'}
+        renderTrigger={({ tooltip, title }) => (
+          <ButtonWithTooltip tooltip={tooltip} variant="ghost" size="xs">
+            {title}
           </ButtonWithTooltip>
         )}
       />

@@ -116,6 +116,7 @@ export const SplitAccordionContent: React.FC<SplitAccordionContentProps> = ({
           exit={{ height: 0, opacity: 0 }}
           transition={{ duration: 0.2 }}
           className={cn('overflow-hidden w-full', className)}
+          style={{ willChange: 'auto' }}
         >
           {children}
         </motion.div>

@@ -89,7 +89,7 @@ export const ChatHumanMessage: FC<ChatHumanMessageProps> = props => {
           isEditMode && 'w-full',
           className
         )}
-        style={style}
+        style={{ ...style, willChange: 'auto' }}
         onClick={() => {
           if (isEditMode) return
           onEditModeChange?.(true, conversation)
@@ -98,6 +98,7 @@ export const ChatHumanMessage: FC<ChatHumanMessageProps> = props => {
         <motion.div
           layout="preserve-aspect"
           transition={{ duration: 0.3, ease: 'easeInOut' }}
+          style={{ willChange: 'auto' }}
         >
           <ChatInput
             ref={chatInputRef}

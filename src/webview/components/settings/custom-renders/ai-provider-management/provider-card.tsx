@@ -41,7 +41,7 @@ export const ProviderCard = ({
   }
 
   return (
-    <div className="border rounded-lg p-4 shadow-sm bg-card hover:shadow-md transition-shadow">
+    <div className="border rounded-lg p-2 shadow-sm bg-card hover:shadow-md transition-shadow">
       <div className="flex justify-between items-center mb-3">
         <div className="flex items-center gap-2">
           {onSelect && (
@@ -92,7 +92,7 @@ export const ProviderCard = ({
         </div>
       </div>
 
-      <div className="space-y-4 text-sm">
+      <div className="space-y-2 text-sm">
         {Object.entries({
           type: aiProviderConfigs[provider.type]?.name,
           ...provider.extraFields

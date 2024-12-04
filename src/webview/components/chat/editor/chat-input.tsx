@@ -190,6 +190,7 @@ const _ChatInput: FC<ChatInputProps> = ({
       <motion.div
         layout
         transition={{ duration: 0.3, ease: 'easeInOut' }}
+        style={{ willChange: 'auto' }}
         className={cn(
           'chat-input relative px-4 flex-shrink-0 w-full flex flex-col border-t',
           [ChatInputMode.MessageReadonly, ChatInputMode.MessageEdit].includes(
@@ -206,6 +207,7 @@ const _ChatInput: FC<ChatInputProps> = ({
               initial={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3, ease: 'easeInOut' }}
+              style={{ willChange: 'auto' }}
             >
               <FileAttachments
                 className={cn(
@@ -228,6 +230,7 @@ const _ChatInput: FC<ChatInputProps> = ({
         <motion.div
           layout="preserve-aspect"
           transition={{ duration: 0.3, ease: 'easeInOut' }}
+          style={{ willChange: 'auto' }}
         >
           <ChatEditor
             ref={handleRef}
@@ -265,6 +268,7 @@ const _ChatInput: FC<ChatInputProps> = ({
                 initial={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
                 transition={{ duration: 0.2 }}
+                style={{ willChange: 'auto' }}
                 className={cn(
                   'chat-input-actions flex justify-between',
                   [ChatInputMode.MessageEdit].includes(mode) && 'px-2',

@@ -30,38 +30,63 @@ export const BaseToolbar: FC<BaseToolbarProps> = ({
     const messageRect = messageRef.current.getBoundingClientRect()
     const containerRect = scrollContentRef.current.getBoundingClientRect()
 
+    if (messageRect.height === 0 || containerRect.height === 0) return
+
     const isPartiallyOutBottom = messageRect.bottom > containerRect.bottom
     const isTopVisible = messageRect.top < containerRect.bottom
 
     const shouldFloat = isPartiallyOutBottom && isTopVisible
 
     setIsFloating(shouldFloat)
+
     if (shouldFloat) {
       const bottom = window.innerHeight - containerRect.bottom + bottomOffset
       const left = containerRect.left + containerRect.width / 2
+
       setFloatingPosition({ bottom, left })
     }
   })
 
   useEffect(() => {
-    if (!scrollContentRef.current) return
     const scrollContainer = scrollContentRef.current
     const throttledCheckShouldFloat = throttle(checkShouldFloat, 100, {
       edges: ['leading', 'trailing']
     })
 
-    scrollContainer.addEventListener('scroll', throttledCheckShouldFloat)
-    window.addEventListener('resize', throttledCheckShouldFloat)
+    // // Create mutation observer to watch for DOM changes
+    const mutationObserver = new MutationObserver(mutations => {
+      // Check if the mutations affect visibility or size
+      const shouldCheck = mutations.some(
+        mutation =>
+          mutation.type === 'attributes' ||
+          mutation.type === 'childList' ||
+          (mutation.target instanceof Element &&
+            (mutation.target.clientHeight > 0 ||
+              mutation.target.clientWidth > 0))
+      )
 
-    const resizeObserver = new ResizeObserver(throttledCheckShouldFloat)
-    resizeObserver.observe(scrollContainer)
+      if (shouldCheck) {
+        throttledCheckShouldFloat()
+      }
+    })
+
+    if (scrollContainer) {
+      mutationObserver.observe(scrollContainer, {
+        attributes: true,
+        childList: true,
+        subtree: true
+      })
+    }
+
+    window.addEventListener('resize', throttledCheckShouldFloat)
+    scrollContainer?.addEventListener('scroll', throttledCheckShouldFloat)
 
     throttledCheckShouldFloat()
 
     return () => {
-      scrollContainer.removeEventListener('scroll', throttledCheckShouldFloat)
       window.removeEventListener('resize', throttledCheckShouldFloat)
-      resizeObserver.disconnect()
+      scrollContainer?.removeEventListener('scroll', throttledCheckShouldFloat)
+      mutationObserver.disconnect()
       throttledCheckShouldFloat.cancel()
     }
   }, [checkShouldFloat])

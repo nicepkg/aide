@@ -69,6 +69,7 @@ const PopoverContent: React.FC<PopoverContentProps> = ({
               initial={animate ? { opacity: 0, scale: 0.9, y: 10 } : undefined}
               animate={animate ? { opacity: 1, scale: 1, y: 0 } : undefined}
               exit={animate ? { opacity: 0, scale: 0.9, y: 10 } : undefined}
+              style={{ willChange: 'auto' }}
             >
               {children}
             </motion.div>

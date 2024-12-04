@@ -2,9 +2,10 @@ import React, { useState } from 'react'
 import { GearIcon, Pencil2Icon, PlusIcon } from '@radix-ui/react-icons'
 import {
   AIProviderType,
+  FeatureModelSettingKey,
+  modelSettingKeyTitleMap,
   type AIModel,
   type AIProvider,
-  type FeatureModelSettingKey,
   type FeatureModelSettingValue
 } from '@shared/entities'
 import { removeDuplicates } from '@shared/utils/common'
@@ -16,6 +17,7 @@ import {
   type IndexListProps
 } from '@webview/components/index-list'
 import { QueryStateWrapper } from '@webview/components/query-state-wrapper'
+import { ModelSettingItem } from '@webview/components/settings/custom-renders/ai-provider-management/model-settings'
 import { ProviderDialog } from '@webview/components/settings/custom-renders/ai-provider-management/provider-dialog'
 import { providerQueryKey } from '@webview/components/settings/custom-renders/ai-provider-management/utils'
 import { Button } from '@webview/components/ui/button'
@@ -37,6 +39,8 @@ interface ModelSelectorProps {
   renderTrigger: (props: {
     activeProvider?: AIProvider
     activeModel?: AIModel
+    tooltip: string
+    title: string
   }) => React.ReactNode
 }
 
@@ -127,21 +131,45 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
   )
 
   // Transform data for IndexList
-  const categories: IndexListProps['categories'] = providers.map(provider => ({
-    id: provider.id,
-    label: provider.name
-  }))
+  const categories: IndexListProps['categories'] = [
+    ...(featureModelSettingKey !== FeatureModelSettingKey.Default
+      ? [
+          {
+            id: 'default',
+            label: 'Default'
+          }
+        ]
+      : []),
+    ...providers.map(provider => ({
+      id: provider.id,
+      label: provider.name
+    }))
+  ]
 
-  const items: IndexListProps['items'] = providers
-    .map(
-      provider =>
-        providerIdModelsMap[provider.id]?.map(model => ({
-          id: model.id,
-          categoryId: provider.id,
-          content: <div>{model.name}</div>
-        })) ?? []
-    )
-    .flat()
+  const items: IndexListProps['items'] = [
+    ...(featureModelSettingKey !== FeatureModelSettingKey.Default
+      ? [
+          {
+            id: 'default',
+            categoryId: 'default',
+            content: <div>extends default model</div>,
+            contentFooter: (
+              <ModelSettingItem settingKey={FeatureModelSettingKey.Default} />
+            )
+          }
+        ]
+      : []),
+    ...providers
+      .map(
+        provider =>
+          providerIdModelsMap[provider.id]?.map(model => ({
+            id: model.id,
+            categoryId: provider.id,
+            content: <div>{model.name}</div>
+          })) ?? []
+      )
+      .flat()
+  ]
 
   const renderCustomCategory = ({
     category,
@@ -149,7 +177,6 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
     onSelect
   }: IndexListCategoryProps) => {
     const provider = providers.find(p => p.id === category.id)
-    if (!provider) return null
 
     return (
       <div
@@ -164,17 +191,19 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
       >
         {category.label}
 
-        <Button
-          variant="ghost"
-          size="iconXs"
-          className="shrink-0 ml-1 hover:bg-primary hover:text-primary-foreground"
-          onClick={e => {
-            e.stopPropagation()
-            setEditingProvider(provider)
-          }}
-        >
-          <Pencil2Icon className="h-3.5 w-3.5" />
-        </Button>
+        {provider && (
+          <Button
+            variant="ghost"
+            size="iconXs"
+            className="shrink-0 ml-1 hover:bg-primary hover:text-primary-foreground"
+            onClick={e => {
+              e.stopPropagation()
+              setEditingProvider(provider)
+            }}
+          >
+            <Pencil2Icon className="h-3.5 w-3.5" />
+          </Button>
+        )}
       </div>
     )
   }
@@ -221,7 +250,17 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
         <PopoverTrigger asChild>
           {renderTrigger({
             activeProvider: featureModelSetting?.provider,
-            activeModel: featureModelSetting?.model
+            activeModel: featureModelSetting?.model,
+            tooltip:
+              featureModelSetting?.model ||
+              featureModelSettingKey !== FeatureModelSettingKey.Default
+                ? `${featureModelSetting?.provider?.name ?? 'Default'} > ${featureModelSetting?.model?.name ?? 'extends default model'}`
+                : 'Select Model',
+            title:
+              featureModelSetting?.model ||
+              featureModelSettingKey !== FeatureModelSettingKey.Default
+                ? (featureModelSetting?.model?.name ?? 'extends default model')
+                : 'Select Model'
           })}
         </PopoverTrigger>
         <PopoverContent
@@ -231,31 +270,44 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
           align="start"
           withBlur
         >
-          <QueryStateWrapper
-            isLoading={isLoading}
-            isEmpty={!providers.length || !models.length}
-            emptyMessage="No AI models available"
-          >
-            <IndexList
-              selectedCategoryId={featureModelSetting?.provider?.id}
-              selectedItemId={featureModelSetting?.model?.id}
-              categories={categories}
-              items={items}
-              className="h-[400px]"
-              contentClassName="pl-2"
-              renderCategory={renderCustomCategory}
-              sidebarFooter={renderSidebarFooter()}
-              onSelectItem={item => {
-                updateFeatureModelSettingMutation.mutate({
-                  key: featureModelSettingKey,
-                  value: {
-                    providerId: item.categoryId,
-                    modelName: models.find(m => m.id === item.id)?.name || ''
-                  }
-                })
-              }}
-            />
-          </QueryStateWrapper>
+          <div className="flex flex-col w-full">
+            <div className="flex items-center opacity-50 text-xs justify-center w-full py-1 border-b">
+              {modelSettingKeyTitleMap[featureModelSettingKey]} Setting
+            </div>
+            <QueryStateWrapper
+              isLoading={isLoading}
+              isEmpty={!providers.length || !models.length}
+              emptyMessage="No AI models available"
+            >
+              <IndexList
+                selectedCategoryId={
+                  featureModelSetting?.provider?.id ?? 'default'
+                }
+                selectedItemId={featureModelSetting?.model?.id ?? 'default'}
+                categories={categories}
+                items={items}
+                className="h-[400px]"
+                contentClassName="px-2 py-0"
+                renderCategory={renderCustomCategory}
+                sidebarFooter={renderSidebarFooter()}
+                onSelectItem={item => {
+                  updateFeatureModelSettingMutation.mutate({
+                    key: featureModelSettingKey,
+                    value: {
+                      providerId:
+                        item.categoryId === 'default'
+                          ? undefined
+                          : item.categoryId,
+                      modelName:
+                        item.id === 'default'
+                          ? undefined
+                          : models.find(m => m.id === item.id)?.name
+                    }
+                  })
+                }}
+              />
+            </QueryStateWrapper>
+          </div>
         </PopoverContent>
       </Popover>
 

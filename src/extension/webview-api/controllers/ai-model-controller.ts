@@ -85,7 +85,8 @@ export class AIModelController extends Controller {
   }): Promise<{ provider?: AIProvider; model?: AIModel }> {
     const defaultResult = { provider: undefined, model: undefined }
     const setting = await ModelProviderFactory.getModelSettingForFeature(
-      req.key
+      req.key,
+      false
     )
 
     if (!setting) {

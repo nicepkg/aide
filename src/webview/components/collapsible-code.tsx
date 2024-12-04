@@ -71,9 +71,8 @@ export const CollapsibleCode: React.FC<CollapsibleCodeProps> = ({
             collapsed: { opacity: 0, height: 0 }
           }}
           transition={{ duration: 0.2, ease: 'easeInOut' }}
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
           className="overflow-hidden"
+          style={{ willChange: 'auto' }}
         >
           <div className="text-xs p-2">{children}</div>
         </motion.div>
