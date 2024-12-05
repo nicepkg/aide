@@ -105,7 +105,7 @@ export const GlobalSearchProvider: React.FC<React.PropsWithChildren> = ({
   return (
     <GlobalSearchContext.Provider value={contextValue}>
       <GlobalSearch
-        categoriesIsResult
+        useInnerFilter={false}
         categories={searchCategories}
         open={isOpen}
         onOpenChange={setIsOpen}

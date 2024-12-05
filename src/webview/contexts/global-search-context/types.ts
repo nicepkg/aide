@@ -1,14 +1,15 @@
-import type { ChatSession } from '@shared/entities'
-import type { SettingItem } from '@webview/components/settings/types'
+import type { ChatSession, SettingConfigItem } from '@shared/entities'
+
+export type SearchSettingItem = SettingConfigItem & {
+  pageLabel: string
+  pageId: string
+  groupLabel?: string
+  groupId?: string
+}
 
 export interface SearchResult {
   type: 'chatSession' | 'setting'
-  item: ChatSession | SettingItem
-  metadata?: {
-    groupName?: string
-    categoryName: string
-    categoryId: string
-  }
+  item: ChatSession | SearchSettingItem
 }
 
 export interface GlobalSearchContextType {

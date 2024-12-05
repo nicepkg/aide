@@ -3,15 +3,11 @@ import {
   Command,
   CommandDialog,
   CommandEmpty,
+  CommandHook,
   CommandInput,
   CommandItem,
   CommandList
 } from '@webview/components/ui/command'
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger
-} from '@webview/components/ui/popover'
 import {
   Tabs,
   TabsContent,
@@ -47,7 +43,7 @@ export interface SearchItem extends Partial<SearchResultItemProps> {
 
 interface GlobalSearchProps {
   categories: SearchCategory[]
-  categoriesIsResult?: boolean
+  useInnerFilter?: boolean
   onOpenChange?: (open: boolean) => void
   open?: boolean
   activeCategory?: string
@@ -65,7 +61,7 @@ const keyboardShortcuts: ShortcutInfo[] = [
 
 export const GlobalSearch: React.FC<GlobalSearchProps> = ({
   categories,
-  categoriesIsResult,
+  useInnerFilter = true,
   onOpenChange,
   open: openProp,
   activeCategory: activeCategoryProp,
@@ -101,7 +97,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({
         ? categories.flatMap(c => c.items)
         : categories.find(c => c.id === activeCategory)?.items || []
 
-    if (categoriesIsResult) {
+    if (useInnerFilter) {
       setFilteredItems(items)
     } else {
       setFilteredItems(
@@ -116,7 +112,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({
         })
       )
     }
-  }, [activeCategory, searchQuery, categories, categoriesIsResult])
+  }, [activeCategory, searchQuery, categories, useInnerFilter])
 
   const handleOpenChange = (open: boolean) => {
     setIsOpen(open)
@@ -145,20 +141,28 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({
   })
 
   return (
-    <CommandDialog open={isOpen} onOpenChange={handleOpenChange}>
+    <CommandDialog
+      open={isOpen}
+      onOpenChange={handleOpenChange}
+      dialogContentClassName="border-none bg-transparent rounded-none"
+      commandClassName="bg-transparent"
+    >
       <div className="flex flex-col" onKeyDown={handleKeyDown}>
         <Command
           loop
-          shouldFilter={!categoriesIsResult}
-          onValueChange={val => {
-            const target = filteredItems.find(item => item.id === val)
-            target && setFocusedItem(target)
-          }}
+          shouldFilter={useInnerFilter}
+          className="border rounded-md h-auto"
         >
           <CommandInput
             placeholder="Type to search..."
             value={searchQuery}
             onValueChange={setSearchQuery}
+          />
+          <CommandHook
+            onFocus={val => {
+              const target = filteredItems.find(item => item.id === val)
+              target && setFocusedItem(target)
+            }}
           />
           <Tabs
             className="h-[300px] flex flex-col overflow-hidden"
@@ -193,25 +197,16 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({
               </TabsContent>
             ))}
           </Tabs>
+          <KeyboardShortcutsInfo shortcuts={keyboardShortcuts} />
         </Command>
-        <KeyboardShortcutsInfo shortcuts={keyboardShortcuts} />
 
-        <Popover open={isOpen && Boolean(focusedItem?.renderPreview)}>
-          <PopoverTrigger asChild>
-            <div />
-          </PopoverTrigger>
-          <PopoverContent
-            side="top"
-            align="start"
-            sideOffset={32}
-            className="min-w-[200px] max-w-[400px] w-screen p-0 z-10"
-            onOpenAutoFocus={e => e.preventDefault()}
-            onCloseAutoFocus={e => e.preventDefault()}
-            onKeyDown={e => e.stopPropagation()}
-          >
-            {focusedItem?.renderPreview?.()}
-          </PopoverContent>
-        </Popover>
+        <div className="w-full h-[250px] mt-4">
+          {isOpen && focusedItem?.renderPreview ? (
+            <div className="border border-primary rounded-md p-2 bg-popover text-popover-foreground w-full max-h-full overflow-auto">
+              {focusedItem.renderPreview()}
+            </div>
+          ) : null}
+        </div>
       </div>
     </CommandDialog>
   )

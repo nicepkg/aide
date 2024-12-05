@@ -1,50 +1,57 @@
-import { settingsConfig } from '@webview/components/settings/settings-config'
+import { settingsConfig, type SettingPage } from '@shared/entities'
 
-import type { SearchResult } from './types'
+import type { SearchResult, SearchSettingItem } from './types'
+
+const getAllSettingsFromSettingsConfig = () => {
+  const result: SearchSettingItem[] = []
+
+  // Collect settings from root pages
+  const collectSettings = (
+    item: SettingPage,
+    groupInfo?: { id: string; label: string }
+  ) => {
+    if (item.settings) {
+      result.push(
+        ...item.settings.map(setting => ({
+          ...setting,
+          pageLabel: item.label,
+          pageId: item.id,
+          groupLabel: groupInfo?.label,
+          groupId: groupInfo?.id
+        }))
+      )
+    }
+  }
+
+  // Collect from root pages
+  settingsConfig.pages?.forEach(page => collectSettings(page))
+
+  // Collect from groups
+  settingsConfig.groups?.forEach(group => {
+    group.pages?.forEach(page =>
+      collectSettings(page, { id: group.id, label: group.label })
+    )
+  })
+
+  return result
+}
 
 export const searchSettings = (query: string): SearchResult[] => {
   const results: SearchResult[] = []
   const searchLower = query.toLowerCase()
 
-  // Search in standalone categories
-  settingsConfig.categories.forEach(category => {
-    category.settings?.forEach(setting => {
-      if (
-        setting.label.toLowerCase().includes(searchLower) ||
-        setting.description.toLowerCase().includes(searchLower)
-      ) {
-        results.push({
-          type: 'setting',
-          item: setting,
-          metadata: {
-            categoryName: category.label,
-            categoryId: category.id
-          }
-        })
-      }
-    })
-  })
+  const settingsWithMetadata = getAllSettingsFromSettingsConfig()
 
-  // Search in group categories
-  settingsConfig.groups.forEach(group => {
-    group.categories.forEach(category => {
-      category.settings?.forEach(setting => {
-        if (
-          setting.label.toLowerCase().includes(searchLower) ||
-          setting.description.toLowerCase().includes(searchLower)
-        ) {
-          results.push({
-            type: 'setting',
-            item: setting,
-            metadata: {
-              groupName: group.label,
-              categoryName: category.label,
-              categoryId: category.id
-            }
-          })
-        }
+  settingsWithMetadata.forEach(setting => {
+    if (
+      setting.renderOptions.label.toLowerCase().includes(searchLower) ||
+      setting.renderOptions.description.toLowerCase().includes(searchLower)
+    ) {
+      results.push({
+        type: 'setting',
+        item: setting
       })
-    })
+    }
   })
 
   return results

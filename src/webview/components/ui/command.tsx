@@ -10,7 +10,7 @@ import {
   DialogTitle
 } from '@webview/components/ui/dialog'
 import { cn } from '@webview/utils/common'
-import { Command as CommandPrimitive } from 'cmdk'
+import { Command as CommandPrimitive, useCommandState } from 'cmdk'
 
 const Command: React.FC<
   React.ComponentPropsWithRef<typeof CommandPrimitive>
@@ -26,13 +26,36 @@ const Command: React.FC<
 )
 Command.displayName = CommandPrimitive.displayName
 
-interface CommandDialogProps extends DialogProps {}
+export const CommandHook: React.FC<{ onFocus: (val: string) => void }> = ({
+  onFocus
+}) => {
+  const val = useCommandState(state => state.value)
 
-const CommandDialog = ({ children, ...props }: CommandDialogProps) => (
+  React.useEffect(() => {
+    onFocus(val)
+  }, [val])
+
+  return null
+}
+
+interface CommandDialogProps extends DialogProps {
+  dialogContentClassName?: string
+  commandClassName?: string
+}
+
+const CommandDialog = ({
+  children,
+  dialogContentClassName,
+  commandClassName,
+  ...props
+}: CommandDialogProps) => (
   <Dialog {...props}>
     <DialogContent
       hideClose
-      className="overflow-hidden p-0 max-w-[400px] w-[calc(100vw-1rem)] rounded-md"
+      className={cn(
+        'overflow-hidden p-0 max-w-[400px] w-[calc(100vw-1rem)] rounded-md',
+        dialogContentClassName
+      )}
     >
       <VisuallyHidden>
         <DialogHeader>
@@ -41,7 +64,12 @@ const CommandDialog = ({ children, ...props }: CommandDialogProps) => (
         </DialogHeader>
       </VisuallyHidden>
 
-      <Command className="[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:h-5 [&_[cmdk-item]_svg]:w-5">
+      <Command
+        className={cn(
+          '[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:h-5 [&_[cmdk-item]_svg]:w-5',
+          commandClassName
+        )}
+      >
         {children}
       </Command>
     </DialogContent>

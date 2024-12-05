@@ -53,7 +53,7 @@ export class ClientPluginContext<State extends PluginState = PluginState> {
   }
 
   getQueryClient() {
-    return this.registry.queryClient
+    return this?.registry?.queryClient
   }
 
   registerCommand(command: string, callback: (...args: any[]) => void): void {

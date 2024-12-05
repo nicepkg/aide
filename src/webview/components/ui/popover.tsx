@@ -40,7 +40,7 @@ const PopoverContent: React.FC<PopoverContentProps> = ({
   return (
     <MotionConfig transition={TRANSITION}>
       <PopoverPrimitive.Portal>
-        <AnimatePresence>
+        <AnimatePresence mode="popLayout">
           {withBlur && (
             <motion.div
               key="blur"

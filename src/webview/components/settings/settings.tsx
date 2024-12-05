@@ -1,64 +1,49 @@
-import { useEffect, useState, type FC } from 'react'
+import { useEffect, useState } from 'react'
 import { ChevronDownIcon, ChevronRightIcon } from '@radix-ui/react-icons'
-import type { SettingsSaveType } from '@shared/entities'
+import { settingsConfig, type SettingsSaveType } from '@shared/entities'
 import { Button } from '@webview/components/ui/button'
 import { Input } from '@webview/components/ui/input'
 import { ScrollArea } from '@webview/components/ui/scroll-area'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from '@webview/components/ui/select'
-import { Switch } from '@webview/components/ui/switch'
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger
 } from '@webview/components/ui/tabs'
-import { cn, logAndToastError } from '@webview/utils/common'
-import { logger } from '@webview/utils/logger'
 
 import { SidebarLayout } from '../sidebar-layout'
-import type { SettingCategory, SettingItem, SettingsConfig } from './types'
+import { SettingItemsPage } from './setting-items-page'
 
 export interface SettingsProps {
-  config: SettingsConfig
-  onChange?: (key: string, value: any) => void
-  onRemoteChange?: (
-    key: string,
-    value: any,
+  onChange?: (event: {
+    key: string
+    value: any
     saveType: SettingsSaveType
-  ) => Promise<void>
+  }) => Promise<void>
   className?: string
-  initialCategory?: string
+  initialPageId?: string | null
 }
 
-export const Settings: FC<SettingsProps> = ({
-  config,
+export const Settings = ({
   onChange,
-  onRemoteChange,
   className,
-  initialCategory
-}) => {
+  initialPageId
+}: SettingsProps) => {
   const [searchTerm, setSearchTerm] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState<string>(
-    initialCategory || config.categories[0]?.id || '' // Use initialCategory if provided
+  const [selectedPage, setSelectedPage] = useState<string>(
+    initialPageId || settingsConfig.pages?.[0]?.id || ''
   )
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>(
-    Object.fromEntries(config.groups.map(group => [group.id, true]))
+    Object.fromEntries(settingsConfig.groups.map(group => [group.id, true]))
   )
-  const [loading, setLoading] = useState<Record<string, boolean>>({})
 
   useEffect(() => {
-    if (initialCategory) {
-      setSelectedCategory(initialCategory)
+    if (initialPageId) {
+      setSelectedPage(initialPageId)
 
-      // If the category is in a group, ensure the group is expanded
-      config.groups.forEach(group => {
-        if (group.categories.some(cat => cat.id === initialCategory)) {
+      // If the page is in a group, ensure the group is expanded
+      settingsConfig.groups.forEach(group => {
+        if (group.pages.some(page => page.id === initialPageId)) {
           setExpandedGroups(prev => ({
             ...prev,
             [group.id]: true
@@ -66,23 +51,7 @@ export const Settings: FC<SettingsProps> = ({
         }
       })
     }
-  }, [initialCategory, config.groups])
-
-  const handleSettingChange = async (setting: SettingItem, value: any) => {
-    logger.log(`Setting ${setting.key} changed to:`, value)
-    onChange?.(setting.key, value)
-
-    if (onRemoteChange) {
-      setLoading(prev => ({ ...prev, [setting.key]: true }))
-      try {
-        await onRemoteChange(setting.key, value, setting.saveType)
-      } catch (error) {
-        logAndToastError('Failed to save setting', error)
-      } finally {
-        setLoading(prev => ({ ...prev, [setting.key]: false }))
-      }
-    }
-  }
+  }, [initialPageId])
 
   const toggleGroup = (groupId: string) => {
     setExpandedGroups(prev => ({
@@ -91,87 +60,22 @@ export const Settings: FC<SettingsProps> = ({
     }))
   }
 
-  const filterItems = (items: SettingCategory[]) =>
+  const filterItems = (
+    items: (typeof settingsConfig.groups)[number]['pages']
+  ) =>
     items.filter(
       item =>
         item.label.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.settings?.some(
           setting =>
-            setting.label.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            setting.description.toLowerCase().includes(searchTerm.toLowerCase())
+            setting.renderOptions.label
+              .toLowerCase()
+              .includes(searchTerm.toLowerCase()) ||
+            setting.renderOptions.description
+              .toLowerCase()
+              .includes(searchTerm.toLowerCase())
         )
     )
-
-  const renderSettingInput = (setting: SettingItem) => {
-    const isLoading = loading[setting.key]
-
-    const renderInput = () => {
-      switch (setting.type) {
-        case 'string':
-          return (
-            <Input
-              defaultValue={setting.defaultValue}
-              onChange={e => handleSettingChange(setting, e.target.value)}
-            />
-          )
-        case 'number':
-          return (
-            <Input
-              type="number"
-              defaultValue={setting.defaultValue}
-              onChange={e =>
-                handleSettingChange(setting, parseFloat(e.target.value))
-              }
-            />
-          )
-        case 'boolean':
-          return (
-            <Switch
-              defaultChecked={setting.defaultValue}
-              onCheckedChange={checked => handleSettingChange(setting, checked)}
-            />
-          )
-        case 'select':
-          return (
-            <Select
-              defaultValue={setting.defaultValue}
-              onValueChange={value => handleSettingChange(setting, value)}
-            >
-              <SelectTrigger>
-                <SelectValue>{setting.defaultValue}</SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                {setting.options?.map(option => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )
-        case 'custom':
-          return setting.customRenderer?.()
-        default:
-          return null
-      }
-    }
-
-    return (
-      <div
-        className={cn(
-          'relative',
-          isLoading && 'opacity-50 pointer-events-none'
-        )}
-      >
-        {isLoading && (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="animate-spin h-4 w-4 border-2 border-primary border-t-transparent rounded-full" />
-          </div>
-        )}
-        {renderInput()}
-      </div>
-    )
-  }
 
   const sidebar = () => (
     <div>
@@ -185,20 +89,21 @@ export const Settings: FC<SettingsProps> = ({
       </div>
       <ScrollArea className="h-[calc(100vh-150px)] mt-2">
         <div className="space-y-1 py-2">
-          {/* Render standalone categories */}
-          {filterItems(config.categories).map(category => (
-            <Button
-              key={category.id}
-              variant={selectedCategory === category.id ? 'secondary' : 'ghost'}
-              className="w-full justify-start px-2"
-              onClick={() => setSelectedCategory(category.id)}
-            >
-              {category.label}
-            </Button>
-          ))}
+          {/* Render standalone pages */}
+          {settingsConfig.pages &&
+            filterItems(settingsConfig.pages).map(page => (
+              <Button
+                key={page.id}
+                variant={selectedPage === page.id ? 'secondary' : 'ghost'}
+                className="w-full justify-start px-2"
+                onClick={() => setSelectedPage(page.id)}
+              >
+                {page.label}
+              </Button>
+            ))}
 
           {/* Render groups */}
-          {config.groups.map(group => (
+          {settingsConfig.groups.map(group => (
             <div key={group.id} className="space-y-1">
               <Button
                 variant="ghost"
@@ -214,16 +119,14 @@ export const Settings: FC<SettingsProps> = ({
               </Button>
               {expandedGroups[group.id] && (
                 <div className="ml-4 space-y-1">
-                  {filterItems(group.categories).map(category => (
+                  {filterItems(group.pages).map(page => (
                     <Button
-                      key={category.id}
-                      variant={
-                        selectedCategory === category.id ? 'secondary' : 'ghost'
-                      }
+                      key={page.id}
+                      variant={selectedPage === page.id ? 'secondary' : 'ghost'}
                       className="w-full justify-start pl-4"
-                      onClick={() => setSelectedCategory(category.id)}
+                      onClick={() => setSelectedPage(page.id)}
                     >
-                      {category.label}
+                      {page.label}
                     </Button>
                   ))}
                 </div>
@@ -236,66 +139,44 @@ export const Settings: FC<SettingsProps> = ({
   )
 
   const content = (
-    <Tabs value={selectedCategory} className="flex-1">
+    <Tabs value={selectedPage} className="flex-1">
       <TabsList className="hidden">
-        {/* Include standalone categories */}
-        {config.categories.map(category => (
-          <TabsTrigger key={category.id} value={category.id}>
-            {category.label}
+        {/* Include standalone pages */}
+        {settingsConfig.pages?.map(page => (
+          <TabsTrigger key={page.id} value={page.id}>
+            {page.label}
           </TabsTrigger>
         ))}
-        {/* Include group categories */}
-        {config.groups.flatMap(group =>
-          group.categories.map(category => (
-            <TabsTrigger key={category.id} value={category.id}>
-              {category.label}
+        {/* Include group pages */}
+        {settingsConfig.groups.flatMap(group =>
+          group.pages.map(page => (
+            <TabsTrigger key={page.id} value={page.id}>
+              {page.label}
             </TabsTrigger>
           ))
         )}
       </TabsList>
 
-      {/* Render standalone category content */}
-      {config.categories.map(category => (
+      {/* Render standalone page content */}
+      {settingsConfig.pages?.map(page => (
         <TabsContent
-          key={category.id}
-          value={category.id}
+          key={page.id}
+          value={page.id}
           className="flex-1 p-4 overflow-auto"
         >
-          <div className="space-y-6">
-            {category.settings?.map(setting => (
-              <div key={setting.key} className="flex flex-col space-y-2">
-                <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                  {setting.label}
-                </label>
-                {renderSettingInput(setting)}
-                <p className="text-sm text-gray-500">{setting.description}</p>
-              </div>
-            ))}
-            {category.customRenderer?.()}
-          </div>
+          <SettingItemsPage page={page} onChange={onChange} />
         </TabsContent>
       ))}
 
-      {/* Render group category content */}
-      {config.groups.flatMap(group =>
-        group.categories.map(category => (
+      {/* Render group page content */}
+      {settingsConfig.groups.flatMap(group =>
+        group.pages.map(page => (
           <TabsContent
-            key={category.id}
-            value={category.id}
+            key={page.id}
+            value={page.id}
             className="flex-1 p-4 overflow-auto"
           >
-            <div className="space-y-6">
-              {category.settings?.map(setting => (
-                <div key={setting.key} className="flex flex-col space-y-2">
-                  <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                    {setting.label}
-                  </label>
-                  {renderSettingInput(setting)}
-                  <p className="text-sm text-gray-500">{setting.description}</p>
-                </div>
-              ))}
-              {category.customRenderer?.()}
-            </div>
+            <SettingItemsPage page={page} onChange={onChange} />
           </TabsContent>
         ))
       )}
@@ -303,11 +184,7 @@ export const Settings: FC<SettingsProps> = ({
   )
 
   return (
-    <SidebarLayout
-      title={config.title}
-      sidebar={sidebar()}
-      className={className}
-    >
+    <SidebarLayout title="Settings" sidebar={sidebar()} className={className}>
       {content}
     </SidebarLayout>
   )

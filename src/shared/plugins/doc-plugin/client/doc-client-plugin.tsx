@@ -46,7 +46,11 @@ export class DocClientPlugin implements ClientPlugin<DocPluginState> {
   private async getMentionOptions(): Promise<MentionOption[]> {
     if (!this.context) return []
 
-    const docSites = await this.context.getQueryClient().fetchQuery({
+    const queryClient = this?.context?.getQueryClient?.()
+
+    if (!queryClient) return []
+
+    const docSites = await queryClient.fetchQuery({
       queryKey: ['realtime', 'docSites'],
       queryFn: () => api.doc.getDocSites({})
     })

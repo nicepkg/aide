@@ -1,13 +1,13 @@
 import path from 'path'
 import { aidePaths } from '@extension/file-utils/paths'
 import {
+  settingKeyItemConfigMap,
   settingsConfig,
   SettingsEntity,
-  type SettingCategory,
   type SettingKey,
   type Settings,
   type SettingValue
-} from '@shared/entities/settings-entity'
+} from '@shared/entities'
 
 import { BaseDB } from './base-db'
 
@@ -28,7 +28,6 @@ class SettingsDB extends BaseDB<Settings> {
   ): Promise<Settings> {
     const existingSettings = await this.getAll()
     const existing = existingSettings.find(s => s.key === key)
-    const config = settingsConfig[key]
 
     if (existing) {
       return this.update(existing.id, {
@@ -40,7 +39,6 @@ class SettingsDB extends BaseDB<Settings> {
     const setting = new SettingsEntity({
       key,
       value,
-      category: config.category,
       updatedAt: Date.now()
     }).entity
 
@@ -54,7 +52,7 @@ class SettingsDB extends BaseDB<Settings> {
     const setting = settings.find(s => s.key === key)
     return setting
       ? (setting.value as SettingValue<K>)
-      : (settingsConfig[key].defaultValue as SettingValue<K>)
+      : settingKeyItemConfigMap[key].renderOptions.defaultValue
   }
 
   async getAllSettings(): Promise<Record<string, any>> {
@@ -78,13 +76,8 @@ class SettingsDB extends BaseDB<Settings> {
     return { ...defaults, ...userSettings }
   }
 
-  async getSettingsByCategory(category: SettingCategory): Promise<Settings[]> {
-    const settings = await this.getAll()
-    return settings.filter(setting => setting.category === category)
-  }
-
   getSettingConfig<K extends SettingKey>(key: K) {
-    return settingsConfig[key]
+    return settingKeyItemConfigMap[key]
   }
 
   getAllSettingConfigs() {

@@ -117,22 +117,26 @@ export class FsClientPlugin implements ClientPlugin<FsPluginState> {
   private async getMentionOptions(): Promise<MentionOption[]> {
     if (!this.context) return []
 
-    const files = await this.context.getQueryClient().fetchQuery({
+    const queryClient = this?.context?.getQueryClient?.()
+
+    if (!queryClient) return []
+
+    const files = await queryClient.fetchQuery({
       queryKey: ['realtime', 'files'],
       queryFn: () => api.file.traverseWorkspaceFiles({ filesOrFolders: ['./'] })
     })
 
-    const folders = await this.context.getQueryClient().fetchQuery({
+    const folders = await queryClient.fetchQuery({
       queryKey: ['realtime', 'folders'],
       queryFn: () => api.file.traverseWorkspaceFolders({ folders: ['./'] })
     })
 
-    const editorErrors = await this.context.getQueryClient().fetchQuery({
+    const editorErrors = await queryClient.fetchQuery({
       queryKey: ['realtime', 'editorErrors'],
       queryFn: () => api.file.getCurrentEditorErrors({})
     })
 
-    const treesInfo = await this.context.getQueryClient().fetchQuery({
+    const treesInfo = await queryClient.fetchQuery({
       queryKey: ['realtime', 'treesInfo'],
       queryFn: () => api.file.getWorkspaceTreesInfo({ depth: 5 })
     })

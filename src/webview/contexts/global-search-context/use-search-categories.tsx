@@ -4,11 +4,11 @@ import type {
   SearchCategory,
   SearchItem
 } from '@webview/components/global-search/global-search'
-import type { SettingItem } from '@webview/components/settings/types'
 import { useNavigate } from 'react-router'
 
 import { useChatContext } from '../chat-context'
-import type { SearchResult } from './types'
+import { SettingPreview } from './previews/setting-preview'
+import type { SearchResult, SearchSettingItem } from './types'
 
 export const useSearchCategories = (
   searchResults: SearchResult[]
@@ -16,7 +16,7 @@ export const useSearchCategories = (
   const { switchSession } = useChatContext()
   const navigate = useNavigate()
 
-  const renderChatSessionResults = (results: SearchResult[]) =>
+  const getChatSessionResults = (results: SearchResult[]) =>
     results
       .filter(result => result.type === 'chatSession')
       .map(result => {
@@ -42,27 +42,27 @@ export const useSearchCategories = (
         } satisfies SearchItem
       })
 
-  const renderSettingResults = (results: SearchResult[]) =>
+  const getSettingResults = (results: SearchResult[]) =>
     results
       .filter(result => result.type === 'setting')
       .map(result => {
         if (result.type !== 'setting') return null
-        const setting = result.item as SettingItem
-        const metadata = result.metadata!
+        const setting = result.item as SearchSettingItem
 
-        const breadcrumbs = metadata.groupName
-          ? [metadata.groupName, metadata.categoryName]
-          : [metadata.categoryName]
+        const breadcrumbs = setting.groupLabel
+          ? [setting.groupLabel, setting.pageLabel]
+          : [setting.pageLabel]
 
         return {
           id: setting.key,
-          title: setting.label,
-          description: setting.description,
+          title: setting.renderOptions.label,
+          description: setting.renderOptions.description,
           breadcrumbs,
           icon: <GearIcon className="!size-3" />,
-          keywords: [setting.label],
+          keywords: [setting.renderOptions.label],
+          renderPreview: () => <SettingPreview setting={setting} />,
           onSelect: () => {
-            navigate(`/settings?category=${metadata.categoryId}`)
+            navigate(`/settings?pageId=${setting.pageId}`)
           }
         } satisfies SearchItem
       })
@@ -72,12 +72,12 @@ export const useSearchCategories = (
     {
       id: 'chatSessions',
       name: 'Chat History',
-      items: renderChatSessionResults(searchResults)
+      items: getChatSessionResults(searchResults)
     },
     {
       id: 'settings',
       name: 'Settings',
-      items: renderSettingResults(searchResults)
+      items: getSettingResults(searchResults)
     }
   ]
 }

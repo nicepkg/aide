@@ -1,4 +1,9 @@
-import type { SettingKey, SettingValue } from '@shared/entities'
+import { settingKeyItemConfigMap } from '@shared/entities'
+import type {
+  SettingKey,
+  SettingsSaveType,
+  SettingValue
+} from '@shared/entities'
 
 import { globalSettingsDB, workspaceSettingsDB } from '../lowdb/settings-db'
 import { Controller } from '../types'
@@ -55,6 +60,33 @@ export class SettingsController extends Controller {
     const { settings } = req
     for (const [key, value] of Object.entries(settings)) {
       await workspaceSettingsDB.setSetting(key as SettingKey, value)
+    }
+  }
+
+  private async getSaveType(key: SettingKey): Promise<SettingsSaveType> {
+    return settingKeyItemConfigMap[key].saveType
+  }
+
+  async getSetting(req: {
+    key: SettingKey
+  }): Promise<SettingValue<SettingKey> | null> {
+    const saveType = await this.getSaveType(req.key)
+    return saveType === 'global'
+      ? await globalSettingsDB.getSetting(req.key)
+      : await workspaceSettingsDB.getSetting(req.key)
+  }
+
+  async setSettings(req: {
+    settings: Partial<Record<SettingKey, SettingValue<SettingKey>>>
+  }): Promise<void> {
+    const { settings } = req
+    for (const [key, value] of Object.entries(settings)) {
+      const saveType = await this.getSaveType(key as SettingKey)
+      if (saveType === 'global') {
+        await globalSettingsDB.setSetting(key as SettingKey, value)
+      } else {
+        await workspaceSettingsDB.setSetting(key as SettingKey, value)
+      }
     }
   }
 

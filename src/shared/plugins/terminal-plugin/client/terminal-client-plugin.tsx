@@ -44,7 +44,11 @@ export class TerminalClientPlugin implements ClientPlugin<TerminalPluginState> {
   private async getMentionOptions(): Promise<MentionOption[]> {
     if (!this.context) return []
 
-    const terminals = await this.context.getQueryClient().fetchQuery({
+    const queryClient = this?.context?.getQueryClient?.()
+
+    if (!queryClient) return []
+
+    const terminals = await queryClient.fetchQuery({
       queryKey: ['realtime', 'terminals'],
       queryFn: () => api.terminal.getTerminalsForMention({})
     })

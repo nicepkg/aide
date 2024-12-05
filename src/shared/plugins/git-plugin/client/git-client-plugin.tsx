@@ -42,7 +42,11 @@ export class GitClientPlugin implements ClientPlugin<GitPluginState> {
   private async getMentionOptions(): Promise<MentionOption[]> {
     if (!this.context) return []
 
-    const gitCommits = await this.context.getQueryClient().fetchQuery({
+    const queryClient = this?.context?.getQueryClient?.()
+
+    if (!queryClient) return []
+
+    const gitCommits = await queryClient.fetchQuery({
       queryKey: ['realtime', 'git-commits'],
       queryFn: () =>
         api.git.getHistoryCommits({
