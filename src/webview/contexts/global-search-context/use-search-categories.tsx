@@ -7,6 +7,7 @@ import type {
 import { useNavigate } from 'react-router'
 
 import { useChatContext } from '../chat-context'
+import { ChatSessionPreview } from './previews/chat-session-preview'
 import { SettingPreview } from './previews/setting-preview'
 import type { SearchResult, SearchSettingItem } from './types'
 
@@ -35,6 +36,7 @@ export const useSearchCategories = (
           breadcrumbs: [chatTypeMap[chatSession.type], 'History'],
           icon: <ChatBubbleIcon className="!size-3" />,
           keywords: [chatSession.title],
+          renderPreview: () => <ChatSessionPreview chatSession={chatSession} />,
           onSelect: () => {
             navigate('/')
             switchSession(chatSession.id)

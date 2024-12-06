@@ -29,7 +29,7 @@ export const updatePluginStatesFromEditorState = (
 
     Object.entries(mentionTypeDataArr).forEach(([type, dataArr]) => {
       const found = findMentionOptionByMentionType(mentionOptions, type)
-      found?.onReplaceAll?.(dataArr)
+      found?.onUpdatePluginState?.(dataArr)
     })
   })
 

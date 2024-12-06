@@ -50,7 +50,7 @@ export const useReadFile = (props: {
     queryKey: ['realtime', 'read-file', filePath, encoding],
     queryFn: ({ signal }) =>
       api.file.readFile({ path: filePath, encoding }, noop, signal),
-    enabled: !!filePath && !content,
+    enabled: Boolean(filePath && !content),
     initialData: content
       ? convertEncoding(content, 'utf-8', encoding || 'utf-8')
       : undefined

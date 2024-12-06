@@ -1,5 +1,5 @@
 import { ChevronDownIcon } from '@radix-ui/react-icons'
-import { ContentPreview } from '@webview/components/chat/editor/content-preview'
+import { ContentPreview } from '@webview/components/content-preview'
 import { FileIcon } from '@webview/components/file-icon'
 import { Tree, type TreeNodeRenderProps } from '@webview/components/tree'
 import { useFilesTreeItems } from '@webview/hooks/chat/use-files-tree-items'

@@ -45,7 +45,9 @@ export class WebClientPlugin implements ClientPlugin<WebPluginState> {
   }
 
   private async getMentionOptions(): Promise<MentionOption[]> {
-    if (!this.context) return []
+    const queryClient = this?.context?.getQueryClient?.()
+
+    if (!queryClient) return []
 
     return [
       {
@@ -53,13 +55,7 @@ export class WebClientPlugin implements ClientPlugin<WebPluginState> {
         type: `${PluginId.Web}#web`,
         label: 'Web',
         data: true,
-        onAddOne: () => {
-          this.context?.setState(draft => {
-            draft.enableWebVisitAgent = true
-            draft.enableWebSearchAgent = true
-          })
-        },
-        onReplaceAll: (dataArr: true[]) => {
+        onUpdatePluginState: (dataArr: true[]) => {
           this.context?.setState(draft => {
             draft.enableWebVisitAgent = dataArr.length > 0
             draft.enableWebSearchAgent = dataArr.length > 0

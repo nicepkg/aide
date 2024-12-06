@@ -51,7 +51,7 @@ export interface ChatInputProps {
   conversation: Conversation
   setConversation: Updater<Conversation>
   sendButtonDisabled: boolean
-  onSend: (conversation: Conversation) => void
+  onSend?: (conversation: Conversation) => void
 }
 
 export interface ChatInputRef extends ChatEditorRef {
@@ -139,7 +139,7 @@ const _ChatInput: FC<ChatInputProps> = ({
 
   const getConversation = useCallbackRef(() => conversation)
   const handleSend = async () => {
-    if (sendButtonDisabled) return
+    if (sendButtonDisabled || !onSend) return
     const editorState = editorRef.current?.editor.getEditorState()
 
     if (editorState) {
@@ -238,7 +238,7 @@ const _ChatInput: FC<ChatInputProps> = ({
               editable: ![ChatInputMode.MessageReadonly].includes(mode),
               editorState: initialEditorState
             }}
-            onComplete={handleSend}
+            onComplete={onSend ? handleSend : undefined}
             onChange={handleEditorChange}
             placeholder={[
               'Type your message here...',
@@ -289,16 +289,18 @@ const _ChatInput: FC<ChatInputProps> = ({
                   showExitEditModeButton={mode === ChatInputMode.MessageEdit}
                   onExitEditMode={onExitEditMode}
                 />
-                <ButtonWithTooltip
-                  variant="outline"
-                  disabled={sendButtonDisabled}
-                  size="xs"
-                  className="ml-auto"
-                  onClick={handleSend}
-                  tooltip="You can use ⌘↩ to send message"
-                >
-                  ⌘↩ Send
-                </ButtonWithTooltip>
+                {onSend && (
+                  <ButtonWithTooltip
+                    variant="outline"
+                    disabled={sendButtonDisabled}
+                    size="xs"
+                    className="ml-auto"
+                    onClick={handleSend}
+                    tooltip="You can use ⌘↩ to send message"
+                  >
+                    ⌘↩ Send
+                  </ButtonWithTooltip>
+                )}
               </motion.div>
             )}
           </AnimatePresence>

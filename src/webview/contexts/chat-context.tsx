@@ -5,9 +5,12 @@ import type {
 } from '@shared/entities'
 import { useConversation } from '@webview/hooks/chat/use-conversation'
 import { useCallbackRef } from '@webview/hooks/use-callback-ref'
-import { useChatStore, type ChatStore } from '@webview/stores/chat-store'
-import { useChatUIStore, type ChatUIStore } from '@webview/stores/chat-ui-store'
+import type { ChatStore } from '@webview/stores/chat-store'
+import type { ChatUIStore } from '@webview/stores/chat-ui-store'
 import type { Updater } from 'use-immer'
+
+import { useChatStore } from '../stores/chat-store-context'
+import { useChatUIStore } from '../stores/chat-ui-store-context'
 
 type ChatContextValue = ChatStore &
   ChatUIStore & {
@@ -30,8 +33,8 @@ export const useChatContext = () => {
 export const ChatContextProvider: FC<React.PropsWithChildren> = ({
   children
 }) => {
-  const chatStore = useChatStore()
-  const chatUIStore = useChatUIStore()
+  const chatStore = useChatStore(state => state)
+  const chatUIStore = useChatUIStore(state => state)
   const { refreshChatSessions } = chatStore
 
   const {

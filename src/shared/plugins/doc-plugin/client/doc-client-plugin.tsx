@@ -1,4 +1,4 @@
-import { IdCardIcon } from '@radix-ui/react-icons'
+import { GearIcon, IdCardIcon } from '@radix-ui/react-icons'
 import type {
   ClientPlugin,
   ClientPluginContext
@@ -44,8 +44,6 @@ export class DocClientPlugin implements ClientPlugin<DocPluginState> {
   }
 
   private async getMentionOptions(): Promise<MentionOption[]> {
-    if (!this.context) return []
-
     const queryClient = this?.context?.getQueryClient?.()
 
     if (!queryClient) return []
@@ -55,6 +53,22 @@ export class DocClientPlugin implements ClientPlugin<DocPluginState> {
       queryFn: () => api.doc.getDocSites({})
     })
 
+    const docSiteNamesSettingMentionOption: MentionOption<string> = {
+      id: `${PluginId.Doc}#doc#setting`,
+      type: `${PluginId.Doc}#doc`,
+      label: 'docs setting',
+      disableAddToEditor: true,
+      onSelect: data => {
+        console.log('onSelect', data)
+      },
+      searchKeywords: ['setting', 'docsetting'],
+      itemLayoutProps: {
+        icon: <GearIcon className="size-4 mr-1" />,
+        label: 'docs setting',
+        details: ''
+      }
+    }
+
     const docSiteNamesMentionOptions: MentionOption[] = docSites.map(
       site =>
         ({
@@ -62,12 +76,7 @@ export class DocClientPlugin implements ClientPlugin<DocPluginState> {
           type: `${PluginId.Doc}#doc`,
           label: site.name,
           data: site.name,
-          onAddOne: data => {
-            this.context?.setState(draft => {
-              draft.allowSearchDocSiteNamesFromEditor.push(data)
-            })
-          },
-          onReplaceAll: dataArr => {
+          onUpdatePluginState: dataArr => {
             this.context?.setState(draft => {
               draft.allowSearchDocSiteNamesFromEditor = dataArr
             })
@@ -93,7 +102,10 @@ export class DocClientPlugin implements ClientPlugin<DocPluginState> {
           icon: <IdCardIcon className="size-4 mr-1" />,
           label: 'Docs'
         },
-        children: docSiteNamesMentionOptions
+        children: [
+          docSiteNamesSettingMentionOption,
+          ...docSiteNamesMentionOptions
+        ]
       }
     ]
   }

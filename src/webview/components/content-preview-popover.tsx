@@ -57,7 +57,7 @@ export const ContentPreviewPopover: React.FC<ContentPreviewPopoverProps> = ({
         onCloseAutoFocus={e => e.preventDefault()}
       >
         <div
-          className="w-full p-4 bg-background overflow-auto"
+          className="w-full bg-background overflow-auto"
           contentEditable
           suppressContentEditableWarning
           onInput={preventDefault}

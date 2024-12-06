@@ -19,14 +19,15 @@ export interface MentionOption<T = any> {
   id: string
   label: string
   type?: string
-  onAddOne?: (data: T) => void
-  onReplaceAll?: (dataArr: T[]) => void
+  onSelect?: (data: T) => void
+  onUpdatePluginState?: (dataArr: T[]) => void
 
   topLevelSort?: number
   searchKeywords?: string[]
   searchSortStrategy?: SearchSortStrategy
   children?: MentionOption[]
   data?: T
+  disableAddToEditor?: boolean
   itemLayoutProps?: MentionItemLayoutProps
   customRenderItem?: FC<MentionOption>
   customRenderPreview?: FC<MentionOption>

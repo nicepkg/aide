@@ -1,14 +1,13 @@
 import React from 'react'
 import DocViewer, { DocViewerRenderers } from '@cyntler/react-doc-viewer'
+import { HighlightedCode } from '@webview/components/chat/messages/markdown/highlighter/highlighter'
 import { QueryStateWrapper } from '@webview/components/query-state-wrapper'
 import { SparklesText } from '@webview/components/ui/sparkles-text'
-import { useGlobalContext } from '@webview/contexts/global-context'
 import { useReadFile } from '@webview/hooks/api/use-read-file'
 import { getExtFromPath } from '@webview/utils/path'
 import { getShikiLanguageFromPath } from '@webview/utils/shiki'
-import ShikiHighlighter from 'react-shiki'
 
-import { Markdown } from '../messages/markdown'
+import { Markdown } from './chat/messages/markdown'
 
 export type PreviewContent =
   | { type: 'text'; content: string }
@@ -27,8 +26,6 @@ interface ContentPreviewProps {
 }
 
 export const ContentPreview: React.FC<ContentPreviewProps> = ({ content }) => {
-  const { isDarkTheme } = useGlobalContext()
-
   const getFileType = (filePath: string) => {
     const ext = getExtFromPath(filePath)?.toLowerCase() || 'txt'
 
@@ -72,7 +69,7 @@ export const ContentPreview: React.FC<ContentPreviewProps> = ({ content }) => {
         )
 
       case 'markdown':
-        return <Markdown>{fileContent}</Markdown>
+        return <Markdown className="p-4">{fileContent}</Markdown>
 
       case 'document':
         const blobUrl = fileContent
@@ -87,6 +84,7 @@ export const ContentPreview: React.FC<ContentPreviewProps> = ({ content }) => {
           <DocViewer
             documents={[{ uri: blobUrl }]}
             pluginRenderers={DocViewerRenderers}
+            className="p-4"
             style={{ width: '100%', height: '450px' }}
             config={{
               header: {
@@ -110,13 +108,9 @@ export const ContentPreview: React.FC<ContentPreviewProps> = ({ content }) => {
 
       default:
         return (
-          <ShikiHighlighter
-            language={getShikiLanguageFromPath(content.path)}
-            theme={isDarkTheme ? 'dark-plus' : 'light-plus'}
-            addDefaultStyles={false}
-          >
+          <HighlightedCode language={getShikiLanguageFromPath(content.path)}>
             {fileContent}
-          </ShikiHighlighter>
+          </HighlightedCode>
         )
     }
   }
@@ -124,7 +118,7 @@ export const ContentPreview: React.FC<ContentPreviewProps> = ({ content }) => {
   switch (content.type) {
     case 'text':
       return (
-        <div className="whitespace-pre-wrap font-mono text-sm">
+        <div className="whitespace-pre-wrap font-mono text-sm p-4">
           {content.content}
         </div>
       )

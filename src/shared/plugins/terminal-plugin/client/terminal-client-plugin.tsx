@@ -58,12 +58,7 @@ export class TerminalClientPlugin implements ClientPlugin<TerminalPluginState> {
       type: `${PluginId.Terminal}#terminal`,
       label: terminal.name,
       data: terminal,
-      onAddOne: data => {
-        this.context?.setState(draft => {
-          draft.selectedTerminalsFromEditor.push(data)
-        })
-      },
-      onReplaceAll: dataArr => {
+      onUpdatePluginState: dataArr => {
         this.context?.setState(draft => {
           draft.selectedTerminalsFromEditor = dataArr
         })

@@ -19,6 +19,31 @@ import { getFileNameFromPath } from '@webview/utils/path'
 import parse from 'html-react-parser'
 import { toast } from 'sonner'
 
+interface HighlightedCodeProps {
+  style?: CSSProperties
+  className?: string
+  language: string
+  children: string
+}
+
+export const HighlightedCode: React.FC<HighlightedCodeProps> = ({
+  style,
+  className,
+  language,
+  children
+}) => {
+  const { highlightedCode } = useShikiHighlighter({
+    code: children,
+    language
+  })
+
+  return (
+    <div style={style} className={className}>
+      {parse(highlightedCode)}
+    </div>
+  )
+}
+
 export interface HighlighterProps {
   children: string
   language: string
@@ -27,6 +52,7 @@ export interface HighlighterProps {
   copyable?: boolean
   fileRelativePath?: string
   defaultExpanded?: boolean
+  isLoading?: boolean
 }
 
 export const Highlighter: React.FC<HighlighterProps> = ({
@@ -36,7 +62,8 @@ export const Highlighter: React.FC<HighlighterProps> = ({
   className = '',
   copyable = true,
   fileRelativePath,
-  defaultExpanded
+  defaultExpanded,
+  isLoading = false
 }) => {
   const { startLine, endLine } = getRangeFromCode(code)
   const { data: fileInfo } = useFileInfoForMessage({
@@ -50,11 +77,6 @@ export const Highlighter: React.FC<HighlighterProps> = ({
 
   const { isApplying, applyStatus, applyCode, cancelApply, reapplyCode } =
     useApplyCode(fileFullPath, children)
-
-  const { highlightedCode, isLoading } = useShikiHighlighter({
-    code: children,
-    language
-  })
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(children)
@@ -157,7 +179,9 @@ export const Highlighter: React.FC<HighlighterProps> = ({
       isLoading={isLoading}
       defaultExpanded={defaultExpanded}
     >
-      <div style={style}>{parse(highlightedCode)}</div>
+      <HighlightedCode style={style} language={language}>
+        {children}
+      </HighlightedCode>
     </CollapsibleCode>
   )
 }

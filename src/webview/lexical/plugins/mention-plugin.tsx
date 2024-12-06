@@ -34,6 +34,7 @@ export const MentionPlugin: FC<MentionPluginProps> = props => {
     setIsOpen(false)
     setSearchQuery('')
 
+    if (option.disableAddToEditor) return
     editor.update(() => {
       const selection = $getSelection()
       if ($isRangeSelection(selection)) {

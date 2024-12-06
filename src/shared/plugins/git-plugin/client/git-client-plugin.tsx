@@ -40,8 +40,6 @@ export class GitClientPlugin implements ClientPlugin<GitPluginState> {
   }
 
   private async getMentionOptions(): Promise<MentionOption[]> {
-    if (!this.context) return []
-
     const queryClient = this?.context?.getQueryClient?.()
 
     if (!queryClient) return []
@@ -61,12 +59,7 @@ export class GitClientPlugin implements ClientPlugin<GitPluginState> {
           type: `${PluginId.Git}#git-commit`,
           label: commit.message,
           data: commit,
-          onAddOne: data => {
-            this.context?.setState(draft => {
-              draft.gitCommitsFromEditor.push(data)
-            })
-          },
-          onReplaceAll: dataArr => {
+          onUpdatePluginState: dataArr => {
             this.context?.setState(draft => {
               draft.gitCommitsFromEditor = dataArr
             })
@@ -97,13 +90,7 @@ export class GitClientPlugin implements ClientPlugin<GitPluginState> {
             id: `${PluginId.Git}#git-diff`,
             type: `${PluginId.Git}#git-diff`,
             label: 'Diff (Diff of Working State)',
-            // TODO: add data
-            onAddOne: data => {
-              this.context?.setState(draft => {
-                draft.gitDiffOfWorkingStateFromEditor = data
-              })
-            },
-            onReplaceAll: dataArr => {
+            onUpdatePluginState: dataArr => {
               this.context?.setState(draft => {
                 draft.gitDiffOfWorkingStateFromEditor = dataArr.at(-1)
               })
@@ -118,13 +105,7 @@ export class GitClientPlugin implements ClientPlugin<GitPluginState> {
             id: `${PluginId.Git}#git-pr`,
             type: `${PluginId.Git}#git-pr`,
             label: 'PR (Diff with Main Branch)',
-            // TODO: add data
-            onAddOne: data => {
-              this.context?.setState(draft => {
-                draft.gitDiffWithMainBranchFromEditor = data
-              })
-            },
-            onReplaceAll: dataArr => {
+            onUpdatePluginState: dataArr => {
               this.context?.setState(draft => {
                 draft.gitDiffWithMainBranchFromEditor = dataArr.at(-1)
               })

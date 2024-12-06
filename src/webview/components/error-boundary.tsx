@@ -20,7 +20,7 @@ interface FallbackProps {
 function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
   return (
     <AlertDialog defaultOpen>
-      <AlertDialogContent className="w-[calc(100vw-2rem)] max-w-2xl">
+      <AlertDialogContent className="w-[calc(100vw-2rem)] max-w-2xl rounded-md">
         <AlertDialogHeader>
           <div className="flex items-center gap-2">
             <AlertTriangle className="h-5 w-5 text-destructive" />

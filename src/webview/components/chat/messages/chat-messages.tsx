@@ -1,5 +1,5 @@
 import React, {
-  useLayoutEffect,
+  useEffect,
   useRef,
   type CSSProperties,
   type FC,
@@ -36,6 +36,8 @@ interface ChatMessagesProps
     | 'onRegenerate'
   > {
   conversationsWithUIState: ConversationWithUIState[]
+  autoScrollToBottom?: boolean
+  disableAnimation?: boolean
 }
 
 export const ChatMessages: React.FC<ChatMessagesProps> = props => {
@@ -48,7 +50,9 @@ export const ChatMessages: React.FC<ChatMessagesProps> = props => {
     className,
     style,
     onDelete,
-    onRegenerate
+    onRegenerate,
+    autoScrollToBottom = true,
+    disableAnimation = false
   } = props
 
   const containerRef = useRef<HTMLDivElement>(null)
@@ -58,24 +62,26 @@ export const ChatMessages: React.FC<ChatMessagesProps> = props => {
 
   const lastConversationId = conversationsWithUIState.at(-1)?.id
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (!containerRef.current) return
 
     const currentId = lastConversationId
     const prevId = prevConversationIdRef.current
 
-    if (currentId !== prevId && currentId) {
+    if (currentId !== prevId && currentId && autoScrollToBottom) {
       const endOfMessagesElement = endOfMessagesRef.current
       if (endOfMessagesElement) {
-        scrollIntoView(endOfMessagesElement, {
-          scrollMode: 'if-needed',
-          block: 'end'
-        })
+        setTimeout(() => {
+          scrollIntoView(endOfMessagesElement, {
+            scrollMode: 'if-needed',
+            block: 'end'
+          })
+        }, 100)
       }
     }
 
     prevConversationIdRef.current = lastConversationId
-  }, [lastConversationId])
+  }, [lastConversationId, autoScrollToBottom])
 
   // const handleSetConversation: Updater<Conversation> = (
   //   conversationOrUpdater: Conversation | DraftFunction<Conversation>
@@ -123,7 +129,7 @@ export const ChatMessages: React.FC<ChatMessagesProps> = props => {
       </style>
 
       {/* Chat messages */}
-      <AnimatedList>
+      <AnimatedList disableAnimation={disableAnimation}>
         {conversationsWithUIState.map(conversationWithUIState => {
           const { uiState, ...conversation } = conversationWithUIState
           return (

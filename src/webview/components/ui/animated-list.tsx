@@ -5,20 +5,26 @@ import { AnimatePresence, motion } from 'framer-motion'
 export interface AnimatedListProps {
   className?: string
   children: React.ReactNode
+  disableAnimation?: boolean
 }
 
 export const AnimatedList: React.FC<AnimatedListProps> = ({
   className,
-  children
+  children,
+  disableAnimation = false
 }) => (
   <div className={cn(`flex flex-col items-center gap-4`, className)}>
-    <AnimatePresence>
-      {Children.map(children, child => (
-        <AnimatedListItem key={(child as ReactElement).key}>
-          {child}
-        </AnimatedListItem>
-      ))}
-    </AnimatePresence>
+    {disableAnimation ? (
+      children
+    ) : (
+      <AnimatePresence>
+        {Children.map(children, child => (
+          <AnimatedListItem key={(child as ReactElement).key}>
+            {child}
+          </AnimatedListItem>
+        ))}
+      </AnimatePresence>
+    )}
   </div>
 )
 

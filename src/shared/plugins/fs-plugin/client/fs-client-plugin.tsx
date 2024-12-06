@@ -115,8 +115,6 @@ export class FsClientPlugin implements ClientPlugin<FsPluginState> {
   }
 
   private async getMentionOptions(): Promise<MentionOption[]> {
-    if (!this.context) return []
-
     const queryClient = this?.context?.getQueryClient?.()
 
     if (!queryClient) return []
@@ -149,12 +147,7 @@ export class FsClientPlugin implements ClientPlugin<FsPluginState> {
         type: `${PluginId.Fs}#file`,
         label,
         data: file,
-        onAddOne: data => {
-          this.context?.setState(draft => {
-            draft.selectedFilesFromEditor.push(data)
-          })
-        },
-        onReplaceAll: dataArr => {
+        onUpdatePluginState: dataArr => {
           this.context?.setState(draft => {
             draft.selectedFilesFromEditor = dataArr
           })
@@ -181,12 +174,7 @@ export class FsClientPlugin implements ClientPlugin<FsPluginState> {
         type: `${PluginId.Fs}#folder`,
         label,
         data: folder,
-        onAddOne: data => {
-          this.context?.setState(draft => {
-            draft.selectedFoldersFromEditor.push(data)
-          })
-        },
-        onReplaceAll: dataArr => {
+        onUpdatePluginState: dataArr => {
           this.context?.setState(draft => {
             draft.selectedFoldersFromEditor = dataArr
           })
@@ -221,12 +209,7 @@ export class FsClientPlugin implements ClientPlugin<FsPluginState> {
         type: `${PluginId.Fs}#tree`,
         label,
         data: treeInfo,
-        onAddOne: data => {
-          this.context?.setState(draft => {
-            draft.selectedTreesFromEditor.push(data)
-          })
-        },
-        onReplaceAll: dataArr => {
+        onUpdatePluginState: dataArr => {
           this.context?.setState(draft => {
             draft.selectedTreesFromEditor = dataArr
           })
@@ -295,13 +278,7 @@ export class FsClientPlugin implements ClientPlugin<FsPluginState> {
         type: `${PluginId.Fs}#codebase`,
         label: 'Codebase',
         data: true,
-        onAddOne: () => {
-          this.context?.setState(draft => {
-            draft.enableCodebaseAgent = true
-            draft.codeSnippetFromAgent = []
-          })
-        },
-        onReplaceAll: (dataArr: true[]) => {
+        onUpdatePluginState: (dataArr: true[]) => {
           this.context?.setState(draft => {
             draft.enableCodebaseAgent = dataArr.length > 0
             draft.codeSnippetFromAgent = []
@@ -319,12 +296,7 @@ export class FsClientPlugin implements ClientPlugin<FsPluginState> {
         type: `${PluginId.Fs}#errors`,
         label: 'Errors',
         data: editorErrors,
-        onAddOne: data => {
-          this.context?.setState(draft => {
-            draft.editorErrors = data
-          })
-        },
-        onReplaceAll: dataArr => {
+        onUpdatePluginState: dataArr => {
           this.context?.setState(draft => {
             draft.editorErrors = dataArr?.[0] ?? []
           })

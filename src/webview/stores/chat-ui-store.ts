@@ -22,80 +22,85 @@ export type ChatUIStore = {
   ) => void
 }
 
-export const useChatUIStore = create<ChatUIStore>()(
-  immer((set, get) => ({
-    sessionConversationUIStateMap: {},
-    getConversationUIState: (sessionId: string, conversationId: string) =>
-      get().sessionConversationUIStateMap[`${sessionId}_${conversationId}`] ||
-      ({} as ConversationUIState),
-    setConversationUIState: (
-      sessionId: string,
-      conversationId: string,
-      uiStateOrUpdater: ConversationUIState | DraftFunction<ConversationUIState>
-    ) => {
-      const id = `${sessionId}_${conversationId}`
+export const createChatUIStore = () =>
+  create<ChatUIStore>()(
+    immer((set, get) => ({
+      sessionConversationUIStateMap: {},
+      getConversationUIState: (sessionId: string, conversationId: string) =>
+        get().sessionConversationUIStateMap[`${sessionId}_${conversationId}`] ||
+        ({} as ConversationUIState),
+      setConversationUIState: (
+        sessionId: string,
+        conversationId: string,
+        uiStateOrUpdater:
+          | ConversationUIState
+          | DraftFunction<ConversationUIState>
+      ) => {
+        const id = `${sessionId}_${conversationId}`
 
-      if (typeof uiStateOrUpdater === 'function') {
-        const newUIState = produce(
-          get().sessionConversationUIStateMap[id] || {},
-          uiStateOrUpdater
-        )
-        set(state => {
-          if (!state.sessionConversationUIStateMap[id]) {
-            state.sessionConversationUIStateMap[id] = {}
-          }
-
-          state.sessionConversationUIStateMap[id] = newUIState
-        })
-      } else {
-        set(state => {
-          if (!state.sessionConversationUIStateMap[id]) {
-            state.sessionConversationUIStateMap[id] = {}
-          }
-
-          state.sessionConversationUIStateMap[id] = uiStateOrUpdater
-        })
-      }
-    },
-    batchSetConversationUIState: (
-      sessionId: string,
-      conversationIds: string[],
-      uiStateOrUpdater: ConversationUIState | DraftFunction<ConversationUIState>
-    ) => {
-      if (typeof uiStateOrUpdater === 'function') {
-        const idUIStateMap = conversationIds.map(conversationId => {
-          const id = `${sessionId}_${conversationId}`
-          const uiState = produce(
+        if (typeof uiStateOrUpdater === 'function') {
+          const newUIState = produce(
             get().sessionConversationUIStateMap[id] || {},
             uiStateOrUpdater
           )
-
-          return {
-            id,
-            uiState
-          }
-        })
-
-        set(state => {
-          idUIStateMap.forEach(({ id, uiState }) => {
+          set(state => {
             if (!state.sessionConversationUIStateMap[id]) {
               state.sessionConversationUIStateMap[id] = {}
             }
 
-            state.sessionConversationUIStateMap[id] = uiState
+            state.sessionConversationUIStateMap[id] = newUIState
           })
-        })
-      } else {
-        set(state => {
-          conversationIds.forEach(conversationId => {
-            const id = `${sessionId}_${conversationId}`
+        } else {
+          set(state => {
             if (!state.sessionConversationUIStateMap[id]) {
               state.sessionConversationUIStateMap[id] = {}
             }
+
             state.sessionConversationUIStateMap[id] = uiStateOrUpdater
           })
-        })
+        }
+      },
+      batchSetConversationUIState: (
+        sessionId: string,
+        conversationIds: string[],
+        uiStateOrUpdater:
+          | ConversationUIState
+          | DraftFunction<ConversationUIState>
+      ) => {
+        if (typeof uiStateOrUpdater === 'function') {
+          const idUIStateMap = conversationIds.map(conversationId => {
+            const id = `${sessionId}_${conversationId}`
+            const uiState = produce(
+              get().sessionConversationUIStateMap[id] || {},
+              uiStateOrUpdater
+            )
+
+            return {
+              id,
+              uiState
+            }
+          })
+
+          set(state => {
+            idUIStateMap.forEach(({ id, uiState }) => {
+              if (!state.sessionConversationUIStateMap[id]) {
+                state.sessionConversationUIStateMap[id] = {}
+              }
+
+              state.sessionConversationUIStateMap[id] = uiState
+            })
+          })
+        } else {
+          set(state => {
+            conversationIds.forEach(conversationId => {
+              const id = `${sessionId}_${conversationId}`
+              if (!state.sessionConversationUIStateMap[id]) {
+                state.sessionConversationUIStateMap[id] = {}
+              }
+              state.sessionConversationUIStateMap[id] = uiStateOrUpdater
+            })
+          })
+        }
       }
-    }
-  }))
-)
+    }))
+  )
