@@ -7,9 +7,11 @@ import { ChevronRightIcon, SquareTerminalIcon } from 'lucide-react'
 import type { TerminalInfo } from '../types'
 
 export const MentionTerminalPreview: React.FC<
-  MentionOption
+  MentionOption<TerminalInfo>
 > = mentionOption => {
-  const terminalInfo = mentionOption.data as TerminalInfo
+  const terminalInfo = mentionOption.data
+
+  if (!terminalInfo) return null
 
   return (
     <div className="flex flex-col w-full h-[50vh] overflow-hidden">

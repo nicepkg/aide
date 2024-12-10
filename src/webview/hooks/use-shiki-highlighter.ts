@@ -19,6 +19,7 @@ export const useShikiHighlighter = (props: UseShikiHighlighterProps) => {
     if (!enabled) return
     const highlightCode = async () => {
       try {
+        if (!code) return
         const html = await codeToHtml(code, {
           lang: language,
           theme: isDarkTheme ? 'dark-plus' : 'light-plus'

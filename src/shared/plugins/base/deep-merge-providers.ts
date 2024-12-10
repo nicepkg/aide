@@ -8,7 +8,11 @@ const isPlainObject = (item: any): item is object =>
 const isAsyncFunction = (func: Function): boolean =>
   func.constructor.name === 'AsyncFunction'
 
-const mergeFunctions = (func1: Function, func2: Function): Function => {
+const mergeFunctions = (
+  func1: Function,
+  func2: Function,
+  disableMergeChildFunction = true
+): Function => {
   const isAsync1 = isAsyncFunction(func1)
   const isAsync2 = isAsyncFunction(func2)
 
@@ -20,13 +24,13 @@ const mergeFunctions = (func1: Function, func2: Function): Function => {
       const result2 = isAsync2
         ? await func2.apply(this, args)
         : func2.apply(this, args)
-      return deepMergeProviders([result1, result2])
+      return deepMergeProviders([result1, result2], disableMergeChildFunction)
     }
   }
   return function (this: any, ...args: any[]) {
     const result1 = func1.apply(this, args)
     const result2 = func2.apply(this, args)
-    return deepMergeProviders([result1, result2])
+    return deepMergeProviders([result1, result2], disableMergeChildFunction)
   }
 }
 
@@ -52,9 +56,12 @@ const getAllProperties = (obj: any): string[] => {
   return Object.keys(obj)
 }
 
-export const deepMergeProviders = <T>(objects: T[]): T => {
+export const deepMergeProviders = <T>(
+  objects: T[],
+  disableMergeFunction = false
+): T | undefined => {
   if (objects.length === 0) {
-    return {} as T
+    return undefined
   }
 
   if (objects.length === 1) {
@@ -62,11 +69,44 @@ export const deepMergeProviders = <T>(objects: T[]): T => {
   }
 
   return objects.reduce((result, obj) => {
+    if (result === undefined) {
+      if (isPlainObject(obj)) {
+        result = {} as T
+      } else if (Array.isArray(obj)) {
+        result = [] as T
+      } else if (typeof obj === 'string') {
+        result = '' as T
+      } else if (typeof obj === 'function') {
+        result = (() => {}) as T
+      } else {
+        result = {} as T
+      }
+    }
+
+    if (
+      typeof result === 'function' &&
+      typeof obj === 'function' &&
+      !disableMergeFunction
+    ) {
+      return mergeFunctions(result, obj) as T
+    }
+
+    if (Array.isArray(result) && Array.isArray(obj)) {
+      return [...result, ...obj] as unknown as T
+    }
+    if (typeof result === 'string' && typeof obj === 'string') {
+      return (result + obj) as unknown as T
+    }
+
     if (isPlainObject(result) && isPlainObject(obj)) {
       getAllProperties(obj).forEach(key => {
         const value = (obj as any)[key]
         if (typeof value === 'function') {
-          if (key in result && typeof (result as any)[key] === 'function') {
+          if (
+            key in result &&
+            typeof (result as any)[key] === 'function' &&
+            !disableMergeFunction
+          ) {
             ;(result as any)[key] = mergeFunctions((result as any)[key], value)
           } else {
             ;(result as any)[key] = value
@@ -98,12 +138,7 @@ export const deepMergeProviders = <T>(objects: T[]): T => {
       })
       return result
     }
-    if (Array.isArray(result) && Array.isArray(obj)) {
-      return [...result, ...obj] as unknown as T
-    }
-    if (typeof result === 'string' && typeof obj === 'string') {
-      return (result + obj) as unknown as T
-    }
+
     return obj
-  }, {} as T)
+  }, undefined as T)
 }

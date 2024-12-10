@@ -1,41 +1,38 @@
+import type { FileInfo, FolderInfo } from '@extension/file-utils/traverse-fs'
 import {
   CardStackIcon,
-  ChevronRightIcon,
   CubeIcon,
-  ExclamationTriangleIcon,
-  FileIcon
+  ExclamationTriangleIcon
 } from '@radix-ui/react-icons'
 import type {
-  ClientPlugin,
-  ClientPluginContext
-} from '@shared/plugins/base/client/client-plugin-context'
+  UseMentionOptionsReturns,
+  UseSelectedFilesReturns,
+  UseSelectedImagesReturns
+} from '@shared/plugins/base/client/client-plugin-types'
+import {
+  createClientPlugin,
+  type SetupProps
+} from '@shared/plugins/base/client/use-client-plugin'
 import { PluginId } from '@shared/plugins/base/types'
 import { pkg } from '@shared/utils/pkg'
+import { useQuery } from '@tanstack/react-query'
 import { FileIcon as FileIcon2 } from '@webview/components/file-icon'
 import { api } from '@webview/services/api-client'
-import {
-  SearchSortStrategy,
-  type FileInfo,
-  type FolderInfo,
-  type MentionOption
-} from '@webview/types/chat'
+import { SearchSortStrategy, type MentionOption } from '@webview/types/chat'
 import { getFileNameFromPath } from '@webview/utils/path'
-import { FolderTreeIcon } from 'lucide-react'
+import { ChevronRightIcon, FileIcon, FolderTreeIcon } from 'lucide-react'
 
-import type { FsPluginState, ImageInfo, TreeInfo } from '../types'
+import type { FsPluginState, TreeInfo } from '../types'
 import { FsLogPreview } from './fs-log-preview'
 import { MentionFilePreview } from './mention-file-preview'
 import { MentionFolderPreview } from './mention-folder-preview'
 import { MentionTreePreview } from './mention-tree-preview'
 
-export class FsClientPlugin implements ClientPlugin<FsPluginState> {
-  id = PluginId.Fs
+export const FsClientPlugin = createClientPlugin<FsPluginState>({
+  id: PluginId.Fs,
+  version: pkg.version,
 
-  version: string = pkg.version
-
-  private context: ClientPluginContext<FsPluginState> | null = null
-
-  getInitState() {
+  getInitialState() {
     return {
       selectedFilesFromFileSelector: [],
       selectedFilesFromEditor: [],
@@ -49,92 +46,62 @@ export class FsClientPlugin implements ClientPlugin<FsPluginState> {
       editorErrors: [],
       selectedTreesFromEditor: []
     }
+  },
+
+  setup(props) {
+    const { registerProvider } = props
+
+    registerProvider('useMentionOptions', () => createUseMentionOptions(props))
+    registerProvider('useSelectedFiles', () => createUseSelectedFiles(props))
+    registerProvider('useSelectedImages', () => createUseSelectedImages(props))
+    registerProvider('CustomRenderLogPreview', () => FsLogPreview)
   }
+})
 
-  async activate(context: ClientPluginContext<FsPluginState>): Promise<void> {
-    this.context = context
+const createUseSelectedFiles =
+  (props: SetupProps<FsPluginState>) => (): UseSelectedFilesReturns => ({
+    selectedFiles: props.state.selectedFilesFromFileSelector || [],
+    setSelectedFiles: files =>
+      props.setState(draft => {
+        draft.selectedFilesFromFileSelector = files
+      })
+  })
 
-    this.context.registerProvider('state', () => this.context!.state)
-    this.context.registerProvider('editor', () => ({
-      getMentionOptions: this.getMentionOptions.bind(this)
-    }))
-    this.context.registerProvider('filesSelector', () => ({
-      getSelectedFiles: this.getSelectedFiles.bind(this),
-      setSelectedFiles: this.setSelectedFiles.bind(this)
-    }))
-    this.context.registerProvider('imagesSelector', () => ({
-      getSelectedImages: this.getSelectedImages.bind(this),
-      addSelectedImage: this.addSelectedImage.bind(this),
-      removeSelectedImage: this.removeSelectedImage.bind(this)
-    }))
-    this.context.registerProvider('message', () => ({
-      customRenderLogPreview: FsLogPreview
-    }))
-  }
+const createUseSelectedImages =
+  (props: SetupProps<FsPluginState>) => (): UseSelectedImagesReturns => ({
+    selectedImages: props.state.selectedImagesFromOutsideUrl || [],
+    addSelectedImage: image => {
+      props.setState(draft => {
+        draft.selectedImagesFromOutsideUrl.push(image)
+      })
+    },
+    removeSelectedImage: image => {
+      props.setState(draft => {
+        draft.selectedImagesFromOutsideUrl =
+          draft.selectedImagesFromOutsideUrl.filter(i => i.url !== image.url)
+      })
+    }
+  })
 
-  deactivate(): void {
-    this.context?.resetState()
-    this.context = null
-  }
-
-  private getSelectedFiles(): FileInfo[] {
-    if (!this.context) return []
-
-    return this.context.state.selectedFilesFromFileSelector
-  }
-
-  private setSelectedFiles(files: FileInfo[]): void {
-    if (!this.context) return
-
-    this.context.setState(draft => {
-      draft.selectedFilesFromFileSelector = files
-    })
-  }
-
-  private getSelectedImages(): ImageInfo[] {
-    if (!this.context) return []
-
-    return this.context.state.selectedImagesFromOutsideUrl
-  }
-
-  private addSelectedImage(image: ImageInfo): void {
-    if (!this.context) return
-
-    this.context.setState(draft => {
-      draft.selectedImagesFromOutsideUrl.push(image)
-    })
-  }
-
-  private removeSelectedImage(image: ImageInfo): void {
-    if (!this.context) return
-
-    this.context.setState(draft => {
-      draft.selectedImagesFromOutsideUrl =
-        draft.selectedImagesFromOutsideUrl.filter(i => i.url !== image.url)
-    })
-  }
-
-  private async getMentionOptions(): Promise<MentionOption[]> {
-    const queryClient = this?.context?.getQueryClient?.()
-
-    if (!queryClient) return []
-
-    const files = await queryClient.fetchQuery({
+const createUseMentionOptions =
+  (props: SetupProps<FsPluginState>) => (): UseMentionOptionsReturns => {
+    const { setState } = props
+    const { data: files = [] } = useQuery({
       queryKey: ['realtime', 'files'],
       queryFn: () => api.file.traverseWorkspaceFiles({ filesOrFolders: ['./'] })
     })
 
-    const folders = await queryClient.fetchQuery({
+    const { data: folders = [] } = useQuery({
       queryKey: ['realtime', 'folders'],
       queryFn: () => api.file.traverseWorkspaceFolders({ folders: ['./'] })
     })
 
-    const editorErrors = await queryClient.fetchQuery({
+    const { data: editorErrors = [] } = useQuery({
       queryKey: ['realtime', 'editorErrors'],
       queryFn: () => api.file.getCurrentEditorErrors({})
     })
 
-    const treesInfo = await queryClient.fetchQuery({
+    const { data: treesInfo = [] } = useQuery({
       queryKey: ['realtime', 'treesInfo'],
       queryFn: () => api.file.getWorkspaceTreesInfo({ depth: 5 })
     })
@@ -148,7 +115,7 @@ export class FsClientPlugin implements ClientPlugin<FsPluginState> {
         label,
         data: file,
         onUpdatePluginState: dataArr => {
-          this.context?.setState(draft => {
+          setState(draft => {
             draft.selectedFilesFromEditor = dataArr
           })
         },
@@ -175,7 +142,7 @@ export class FsClientPlugin implements ClientPlugin<FsPluginState> {
         label,
         data: folder,
         onUpdatePluginState: dataArr => {
-          this.context?.setState(draft => {
+          setState(draft => {
             draft.selectedFoldersFromEditor = dataArr
           })
         },
@@ -210,7 +177,7 @@ export class FsClientPlugin implements ClientPlugin<FsPluginState> {
         label,
         data: treeInfo,
         onUpdatePluginState: dataArr => {
-          this.context?.setState(draft => {
+          setState(draft => {
             draft.selectedTreesFromEditor = dataArr
           })
         },
@@ -279,7 +246,7 @@ export class FsClientPlugin implements ClientPlugin<FsPluginState> {
         label: 'Codebase',
         data: true,
         onUpdatePluginState: (dataArr: true[]) => {
-          this.context?.setState(draft => {
+          setState(draft => {
             draft.enableCodebaseAgent = dataArr.length > 0
             draft.codeSnippetFromAgent = []
           })
@@ -297,7 +264,7 @@ export class FsClientPlugin implements ClientPlugin<FsPluginState> {
         label: 'Errors',
         data: editorErrors,
         onUpdatePluginState: dataArr => {
-          this.context?.setState(draft => {
+          setState(draft => {
             draft.editorErrors = dataArr?.[0] ?? []
           })
         },
@@ -317,4 +284,3 @@ export class FsClientPlugin implements ClientPlugin<FsPluginState> {
       }
     ]
   }
-}

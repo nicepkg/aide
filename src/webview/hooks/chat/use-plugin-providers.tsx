@@ -1,67 +1,54 @@
-import { Fragment, useMemo, type FC } from 'react'
-import type { ConversationLog } from '@shared/entities'
-import { usePluginRegistry } from '@webview/contexts/plugin-registry-context'
-
-export const usePluginEditorProviders = () => {
-  const { pluginRegistry } = usePluginRegistry()
-  const merged = useMemo(
-    () => pluginRegistry?.providerManagers.editor.mergeAll() || {},
-    [pluginRegistry]
-  )
-
-  return merged
-}
-
-export const usePluginMessageProviders = () => {
-  const { pluginRegistry } = usePluginRegistry()
-  const merged = useMemo(
-    () => pluginRegistry?.providerManagers.message.mergeAll() || {},
-    [pluginRegistry]
-  )
-
-  return merged
-}
+import { Fragment, type FC } from 'react'
+import type {
+  CustomRenderLogPreviewProps,
+  UseMentionOptionsReturns,
+  UseSelectedFilesReturns,
+  UseSelectedImagesReturns
+} from '@shared/plugins/base/client/client-plugin-types'
+import { usePlugin } from '@webview/contexts/plugin-context'
 
 export const usePluginCustomRenderLogPreview = () => {
-  const { pluginRegistry } = usePluginRegistry()
-  const renders = pluginRegistry?.providerManagers.message.getValues(
-    'customRenderLogPreview'
-  )
+  const { getProviders } = usePlugin()
+  const renders = getProviders('CustomRenderLogPreview')
 
-  const customRenderLogPreview: FC<{ log: ConversationLog }> = ({ log }) =>
+  const CustomRenderLogPreview: FC<CustomRenderLogPreviewProps> = ({ log }) =>
     renders?.map((render, i) => <Fragment key={i}>{render({ log })}</Fragment>)
 
-  return customRenderLogPreview
+  return CustomRenderLogPreview
 }
 
-export const usePluginFilesSelectorProviders = () => {
-  const { pluginRegistry } = usePluginRegistry()
-  const merged = useMemo(
-    () => pluginRegistry?.providerManagers.filesSelector.mergeAll() || {},
-    [pluginRegistry]
+export const usePluginSelectedFilesProviders = (): UseSelectedFilesReturns => {
+  const { mergeProviders } = usePlugin()
+  const useSelectedFiles = mergeProviders('useSelectedFiles')
+
+  return (
+    // eslint-disable-next-line react-compiler/react-compiler
+    useSelectedFiles?.() || {
+      selectedFiles: [],
+      setSelectedFiles: () => {}
+    }
   )
-
-  const selectedFiles = merged.getSelectedFiles?.() || []
-
-  return { ...merged, selectedFiles }
 }
 
-export const usePluginImagesSelectorProviders = () => {
-  const { pluginRegistry } = usePluginRegistry()
-  const merged = useMemo(
-    () => pluginRegistry?.providerManagers.imagesSelector.mergeAll() || {},
-    [pluginRegistry]
-  )
+export const usePluginSelectedImagesProviders =
+  (): UseSelectedImagesReturns => {
+    const { mergeProviders } = usePlugin()
+    const useSelectedImages = mergeProviders('useSelectedImages')
 
-  return merged
-}
+    return (
+      // eslint-disable-next-line react-compiler/react-compiler
+      useSelectedImages?.() || {
+        selectedImages: [],
+        addSelectedImage: () => {},
+        removeSelectedImage: () => {}
+      }
+    )
+  }
 
-export const usePluginStates = () => {
-  const { pluginRegistry } = usePluginRegistry()
-  const states = useMemo(
-    () => pluginRegistry?.providerManagers.state.getAll() || {},
-    [pluginRegistry]
-  )
+export const usePluginMentionOptions = (): UseMentionOptionsReturns => {
+  const { mergeProviders } = usePlugin()
+  const useMentionOptions = mergeProviders('useMentionOptions')
 
-  return states
+  // eslint-disable-next-line react-compiler/react-compiler
+  return useMentionOptions!()
 }

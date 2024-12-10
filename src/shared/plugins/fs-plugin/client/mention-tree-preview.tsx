@@ -4,8 +4,12 @@ import type { MentionOption } from '@webview/types/chat'
 
 import type { TreeInfo } from '../types'
 
-export const MentionTreePreview: FC<MentionOption> = mentionOption => {
-  const treeInfo = mentionOption.data as TreeInfo
+export const MentionTreePreview: FC<
+  MentionOption<TreeInfo>
+> = mentionOption => {
+  const treeInfo = mentionOption.data
+
+  if (!treeInfo) return null
 
   return (
     <div className="flex flex-col h-full max-h-[40vh]">

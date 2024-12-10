@@ -1,7 +1,7 @@
 import type { CSSProperties, FC, Ref } from 'react'
 import type { Conversation } from '@shared/entities'
 import { getAllTextFromLangchainMessageContents } from '@shared/utils/get-all-text-from-langchain-message-contents'
-import { WithPluginRegistryProvider } from '@webview/contexts/plugin-registry-context'
+import { WithPluginProvider } from '@webview/contexts/plugin-context'
 import type { ConversationUIState } from '@webview/types/chat'
 import { cn } from '@webview/utils/common'
 
@@ -60,4 +60,4 @@ const _ChatAIMessage: FC<ChatAIMessageProps> = props => {
   )
 }
 
-export const ChatAIMessage = WithPluginRegistryProvider(_ChatAIMessage)
+export const ChatAIMessage = WithPluginProvider(_ChatAIMessage)

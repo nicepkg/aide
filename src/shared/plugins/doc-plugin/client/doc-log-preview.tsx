@@ -1,6 +1,6 @@
 import { FC } from 'react'
 import { FileTextIcon } from '@radix-ui/react-icons'
-import type { ConversationLog } from '@shared/entities'
+import type { CustomRenderLogPreviewProps } from '@shared/plugins/base/client/client-plugin-types'
 import { PluginId } from '@shared/plugins/base/types'
 import { ChatLogPreview } from '@webview/components/chat/messages/roles/chat-log-preview'
 import type { PreviewContent } from '@webview/components/content-preview'
@@ -10,9 +10,7 @@ import { cn } from '@webview/utils/common'
 
 import type { DocInfo, DocPluginLog } from '../types'
 
-export const DocLogPreview: FC<{
-  log: ConversationLog
-}> = props => {
+export const DocLogPreview: FC<CustomRenderLogPreviewProps> = props => {
   if (props.log.pluginId !== PluginId.Doc) return null
   const log = props.log as DocPluginLog
 

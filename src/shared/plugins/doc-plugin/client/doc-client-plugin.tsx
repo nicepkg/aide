@@ -1,54 +1,44 @@
 import { GearIcon, IdCardIcon } from '@radix-ui/react-icons'
-import type {
-  ClientPlugin,
-  ClientPluginContext
-} from '@shared/plugins/base/client/client-plugin-context'
+import type { UseMentionOptionsReturns } from '@shared/plugins/base/client/client-plugin-types'
+import {
+  createClientPlugin,
+  type SetupProps
+} from '@shared/plugins/base/client/use-client-plugin'
 import { PluginId } from '@shared/plugins/base/types'
 import { pkg } from '@shared/utils/pkg'
+import { useQuery } from '@tanstack/react-query'
 import { api } from '@webview/services/api-client'
 import { type MentionOption } from '@webview/types/chat'
+import { useNavigate } from 'react-router'
 
 import type { DocPluginState } from '../types'
 import { DocLogPreview } from './doc-log-preview'
 
-export class DocClientPlugin implements ClientPlugin<DocPluginState> {
-  id = PluginId.Doc
+export const DocClientPlugin = createClientPlugin<DocPluginState>({
+  id: PluginId.Doc,
+  version: pkg.version,
 
-  version: string = pkg.version
-
-  private context: ClientPluginContext<DocPluginState> | null = null
-
-  getInitState() {
+  getInitialState() {
     return {
       allowSearchDocSiteNamesFromEditor: [],
       relevantDocsFromAgent: []
     }
+  },
+
+  setup(props) {
+    const { registerProvider } = props
+
+    registerProvider('useMentionOptions', () => createUseMentionOptions(props))
+    registerProvider('CustomRenderLogPreview', () => DocLogPreview)
   }
+})
 
-  async activate(context: ClientPluginContext<DocPluginState>): Promise<void> {
-    this.context = context
+const createUseMentionOptions =
+  (props: SetupProps<DocPluginState>) => (): UseMentionOptionsReturns => {
+    const { setState } = props
+    const navigate = useNavigate()
 
-    this.context.registerProvider('state', () => this.context!.state)
-    this.context.registerProvider('editor', () => ({
-      getMentionOptions: this.getMentionOptions.bind(this)
-    }))
-
-    this.context.registerProvider('message', () => ({
-      customRenderLogPreview: DocLogPreview
-    }))
-  }
-
-  deactivate(): void {
-    this.context?.resetState()
-    this.context = null
-  }
-
-  private async getMentionOptions(): Promise<MentionOption[]> {
-    const queryClient = this?.context?.getQueryClient?.()
-
-    if (!queryClient) return []
-
-    const docSites = await queryClient.fetchQuery({
+    const { data: docSites = [] } = useQuery({
       queryKey: ['realtime', 'docSites'],
       queryFn: () => api.doc.getDocSites({})
     })
@@ -58,13 +48,13 @@ export class DocClientPlugin implements ClientPlugin<DocPluginState> {
       type: `${PluginId.Doc}#doc`,
       label: 'docs setting',
       disableAddToEditor: true,
-      onSelect: data => {
-        console.log('onSelect', data)
+      onSelect: () => {
+        navigate(`/settings?pageId=chatDoc`)
       },
       searchKeywords: ['setting', 'docsetting'],
       itemLayoutProps: {
         icon: <GearIcon className="size-4 mr-1" />,
-        label: 'docs setting',
+        label: 'Docs setting',
         details: ''
       }
     }
@@ -77,11 +67,10 @@ export class DocClientPlugin implements ClientPlugin<DocPluginState> {
           label: site.name,
           data: site.name,
           onUpdatePluginState: dataArr => {
-            this.context?.setState(draft => {
+            setState(draft => {
               draft.allowSearchDocSiteNamesFromEditor = dataArr
             })
           },
-
           searchKeywords: [site.name, site.url],
           itemLayoutProps: {
             icon: <IdCardIcon className="size-4 mr-1" />,
@@ -109,4 +98,3 @@ export class DocClientPlugin implements ClientPlugin<DocPluginState> {
       }
     ]
   }
-}

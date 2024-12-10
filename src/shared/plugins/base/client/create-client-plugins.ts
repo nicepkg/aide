@@ -4,15 +4,15 @@ import { GitClientPlugin } from '@shared/plugins/git-plugin/client/git-client-pl
 import { TerminalClientPlugin } from '@shared/plugins/terminal-plugin/client/terminal-client-plugin'
 import { WebClientPlugin } from '@shared/plugins/web-plugin/client/web-client-plugin'
 
-import type { ClientPlugin } from './client-plugin-context'
+import type { ClientPlugin } from './use-client-plugin'
 
 export const createClientPlugins = (): ClientPlugin[] => {
   const plugins: ClientPlugin[] = [
-    new FsClientPlugin(),
-    new DocClientPlugin(),
-    new WebClientPlugin(),
-    new GitClientPlugin(),
-    new TerminalClientPlugin()
+    FsClientPlugin,
+    DocClientPlugin,
+    WebClientPlugin,
+    GitClientPlugin,
+    TerminalClientPlugin
   ]
 
   return plugins

@@ -5,10 +5,13 @@ import { Tree, type TreeNodeRenderProps } from '@webview/components/tree'
 import { useFilesTreeItems } from '@webview/hooks/chat/use-files-tree-items'
 import type { FolderInfo, MentionOption } from '@webview/types/chat'
 
-export const MentionFolderPreview: React.FC<MentionOption> = mentionOption => {
-  const folderInfo = mentionOption.data as FolderInfo
+export const MentionFolderPreview: React.FC<
+  MentionOption<FolderInfo>
+> = mentionOption => {
+  const folderInfo = mentionOption.data
+
   const { treeItems, traverseTree } = useFilesTreeItems({
-    files: [folderInfo]
+    files: folderInfo ? [folderInfo] : []
   })
 
   const allExpandedIds = useMemo(() => {
@@ -50,6 +53,8 @@ export const MentionFolderPreview: React.FC<MentionOption> = mentionOption => {
       </div>
     )
   }
+
+  if (!folderInfo) return null
 
   return (
     <div className="flex flex-col h-full">

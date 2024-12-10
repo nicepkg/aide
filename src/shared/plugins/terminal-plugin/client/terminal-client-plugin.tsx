@@ -1,9 +1,11 @@
-import type {
-  ClientPlugin,
-  ClientPluginContext
-} from '@shared/plugins/base/client/client-plugin-context'
+import type { UseMentionOptionsReturns } from '@shared/plugins/base/client/client-plugin-types'
+import {
+  createClientPlugin,
+  type SetupProps
+} from '@shared/plugins/base/client/use-client-plugin'
 import { PluginId } from '@shared/plugins/base/types'
 import { pkg } from '@shared/utils/pkg'
+import { useQuery } from '@tanstack/react-query'
 import { api } from '@webview/services/api-client'
 import { type MentionOption } from '@webview/types/chat'
 import { SquareTerminalIcon } from 'lucide-react'
@@ -11,44 +13,28 @@ import { SquareTerminalIcon } from 'lucide-react'
 import type { TerminalInfo, TerminalPluginState } from '../types'
 import { MentionTerminalPreview } from './mention-terminal-preview'
 
-export class TerminalClientPlugin implements ClientPlugin<TerminalPluginState> {
-  id = PluginId.Terminal
+export const TerminalClientPlugin = createClientPlugin<TerminalPluginState>({
+  id: PluginId.Terminal,
+  version: pkg.version,
 
-  version: string = pkg.version
-
-  private context: ClientPluginContext<TerminalPluginState> | null = null
-
-  getInitState() {
+  getInitialState() {
     return {
       selectedTerminalsFromEditor: [],
       terminalLogsFromAgent: []
     }
+  },
+
+  setup(props) {
+    const { registerProvider } = props
+
+    registerProvider('useMentionOptions', () => createUseMentionOptions(props))
   }
+})
 
-  async activate(
-    context: ClientPluginContext<TerminalPluginState>
-  ): Promise<void> {
-    this.context = context
-
-    this.context.registerProvider('state', () => this.context!.state)
-    this.context.registerProvider('editor', () => ({
-      getMentionOptions: this.getMentionOptions.bind(this)
-    }))
-  }
-
-  deactivate(): void {
-    this.context?.resetState()
-    this.context = null
-  }
-
-  private async getMentionOptions(): Promise<MentionOption[]> {
-    if (!this.context) return []
-
-    const queryClient = this?.context?.getQueryClient?.()
-
-    if (!queryClient) return []
-
-    const terminals = await queryClient.fetchQuery({
+const createUseMentionOptions =
+  (props: SetupProps<TerminalPluginState>) => (): UseMentionOptionsReturns => {
+    const { setState } = props
+    const { data: terminals = [] } = useQuery({
       queryKey: ['realtime', 'terminals'],
       queryFn: () => api.terminal.getTerminalsForMention({})
     })
@@ -59,7 +45,7 @@ export class TerminalClientPlugin implements ClientPlugin<TerminalPluginState> {
       label: terminal.name,
       data: terminal,
       onUpdatePluginState: dataArr => {
-        this.context?.setState(draft => {
+        setState(draft => {
           draft.selectedTerminalsFromEditor = dataArr
         })
       },
@@ -87,4 +73,3 @@ export class TerminalClientPlugin implements ClientPlugin<TerminalPluginState> {
       }
     ]
   }
-}

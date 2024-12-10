@@ -7,12 +7,11 @@ import { getAllTextFromLangchainMessageContents } from '@shared/utils/get-all-te
 import { mergeLangchainMessageContents } from '@shared/utils/merge-langchain-message-contents'
 import { ButtonWithTooltip } from '@webview/components/button-with-tooltip'
 import { BorderBeam } from '@webview/components/ui/border-beam'
+import { usePlugin, WithPluginProvider } from '@webview/contexts/plugin-context'
 import {
-  usePluginRegistry,
-  WithPluginRegistryProvider
-} from '@webview/contexts/plugin-registry-context'
-import { useMentionOptions } from '@webview/hooks/chat/use-mention-options'
-import { usePluginFilesSelectorProviders } from '@webview/hooks/chat/use-plugin-providers'
+  usePluginMentionOptions,
+  usePluginSelectedFilesProviders
+} from '@webview/hooks/chat/use-plugin-providers'
 import { useCallbackRef } from '@webview/hooks/use-callback-ref'
 import { type FileInfo } from '@webview/types/chat'
 import { cn } from '@webview/utils/common'
@@ -74,16 +73,16 @@ const _ChatInput: FC<ChatInputProps> = ({
   onSend
 }) => {
   const editorRef = useRef<ChatEditorRef>(null)
-  const { getPluginRegistry } = usePluginRegistry()
-  const { selectedFiles, setSelectedFiles } = usePluginFilesSelectorProviders()
-  const mentionOptions = useMentionOptions()
+  const { setState: setPluginState, getState: getPluginState } = usePlugin()
+  const { selectedFiles, setSelectedFiles } = usePluginSelectedFilesProviders()
+  const mentionOptions = usePluginMentionOptions()
 
   // sync conversation plugin states with plugin registry
   useEffect(() => {
     Object.entries(conversation.pluginStates).forEach(([pluginId, state]) => {
-      getPluginRegistry()?.setState(pluginId as PluginId, state)
+      setPluginState(pluginId as PluginId, state)
     })
-  }, [getPluginRegistry, conversation.pluginStates])
+  }, [setPluginState, conversation.pluginStates])
 
   const handleEditorChange = async (editorState: EditorState) => {
     const newRichText = tryStringifyJSON(editorState.toJSON()) || ''
@@ -101,8 +100,7 @@ const _ChatInput: FC<ChatInputProps> = ({
 
     updatePluginStatesFromEditorState(editorState, mentionOptions)
     setConversation(draft => {
-      draft.pluginStates =
-        getPluginRegistry()?.providerManagers.state.getAll() || {}
+      draft.pluginStates = getPluginState()
     })
   }
 
@@ -311,4 +309,4 @@ const _ChatInput: FC<ChatInputProps> = ({
   )
 }
 
-export const ChatInput = WithPluginRegistryProvider(_ChatInput)
+export const ChatInput = WithPluginProvider(_ChatInput)

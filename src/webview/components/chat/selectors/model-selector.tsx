@@ -219,7 +219,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
   }
 
   const handleOpenProvidersManagement = () => {
-    navigate(`/settings?category=chatModel`)
+    navigate(`/settings?pageId=chatModel`)
   }
 
   const renderSidebarFooter = () => (

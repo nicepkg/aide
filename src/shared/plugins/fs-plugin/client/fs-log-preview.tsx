@@ -1,6 +1,6 @@
 import { FC } from 'react'
 import type { FileInfo } from '@extension/file-utils/traverse-fs'
-import type { ConversationLog } from '@shared/entities'
+import type { CustomRenderLogPreviewProps } from '@shared/plugins/base/client/client-plugin-types'
 import { PluginId } from '@shared/plugins/base/types'
 import { ChatLogPreview } from '@webview/components/chat/messages/roles/chat-log-preview'
 import { FileIcon } from '@webview/components/file-icon'
@@ -11,9 +11,7 @@ import { getFileNameFromPath } from '@webview/utils/path'
 
 import type { CodeSnippet, FsPluginLog } from '../types'
 
-export const FsLogPreview: FC<{
-  log: ConversationLog
-}> = props => {
+export const FsLogPreview: FC<CustomRenderLogPreviewProps> = props => {
   if (props.log.pluginId !== PluginId.Fs) return null
   const log = props.log as FsPluginLog
 

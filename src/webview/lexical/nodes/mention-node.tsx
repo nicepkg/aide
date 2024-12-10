@@ -5,7 +5,7 @@ import {
   PopoverContent,
   PopoverTrigger
 } from '@webview/components/ui/popover'
-import { useMentionOptions } from '@webview/hooks/chat/use-mention-options'
+import { usePluginMentionOptions } from '@webview/hooks/chat/use-plugin-providers'
 import type { MentionOption } from '@webview/types/chat'
 import { findMentionOptionByMentionType } from '@webview/utils/plugin-states'
 import {
@@ -230,7 +230,7 @@ const MentionPreview: FC<{
   mentionData: any
   children: React.ReactNode
 }> = ({ mentionType, mentionData, children }) => {
-  const mentionOptions = useMentionOptions()
+  const mentionOptions = usePluginMentionOptions()
   const option = findMentionOptionByMentionType(mentionOptions, mentionType)
 
   const currentOption = {

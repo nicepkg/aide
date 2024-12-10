@@ -8,6 +8,7 @@ export interface UseFilesTreeItemsOptions {
 
 export const useFilesTreeItems = (options: UseFilesTreeItemsOptions) => {
   const { files } = options
+
   const treeItems = convertFilesToTreeItems(files)
   const flattenedItems = flattenTreeItems(treeItems)
 

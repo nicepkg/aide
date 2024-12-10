@@ -1,7 +1,7 @@
 import React, { useState, type FC } from 'react'
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
 import { MentionSelector } from '@webview/components/chat/selectors/mention-selector/mention-selector'
-import { useMentionOptions } from '@webview/hooks/chat/use-mention-options'
+import { usePluginMentionOptions } from '@webview/hooks/chat/use-plugin-providers'
 import type { MentionOption } from '@webview/types/chat'
 import {
   $createTextNode,
@@ -21,7 +21,7 @@ export const MentionPlugin: FC<MentionPluginProps> = props => {
   const [editor] = useLexicalComposerContext()
   const [isOpen, setIsOpen] = useState(false)
   const mentionPosition = useNearestMentionPosition(editor)
-  const mentionOptions = useMentionOptions()
+  const mentionOptions = usePluginMentionOptions()
 
   const { searchQuery, setSearchQuery, clearMentionInput } = useMentionSearch(
     editor,
@@ -34,7 +34,9 @@ export const MentionPlugin: FC<MentionPluginProps> = props => {
     setIsOpen(false)
     setSearchQuery('')
 
+    option.onSelect?.(option.data)
     if (option.disableAddToEditor) return
+
     editor.update(() => {
       const selection = $getSelection()
       if ($isRangeSelection(selection)) {

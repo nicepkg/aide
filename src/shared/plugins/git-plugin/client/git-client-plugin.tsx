@@ -1,50 +1,40 @@
 import { CommitIcon, MaskOffIcon, TransformIcon } from '@radix-ui/react-icons'
-import type {
-  ClientPlugin,
-  ClientPluginContext
-} from '@shared/plugins/base/client/client-plugin-context'
+import type { UseMentionOptionsReturns } from '@shared/plugins/base/client/client-plugin-types'
+import {
+  createClientPlugin,
+  type SetupProps
+} from '@shared/plugins/base/client/use-client-plugin'
 import { PluginId } from '@shared/plugins/base/types'
 import { pkg } from '@shared/utils/pkg'
+import { useQuery } from '@tanstack/react-query'
 import { api } from '@webview/services/api-client'
 import { type MentionOption } from '@webview/types/chat'
 
 import type { GitCommit, GitPluginState } from '../types'
 
-export class GitClientPlugin implements ClientPlugin<GitPluginState> {
-  id = PluginId.Git
+export const GitClientPlugin = createClientPlugin<GitPluginState>({
+  id: PluginId.Git,
+  version: pkg.version,
 
-  version: string = pkg.version
-
-  private context: ClientPluginContext<GitPluginState> | null = null
-
-  getInitState() {
+  getInitialState() {
     return {
       gitCommitsFromEditor: [],
       gitDiffWithMainBranchFromEditor: null,
       gitDiffOfWorkingStateFromEditor: null
     }
+  },
+
+  setup(props) {
+    const { registerProvider } = props
+
+    registerProvider('useMentionOptions', () => createUseMentionOptions(props))
   }
+})
 
-  async activate(context: ClientPluginContext<GitPluginState>): Promise<void> {
-    this.context = context
-
-    this.context.registerProvider('state', () => this.context!.state)
-    this.context.registerProvider('editor', () => ({
-      getMentionOptions: this.getMentionOptions.bind(this)
-    }))
-  }
-
-  deactivate(): void {
-    this.context?.resetState()
-    this.context = null
-  }
-
-  private async getMentionOptions(): Promise<MentionOption[]> {
-    const queryClient = this?.context?.getQueryClient?.()
-
-    if (!queryClient) return []
-
-    const gitCommits = await queryClient.fetchQuery({
+const createUseMentionOptions =
+  (props: SetupProps<GitPluginState>) => (): UseMentionOptionsReturns => {
+    const { setState } = props
+    const { data: gitCommits = [] } = useQuery({
       queryKey: ['realtime', 'git-commits'],
       queryFn: () =>
         api.git.getHistoryCommits({
@@ -60,7 +50,7 @@ export class GitClientPlugin implements ClientPlugin<GitPluginState> {
           label: commit.message,
           data: commit,
           onUpdatePluginState: dataArr => {
-            this.context?.setState(draft => {
+            setState(draft => {
               draft.gitCommitsFromEditor = dataArr
             })
           },
@@ -91,7 +81,7 @@ export class GitClientPlugin implements ClientPlugin<GitPluginState> {
             type: `${PluginId.Git}#git-diff`,
             label: 'Diff (Diff of Working State)',
             onUpdatePluginState: dataArr => {
-              this.context?.setState(draft => {
+              setState(draft => {
                 draft.gitDiffOfWorkingStateFromEditor = dataArr.at(-1)
               })
             },
@@ -106,7 +96,7 @@ export class GitClientPlugin implements ClientPlugin<GitPluginState> {
             type: `${PluginId.Git}#git-pr`,
             label: 'PR (Diff with Main Branch)',
             onUpdatePluginState: dataArr => {
-              this.context?.setState(draft => {
+              setState(draft => {
                 draft.gitDiffWithMainBranchFromEditor = dataArr.at(-1)
               })
             },
@@ -121,4 +111,3 @@ export class GitClientPlugin implements ClientPlugin<GitPluginState> {
       }
     ]
   }
-}

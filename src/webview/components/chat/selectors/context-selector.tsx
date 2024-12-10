@@ -7,7 +7,7 @@ import {
   type Conversation
 } from '@shared/entities'
 import { ButtonWithTooltip } from '@webview/components/button-with-tooltip'
-import { usePluginImagesSelectorProviders } from '@webview/hooks/chat/use-plugin-providers'
+import { usePluginSelectedImagesProviders } from '@webview/hooks/chat/use-plugin-providers'
 import type { Updater } from 'use-immer'
 
 import { ModelSelector } from './model-selector'
@@ -33,7 +33,7 @@ export const ContextSelector: React.FC<ContextSelectorProps> = ({
   showExitEditModeButton,
   onExitEditMode
 }) => {
-  const { addSelectedImage } = usePluginImagesSelectorProviders()
+  const { addSelectedImage } = usePluginSelectedImagesProviders()
 
   const handleSelectImage = () => {
     const input = document.createElement('input')

@@ -1,32 +1,34 @@
 import { deepMergeProviders } from './deep-merge-providers'
-import type { PluginId } from './types'
+import { PluginId } from './types'
+
+export class ProviderUtils {
+  static getValues = <T>(idProvidersMap: Record<PluginId, () => T>): T[] =>
+    Object.values(idProvidersMap).map(provider => provider?.())
+
+  static mergeAll = <T>(
+    idProvidersMap: Record<PluginId, () => T>
+  ): T | undefined => {
+    const allValues = ProviderUtils.getValues(idProvidersMap)
+    return deepMergeProviders(allValues)
+  }
+}
 
 export class ProviderManager<T> {
-  protected providers: Map<PluginId, () => T> = new Map()
+  protected idProvidersMap = {} as Record<PluginId, () => T>
 
   register(pluginId: PluginId, provider: () => T): void {
-    this.providers.set(pluginId, provider)
+    this.idProvidersMap[pluginId] = provider
   }
 
   unregister(pluginId: PluginId): void {
-    this.providers.delete(pluginId)
+    delete this.idProvidersMap[pluginId]
   }
 
-  getValues(key: keyof T): T[keyof T][] {
-    return Array.from(this.providers.values()).map(provider => provider()[key])
+  getValues(): T[] {
+    return ProviderUtils.getValues<T>(this.idProvidersMap)
   }
 
-  getAll(): Record<PluginId, Partial<T>> {
-    const entries = Array.from(this.providers.entries())
-    const results = entries.map(([pluginId, provider]) => {
-      const value = provider()
-      return [pluginId, value] as [PluginId, T]
-    })
-    return Object.fromEntries(results) as Record<PluginId, T>
-  }
-
-  mergeAll(): Partial<T> {
-    const allValues = this.getAll()
-    return deepMergeProviders(Object.values(allValues))
+  mergeAll(): T | undefined {
+    return ProviderUtils.mergeAll<T>(this.idProvidersMap)
   }
 }

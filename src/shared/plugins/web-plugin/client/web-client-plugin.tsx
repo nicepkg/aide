@@ -1,23 +1,20 @@
 import { GlobeIcon } from '@radix-ui/react-icons'
-import type {
-  ClientPlugin,
-  ClientPluginContext
-} from '@shared/plugins/base/client/client-plugin-context'
+import type { UseMentionOptionsReturns } from '@shared/plugins/base/client/client-plugin-types'
+import {
+  createClientPlugin,
+  type SetupProps
+} from '@shared/plugins/base/client/use-client-plugin'
 import { PluginId } from '@shared/plugins/base/types'
 import { pkg } from '@shared/utils/pkg'
-import { type MentionOption } from '@webview/types/chat'
 
 import type { WebPluginState } from '../types'
 import { WebLogPreview } from './web-log-preview'
 
-export class WebClientPlugin implements ClientPlugin<WebPluginState> {
-  id = PluginId.Web
+export const WebClientPlugin = createClientPlugin<WebPluginState>({
+  id: PluginId.Web,
+  version: pkg.version,
 
-  version: string = pkg.version
-
-  private context: ClientPluginContext<WebPluginState> | null = null
-
-  getInitState() {
+  getInitialState() {
     return {
       enableWebSearchAgent: false,
       webSearchResultsFromAgent: [],
@@ -25,29 +22,19 @@ export class WebClientPlugin implements ClientPlugin<WebPluginState> {
       enableWebVisitAgent: false,
       webVisitResultsFromAgent: []
     }
+  },
+
+  setup(props) {
+    const { registerProvider } = props
+
+    registerProvider('useMentionOptions', () => createUseMentionOptions(props))
+    registerProvider('CustomRenderLogPreview', () => WebLogPreview)
   }
+})
 
-  async activate(context: ClientPluginContext<WebPluginState>): Promise<void> {
-    this.context = context
-
-    this.context.registerProvider('state', () => this.context!.state)
-    this.context.registerProvider('editor', () => ({
-      getMentionOptions: this.getMentionOptions.bind(this)
-    }))
-    this.context.registerProvider('message', () => ({
-      customRenderLogPreview: WebLogPreview
-    }))
-  }
-
-  deactivate(): void {
-    this.context?.resetState()
-    this.context = null
-  }
-
-  private async getMentionOptions(): Promise<MentionOption[]> {
-    const queryClient = this?.context?.getQueryClient?.()
-
-    if (!queryClient) return []
+const createUseMentionOptions =
+  (props: SetupProps<WebPluginState>) => (): UseMentionOptionsReturns => {
+    const { setState } = props
 
     return [
       {
@@ -56,7 +43,7 @@ export class WebClientPlugin implements ClientPlugin<WebPluginState> {
         label: 'Web',
         data: true,
         onUpdatePluginState: (dataArr: true[]) => {
-          this.context?.setState(draft => {
+          setState(draft => {
             draft.enableWebVisitAgent = dataArr.length > 0
             draft.enableWebSearchAgent = dataArr.length > 0
           })
@@ -70,4 +57,3 @@ export class WebClientPlugin implements ClientPlugin<WebPluginState> {
       }
     ]
   }
-}

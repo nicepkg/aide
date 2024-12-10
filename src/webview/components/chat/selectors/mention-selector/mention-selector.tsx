@@ -88,9 +88,7 @@ export const MentionSelector: React.FC<MentionSelectorProps> = ({
 
   const handleSelect = (option: MentionOption) => {
     if (isFlattened) {
-      if (option.data) {
-        onSelect(option)
-      }
+      onSelect(option)
       setIsFlattened(false)
       setIsOpen(false)
       return
@@ -101,9 +99,7 @@ export const MentionSelector: React.FC<MentionSelectorProps> = ({
       setOptionsStack(prevStack => [...prevStack, option.children || []])
       onCloseWithoutSelect?.()
     } else {
-      if (option.data) {
-        onSelect(option)
-      }
+      onSelect(option)
       setIsOpen(false)
     }
   }
