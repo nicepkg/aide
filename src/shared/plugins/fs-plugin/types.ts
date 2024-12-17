@@ -1,7 +1,34 @@
 import type { FileInfo, FolderInfo } from '@extension/file-utils/traverse-fs'
-import type { BaseConversationLog } from '@shared/entities'
+import type { Mention } from '@shared/entities'
 
-import type { PluginId } from '../base/types'
+import { PluginId } from '../base/types'
+
+export enum FsMentionType {
+  Files = `${PluginId.Fs}#files`,
+  File = `${PluginId.Fs}#file`,
+  Folders = `${PluginId.Fs}#folders`,
+  Folder = `${PluginId.Fs}#folder`,
+  Trees = `${PluginId.Fs}#trees`,
+  Tree = `${PluginId.Fs}#tree`,
+  Code = `${PluginId.Fs}#code`,
+  Codebase = `${PluginId.Fs}#codebase`,
+  Errors = `${PluginId.Fs}#errors`
+}
+
+export type FileMention = Mention<FsMentionType.File, FileInfo>
+export type FolderMention = Mention<FsMentionType.Folder, FolderInfo>
+export type TreeMention = Mention<FsMentionType.Tree, TreeInfo>
+export type CodeMention = Mention<FsMentionType.Code, CodeChunk>
+export type CodebaseMention = Mention<FsMentionType.Codebase, CodeSnippet[]>
+export type ErrorMention = Mention<FsMentionType.Errors, EditorError[]>
+
+export type FsMention =
+  | FileMention
+  | FolderMention
+  | TreeMention
+  | CodeMention
+  | CodebaseMention
+  | ErrorMention
 
 export interface CodeSnippet {
   fileHash: string
@@ -23,10 +50,6 @@ export interface CodeChunk {
   endLine?: number
 }
 
-export interface ImageInfo {
-  url: string
-}
-
 export interface EditorError {
   message: string
   code?: string
@@ -44,22 +67,4 @@ export interface TreeInfo {
   listString: string // markdown list string, for ai reading
 }
 
-export interface FsPluginState {
-  selectedFilesFromFileSelector: FileInfo[]
-  selectedFilesFromEditor: FileInfo[]
-  selectedFilesFromAgent: FileInfo[]
-  currentFilesFromVSCode: FileInfo[]
-  selectedFoldersFromEditor: FolderInfo[]
-  selectedImagesFromOutsideUrl: ImageInfo[]
-  codeChunksFromEditor: CodeChunk[]
-  codeSnippetFromAgent: CodeSnippet[]
-  enableCodebaseAgent: boolean
-  editorErrors: EditorError[]
-  selectedTreesFromEditor: TreeInfo[]
-}
-
-export interface FsPluginLog extends BaseConversationLog {
-  pluginId: PluginId.Fs
-  codeSnippets?: CodeSnippet[]
-  selectedFilesFromAgent?: FileInfo[]
-}
+export interface FsPluginState {}

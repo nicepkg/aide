@@ -123,7 +123,7 @@ export const MentionSelector: React.FC<MentionSelectorProps> = ({
       <PopoverTrigger asChild>{children}</PopoverTrigger>
       <PopoverContent
         className={cn(
-          'min-w-[200px] max-w-[400px] w-screen p-0 bg-transparent shadow-none border-none [&[data-side="bottom"]>div]:flex-col-reverse',
+          'min-w-[200px] max-w-[400px] w-screen p-0 rounded-none bg-transparent shadow-none border-none [&[data-side="bottom"]>div]:flex-col-reverse',
           !isOpen && 'hidden'
         )}
         innerClassName="flex flex-col gap-4 overflow-hidden"
@@ -137,7 +137,7 @@ export const MentionSelector: React.FC<MentionSelectorProps> = ({
       >
         <div
           className={cn(
-            'w-full max-h-[50vh] flex overflow-y-auto overflow-x-hidden rounded-md shadow-md border-primary border bg-popover text-popover-foreground outline-none',
+            'w-full max-h-[50vh] flex overflow-y-auto overflow-x-hidden rounded-2xl shadow-md border-primary border bg-popover text-popover-foreground outline-none',
             isOpen && Boolean(focusedOption?.customRenderPreview)
               ? 'block'
               : 'hidden'
@@ -148,7 +148,7 @@ export const MentionSelector: React.FC<MentionSelectorProps> = ({
           )}
         </div>
 
-        <div className="w-full rounded-md shadow-md border bg-popover text-popover-foreground outline-none">
+        <div className="w-full rounded-2xl shadow-md border bg-popover text-popover-foreground outline-none">
           <Command
             loop
             ref={commandRef}

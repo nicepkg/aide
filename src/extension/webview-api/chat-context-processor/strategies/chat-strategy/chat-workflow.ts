@@ -2,14 +2,10 @@ import { ServerPluginRegister } from '@extension/registers/server-plugin-registe
 import { END, START, StateGraph } from '@langchain/langgraph'
 
 import { combineNode } from '../../utils/combine-node'
-import type { BaseStrategyOptions } from '../base-strategy'
-import { createAgentNode } from './nodes/agent-node'
-import { createGenerateNode } from './nodes/generate-node'
-import {
-  ChatGraphNodeName,
-  chatGraphState,
-  type ChatGraphState
-} from './nodes/state'
+import type { BaseStrategyOptions } from '../base/base-strategy'
+import { AgentNode } from './nodes/agent-node'
+import { GenerateNode } from './nodes/generate-node'
+import { ChatGraphNodeName, chatGraphState, type ChatGraphState } from './state'
 
 const createSmartRoute =
   (nextNodeName: ChatGraphNodeName) => (state: ChatGraphState) => {
@@ -28,10 +24,20 @@ export const createChatWorkflow = async (options: BaseStrategyOptions) => {
   const toolNodes =
     (await chatStrategyProvider?.buildLanggraphToolNodes?.(options)) || []
 
+  const combinedToolsNode = combineNode(toolNodes, chatGraphState)
+
+  const agentNode = new AgentNode({
+    strategyOptions: options
+  }).createGraphNode()
+
+  const generateNode = new GenerateNode({
+    strategyOptions: options
+  }).createGraphNode()
+
   const chatWorkflow = new StateGraph(chatGraphState)
-    .addNode(ChatGraphNodeName.Agent, createAgentNode(options))
-    .addNode(ChatGraphNodeName.Tools, combineNode(toolNodes, chatGraphState))
-    .addNode(ChatGraphNodeName.Generate, createGenerateNode(options))
+    .addNode(ChatGraphNodeName.Agent, agentNode)
+    .addNode(ChatGraphNodeName.Tools, combinedToolsNode)
+    .addNode(ChatGraphNodeName.Generate, generateNode)
 
   chatWorkflow
     .addConditionalEdges(START, createSmartRoute(ChatGraphNodeName.Agent))

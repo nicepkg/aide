@@ -56,7 +56,7 @@ const PopoverContent: React.FC<PopoverContentProps> = ({
             align={align}
             sideOffset={sideOffset}
             className={cn(
-              'z-50 w-72 overflow-x-hidden rounded-md shadow-md border bg-popover p-4 text-popover-foreground outline-none',
+              'z-50 w-72 overflow-x-hidden rounded-2xl shadow-md border bg-popover p-4 text-popover-foreground outline-none',
               className
             )}
             onFocusOutside={e => e.preventDefault()}

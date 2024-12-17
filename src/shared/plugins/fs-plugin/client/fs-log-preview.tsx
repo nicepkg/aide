@@ -1,32 +1,54 @@
-import { FC } from 'react'
-import type { FileInfo } from '@extension/file-utils/traverse-fs'
+import { FC, type ReactNode } from 'react'
+import {
+  codebaseSearchAgentName,
+  fsVisitAgentName
+} from '@shared/plugins/agents/agent-names'
+import type { CodebaseSearchAgent } from '@shared/plugins/agents/codebase-search-agent'
+import type { FsVisitAgent } from '@shared/plugins/agents/fs-visit-agent'
 import type { CustomRenderLogPreviewProps } from '@shared/plugins/base/client/client-plugin-types'
-import { PluginId } from '@shared/plugins/base/types'
+import type { GetAgent } from '@shared/plugins/base/strategies'
 import { ChatLogPreview } from '@webview/components/chat/messages/roles/chat-log-preview'
 import { FileIcon } from '@webview/components/file-icon'
 import { TruncateStart } from '@webview/components/truncate-start'
 import { api } from '@webview/services/api-client'
+import type { FileInfo } from '@webview/types/chat'
 import { cn } from '@webview/utils/common'
 import { getFileNameFromPath } from '@webview/utils/path'
 
-import type { CodeSnippet, FsPluginLog } from '../types'
+import type { CodeSnippet } from '../types'
 
 export const FsLogPreview: FC<CustomRenderLogPreviewProps> = props => {
-  if (props.log.pluginId !== PluginId.Fs) return null
-  const log = props.log as FsPluginLog
+  const { log } = props
+  const { agent } = log
 
-  return (
+  const renderWrapper = (children: ReactNode) => (
     <ChatLogPreview log={log}>
-      <div className="mt-2 space-y-1.5">
-        {log.codeSnippets?.map((snippet, index) => (
-          <FileSnippetItem key={index} file={snippet} />
-        ))}
-        {log.selectedFilesFromAgent?.map((file, index) => (
-          <FileSnippetItem key={index} file={file} />
-        ))}
-      </div>
+      <div className="mt-2 space-y-1.5">{children}</div>
     </ChatLogPreview>
   )
+
+  if (!agent) return null
+
+  switch (agent.name) {
+    case codebaseSearchAgentName:
+      return renderWrapper(
+        <div className="mt-2 space-y-1.5">
+          {(agent as GetAgent<CodebaseSearchAgent>).output.codeSnippets?.map(
+            (snippet, index) => <FileSnippetItem key={index} file={snippet} />
+          )}
+        </div>
+      )
+    case fsVisitAgentName:
+      return renderWrapper(
+        <div className="mt-2 space-y-1.5">
+          {(agent as GetAgent<FsVisitAgent>).output.files?.map(
+            (file, index) => <FileSnippetItem key={index} file={file} />
+          )}
+        </div>
+      )
+    default:
+      return null
+  }
 }
 
 interface FileSnippetItemProps {

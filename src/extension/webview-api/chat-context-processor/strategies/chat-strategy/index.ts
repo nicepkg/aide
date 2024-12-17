@@ -2,9 +2,10 @@ import { type ChatContext, type Conversation } from '@shared/entities'
 import { UnPromise } from '@shared/types/common'
 import { produce } from 'immer'
 
-import { BaseStrategy } from '../base-strategy'
+import { baseGraphStateEventName } from '../base/base-state'
+import { BaseStrategy } from '../base/base-strategy'
 import { createChatWorkflow } from './chat-workflow'
-import { chatGraphStateEventName, type ChatGraphState } from './nodes/state'
+import { type ChatGraphState } from './state'
 
 export class ChatStrategy extends BaseStrategy {
   private _chatWorkflow: UnPromise<
@@ -40,7 +41,7 @@ export class ChatStrategy extends BaseStrategy {
     const state: Partial<ChatGraphState> = {}
 
     for await (const { event, name, data } of eventStream) {
-      if (event === 'on_custom_event' && name === chatGraphStateEventName) {
+      if (event === 'on_custom_event' && name === baseGraphStateEventName) {
         const returnsState = data as Partial<ChatGraphState>
         Object.assign(state, returnsState)
         const currentChatContext = state.chatContext || chatContext

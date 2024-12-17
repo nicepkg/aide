@@ -1,23 +1,38 @@
 import type { Conversation } from '@shared/entities'
+import type {
+  GetAgentState,
+  GetMentionState
+} from '@shared/plugins/base/base-to-state'
 import type { ChatStrategyProvider } from '@shared/plugins/base/server/create-provider-manager'
-import { PluginId } from '@shared/plugins/base/types'
 import { removeDuplicates } from '@shared/utils/common'
 
-import type { GitDiff, GitPluginState } from '../../types'
+import { GitToState } from '../../git-to-state'
+import type { GitDiff } from '../../types'
+
+interface ConversationWithStateProps {
+  conversation: Conversation
+  mentionState: GetMentionState<GitToState>
+  agentState: GetAgentState<GitToState>
+}
 
 export class GitChatStrategyProvider implements ChatStrategyProvider {
+  private createConversationWithStateProps(
+    conversation: Conversation
+  ): ConversationWithStateProps {
+    const gitToState = new GitToState(conversation)
+    const mentionState = gitToState.toMentionsState()
+    const agentState = gitToState.toAgentsState()
+
+    return { conversation, mentionState, agentState }
+  }
+
   async buildContextMessagePrompt(conversation: Conversation): Promise<string> {
-    const state = conversation.pluginStates?.[PluginId.Git] as
-      | Partial<GitPluginState>
-      | undefined
-
-    if (!state) return ''
-
+    const props = this.createConversationWithStateProps(conversation)
     const diffWithMainBranchPrompt =
-      this.buildGitDiffWithMainBranchPrompt(state)
+      this.buildGitDiffWithMainBranchPrompt(props)
     const diffOfWorkingStatePrompt =
-      this.buildGitDiffOfWorkingStatePrompt(state)
-    const commitPrompt = this.buildGitCommitPrompt(state)
+      this.buildGitDiffOfWorkingStatePrompt(props)
+    const commitPrompt = this.buildGitCommitPrompt(props)
 
     const prompts = [
       diffWithMainBranchPrompt,
@@ -28,16 +43,16 @@ export class GitChatStrategyProvider implements ChatStrategyProvider {
     return prompts.join('\n\n')
   }
 
-  private buildGitCommitPrompt(state: Partial<GitPluginState>): string {
-    const { gitCommitsFromEditor = [] } = state
+  private buildGitCommitPrompt(props: ConversationWithStateProps): string {
+    const { mentionState } = props
 
-    if (!gitCommitsFromEditor.length) return ''
+    if (!mentionState?.gitCommits.length) return ''
 
     let gitCommitContent = `
 ## Git Commits
   `
 
-    removeDuplicates(gitCommitsFromEditor, ['sha']).forEach(commit => {
+    removeDuplicates(mentionState.gitCommits, ['sha']).forEach(commit => {
       gitCommitContent += `
 Commit: ${commit.sha}
 Message: ${commit.message}
@@ -52,28 +67,28 @@ ${this.buildGitDiffsPrompt(commit.diff)}
   }
 
   private buildGitDiffWithMainBranchPrompt(
-    state: Partial<GitPluginState>
+    props: ConversationWithStateProps
   ): string {
-    const { gitDiffWithMainBranchFromEditor } = state
+    const { mentionState } = props
 
-    if (!gitDiffWithMainBranchFromEditor) return ''
+    if (!mentionState?.gitDiffWithMain) return ''
 
     return `
 ## Git Diff with Main Branch
-${this.buildGitDiffsPrompt([gitDiffWithMainBranchFromEditor])}
+${this.buildGitDiffsPrompt([mentionState.gitDiffWithMain])}
 `
   }
 
   private buildGitDiffOfWorkingStatePrompt(
-    state: Partial<GitPluginState>
+    props: ConversationWithStateProps
   ): string {
-    const { gitDiffOfWorkingStateFromEditor } = state
+    const { mentionState } = props
 
-    if (!gitDiffOfWorkingStateFromEditor) return ''
+    if (!mentionState?.gitDiffOfWorkingState) return ''
 
     return `
 ## Git Diff of Working State
-${this.buildGitDiffsPrompt([gitDiffOfWorkingStateFromEditor])}
+${this.buildGitDiffsPrompt([mentionState.gitDiffOfWorkingState])}
 `
   }
 

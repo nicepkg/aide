@@ -1,56 +1,77 @@
-import type { BaseStrategyOptions } from '@extension/webview-api/chat-context-processor/strategies/base-strategy'
-import type {
-  ChatGraphNode,
-  ChatGraphState
-} from '@extension/webview-api/chat-context-processor/strategies/chat-strategy/nodes/state'
 import type { StructuredTool } from '@langchain/core/tools'
 import type { Conversation } from '@shared/entities'
+import type {
+  GetAgentState,
+  GetMentionState
+} from '@shared/plugins/base/base-to-state'
 import type { ChatStrategyProvider } from '@shared/plugins/base/server/create-provider-manager'
-import { PluginId } from '@shared/plugins/base/types'
-
-import type { DocPluginState } from '../../types'
 import {
-  createDocRetrieverNode,
-  createDocRetrieverTool
-} from './doc-retriever-node'
+  createGraphNodeFromNodes,
+  createToolsFromNodes
+} from '@shared/plugins/base/strategies'
+import type {
+  BaseStrategyOptions,
+  ChatGraphNode,
+  ChatGraphState
+} from '@shared/plugins/base/strategies'
+
+import { DocToState } from '../../doc-to-state'
+import { DocRetrieverNode } from './doc-retriever-node'
+
+interface ConversationWithStateProps {
+  conversation: Conversation
+  mentionState: GetMentionState<DocToState>
+  agentState: GetAgentState<DocToState>
+}
 
 export class DocChatStrategyProvider implements ChatStrategyProvider {
+  private createConversationWithStateProps(
+    conversation: Conversation
+  ): ConversationWithStateProps {
+    const docToState = new DocToState(conversation)
+    const mentionState = docToState.toMentionsState()
+    const agentState = docToState.toAgentsState()
+
+    return { conversation, mentionState, agentState }
+  }
+
   async buildContextMessagePrompt(conversation: Conversation): Promise<string> {
-    const state = conversation.pluginStates?.[PluginId.Doc] as
-      | Partial<DocPluginState>
-      | undefined
-
-    if (!state) return ''
-
-    const relevantDocsPrompt = this.buildRelevantDocsPrompt(state)
-
+    const props = this.createConversationWithStateProps(conversation)
+    const relevantDocsPrompt = this.buildRelevantDocsPrompt(props)
     const prompts = [relevantDocsPrompt].filter(Boolean)
 
     return prompts.join('\n\n')
   }
 
   async buildAgentTools(
-    options: BaseStrategyOptions,
+    strategyOptions: BaseStrategyOptions,
     state: ChatGraphState
   ): Promise<StructuredTool[]> {
-    const tools = await Promise.all([createDocRetrieverTool(options, state)])
-    return tools.filter(Boolean) as StructuredTool[]
+    return await createToolsFromNodes({
+      nodeClasses: [DocRetrieverNode],
+      strategyOptions,
+      state
+    })
   }
 
   async buildLanggraphToolNodes(
-    options: BaseStrategyOptions
+    strategyOptions: BaseStrategyOptions
   ): Promise<ChatGraphNode[]> {
-    return [createDocRetrieverNode(options)]
+    return await createGraphNodeFromNodes({
+      nodeClasses: [DocRetrieverNode],
+      strategyOptions
+    })
   }
 
-  private buildRelevantDocsPrompt(state: Partial<DocPluginState>): string {
-    const { relevantDocsFromAgent: relevantDocsFromDocAgent } = state
+  private buildRelevantDocsPrompt(props: ConversationWithStateProps): string {
+    const { agentState } = props
+    const { relevantDocs } = agentState
 
-    if (!relevantDocsFromDocAgent?.length) return ''
+    if (!relevantDocs?.length) return ''
 
     let docsContent = ''
 
-    relevantDocsFromDocAgent.forEach(doc => {
+    relevantDocs.forEach(doc => {
       docsContent += `
 Source Path: ${doc.path}
 Content: ${doc.content}

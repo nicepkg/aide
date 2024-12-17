@@ -1,8 +1,10 @@
+import type { FileInfo } from '@extension/file-utils/traverse-fs'
 import type {
   AIMessage,
   ChatMessage,
   FunctionMessage,
   HumanMessage,
+  ImageDetail,
   MessageType,
   SystemMessage,
   ToolMessage
@@ -14,13 +16,27 @@ import { v4 as uuidv4 } from 'uuid'
 
 import { BaseEntity, type IBaseEntity } from './base-entity'
 
+export interface ImageInfo {
+  url: string
+  name?: string
+}
+
+export interface ConversationState {
+  selectedFilesFromFileSelector: FileInfo[]
+  currentFilesFromVSCode: FileInfo[]
+  selectedImagesFromOutsideUrl: ImageInfo[]
+}
+
 export interface Conversation extends IBaseEntity {
   createdAt: number
   role: MessageType
   contents: LangchainMessageContents
   richText?: string // JSON stringified
   pluginStates: Record<string, PluginState>
+  mentions: Mention[]
+  agents: Agent[]
   logs: ConversationLog[]
+  state: ConversationState
 }
 
 export class ConversationEntity extends BaseEntity<Conversation> {
@@ -31,22 +47,37 @@ export class ConversationEntity extends BaseEntity<Conversation> {
       role: 'human',
       contents: [],
       pluginStates: {},
+      mentions: [],
+      agents: [],
       logs: [],
+      state: {
+        selectedFilesFromFileSelector: [],
+        currentFilesFromVSCode: [],
+        selectedImagesFromOutsideUrl: []
+      },
       ...data
     }
   }
 }
 
-export type BaseConversationLog = {
+export interface Mention<Type extends string = string, Data = any> {
+  type: Type
+  data: Data
+}
+
+export interface Agent<Input = any, Output = any> {
   id: string
-  pluginId?: string
+  name: string
+  input: Input
+  output: Output
+}
+
+export type ConversationLog = {
+  id: string
   createdAt: number
   title: string
   content?: string
-}
-
-export type ConversationLog = BaseConversationLog & {
-  [key: string]: any
+  agentId?: string
 }
 
 export type LangchainMessage =
@@ -64,7 +95,10 @@ export type LangchainMessageContents = (
     }
   | {
       type: 'image_url'
-      image_url: string
+      image_url: {
+        url: string
+        detail?: ImageDetail
+      }
     }
 )[]
 

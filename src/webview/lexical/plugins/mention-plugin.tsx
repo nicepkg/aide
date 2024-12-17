@@ -1,5 +1,6 @@
 import React, { useState, type FC } from 'react'
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
+import type { Mention } from '@shared/entities'
 import { MentionSelector } from '@webview/components/chat/selectors/mention-selector/mention-selector'
 import { usePluginMentionOptions } from '@webview/hooks/chat/use-plugin-providers'
 import type { MentionOption } from '@webview/types/chat'
@@ -99,7 +100,11 @@ const insertMention = ({
 
   // Create and insert the mention node
   const mentionText = `@${option.label}`
-  const mentionNode = $createMentionNode(option.type, option.data, mentionText)
+  const mention: Mention = {
+    type: option.type,
+    data: option.data
+  }
+  const mentionNode = $createMentionNode(mention, mentionText)
   selection.insertNodes([mentionNode])
 
   // Insert a space after the mention node

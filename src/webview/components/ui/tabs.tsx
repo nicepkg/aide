@@ -22,13 +22,14 @@ const tabListVariants = cva(
 )
 
 const tabsTriggerVariants = cva(
-  'inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-all focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow px-3 py-1 rounded-md',
+  'inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-all focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 px-3 py-1 rounded-md',
   {
     variants: {
       mode: {
-        default: '',
+        default:
+          'data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow',
         underlined:
-          'relative text-md h-full rounded-none border-b-2 border-b-transparent bg-transparent px-4 pb-1 pt-1 font-semibold text-foreground/60 shadow-none transition-none data-[state=active]:border-b-primary data-[state=active]:text-foreground data-[state=active]:bg-background data-[state=active]:shadow-none'
+          'relative text-md h-full rounded-none border-b-2 border-b-transparent bg-transparent px-4 pb-1 pt-1 font-semibold text-foreground/60 shadow-none transition-none data-[state=active]:border-b-primary'
       }
     },
     defaultVariants: {

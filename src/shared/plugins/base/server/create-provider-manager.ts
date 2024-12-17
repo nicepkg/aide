@@ -1,10 +1,11 @@
-import type { BaseStrategyOptions } from '@extension/webview-api/chat-context-processor/strategies/base-strategy'
+import type { ControllerRegister } from '@extension/registers/controller-register'
+import type { StructuredTool } from '@langchain/core/tools'
+import type { ChatContext, Conversation, Mention } from '@shared/entities'
 import type {
+  BaseStrategyOptions,
   ChatGraphNode,
   ChatGraphState
-} from '@extension/webview-api/chat-context-processor/strategies/chat-strategy/nodes/state'
-import type { StructuredTool } from '@langchain/core/tools'
-import type { ChatContext, Conversation } from '@shared/entities'
+} from '@shared/plugins/base/strategies'
 
 import { ProviderManager } from '../provider-manager'
 
@@ -27,15 +28,23 @@ export interface ChatStrategyProvider {
     chatContext: ChatContext
   ) => Promise<string[]>
   buildAgentTools?: (
-    options: BaseStrategyOptions,
+    strategyOptions: BaseStrategyOptions,
     graphState: ChatGraphState
   ) => Promise<StructuredTool[]>
   buildLanggraphToolNodes?: (
-    options: BaseStrategyOptions
+    strategyOptions: BaseStrategyOptions
   ) => Promise<ChatGraphNode[]>
+}
+
+export type RefreshMentionFn = (mention: Mention) => Mention
+export interface MentionUtilsProvider {
+  createRefreshMentionFn: (
+    controllerRegister: ControllerRegister
+  ) => Promise<RefreshMentionFn>
 }
 
 export const createProviderManagers = () =>
   ({
-    chatStrategy: new ProviderManager<ChatStrategyProvider>()
+    chatStrategy: new ProviderManager<ChatStrategyProvider>(),
+    mentionUtils: new ProviderManager<MentionUtilsProvider>()
   }) as const satisfies Record<string, ProviderManager<any>>

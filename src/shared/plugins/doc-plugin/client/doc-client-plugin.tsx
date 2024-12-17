@@ -11,7 +11,7 @@ import { api } from '@webview/services/api-client'
 import { type MentionOption } from '@webview/types/chat'
 import { useNavigate } from 'react-router'
 
-import type { DocPluginState } from '../types'
+import { DocMentionType, type DocPluginState } from '../types'
 import { DocLogPreview } from './doc-log-preview'
 
 export const DocClientPlugin = createClientPlugin<DocPluginState>({
@@ -19,10 +19,7 @@ export const DocClientPlugin = createClientPlugin<DocPluginState>({
   version: pkg.version,
 
   getInitialState() {
-    return {
-      allowSearchDocSiteNamesFromEditor: [],
-      relevantDocsFromAgent: []
-    }
+    return {}
   },
 
   setup(props) {
@@ -35,7 +32,6 @@ export const DocClientPlugin = createClientPlugin<DocPluginState>({
 
 const createUseMentionOptions =
   (props: SetupProps<DocPluginState>) => (): UseMentionOptionsReturns => {
-    const { setState } = props
     const navigate = useNavigate()
 
     const { data: docSites = [] } = useQuery({
@@ -43,9 +39,9 @@ const createUseMentionOptions =
       queryFn: () => api.doc.getDocSites({})
     })
 
-    const docSiteNamesSettingMentionOption: MentionOption<string> = {
-      id: `${PluginId.Doc}#doc#setting`,
-      type: `${PluginId.Doc}#doc`,
+    const docSiteNamesSettingMentionOption: MentionOption = {
+      id: DocMentionType.DocSetting,
+      type: DocMentionType.DocSetting,
       label: 'docs setting',
       disableAddToEditor: true,
       onSelect: () => {
@@ -59,18 +55,13 @@ const createUseMentionOptions =
       }
     }
 
-    const docSiteNamesMentionOptions: MentionOption[] = docSites.map(
+    const docSiteNamesMentionOptions: MentionOption<string>[] = docSites.map(
       site =>
         ({
-          id: `${PluginId.Doc}#doc#${site.id}`,
-          type: `${PluginId.Doc}#doc`,
+          id: `${DocMentionType.Doc}#${site.id}`,
+          type: DocMentionType.Doc,
           label: site.name,
           data: site.name,
-          onUpdatePluginState: dataArr => {
-            setState(draft => {
-              draft.allowSearchDocSiteNamesFromEditor = dataArr
-            })
-          },
           searchKeywords: [site.name, site.url],
           itemLayoutProps: {
             icon: <IdCardIcon className="size-4 mr-1" />,
@@ -82,8 +73,8 @@ const createUseMentionOptions =
 
     return [
       {
-        id: `${PluginId.Doc}#docs`,
-        type: `${PluginId.Doc}#docs`,
+        id: DocMentionType.Docs,
+        type: DocMentionType.Docs,
         label: 'Docs',
         topLevelSort: 4,
         searchKeywords: ['docs'],

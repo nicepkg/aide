@@ -1,32 +1,45 @@
-import { FC } from 'react'
+import { FC, type ReactNode } from 'react'
 import { FileTextIcon } from '@radix-ui/react-icons'
+import { docRetrieverAgentName } from '@shared/plugins/agents/agent-names'
+import type { DocRetrieverAgent } from '@shared/plugins/agents/doc-retriever-agent'
 import type { CustomRenderLogPreviewProps } from '@shared/plugins/base/client/client-plugin-types'
-import { PluginId } from '@shared/plugins/base/types'
+import type { GetAgent } from '@shared/plugins/base/strategies'
 import { ChatLogPreview } from '@webview/components/chat/messages/roles/chat-log-preview'
 import type { PreviewContent } from '@webview/components/content-preview'
 import { ContentPreviewPopover } from '@webview/components/content-preview-popover'
 import { api } from '@webview/services/api-client'
 import { cn } from '@webview/utils/common'
 
-import type { DocInfo, DocPluginLog } from '../types'
+import type { DocInfo } from '../types'
 
 export const DocLogPreview: FC<CustomRenderLogPreviewProps> = props => {
-  if (props.log.pluginId !== PluginId.Doc) return null
-  const log = props.log as DocPluginLog
+  const { log } = props
+  const { agent } = log
 
-  return (
+  const renderWrapper = (children: ReactNode) => (
     <ChatLogPreview log={log}>
-      <div className="mt-2">
-        {log.relevantDocsFromAgent?.map((doc, index) => (
-          <DocItem
-            key={index}
-            doc={doc}
-            className={cn(index !== 0 && 'border-t')}
-          />
-        ))}
-      </div>
+      <div className="mt-2">{children}</div>
     </ChatLogPreview>
   )
+
+  if (!agent) return null
+
+  switch (agent.name) {
+    case docRetrieverAgentName:
+      return renderWrapper(
+        (agent as GetAgent<DocRetrieverAgent>).output.relevantDocs?.map(
+          (doc, index) => (
+            <DocItem
+              key={index}
+              doc={doc}
+              className={cn(index !== 0 && 'border-t')}
+            />
+          )
+        )
+      )
+    default:
+      return null
+  }
 }
 
 interface DocItemProps {

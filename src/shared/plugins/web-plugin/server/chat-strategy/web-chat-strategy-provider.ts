@@ -1,27 +1,46 @@
-import type { BaseStrategyOptions } from '@extension/webview-api/chat-context-processor/strategies/base-strategy'
-import type {
-  ChatGraphNode,
-  ChatGraphState
-} from '@extension/webview-api/chat-context-processor/strategies/chat-strategy/nodes/state'
 import type { StructuredTool } from '@langchain/core/tools'
 import type { Conversation } from '@shared/entities'
+import type {
+  GetAgentState,
+  GetMentionState
+} from '@shared/plugins/base/base-to-state'
 import type { ChatStrategyProvider } from '@shared/plugins/base/server/create-provider-manager'
-import { PluginId } from '@shared/plugins/base/types'
+import {
+  createGraphNodeFromNodes,
+  createToolsFromNodes
+} from '@shared/plugins/base/strategies'
+import type {
+  BaseStrategyOptions,
+  ChatGraphNode,
+  ChatGraphState
+} from '@shared/plugins/base/strategies'
 import { removeDuplicates } from '@shared/utils/common'
 
-import type { WebPluginState } from '../../types'
-import { createWebSearchNode, createWebSearchTool } from './web-search-node'
-import { createWebVisitNode, createWebVisitTool } from './web-visit-node'
+import { WebToState } from '../../web-to-state'
+import { WebSearchNode } from './web-search-node'
+import { WebVisitNode } from './web-visit-node'
+
+interface ConversationWithStateProps {
+  conversation: Conversation
+  mentionState: GetMentionState<WebToState>
+  agentState: GetAgentState<WebToState>
+}
 
 export class WebChatStrategyProvider implements ChatStrategyProvider {
+  private createConversationWithStateProps(
+    conversation: Conversation
+  ): ConversationWithStateProps {
+    const webToState = new WebToState(conversation)
+    const mentionState = webToState.toMentionsState()
+    const agentState = webToState.toAgentsState()
+
+    return { conversation, mentionState, agentState }
+  }
+
   async buildContextMessagePrompt(conversation: Conversation): Promise<string> {
-    const state = conversation.pluginStates?.[PluginId.Web] as
-      | Partial<WebPluginState>
-      | undefined
+    const props = this.createConversationWithStateProps(conversation)
 
-    if (!state) return ''
-
-    const relevantWebsPrompt = this.buildRelevantWebsPrompt(state)
+    const relevantWebsPrompt = this.buildRelevantWebsPrompt(props)
 
     const prompts = [relevantWebsPrompt].filter(Boolean)
 
@@ -29,29 +48,35 @@ export class WebChatStrategyProvider implements ChatStrategyProvider {
   }
 
   async buildAgentTools(
-    options: BaseStrategyOptions,
+    strategyOptions: BaseStrategyOptions,
     state: ChatGraphState
   ): Promise<StructuredTool[]> {
-    const tools = await Promise.all([
-      createWebSearchTool(options, state),
-      createWebVisitTool(options, state)
-    ])
-    return tools.filter(Boolean) as StructuredTool[]
+    return await createToolsFromNodes({
+      nodeClasses: [WebSearchNode, WebVisitNode],
+      strategyOptions,
+      state
+    })
   }
 
   async buildLanggraphToolNodes(
-    options: BaseStrategyOptions
+    strategyOptions: BaseStrategyOptions
   ): Promise<ChatGraphNode[]> {
-    return [createWebSearchNode(options), createWebVisitNode(options)]
+    return await createGraphNodeFromNodes({
+      nodeClasses: [WebSearchNode, WebVisitNode],
+      strategyOptions
+    })
   }
 
-  private buildRelevantWebsPrompt(state: Partial<WebPluginState>): string {
-    const { webSearchAsDocFromAgent = [], webVisitResultsFromAgent = [] } =
-      state
+  private buildRelevantWebsPrompt(props: ConversationWithStateProps): string {
+    const { agentState } = props
+    const { webSearchRelevantContent = [], webVisitContents = [] } = agentState
 
     const webDocs = [
-      ...webSearchAsDocFromAgent,
-      ...removeDuplicates(webVisitResultsFromAgent, ['url'])
+      ...webSearchRelevantContent.map(content => ({
+        url: '',
+        content
+      })),
+      ...removeDuplicates(webVisitContents, ['url'])
     ]
 
     if (!webDocs.length) return ''

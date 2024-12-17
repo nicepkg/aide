@@ -4,10 +4,11 @@ import { Cross1Icon, ImageIcon } from '@radix-ui/react-icons'
 import {
   chatContextTypeModelSettingKeyMap,
   type ChatContext,
-  type Conversation
+  type Conversation,
+  type ImageInfo
 } from '@shared/entities'
+import { removeDuplicates } from '@shared/utils/common'
 import { ButtonWithTooltip } from '@webview/components/button-with-tooltip'
-import { usePluginSelectedImagesProviders } from '@webview/hooks/chat/use-plugin-providers'
 import type { Updater } from 'use-immer'
 
 import { ModelSelector } from './model-selector'
@@ -33,7 +34,14 @@ export const ContextSelector: React.FC<ContextSelectorProps> = ({
   showExitEditModeButton,
   onExitEditMode
 }) => {
-  const { addSelectedImage } = usePluginSelectedImagesProviders()
+  const addSelectedImage = (image: ImageInfo) => {
+    setConversation(draft => {
+      draft.state.selectedImagesFromOutsideUrl = removeDuplicates(
+        [...draft.state.selectedImagesFromOutsideUrl, image],
+        ['url']
+      )
+    })
+  }
 
   const handleSelectImage = () => {
     const input = document.createElement('input')
@@ -45,7 +53,10 @@ export const ContextSelector: React.FC<ContextSelectorProps> = ({
         const reader = new FileReader()
         reader.onload = e => {
           const base64Image = e.target?.result as string
-          addSelectedImage?.({ url: base64Image })
+          addSelectedImage?.({
+            url: base64Image,
+            name: file.name
+          })
         }
         reader.readAsDataURL(file)
       }

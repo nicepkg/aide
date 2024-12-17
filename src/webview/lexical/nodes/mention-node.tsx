@@ -1,5 +1,6 @@
 /* eslint-disable unused-imports/no-unused-vars */
 import React, { useState, type FC } from 'react'
+import type { Mention } from '@shared/entities'
 import {
   Popover,
   PopoverContent,
@@ -26,9 +27,8 @@ import {
 
 export type SerializedMentionNode = Spread<
   {
-    mentionType: string
-    mentionData: any
     text: string
+    mention: Mention
   },
   SerializedLexicalNode
 >
@@ -36,27 +36,19 @@ export type SerializedMentionNode = Spread<
 const convertMentionElement = (
   domNode: HTMLElement
 ): DOMConversionOutput | null => {
-  const mentionType = domNode.getAttribute(
-    'data-lexical-mention-type'
-  ) as string
-  const mentionData = domNode.getAttribute('data-lexical-mention-data')
+  const mentionJson = domNode.getAttribute('data-lexical-mention') as string
+  const mention = JSON.parse(mentionJson) as Mention
   const text = domNode.textContent
 
-  if (mentionType && text) {
-    const node = $createMentionNode(
-      mentionType,
-      JSON.parse(mentionData || '{}'),
-      text
-    )
+  if (mention && text) {
+    const node = $createMentionNode(mention, text)
     return { node }
   }
   return null
 }
 
 export class MentionNode extends DecoratorNode<React.ReactNode> {
-  __mentionType: string
-
-  __mentionData: any
+  __mention: Mention
 
   __text: string
 
@@ -65,34 +57,18 @@ export class MentionNode extends DecoratorNode<React.ReactNode> {
   }
 
   static clone(node: MentionNode): MentionNode {
-    return new MentionNode(
-      node.__mentionType,
-      node.__mentionData,
-      node.__text,
-      node.__key
-    )
+    return new MentionNode(node.__mention, node.__text, node.__key)
   }
 
-  constructor(
-    mentionType: string,
-    mentionData: any,
-    text: string,
-    key?: NodeKey
-  ) {
+  constructor(mention: Mention, text: string, key?: NodeKey) {
     super(key)
-    this.__mentionType = mentionType
-    this.__mentionData = mentionData
+    this.__mention = mention
     this.__text = text
   }
 
   createDOM(config: EditorConfig): HTMLElement {
     const dom = document.createElement('span')
-    dom.setAttribute('data-lexical-mention', 'true')
-    dom.setAttribute('data-lexical-mention-type', this.__mentionType)
-    dom.setAttribute(
-      'data-lexical-mention-data',
-      JSON.stringify(this.__mentionData)
-    )
+    dom.setAttribute('data-lexical-mention', JSON.stringify(this.__mention))
     return dom
   }
 
@@ -116,27 +92,21 @@ export class MentionNode extends DecoratorNode<React.ReactNode> {
 
   exportDOM(): DOMExportOutput {
     const element = document.createElement('span')
-    element.setAttribute('data-lexical-mention', 'true')
-    element.setAttribute('data-lexical-mention-type', this.__mentionType)
-    element.setAttribute(
-      'data-lexical-mention-data',
-      JSON.stringify(this.__mentionData)
-    )
+    element.setAttribute('data-lexical-mention', JSON.stringify(this.__mention))
     element.textContent = this.__text
     return { element }
   }
 
   static importJSON(serializedNode: SerializedMentionNode): MentionNode {
-    const { mentionType, mentionData, text } = serializedNode
-    const node = $createMentionNode(mentionType, mentionData, text)
+    const { mention, text } = serializedNode
+    const node = $createMentionNode(mention, text)
     return node
   }
 
   exportJSON(): SerializedMentionNode {
     return {
       type: 'mention',
-      mentionType: this.__mentionType,
-      mentionData: this.__mentionData,
+      mention: this.__mention,
       text: this.__text,
       version: 1
     }
@@ -148,10 +118,7 @@ export class MentionNode extends DecoratorNode<React.ReactNode> {
 
   decorate(editor: LexicalEditor, config: EditorConfig): React.ReactNode {
     return (
-      <MentionPreview
-        mentionType={this.__mentionType}
-        mentionData={this.__mentionData}
-      >
+      <MentionPreview mention={this.__mention}>
         <span
           className="mention"
           style={{
@@ -215,27 +182,24 @@ export class MentionNode extends DecoratorNode<React.ReactNode> {
 }
 
 export const $createMentionNode = (
-  mentionType: string,
-  mentionData: any,
+  mention: Mention,
   text: string
-): MentionNode =>
-  $applyNodeReplacement(new MentionNode(mentionType, mentionData, text))
+): MentionNode => $applyNodeReplacement(new MentionNode(mention, text))
 
 export const $isMentionNode = (
   node: LexicalNode | null | undefined
 ): node is MentionNode => node instanceof MentionNode
 
 const MentionPreview: FC<{
-  mentionType: string
-  mentionData: any
+  mention: Mention
   children: React.ReactNode
-}> = ({ mentionType, mentionData, children }) => {
+}> = ({ mention, children }) => {
   const mentionOptions = usePluginMentionOptions()
-  const option = findMentionOptionByMentionType(mentionOptions, mentionType)
+  const option = findMentionOptionByMentionType(mentionOptions, mention.type)
 
   const currentOption = {
     ...option,
-    data: mentionData
+    data: mention.data
   } as MentionOption<any>
 
   const [isOpen, setIsOpen] = useState(false)

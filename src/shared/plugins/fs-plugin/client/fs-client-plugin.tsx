@@ -4,11 +4,7 @@ import {
   CubeIcon,
   ExclamationTriangleIcon
 } from '@radix-ui/react-icons'
-import type {
-  UseMentionOptionsReturns,
-  UseSelectedFilesReturns,
-  UseSelectedImagesReturns
-} from '@shared/plugins/base/client/client-plugin-types'
+import type { UseMentionOptionsReturns } from '@shared/plugins/base/client/client-plugin-types'
 import {
   createClientPlugin,
   type SetupProps
@@ -22,7 +18,7 @@ import { SearchSortStrategy, type MentionOption } from '@webview/types/chat'
 import { getFileNameFromPath } from '@webview/utils/path'
 import { ChevronRightIcon, FileIcon, FolderTreeIcon } from 'lucide-react'
 
-import type { FsPluginState, TreeInfo } from '../types'
+import { FsMentionType, type FsPluginState, type TreeInfo } from '../types'
 import { FsLogPreview } from './fs-log-preview'
 import { MentionFilePreview } from './mention-file-preview'
 import { MentionFolderPreview } from './mention-folder-preview'
@@ -33,59 +29,19 @@ export const FsClientPlugin = createClientPlugin<FsPluginState>({
   version: pkg.version,
 
   getInitialState() {
-    return {
-      selectedFilesFromFileSelector: [],
-      selectedFilesFromEditor: [],
-      selectedFilesFromAgent: [],
-      currentFilesFromVSCode: [],
-      selectedFoldersFromEditor: [],
-      selectedImagesFromOutsideUrl: [],
-      codeChunksFromEditor: [],
-      codeSnippetFromAgent: [],
-      enableCodebaseAgent: false,
-      editorErrors: [],
-      selectedTreesFromEditor: []
-    }
+    return {}
   },
 
   setup(props) {
     const { registerProvider } = props
 
     registerProvider('useMentionOptions', () => createUseMentionOptions(props))
-    registerProvider('useSelectedFiles', () => createUseSelectedFiles(props))
-    registerProvider('useSelectedImages', () => createUseSelectedImages(props))
     registerProvider('CustomRenderLogPreview', () => FsLogPreview)
   }
 })
 
-const createUseSelectedFiles =
-  (props: SetupProps<FsPluginState>) => (): UseSelectedFilesReturns => ({
-    selectedFiles: props.state.selectedFilesFromFileSelector || [],
-    setSelectedFiles: files =>
-      props.setState(draft => {
-        draft.selectedFilesFromFileSelector = files
-      })
-  })
-
-const createUseSelectedImages =
-  (props: SetupProps<FsPluginState>) => (): UseSelectedImagesReturns => ({
-    selectedImages: props.state.selectedImagesFromOutsideUrl || [],
-    addSelectedImage: image => {
-      props.setState(draft => {
-        draft.selectedImagesFromOutsideUrl.push(image)
-      })
-    },
-    removeSelectedImage: image => {
-      props.setState(draft => {
-        draft.selectedImagesFromOutsideUrl =
-          draft.selectedImagesFromOutsideUrl.filter(i => i.url !== image.url)
-      })
-    }
-  })
-
 const createUseMentionOptions =
   (props: SetupProps<FsPluginState>) => (): UseMentionOptionsReturns => {
-    const { setState } = props
     const { data: files = [] } = useQuery({
       queryKey: ['realtime', 'files'],
       queryFn: () => api.file.traverseWorkspaceFiles({ filesOrFolders: ['./'] })
@@ -110,16 +66,10 @@ const createUseMentionOptions =
       const label = getFileNameFromPath(file.fullPath)
 
       return {
-        id: `${PluginId.Fs}#file#${file.fullPath}`,
-        type: `${PluginId.Fs}#file`,
+        id: `${FsMentionType.File}#${file.fullPath}`,
+        type: FsMentionType.File,
         label,
         data: file,
-        onUpdatePluginState: dataArr => {
-          setState(draft => {
-            draft.selectedFilesFromEditor = dataArr
-          })
-        },
-
         searchKeywords: [file.relativePath, label],
         searchSortStrategy: SearchSortStrategy.EndMatch,
         itemLayoutProps: {
@@ -137,16 +87,10 @@ const createUseMentionOptions =
       const label = getFileNameFromPath(folder.fullPath)
 
       return {
-        id: `${PluginId.Fs}#folder#${folder.fullPath}`,
-        type: `${PluginId.Fs}#folder`,
+        id: `${FsMentionType.Folder}#${folder.fullPath}`,
+        type: FsMentionType.Folder,
         label,
         data: folder,
-        onUpdatePluginState: dataArr => {
-          setState(draft => {
-            draft.selectedFoldersFromEditor = dataArr
-          })
-        },
-
         searchKeywords: [folder.relativePath, label],
         searchSortStrategy: SearchSortStrategy.EndMatch,
         itemLayoutProps: {
@@ -172,15 +116,10 @@ const createUseMentionOptions =
       const label = getFileNameFromPath(treeInfo.fullPath)
 
       return {
-        id: `${PluginId.Fs}#tree#${treeInfo.fullPath}`,
-        type: `${PluginId.Fs}#tree`,
+        id: `${FsMentionType.Tree}#${treeInfo.fullPath}`,
+        type: FsMentionType.Tree,
         label,
         data: treeInfo,
-        onUpdatePluginState: dataArr => {
-          setState(draft => {
-            draft.selectedTreesFromEditor = dataArr
-          })
-        },
         searchKeywords: [treeInfo.relativePath, label],
         searchSortStrategy: SearchSortStrategy.EndMatch,
         itemLayoutProps: {
@@ -194,8 +133,8 @@ const createUseMentionOptions =
 
     return [
       {
-        id: `${PluginId.Fs}#files`,
-        type: `${PluginId.Fs}#files`,
+        id: FsMentionType.Files,
+        type: FsMentionType.Files,
         label: 'Files',
         topLevelSort: 0,
         searchKeywords: ['files'],
@@ -206,8 +145,8 @@ const createUseMentionOptions =
         }
       },
       {
-        id: `${PluginId.Fs}#folders`,
-        type: `${PluginId.Fs}#folders`,
+        id: FsMentionType.Folders,
+        type: FsMentionType.Folders,
         label: 'Folders',
         topLevelSort: 1,
         searchKeywords: ['folders'],
@@ -218,8 +157,8 @@ const createUseMentionOptions =
         }
       },
       {
-        id: `${PluginId.Fs}#tree`,
-        type: `${PluginId.Fs}#tree`,
+        id: FsMentionType.Trees,
+        type: FsMentionType.Trees,
         label: 'Tree',
         topLevelSort: 2,
         searchKeywords: ['tree', 'structure'],
@@ -230,8 +169,8 @@ const createUseMentionOptions =
         }
       },
       // {
-      //   id: `${PluginId.Fs}#code`,
-      //   type: `${PluginId.Fs}#code`,
+      //   id: FsMentionType.Code,
+      //   type: FsMentionType.Code,
       //   label: 'Code',
       //   topLevelSort: 2,
       //   searchKeywords: ['code'],
@@ -241,16 +180,10 @@ const createUseMentionOptions =
       //   }
       // },
       {
-        id: `${PluginId.Fs}#codebase`,
-        type: `${PluginId.Fs}#codebase`,
+        id: FsMentionType.Codebase,
+        type: FsMentionType.Codebase,
         label: 'Codebase',
         data: true,
-        onUpdatePluginState: (dataArr: true[]) => {
-          setState(draft => {
-            draft.enableCodebaseAgent = dataArr.length > 0
-            draft.codeSnippetFromAgent = []
-          })
-        },
         topLevelSort: 6,
         searchKeywords: ['codebase'],
         itemLayoutProps: {
@@ -259,15 +192,10 @@ const createUseMentionOptions =
         }
       },
       {
-        id: `${PluginId.Fs}#errors`,
-        type: `${PluginId.Fs}#errors`,
+        id: FsMentionType.Errors,
+        type: FsMentionType.Errors,
         label: 'Errors',
         data: editorErrors,
-        onUpdatePluginState: dataArr => {
-          setState(draft => {
-            draft.editorErrors = dataArr?.[0] ?? []
-          })
-        },
         topLevelSort: 7,
         searchKeywords: ['errors', 'warnings', 'diagnostics'],
         itemLayoutProps: {

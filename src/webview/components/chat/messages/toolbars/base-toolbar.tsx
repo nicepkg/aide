@@ -115,7 +115,7 @@ export const BaseToolbar: FC<BaseToolbarProps> = ({
         >
           {/* blur overlay */}
           <div
-            className="absolute inset-0 pointer-events-none rounded-lg"
+            className="absolute inset-0 pointer-events-none rounded-xl"
             style={{
               backdropFilter: 'blur(4px)'
             }}

@@ -3,22 +3,23 @@ import type { LangchainMessageContents } from '@shared/entities'
 export const mergeLangchainMessageContents = (
   contents: LangchainMessageContents
 ): LangchainMessageContents => {
-  let finalText = ''
-  const otherContents: LangchainMessageContents = []
+  const finalContents: LangchainMessageContents = []
 
   contents.forEach(content => {
-    if (content.type === 'text') {
-      finalText += content.text
+    const lastContent = finalContents.at(-1)
+
+    if (!lastContent) {
+      finalContents.push(content)
+      return
+    }
+
+    if (content.type === 'text' && lastContent.type === 'text') {
+      lastContent.text += content.text
+      finalContents[finalContents.length - 1] = lastContent
     } else {
-      otherContents.push(content)
+      finalContents.push(content)
     }
   })
 
-  return [
-    {
-      type: 'text',
-      text: finalText
-    },
-    ...otherContents
-  ]
+  return finalContents
 }

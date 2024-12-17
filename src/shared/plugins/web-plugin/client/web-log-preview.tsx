@@ -1,44 +1,60 @@
-import { FC } from 'react'
+import { FC, type ReactNode } from 'react'
 import { GlobeIcon } from '@radix-ui/react-icons'
+import {
+  webSearchAgentName,
+  webVisitAgentName
+} from '@shared/plugins/agents/agent-names'
+import type { WebSearchAgent } from '@shared/plugins/agents/web-search-agent'
+import type { WebVisitAgent } from '@shared/plugins/agents/web-visit-agent'
 import type { CustomRenderLogPreviewProps } from '@shared/plugins/base/client/client-plugin-types'
-import { PluginId } from '@shared/plugins/base/types'
+import type { GetAgent } from '@shared/plugins/base/strategies'
 import { ChatLogPreview } from '@webview/components/chat/messages/roles/chat-log-preview'
 import type { PreviewContent } from '@webview/components/content-preview'
 import { ContentPreviewPopover } from '@webview/components/content-preview-popover'
 import { cn } from '@webview/utils/common'
 
-import type { WebDocInfo, WebPluginLog } from '../types'
+import type { WebDocInfo } from '../types'
 
 export const WebLogPreview: FC<CustomRenderLogPreviewProps> = props => {
-  if (props.log.pluginId !== PluginId.Web) return null
-  const log = props.log as WebPluginLog
+  const { log } = props
+  const { agent } = log
 
-  return (
+  const renderWrapper = (children: ReactNode) => (
     <ChatLogPreview log={log}>
-      <div className="mt-2">
-        {/* Search Results Section */}
-        {log.webSearchResultsFromAgent?.map((doc, index) => (
-          <WebDocItem
-            key={`search-${index}`}
-            doc={doc}
-            className={cn(index !== 0 && 'border-t')}
-          />
-        ))}
-
-        {/* Visit Results Section */}
-        {log.webVisitResultsFromAgent?.map((doc, index) => (
-          <WebDocItem
-            key={`visit-${index}`}
-            doc={doc}
-            className={cn(
-              index !== 0 && 'border-t',
-              log.webSearchResultsFromAgent?.length && 'border-t'
-            )}
-          />
-        ))}
-      </div>
+      <div className="mt-2">{children}</div>
     </ChatLogPreview>
   )
+
+  if (!agent) return null
+
+  switch (agent.name) {
+    case webSearchAgentName:
+      return renderWrapper(
+        (agent as GetAgent<WebSearchAgent>).output.webSearchResults?.map(
+          (doc, index) => (
+            <WebDocItem
+              key={`search-${index}`}
+              doc={doc}
+              className={cn(index !== 0 && 'border-t')}
+            />
+          )
+        )
+      )
+    case webVisitAgentName:
+      return renderWrapper(
+        (agent as GetAgent<WebVisitAgent>).output.contents?.map(
+          (doc, index) => (
+            <WebDocItem
+              key={`visit-${index}`}
+              doc={doc}
+              className={cn(index !== 0 && 'border-t')}
+            />
+          )
+        )
+      )
+    default:
+      return null
+  }
 }
 
 interface WebDocItemProps {

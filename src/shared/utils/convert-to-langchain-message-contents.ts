@@ -40,10 +40,13 @@ export const convertToLangchainMessageContents = (
       return [
         {
           type: 'image_url',
-          image_url:
-            typeof _content.image_url === 'string'
-              ? _content.image_url
-              : _content.image_url?.url
+          image_url: {
+            url:
+              typeof _content.image_url === 'string'
+                ? _content.image_url
+                : _content.image_url?.url,
+            detail: _content?.image_url?.detail || undefined
+          }
         }
       ]
     }

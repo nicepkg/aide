@@ -10,26 +10,29 @@ import {
 import { VsCodeFS } from '@extension/file-utils/vscode-fs'
 import { logger } from '@extension/logger'
 import { getWorkspaceFolder } from '@extension/utils'
-import type { BaseStrategyOptions } from '@extension/webview-api/chat-context-processor/strategies/base-strategy'
-import type {
-  ChatGraphNode,
-  ChatGraphState
-} from '@extension/webview-api/chat-context-processor/strategies/chat-strategy/nodes/state'
 import { formatCodeSnippet } from '@extension/webview-api/chat-context-processor/utils/code-snippet-formatter'
 import { getFileContent } from '@extension/webview-api/chat-context-processor/utils/get-file-content'
 import type { StructuredTool } from '@langchain/core/tools'
 import type { ChatContext, Conversation } from '@shared/entities'
+import type {
+  GetAgentState,
+  GetMentionState
+} from '@shared/plugins/base/base-to-state'
 import type { ChatStrategyProvider } from '@shared/plugins/base/server/create-provider-manager'
-import { PluginId } from '@shared/plugins/base/types'
+import {
+  createGraphNodeFromNodes,
+  createToolsFromNodes,
+  type BaseStrategyOptions,
+  type ChatGraphNode,
+  type ChatGraphState
+} from '@shared/plugins/base/strategies'
 import { mergeCodeSnippets } from '@shared/plugins/fs-plugin/server/merge-code-snippets'
 import { removeDuplicates } from '@shared/utils/common'
 
-import type { EditorError, FsPluginState } from '../../types'
-import {
-  createCodebaseSearchNode,
-  createCodebaseSearchTool
-} from './codebase-search-node'
-import { createFsVisitNode, createFsVisitTool } from './fs-visit-node'
+import { FsToState } from '../../fs-to-state'
+import { type EditorError } from '../../types'
+import { CodebaseSearchNode } from './codebase-search-node'
+import { FsVisitNode } from './fs-visit-node'
 
 interface BuildFilePromptsResult {
   selectedFilesPrompt: string
@@ -38,7 +41,23 @@ interface BuildFilePromptsResult {
   treePrompt: string
 }
 
+interface ConversationWithStateProps {
+  conversation: Conversation
+  mentionState: GetMentionState<FsToState>
+  agentState: GetAgentState<FsToState>
+}
+
 export class FsChatStrategyProvider implements ChatStrategyProvider {
+  private createConversationWithStateProps(
+    conversation: Conversation
+  ): ConversationWithStateProps {
+    const fsToState = new FsToState(conversation)
+    const mentionState = fsToState.toMentionsState()
+    const agentState = fsToState.toAgentsState()
+
+    return { conversation, mentionState, agentState }
+  }
+
   async buildSystemMessagePrompt(chatContext: ChatContext): Promise<string> {
     const hasAttachedFiles = this.checkForAttachedFiles(chatContext)
 
@@ -48,21 +67,17 @@ export class FsChatStrategyProvider implements ChatStrategyProvider {
   }
 
   async buildContextMessagePrompt(conversation: Conversation): Promise<string> {
-    const state = conversation.pluginStates?.[PluginId.Fs] as
-      | Partial<FsPluginState>
-      | undefined
+    const props = this.createConversationWithStateProps(conversation)
 
-    if (!state) return ''
-
-    const codeSnippetsPrompt = await this.buildCodeSnippetsPrompt(state)
+    const codeSnippetsPrompt = await this.buildCodeSnippetsPrompt(props)
     codeSnippetsPrompt &&
       logger.dev.verbose('codeSnippetsPrompt', codeSnippetsPrompt)
 
-    const editorErrorsPrompt = this.buildEditorErrorsPrompt(state)
+    const editorErrorsPrompt = this.buildEditorErrorsPrompt(props)
     editorErrorsPrompt &&
       logger.dev.verbose('editorErrorsPrompt', editorErrorsPrompt)
 
-    const { currentFilesPrompt } = await this.buildFilePrompts(state)
+    const { currentFilesPrompt } = await this.buildFilePrompts(props)
     const prompts = [
       codeSnippetsPrompt,
       currentFilesPrompt,
@@ -73,15 +88,10 @@ export class FsChatStrategyProvider implements ChatStrategyProvider {
   }
 
   async buildHumanMessagePrompt(conversation: Conversation): Promise<string> {
-    const state = conversation.pluginStates?.[PluginId.Fs] as
-      | Partial<FsPluginState>
-      | undefined
-
-    if (!state) return ''
-
+    const props = this.createConversationWithStateProps(conversation)
     const { selectedFilesPrompt, treePrompt } =
-      await this.buildFilePrompts(state)
-    const codeChunksPrompt = this.buildCodeChunksPrompt(state)
+      await this.buildFilePrompts(props)
+    const codeChunksPrompt = this.buildCodeChunksPrompt(props)
 
     return `
 ${treePrompt}
@@ -102,14 +112,12 @@ ${codeChunksPrompt}`
   async buildHumanMessageImageUrls(
     conversation: Conversation
   ): Promise<string[]> {
-    const state = conversation.pluginStates?.[PluginId.Fs] as
-      | Partial<FsPluginState>
-      | undefined
+    const { selectedImagesFromOutsideUrl } = conversation.state
 
-    if (!state) return []
+    if (!selectedImagesFromOutsideUrl) return []
 
-    const { selectedImagesFromOutsideUrl } = state
-    const { imageBase64Urls } = await this.buildFilePrompts(state)
+    const props = this.createConversationWithStateProps(conversation)
+    const { imageBase64Urls } = await this.buildFilePrompts(props)
     return removeDuplicates([
       ...(selectedImagesFromOutsideUrl?.map(image => image.url) || []),
       ...imageBase64Urls
@@ -117,43 +125,45 @@ ${codeChunksPrompt}`
   }
 
   async buildAgentTools(
-    options: BaseStrategyOptions,
+    strategyOptions: BaseStrategyOptions,
     state: ChatGraphState
   ): Promise<StructuredTool[]> {
-    const tools = await Promise.all([
-      createCodebaseSearchTool(options, state),
-      createFsVisitTool(options, state)
-    ])
-    return tools.filter(Boolean) as StructuredTool[]
+    return await createToolsFromNodes({
+      nodeClasses: [CodebaseSearchNode, FsVisitNode],
+      strategyOptions,
+      state
+    })
   }
 
   async buildLanggraphToolNodes(
-    options: BaseStrategyOptions
+    strategyOptions: BaseStrategyOptions
   ): Promise<ChatGraphNode[]> {
-    return [createCodebaseSearchNode(options), createFsVisitNode(options)]
+    return await createGraphNodeFromNodes({
+      nodeClasses: [CodebaseSearchNode, FsVisitNode],
+      strategyOptions
+    })
   }
 
   private checkForAttachedFiles(chatContext: ChatContext): boolean {
     return chatContext.conversations.some(conversation => {
-      const {
-        selectedFilesFromEditor = [],
-        selectedFoldersFromEditor = [],
-        codeSnippetFromAgent = []
-      } = (conversation.pluginStates?.[PluginId.Fs] as
-        | Partial<FsPluginState>
-        | undefined) || {}
+      const { mentionState, agentState } =
+        this.createConversationWithStateProps(conversation)
+      const codeSnippet = agentState?.codeSnippets || []
+
+      const { selectedFiles = [], selectedFolders = [] } = mentionState || {}
 
       return (
-        selectedFilesFromEditor.length > 0 ||
-        selectedFoldersFromEditor.length > 0 ||
-        codeSnippetFromAgent.length > 0
+        selectedFiles.length > 0 ||
+        selectedFolders.length > 0 ||
+        codeSnippet.length > 0
       )
     })
   }
 
   private async buildFilePrompts(
-    state: Partial<FsPluginState>
+    props: ConversationWithStateProps
   ): Promise<BuildFilePromptsResult> {
+    const { conversation, mentionState, agentState } = props
     const result: BuildFilePromptsResult = {
       selectedFilesPrompt: '',
       currentFilesPrompt: '',
@@ -163,16 +173,16 @@ ${codeChunksPrompt}`
 
     const workspacePath = getWorkspaceFolder().uri.fsPath
     const currentFilePaths = new Set(
-      state.currentFilesFromVSCode?.map(file => file.fullPath)
+      conversation.state.currentFilesFromVSCode?.map(file => file.fullPath)
     )
     const processedFiles = new Set<string>()
 
     const filesOrFolders = removeDuplicates(
       [
-        ...(state.selectedFilesFromEditor || []),
-        ...(state.selectedFilesFromFileSelector || []),
-        ...(state.selectedFoldersFromEditor || []),
-        ...(state.selectedFilesFromAgent || [])
+        ...(mentionState?.selectedFiles || []),
+        ...(mentionState?.selectedFolders || []),
+        ...(conversation?.state?.selectedFilesFromFileSelector || []),
+        ...(agentState?.codeSnippets || [])
       ],
       ['fullPath']
     ).map(file => file.fullPath)
@@ -218,11 +228,11 @@ ${codeChunksPrompt}`
       }
     })
 
-    if (state.selectedTreesFromEditor?.length) {
+    if (mentionState?.selectedTrees?.length) {
       result.treePrompt = `
 ## Some Project Structure
 
-${state.selectedTreesFromEditor.map(tree => tree.listString).join('\n')}
+${mentionState?.selectedTrees?.map(tree => tree.listString).join('\n')}
 `
     }
 
@@ -239,16 +249,13 @@ ${result.currentFilesPrompt}
   }
 
   private async buildCodeSnippetsPrompt(
-    state: Partial<FsPluginState>
+    props: ConversationWithStateProps
   ): Promise<string> {
-    const {
-      enableCodebaseAgent,
-      codeSnippetFromAgent: codeSnippetFromCodebaseAgent
-    } = state
+    const { mentionState, agentState } = props
+    if (!mentionState?.enableCodebaseAgent || !agentState.codeSnippets?.length)
+      return ''
 
-    if (!enableCodebaseAgent || !codeSnippetFromCodebaseAgent?.length) return ''
-
-    const mergedSnippets = await mergeCodeSnippets(codeSnippetFromCodebaseAgent)
+    const mergedSnippets = await mergeCodeSnippets(agentState.codeSnippets)
 
     const snippetsContent = mergedSnippets
       .map(snippet =>
@@ -272,12 +279,11 @@ ${CONTENT_SEPARATOR}
       : ''
   }
 
-  private buildCodeChunksPrompt(state: Partial<FsPluginState>): string {
-    const { codeChunksFromEditor } = state
+  private buildCodeChunksPrompt(props: ConversationWithStateProps): string {
+    const { mentionState } = props
+    if (!mentionState?.codeChunks?.length) return ''
 
-    if (!codeChunksFromEditor?.length) return ''
-
-    const chunksContent = removeDuplicates(codeChunksFromEditor, [
+    const chunksContent = removeDuplicates(mentionState.codeChunks, [
       'relativePath',
       'code'
     ])
@@ -296,13 +302,12 @@ ${CONTENT_SEPARATOR}
     return chunksContent
   }
 
-  private buildEditorErrorsPrompt(state: Partial<FsPluginState>): string {
-    const { editorErrors } = state
-
-    if (!editorErrors?.length) return ''
+  private buildEditorErrorsPrompt(props: ConversationWithStateProps): string {
+    const { mentionState } = props
+    if (!mentionState?.editorErrors?.length) return ''
 
     // Group errors by file
-    const errorsByFile = editorErrors.reduce(
+    const errorsByFile = mentionState.editorErrors.reduce(
       (acc, error) => {
         if (!acc[error.file]) {
           acc[error.file] = []

@@ -7,7 +7,7 @@ import {
 import { PluginId } from '@shared/plugins/base/types'
 import { pkg } from '@shared/utils/pkg'
 
-import type { WebPluginState } from '../types'
+import { WebMentionType, WebPluginState } from '../types'
 import { WebLogPreview } from './web-log-preview'
 
 export const WebClientPlugin = createClientPlugin<WebPluginState>({
@@ -15,13 +15,7 @@ export const WebClientPlugin = createClientPlugin<WebPluginState>({
   version: pkg.version,
 
   getInitialState() {
-    return {
-      enableWebSearchAgent: false,
-      webSearchResultsFromAgent: [],
-      webSearchAsDocFromAgent: [],
-      enableWebVisitAgent: false,
-      webVisitResultsFromAgent: []
-    }
+    return {}
   },
 
   setup(props) {
@@ -33,27 +27,17 @@ export const WebClientPlugin = createClientPlugin<WebPluginState>({
 })
 
 const createUseMentionOptions =
-  (props: SetupProps<WebPluginState>) => (): UseMentionOptionsReturns => {
-    const { setState } = props
-
-    return [
-      {
-        id: `${PluginId.Web}#web`,
-        type: `${PluginId.Web}#web`,
-        label: 'Web',
-        data: true,
-        onUpdatePluginState: (dataArr: true[]) => {
-          setState(draft => {
-            draft.enableWebVisitAgent = dataArr.length > 0
-            draft.enableWebSearchAgent = dataArr.length > 0
-          })
-        },
-        topLevelSort: 3,
-        searchKeywords: ['web', 'search'],
-        itemLayoutProps: {
-          icon: <GlobeIcon className="size-4 mr-1" />,
-          label: 'Web'
-        }
+  (props: SetupProps<WebPluginState>) => (): UseMentionOptionsReturns => [
+    {
+      id: WebMentionType.Web,
+      type: WebMentionType.Web,
+      label: 'Web',
+      data: true,
+      topLevelSort: 3,
+      searchKeywords: ['web', 'search'],
+      itemLayoutProps: {
+        icon: <GlobeIcon className="size-4 mr-1" />,
+        label: 'Web'
       }
-    ]
-  }
+    }
+  ]

@@ -10,7 +10,7 @@ import { AutoTaskStrategy } from './strategies/auto-task-strategy'
 import type {
   BaseStrategy,
   BaseStrategyOptions
-} from './strategies/base-strategy'
+} from './strategies/base/base-strategy'
 import { ChatStrategy } from './strategies/chat-strategy'
 import { ComposerStrategy } from './strategies/composer-strategy'
 import { UIDesignerStrategy } from './strategies/ui-designer-strategy'

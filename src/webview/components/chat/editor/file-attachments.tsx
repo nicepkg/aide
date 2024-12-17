@@ -7,15 +7,29 @@ import type { FileInfo } from '@webview/types/chat'
 import { cn } from '@webview/utils/common'
 import { getFileNameFromPath } from '@webview/utils/path'
 
-import { ContentPreviewPopover } from '../../content-preview-popover'
+import {
+  ContentPreviewPopover,
+  type ContentPreviewPopoverProps
+} from '../../content-preview-popover'
 import { Popover, PopoverContent, PopoverTrigger } from '../../ui/popover'
 import { FileSelector } from '../selectors/file-selector'
+
+export interface FileAttachmentOtherItem {
+  id: string
+  label: string
+  type: string
+  item: Record<string, any>
+  previewConfig: ContentPreviewPopoverProps['content']
+  icon?: React.ReactNode
+}
 
 interface FileAttachmentsProps {
   className?: string
   showFileSelector?: boolean
   selectedFiles: FileInfo[]
+  selectedOtherItems?: FileAttachmentOtherItem[]
   onSelectedFilesChange: (files: FileInfo[]) => void
+  onSelectedOtherItemsChange?: (items: FileAttachmentOtherItem[]) => void
   onOpenChange?: (isOpen: boolean) => void
 }
 
@@ -23,7 +37,9 @@ export const FileAttachments: React.FC<FileAttachmentsProps> = ({
   className,
   showFileSelector = true,
   selectedFiles,
+  selectedOtherItems,
   onSelectedFilesChange,
+  onSelectedOtherItemsChange,
   onOpenChange
 }) => {
   const [showMore, setShowMore] = useState(false)
@@ -37,7 +53,7 @@ export const FileAttachments: React.FC<FileAttachmentsProps> = ({
 
     const checkOverflow = () => {
       setShowMore(container.scrollHeight > container.clientHeight)
-      const items = container.querySelectorAll('.file-item')
+      const items = container.querySelectorAll('.file-attachment-item')
       let count = 0
       for (const item of items) {
         if (item.getBoundingClientRect().top < container.clientHeight) {
@@ -60,19 +76,45 @@ export const FileAttachments: React.FC<FileAttachmentsProps> = ({
     )
   }
 
+  const handleRemoveOtherItem = (item: FileAttachmentOtherItem) => {
+    onSelectedOtherItemsChange?.(
+      selectedOtherItems?.filter(i => i.id !== item.id) ?? []
+    )
+  }
+
   const renderFileItem = (file: FileInfo) => (
     <ContentPreviewPopover
       key={file.fullPath}
       content={{ type: 'file', path: file.fullPath }}
     >
-      <div className="file-item cursor-pointer flex items-center border text-foreground bg-background mr-2 mt-2 h-5 px-1 py-0.5 text-xs rounded-sm">
+      <div className="file-attachment-item cursor-pointer flex items-center border text-foreground bg-background mr-2 mt-2 h-5 px-1 py-0.5 text-xs rounded-sm">
         <FileIcon className="size-2.5 mr-1" filePath={file.fullPath} />
-        <div>{getFileNameFromPath(file.fullPath)}</div>
+        <div className="user-select-none max-w-[100px] truncate">
+          {getFileNameFromPath(file.fullPath)}
+        </div>
         <Cross1Icon
           className="size-2.5 ml-1"
           onClick={e => {
             e.stopPropagation()
             handleRemoveFile(file)
+          }}
+        />
+      </div>
+    </ContentPreviewPopover>
+  )
+
+  const renderOtherItem = (item: FileAttachmentOtherItem) => (
+    <ContentPreviewPopover key={item.id} content={item.previewConfig}>
+      <div className="file-attachment-item cursor-pointer flex items-center border text-foreground bg-background mr-2 mt-2 h-5 px-1 py-0.5 text-xs rounded-sm">
+        {item.icon}
+        <div className="user-select-none max-w-[100px] truncate">
+          {item.label}
+        </div>
+        <Cross1Icon
+          className="size-2.5 ml-1"
+          onClick={e => {
+            e.stopPropagation()
+            handleRemoveOtherItem(item)
           }}
         />
       </div>
@@ -113,17 +155,27 @@ export const FileAttachments: React.FC<FileAttachmentsProps> = ({
               size="xsss"
               className="cursor-pointer mt-2 mr-2 self-start"
             >
-              ...{selectedFiles.length - visibleCount} more
+              ...
+              {selectedFiles.length +
+                (selectedOtherItems?.length || 0) -
+                visibleCount}{' '}
+              more
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-[300px] max-h-[400px] overflow-y-auto p-2">
+          <PopoverContent
+            side="top"
+            align="start"
+            className="w-[300px] max-h-[400px] overflow-y-auto p-2"
+          >
             <div className="flex flex-wrap gap-1">
+              {selectedOtherItems?.map(renderOtherItem)}
               {selectedFiles.map(renderFileItem)}
             </div>
           </PopoverContent>
         </Popover>
       )}
 
+      {selectedOtherItems?.map(renderOtherItem)}
       {selectedFiles.map(renderFileItem)}
     </div>
   )

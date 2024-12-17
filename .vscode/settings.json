@@ -134,5 +134,6 @@
     "xsss",
     "Zhipu",
     "zustand"
-  ]
+  ],
+  "testing.automaticallyOpenTestResults": "neverOpen"
 }

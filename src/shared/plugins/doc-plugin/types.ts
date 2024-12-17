@@ -1,18 +1,18 @@
-import type { BaseConversationLog } from '@shared/entities'
+import type { Mention } from '@shared/entities'
 
-import type { PluginId } from '../base/types'
+import { PluginId } from '../base/types'
+
+export enum DocMentionType {
+  Docs = `${PluginId.Doc}#docs`,
+  Doc = `${PluginId.Doc}#doc`,
+  DocSetting = `${PluginId.Doc}#doc-setting`
+}
+
+export type DocMention = Mention<DocMentionType.Doc, string>
 
 export interface DocInfo {
   content: string
   path: string // file path or url
 }
 
-export interface DocPluginState {
-  allowSearchDocSiteNamesFromEditor: string[]
-  relevantDocsFromAgent: DocInfo[]
-}
-
-export interface DocPluginLog extends BaseConversationLog {
-  pluginId: PluginId.Doc
-  relevantDocsFromAgent?: DocInfo[]
-}
+export interface DocPluginState {}

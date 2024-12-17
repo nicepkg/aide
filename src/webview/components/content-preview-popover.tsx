@@ -8,7 +8,7 @@ import { useControllableState } from '@webview/hooks/use-controllable-state'
 
 import { ContentPreview, type PreviewContent } from './content-preview'
 
-interface ContentPreviewPopoverProps {
+export interface ContentPreviewPopoverProps {
   content: PreviewContent
   open?: boolean
   onOpenChange?: (open: boolean) => void

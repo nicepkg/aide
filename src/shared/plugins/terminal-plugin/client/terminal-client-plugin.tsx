@@ -10,7 +10,11 @@ import { api } from '@webview/services/api-client'
 import { type MentionOption } from '@webview/types/chat'
 import { SquareTerminalIcon } from 'lucide-react'
 
-import type { TerminalInfo, TerminalPluginState } from '../types'
+import {
+  TerminalInfo,
+  TerminalMentionType,
+  TerminalPluginState
+} from '../types'
 import { MentionTerminalPreview } from './mention-terminal-preview'
 
 export const TerminalClientPlugin = createClientPlugin<TerminalPluginState>({
@@ -18,10 +22,7 @@ export const TerminalClientPlugin = createClientPlugin<TerminalPluginState>({
   version: pkg.version,
 
   getInitialState() {
-    return {
-      selectedTerminalsFromEditor: [],
-      terminalLogsFromAgent: []
-    }
+    return {}
   },
 
   setup(props) {
@@ -33,22 +34,16 @@ export const TerminalClientPlugin = createClientPlugin<TerminalPluginState>({
 
 const createUseMentionOptions =
   (props: SetupProps<TerminalPluginState>) => (): UseMentionOptionsReturns => {
-    const { setState } = props
     const { data: terminals = [] } = useQuery({
       queryKey: ['realtime', 'terminals'],
       queryFn: () => api.terminal.getTerminalsForMention({})
     })
 
     const terminalMentionOptions: MentionOption[] = terminals.map(terminal => ({
-      id: `${PluginId.Terminal}#terminal#${terminal.processId}`,
-      type: `${PluginId.Terminal}#terminal`,
+      id: `${TerminalMentionType.Terminal}#${terminal.processId}`,
+      type: TerminalMentionType.Terminal,
       label: terminal.name,
       data: terminal,
-      onUpdatePluginState: dataArr => {
-        setState(draft => {
-          draft.selectedTerminalsFromEditor = dataArr
-        })
-      },
       searchKeywords: [terminal.name],
       itemLayoutProps: {
         icon: <SquareTerminalIcon className="size-4 mr-1" />,
@@ -60,8 +55,8 @@ const createUseMentionOptions =
 
     return [
       {
-        id: `${PluginId.Terminal}#terminals`,
-        type: `${PluginId.Terminal}#terminals`,
+        id: TerminalMentionType.Terminals,
+        type: TerminalMentionType.Terminals,
         label: 'Terminals',
         topLevelSort: 6,
         searchKeywords: ['terminal', 'shell', 'command'],

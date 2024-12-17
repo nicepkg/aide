@@ -40,6 +40,8 @@ body,
 
   color: hsl(var(--foreground));
   background-color: hsl(var(--background)) !important;
+  pointer-events: auto !important;
+  user-select: auto !important;
 }
 
 a:focus,
@@ -124,4 +126,9 @@ span.languageLabel {
   padding: 2px 4px;
   border-radius: 3px;
   font-family: monospace;
+}
+
+.editor-input.dragging {
+  border: 2px dashed hsl(var(--primary));
+  background-color: hsl(var(--primary) / 0.1);
 }

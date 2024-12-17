@@ -8,6 +8,7 @@ import { CodebaseController } from './codebase-controller'
 import { DocController } from './doc-controller'
 import { FileController } from './file-controller'
 import { GitController } from './git-controller'
+import { MentionController } from './mention-controller'
 import { SettingsController } from './settings-controller'
 import { SystemController } from './system-controller'
 import { TerminalController } from './terminal-controller'
@@ -24,6 +25,7 @@ export const controllers = [
   ApplyController,
   SettingsController,
   AIProviderController,
-  AIModelController
+  AIModelController,
+  MentionController
 ] as const satisfies (typeof Controller)[]
 export type Controllers = typeof controllers

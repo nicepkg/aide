@@ -83,7 +83,7 @@ ${prompt}
     const imageContents: LangchainMessageContents =
       imageUrls.map(url => ({
         type: 'image_url',
-        image_url: url
+        image_url: { url }
       })) || []
 
     let isEnhanced = false

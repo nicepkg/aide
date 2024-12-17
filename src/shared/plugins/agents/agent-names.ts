@@ -1,0 +1,5 @@
+export const codebaseSearchAgentName = 'codebaseSearch'
+export const docRetrieverAgentName = 'docRetriever'
+export const fsVisitAgentName = 'fsVisit'
+export const webSearchAgentName = 'webSearch'
+export const webVisitAgentName = 'webVisit'

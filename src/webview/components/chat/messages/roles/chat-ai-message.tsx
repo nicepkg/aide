@@ -31,7 +31,7 @@ const _ChatAIMessage: FC<ChatAIMessageProps> = props => {
     <div ref={ref} className="w-full flex">
       <div
         className={cn(
-          'mr-auto relative bg-background text-foreground border overflow-hidden rounded-md rounded-bl-[0px]',
+          'mr-auto relative bg-background text-foreground border overflow-hidden rounded-2xl rounded-bl-[0px]',
           isEditMode && 'w-full',
           className
         )}

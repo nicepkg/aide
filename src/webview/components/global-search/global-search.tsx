@@ -158,7 +158,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({
         <Command
           loop
           shouldFilter={useInnerFilter}
-          className="border rounded-md h-auto shrink-0 "
+          className="border rounded-2xl h-auto shrink-0 "
         >
           <CommandInput
             placeholder="Type to search..."
@@ -210,7 +210,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({
         <div className="w-full h-[250px] mt-4">
           <AppErrorBoundary>
             {isOpen && focusedItem?.renderPreview ? (
-              <div className="border border-primary rounded-md p-2 bg-popover text-popover-foreground w-full max-h-full overflow-auto">
+              <div className="border border-primary rounded-2xl p-2 bg-popover text-popover-foreground w-full max-h-full overflow-auto">
                 {focusedItem.renderPreview()}
               </div>
             ) : null}

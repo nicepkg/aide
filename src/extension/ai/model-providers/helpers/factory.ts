@@ -3,10 +3,12 @@ import { aiModelDB } from '@extension/webview-api/lowdb/ai-model-db'
 import { aiProviderDB } from '@extension/webview-api/lowdb/ai-provider-db'
 import { globalSettingsDB } from '@extension/webview-api/lowdb/settings-db'
 import type { MessageContent } from '@langchain/core/messages'
+import type { ChatContext } from '@shared/entities'
 import type { AIModel } from '@shared/entities/ai-model-entity'
 import {
   AIProvider,
   AIProviderType,
+  chatContextTypeModelSettingKeyMap,
   FeatureModelSettingKey,
   FeatureModelSettingValue
 } from '@shared/entities/ai-provider-entity'
@@ -23,6 +25,7 @@ export class ModelProviderFactory {
     const provider = (await aiProviderDB.getAll()).find(
       p => p.id === providerId
     )
+
     if (!provider) {
       throw new Error(`Provider not found: ${providerId}`)
     }
@@ -90,6 +93,12 @@ export class ModelProviderFactory {
     return await this.create(setting)
   }
 
+  static async getModelProviderForChatContext(chatContext: ChatContext) {
+    const chatContextType = chatContext.type
+    const modelSettingKey = chatContextTypeModelSettingKeyMap[chatContextType]
+    return await this.getModelProvider(modelSettingKey)
+  }
+
   static async getModelSettingForFeature(
     key: FeatureModelSettingKey,
     useDefault = true
@@ -99,9 +108,19 @@ export class ModelProviderFactory {
       FeatureModelSettingValue
     > | null = await globalSettingsDB.getSetting('models')
 
+    const isExtendsDefault =
+      !settings?.[key]?.providerId && !settings?.[key]?.modelName
+
+    const defaultSetting = settings?.[FeatureModelSettingKey.Default]
+
+    if (isExtendsDefault && useDefault && !defaultSetting) {
+      throw new Error(
+        'You forgot to set provider or model in your settings, please check your settings.'
+      )
+    }
+
     const setting =
-      settings?.[key] ||
-      (useDefault ? settings?.[FeatureModelSettingKey.Default] : undefined)
+      isExtendsDefault && useDefault ? defaultSetting : settings?.[key]
 
     return setting
   }

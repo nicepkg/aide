@@ -20,8 +20,6 @@ export interface MentionOption<T = any> {
   label: string
   type?: string
   onSelect?: (data: T) => void
-  onUpdatePluginState?: (dataArr: T[]) => void
-
   topLevelSort?: number
   searchKeywords?: string[]
   searchSortStrategy?: SearchSortStrategy

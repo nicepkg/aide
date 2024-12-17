@@ -1,20 +1,22 @@
 import type { CommandManager } from '@extension/commands/command-manager'
+import { ControllerRegister } from '@extension/registers/controller-register'
 import type { RegisterManager } from '@extension/registers/register-manager'
 import { getErrorMsg, isAbortError } from '@shared/utils/common'
 import findFreePorts from 'find-free-ports'
 import { Server } from 'socket.io'
 import * as vscode from 'vscode'
 
-import { controllers } from './controllers'
-import type {
-  Controller,
-  ControllerClass,
-  ControllerMethod,
-  WebviewPanel
-} from './types'
+import type { ControllerMethod, WebviewPanel } from './types'
 
 class APIManager {
-  private controllers: Map<string, Controller> = new Map()
+  private get controllers() {
+    const controller =
+      this.registerManager.getRegister(ControllerRegister)?.controllers
+
+    if (!controller) throw new Error('ControllerRegister not found')
+
+    return controller
+  }
 
   private io!: Server
 
@@ -28,12 +30,8 @@ class APIManager {
     private commandManager: CommandManager
   ) {}
 
-  public async initialize(
-    panel: WebviewPanel,
-    controllerClasses: ControllerClass[]
-  ) {
+  public async initialize(panel: WebviewPanel) {
     await this.initializeServer()
-    this.registerControllers(controllerClasses)
 
     const listenerDispose = panel.webview.onDidReceiveMessage(e => {
       if (e.type === 'getVSCodeSocketPort') {
@@ -62,16 +60,6 @@ class APIManager {
     this.io.on('connection', socket => {
       socket.on('request', this.handleMessage.bind(this, socket))
     })
-  }
-
-  private registerControllers(controllerClasses: ControllerClass[]) {
-    for (const ControllerClass of controllerClasses) {
-      const controller = new ControllerClass(
-        this.registerManager,
-        this.commandManager
-      )
-      this.controllers.set(controller.name, controller)
-    }
   }
 
   private async handleMessage(socket: any, message: any) {
@@ -138,7 +126,7 @@ export const setupWebviewAPIManager = async (
 ): Promise<vscode.Disposable> => {
   const apiManager = new APIManager(context, registerManager, commandManager)
 
-  await apiManager.initialize(panel, controllers as any as ControllerClass[])
+  await apiManager.initialize(panel)
 
   return {
     dispose: () => {

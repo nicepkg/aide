@@ -1,21 +1,26 @@
 import { ModelProviderFactory } from '@extension/ai/model-providers/helpers/factory'
 import type { AIMessageChunk } from '@langchain/core/messages'
-import { FeatureModelSettingKey } from '@shared/entities'
 import { convertToLangchainMessageContents } from '@shared/utils/convert-to-langchain-message-contents'
+import { mergeLangchainMessageContents } from '@shared/utils/merge-langchain-message-contents'
 import { produce } from 'immer'
 
+import { BaseNode } from '../../base/base-node'
+import { dispatchBaseGraphState } from '../../base/base-state'
 import { ChatMessagesConstructor } from '../messages-constructors/chat-messages-constructor'
-import { dispatchChatGraphState, type CreateChatGraphNode } from './state'
+import { type ChatGraphState } from '../state'
 
-export const createGenerateNode: CreateChatGraphNode =
-  options => async state => {
-    const modelProvider = await ModelProviderFactory.getModelProvider(
-      FeatureModelSettingKey.Chat
-    )
+export class GenerateNode extends BaseNode {
+  onInit() {}
+
+  async execute(state: ChatGraphState) {
+    const modelProvider =
+      await ModelProviderFactory.getModelProviderForChatContext(
+        state.chatContext
+      )
     const aiModel = await modelProvider.createLangChainModel()
 
     const chatMessagesConstructor = new ChatMessagesConstructor({
-      ...options,
+      ...this.context.strategyOptions,
       chatContext: state.chatContext
     })
 
@@ -40,11 +45,14 @@ export const createGenerateNode: CreateChatGraphNode =
 
       if (contents.length) {
         newConversations = produce(state.newConversations, draft => {
-          draft.at(-1)!.contents.push(...contents)
+          draft.at(-1)!.contents = mergeLangchainMessageContents([
+            ...draft.at(-1)!.contents,
+            ...contents
+          ])
         })
       }
 
-      dispatchChatGraphState({
+      dispatchBaseGraphState({
         newConversations,
         chatContext: state.chatContext
       })
@@ -55,3 +63,4 @@ export const createGenerateNode: CreateChatGraphNode =
       newConversations
     }
   }
+}

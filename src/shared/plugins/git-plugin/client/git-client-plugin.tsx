@@ -10,18 +10,14 @@ import { useQuery } from '@tanstack/react-query'
 import { api } from '@webview/services/api-client'
 import { type MentionOption } from '@webview/types/chat'
 
-import type { GitCommit, GitPluginState } from '../types'
+import { GitCommit, GitMentionType, GitPluginState } from '../types'
 
 export const GitClientPlugin = createClientPlugin<GitPluginState>({
   id: PluginId.Git,
   version: pkg.version,
 
   getInitialState() {
-    return {
-      gitCommitsFromEditor: [],
-      gitDiffWithMainBranchFromEditor: null,
-      gitDiffOfWorkingStateFromEditor: null
-    }
+    return {}
   },
 
   setup(props) {
@@ -33,7 +29,6 @@ export const GitClientPlugin = createClientPlugin<GitPluginState>({
 
 const createUseMentionOptions =
   (props: SetupProps<GitPluginState>) => (): UseMentionOptionsReturns => {
-    const { setState } = props
     const { data: gitCommits = [] } = useQuery({
       queryKey: ['realtime', 'git-commits'],
       queryFn: () =>
@@ -45,16 +40,10 @@ const createUseMentionOptions =
     const gitCommitsMentionOptions: MentionOption[] = gitCommits.map(
       commit =>
         ({
-          id: `${PluginId.Git}#git-commit#${commit.sha}`,
-          type: `${PluginId.Git}#git-commit`,
+          id: `${GitMentionType.GitCommit}#${commit.sha}`,
+          type: GitMentionType.GitCommit,
           label: commit.message,
           data: commit,
-          onUpdatePluginState: dataArr => {
-            setState(draft => {
-              draft.gitCommitsFromEditor = dataArr
-            })
-          },
-
           searchKeywords: [commit.sha, commit.message],
           itemLayoutProps: {
             icon: <CommitIcon className="size-4 mr-1 rotate-90" />,
@@ -66,8 +55,8 @@ const createUseMentionOptions =
 
     return [
       {
-        id: `${PluginId.Git}#git`,
-        type: `${PluginId.Git}#git`,
+        id: GitMentionType.Git,
+        type: GitMentionType.Git,
         label: 'Git',
         topLevelSort: 5,
         searchKeywords: ['git'],
@@ -77,14 +66,10 @@ const createUseMentionOptions =
         },
         children: [
           {
-            id: `${PluginId.Git}#git-diff`,
-            type: `${PluginId.Git}#git-diff`,
+            id: GitMentionType.GitDiff,
+            type: GitMentionType.GitDiff,
             label: 'Diff (Diff of Working State)',
-            onUpdatePluginState: dataArr => {
-              setState(draft => {
-                draft.gitDiffOfWorkingStateFromEditor = dataArr.at(-1)
-              })
-            },
+            data: null, // TODO: add diff of working state
             searchKeywords: ['diff'],
             itemLayoutProps: {
               icon: <MaskOffIcon className="size-4 mr-1" />,
@@ -92,14 +77,10 @@ const createUseMentionOptions =
             }
           },
           {
-            id: `${PluginId.Git}#git-pr`,
-            type: `${PluginId.Git}#git-pr`,
+            id: GitMentionType.GitPR,
+            type: GitMentionType.GitPR,
             label: 'PR (Diff with Main Branch)',
-            onUpdatePluginState: dataArr => {
-              setState(draft => {
-                draft.gitDiffWithMainBranchFromEditor = dataArr.at(-1)
-              })
-            },
+            data: null, // TODO: add diff with main branch
             searchKeywords: ['pull request', 'pr', 'diff'],
             itemLayoutProps: {
               icon: <MaskOffIcon className="size-4 mr-1" />,

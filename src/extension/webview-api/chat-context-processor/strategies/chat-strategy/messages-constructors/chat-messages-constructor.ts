@@ -1,11 +1,12 @@
 import type { CommandManager } from '@extension/commands/command-manager'
 import type { RegisterManager } from '@extension/registers/register-manager'
 import { ServerPluginRegister } from '@extension/registers/server-plugin-register'
+import { processConversationsWithAgents } from '@extension/webview-api/chat-context-processor/utils/conversation-utils'
 import { HumanMessage, SystemMessage } from '@langchain/core/messages'
 import type { ChatContext, LangchainMessage } from '@shared/entities'
 import { settledPromiseResults } from '@shared/utils/common'
 
-import type { BaseStrategyOptions } from '../../base-strategy'
+import type { BaseStrategyOptions } from '../../base/base-strategy'
 import { ConversationMessageConstructor } from './conversation-message-constructor'
 
 interface ChatMessagesConstructorOptions extends BaseStrategyOptions {
@@ -26,7 +27,7 @@ export class ChatMessagesConstructor {
   }
 
   constructor(options: ChatMessagesConstructorOptions) {
-    this.chatContext = options.chatContext
+    this.chatContext = processConversationsWithAgents(options.chatContext)
     this.registerManager = options.registerManager
     this.commandManager = options.commandManager
   }

@@ -1,4 +1,5 @@
 import { useEffect, useId, useImperativeHandle, type FC, type Ref } from 'react'
+import type { FileInfo } from '@extension/file-utils/traverse-fs'
 import { $generateHtmlFromNodes } from '@lexical/html'
 import { AutoFocusPlugin } from '@lexical/react/LexicalAutoFocusPlugin'
 import {
@@ -12,7 +13,10 @@ import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin'
 import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin'
 import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin'
 import { TabIndentationPlugin } from '@lexical/react/LexicalTabIndentationPlugin'
+import { type ImageInfo } from '@shared/entities'
 import { useQueryClient } from '@tanstack/react-query'
+import { useDropHandler } from '@webview/lexical/hooks/use-drop-handler'
+import { usePasteHandler } from '@webview/lexical/hooks/use-paste-handler'
 import { MentionNode } from '@webview/lexical/nodes/mention-node'
 import {
   MentionPlugin,
@@ -54,6 +58,8 @@ export interface ChatEditorProps
     editor: LexicalEditor,
     tags: Set<string>
   ) => void
+  onPasteImage?: (image: ImageInfo) => void
+  onDropFiles?: (files: FileInfo[]) => void
 }
 
 export interface ChatEditorRef {
@@ -72,6 +78,8 @@ export const ChatEditor: FC<ChatEditorProps> = ({
   autoFocus = false,
   onComplete,
   onChange,
+  onPasteImage,
+  onDropFiles,
   ...otherProps
 }) => {
   const id = useId()
@@ -93,6 +101,8 @@ export const ChatEditor: FC<ChatEditorProps> = ({
         autoFocus={autoFocus}
         onComplete={onComplete}
         onChange={onChange}
+        onPasteImage={onPasteImage}
+        onDropFiles={onDropFiles}
         {...otherProps}
       />
     </LexicalComposer>
@@ -108,6 +118,8 @@ const ChatEditorInner: FC<ChatEditorProps> = ({
   autoFocus,
   onComplete,
   onChange,
+  onPasteImage,
+  onDropFiles,
 
   // div props
   ...otherProps
@@ -239,6 +251,16 @@ const ChatEditorInner: FC<ChatEditorProps> = ({
       ),
     [editor, queryClient]
   )
+
+  usePasteHandler({
+    editor,
+    onPasteImage
+  })
+
+  useDropHandler({
+    editor,
+    onDropFiles
+  })
 
   return (
     <div

@@ -1,22 +1,28 @@
 import { useEffect, useRef, type FC } from 'react'
-import type { ChatContext, Conversation } from '@shared/entities'
+import {
+  ConversationEntity,
+  type ChatContext,
+  type Conversation,
+  type ImageInfo
+} from '@shared/entities'
 import { PluginId } from '@shared/plugins/base/types'
-import { tryParseJSON, tryStringifyJSON } from '@shared/utils/common'
+import {
+  removeDuplicates,
+  tryParseJSON,
+  tryStringifyJSON
+} from '@shared/utils/common'
 import { convertToLangchainMessageContents } from '@shared/utils/convert-to-langchain-message-contents'
 import { getAllTextFromLangchainMessageContents } from '@shared/utils/get-all-text-from-langchain-message-contents'
 import { mergeLangchainMessageContents } from '@shared/utils/merge-langchain-message-contents'
 import { ButtonWithTooltip } from '@webview/components/button-with-tooltip'
+import { FileIcon } from '@webview/components/file-icon'
 import { BorderBeam } from '@webview/components/ui/border-beam'
 import { usePlugin, WithPluginProvider } from '@webview/contexts/plugin-context'
-import {
-  usePluginMentionOptions,
-  usePluginSelectedFilesProviders
-} from '@webview/hooks/chat/use-plugin-providers'
 import { useCallbackRef } from '@webview/hooks/use-callback-ref'
+import { api } from '@webview/services/api-client'
 import { type FileInfo } from '@webview/types/chat'
 import { cn } from '@webview/utils/common'
 import { logger } from '@webview/utils/logger'
-import { updatePluginStatesFromEditorState } from '@webview/utils/plugin-states'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
   $createParagraphNode,
@@ -25,11 +31,14 @@ import {
   type EditorState,
   type LexicalEditor
 } from 'lexical'
-import type { Updater } from 'use-immer'
+import { type Updater } from 'use-immer'
 
 import { ContextSelector } from '../selectors/context-selector'
 import { ChatEditor, type ChatEditorRef } from './chat-editor'
-import { FileAttachments } from './file-attachments'
+import {
+  FileAttachments,
+  type FileAttachmentOtherItem
+} from './file-attachments'
 
 export enum ChatInputMode {
   Default = 'default',
@@ -74,8 +83,6 @@ const _ChatInput: FC<ChatInputProps> = ({
 }) => {
   const editorRef = useRef<ChatEditorRef>(null)
   const { setState: setPluginState, getState: getPluginState } = usePlugin()
-  const { selectedFiles, setSelectedFiles } = usePluginSelectedFilesProviders()
-  const mentionOptions = usePluginMentionOptions()
 
   // sync conversation plugin states with plugin registry
   useEffect(() => {
@@ -96,10 +103,6 @@ const _ChatInput: FC<ChatInputProps> = ({
           )
         )
       }
-    })
-
-    updatePluginStatesFromEditorState(editorState, mentionOptions)
-    setConversation(draft => {
       draft.pluginStates = getPluginState()
     })
   }
@@ -144,12 +147,12 @@ const _ChatInput: FC<ChatInputProps> = ({
       await handleEditorChange(editorState)
     }
 
-    logger.verbose('send conversation', getConversation())
-    onSend(getConversation())
-  }
+    // refresh mentions
+    const newConversation =
+      await api.mention.refreshConversationMentions(getConversation())
 
-  const handleSelectedFiles = (files: FileInfo[]) => {
-    setSelectedFiles?.(files)
+    logger.verbose('send conversation', newConversation)
+    onSend(newConversation)
   }
 
   const focusOnEditor = () => editorRef.current?.focusOnEditor()
@@ -183,6 +186,24 @@ const _ChatInput: FC<ChatInputProps> = ({
     }
   }
 
+  const handlePasteImage = (image: ImageInfo) => {
+    setConversation(draft => {
+      draft.state.selectedImagesFromOutsideUrl = removeDuplicates(
+        [...draft.state.selectedImagesFromOutsideUrl, image],
+        ['url']
+      )
+    })
+  }
+
+  const handleDropFiles = (files: FileInfo[]) => {
+    setConversation(draft => {
+      draft.state.selectedFilesFromFileSelector = removeDuplicates(
+        [...draft.state.selectedFilesFromFileSelector, ...files],
+        ['fullPath']
+      )
+    })
+  }
+
   return (
     <AnimatePresence initial={false}>
       <motion.div
@@ -198,32 +219,12 @@ const _ChatInput: FC<ChatInputProps> = ({
           className
         )}
       >
-        <AnimatePresence mode="wait">
-          {![ChatInputMode.MessageReadonly].includes(mode) && (
-            <motion.div
-              layout="preserve-aspect"
-              initial={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.3, ease: 'easeInOut' }}
-              style={{ willChange: 'auto' }}
-            >
-              <FileAttachments
-                className={cn(
-                  [
-                    ChatInputMode.MessageReadonly,
-                    ChatInputMode.MessageEdit
-                  ].includes(mode) && 'px-2'
-                )}
-                showFileSelector={
-                  ![ChatInputMode.MessageReadonly].includes(mode)
-                }
-                selectedFiles={selectedFiles}
-                onSelectedFilesChange={handleSelectedFiles}
-                onOpenChange={isOpen => !isOpen && focusOnEditor()}
-              />
-            </motion.div>
-          )}
-        </AnimatePresence>
+        <AnimatedFileAttachments
+          mode={mode}
+          conversation={conversation}
+          setConversation={setConversation}
+          onFocusEditor={focusOnEditor}
+        />
 
         <motion.div
           layout="preserve-aspect"
@@ -258,6 +259,8 @@ const _ChatInput: FC<ChatInputProps> = ({
               [ChatInputMode.MessageReadonly].includes(mode) &&
                 'min-h-0 min-w-0 h-auto w-auto'
             )}
+            onPasteImage={handlePasteImage}
+            onDropFiles={handleDropFiles}
           />
 
           <AnimatePresence mode="wait">
@@ -292,7 +295,7 @@ const _ChatInput: FC<ChatInputProps> = ({
                     variant="outline"
                     disabled={sendButtonDisabled}
                     size="xs"
-                    className="ml-auto"
+                    className="ml-auto rounded-md"
                     onClick={handleSend}
                     tooltip="You can use ⌘↩ to send message"
                   >
@@ -310,3 +313,88 @@ const _ChatInput: FC<ChatInputProps> = ({
 }
 
 export const ChatInput = WithPluginProvider(_ChatInput)
+
+interface AnimatedFileAttachmentsProps {
+  mode: ChatInputMode
+  conversation: Conversation
+  setConversation: Updater<Conversation>
+  onFocusEditor: () => void
+}
+
+export const AnimatedFileAttachments: React.FC<
+  AnimatedFileAttachmentsProps
+> = ({ mode, conversation, setConversation, onFocusEditor }) => {
+  const selectedFiles = conversation?.state?.selectedFilesFromFileSelector || []
+  const setSelectedFiles = (files: FileInfo[]) => {
+    setConversation(draft => {
+      if (!draft.state) {
+        draft.state = new ConversationEntity().entity.state
+      }
+      draft.state.selectedFilesFromFileSelector = removeDuplicates(files, [
+        'fullPath'
+      ])
+    })
+  }
+
+  const selectedOtherItems: FileAttachmentOtherItem[] =
+    conversation.state?.selectedImagesFromOutsideUrl?.map(
+      img =>
+        ({
+          id: img.url,
+          label: img.name || 'image',
+          type: 'image',
+          icon: <FileIcon className="size-2.5 mr-1" filePath="example.png" />,
+          item: img,
+          previewConfig: {
+            type: 'image',
+            url: img.url
+          }
+        }) satisfies FileAttachmentOtherItem
+    )
+
+  const setSelectedOtherItems = (items: FileAttachmentOtherItem[]) => {
+    setConversation(draft => {
+      const selectedImages: ImageInfo[] = []
+      items.forEach(item => {
+        if (item.type === 'image') {
+          selectedImages.push(item.item as ImageInfo)
+        }
+      })
+
+      draft.state.selectedImagesFromOutsideUrl = removeDuplicates(
+        selectedImages,
+        ['url']
+      )
+    })
+  }
+
+  if ([ChatInputMode.MessageReadonly].includes(mode)) {
+    return null
+  }
+
+  return (
+    <AnimatePresence mode="wait">
+      <motion.div
+        layout="preserve-aspect"
+        initial={{ opacity: 1, height: 'auto' }}
+        exit={{ opacity: 0, height: 0 }}
+        transition={{ duration: 0.3, ease: 'easeInOut' }}
+        style={{ willChange: 'auto' }}
+      >
+        <FileAttachments
+          className={cn(
+            [ChatInputMode.MessageReadonly, ChatInputMode.MessageEdit].includes(
+              mode
+            ) && 'px-2'
+          )}
+          showFileSelector={![ChatInputMode.MessageReadonly].includes(mode)}
+          selectedFiles={selectedFiles}
+          selectedOtherItems={selectedOtherItems}
+          onSelectedFilesChange={setSelectedFiles}
+          onSelectedOtherItemsChange={setSelectedOtherItems}
+          onOpenChange={isOpen => !isOpen && onFocusEditor()}
+        />
+      </motion.div>
+    </AnimatePresence>
+  )
+}

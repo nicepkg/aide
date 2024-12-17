@@ -1,34 +1,50 @@
 import type { Conversation } from '@shared/entities'
+import type {
+  GetAgentState,
+  GetMentionState
+} from '@shared/plugins/base/base-to-state'
 import type { ChatStrategyProvider } from '@shared/plugins/base/server/create-provider-manager'
-import { PluginId } from '@shared/plugins/base/types'
 
-import type { TerminalCommand, TerminalPluginState } from '../../types'
+import { TerminalToState } from '../../terminal-mentions-to-state'
+import type { TerminalCommand } from '../../types'
+
+interface ConversationWithStateProps {
+  conversation: Conversation
+  mentionState: GetMentionState<TerminalToState>
+  agentState: GetAgentState<TerminalToState>
+}
 
 export class TerminalChatStrategyProvider implements ChatStrategyProvider {
+  private createConversationWithStateProps(
+    conversation: Conversation
+  ): ConversationWithStateProps {
+    const terminalToState = new TerminalToState(conversation)
+    const mentionState = terminalToState.toMentionsState()
+    const agentState = terminalToState.toAgentsState()
+
+    return { conversation, mentionState, agentState }
+  }
+
   async buildContextMessagePrompt(conversation: Conversation): Promise<string> {
-    const state = conversation.pluginStates?.[PluginId.Terminal] as
-      | Partial<TerminalPluginState>
-      | undefined
+    const props = this.createConversationWithStateProps(conversation)
 
-    if (!state) return ''
-
-    const terminalLogsPrompt = this.buildTerminalLogsPrompt(state)
+    const terminalLogsPrompt = this.buildTerminalLogsPrompt(props)
 
     const prompts = [terminalLogsPrompt].filter(Boolean)
 
     return prompts.join('\n\n')
   }
 
-  private buildTerminalLogsPrompt(state: Partial<TerminalPluginState>): string {
-    const { selectedTerminalsFromEditor = [] } = state
+  private buildTerminalLogsPrompt(props: ConversationWithStateProps): string {
+    const { mentionState } = props
 
-    if (!selectedTerminalsFromEditor.length) return ''
+    if (!mentionState?.selectedTerminals.length) return ''
 
     let terminalContent = `
 ## Terminal Logs
 `
 
-    selectedTerminalsFromEditor.forEach(terminal => {
+    mentionState.selectedTerminals.forEach(terminal => {
       terminalContent += `
 Terminal: ${terminal.name}
 ${terminal.commands.map(cmd => this.buildTerminalCommandPrompt(cmd)).join('\n')}

@@ -7,6 +7,7 @@ import { pkg } from '@shared/utils/pkg'
 
 import type { WebPluginState } from '../types'
 import { WebChatStrategyProvider } from './chat-strategy/web-chat-strategy-provider'
+import { WebMentionUtilsProvider } from './web-mention-utils-provider'
 
 export class WebServerPlugin implements ServerPlugin<WebPluginState> {
   id = PluginId.Web
@@ -21,6 +22,11 @@ export class WebServerPlugin implements ServerPlugin<WebPluginState> {
     this.context.registerProvider(
       'chatStrategy',
       () => new WebChatStrategyProvider()
+    )
+
+    this.context.registerProvider(
+      'mentionUtils',
+      () => new WebMentionUtilsProvider()
     )
   }
 

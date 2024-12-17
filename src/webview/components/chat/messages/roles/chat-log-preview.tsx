@@ -1,6 +1,7 @@
 import { FC, type ReactNode } from 'react'
 import { LightningBoltIcon } from '@radix-ui/react-icons'
 import type { Conversation, ConversationLog } from '@shared/entities'
+import { toLogWithAgent } from '@shared/plugins/base/base-to-state'
 import { Card } from '@webview/components/ui/card'
 import { ShineBorder } from '@webview/components/ui/shine-border'
 import {
@@ -54,7 +55,8 @@ export const ChatLogPreview: FC<{
 export const ChatAIMessageLogPreview: FC<{ conversation: Conversation }> = ({
   conversation
 }) => {
-  const logs = conversation.logs || []
+  const logs = toLogWithAgent(conversation)
+
   const customRenderLogPreview = usePluginCustomRenderLogPreview()
 
   if (logs.length === 0) return null
@@ -63,9 +65,11 @@ export const ChatAIMessageLogPreview: FC<{ conversation: Conversation }> = ({
     <div className="mt-2 space-y-2">
       {logs.map((log, index) => (
         <div key={index}>
-          {customRenderLogPreview?.({
-            log
-          }) || <ChatLogPreview log={log} />}
+          {log.agent && customRenderLogPreview ? (
+            customRenderLogPreview({ log })
+          ) : (
+            <ChatLogPreview log={log} />
+          )}
         </div>
       ))}
     </div>

@@ -8,15 +8,9 @@ import {
 } from '@shared/entities'
 import { cloneDeep } from 'es-toolkit'
 
-import type { BaseStrategyOptions } from '../../base-strategy'
+import type { BaseStrategyOptions } from './base-strategy'
 
-export enum ChatGraphNodeName {
-  Agent = 'agent',
-  Tools = 'tools',
-  Generate = 'generate'
-}
-
-export const chatGraphState = Annotation.Root({
+export const baseGraphStateConfig = {
   messages: Annotation<BaseMessage[]>({
     reducer: (x, y) => x.concat(y),
     default: () => []
@@ -28,28 +22,27 @@ export const chatGraphState = Annotation.Root({
     reducer: (x, y) => y ?? x,
     default: () => [new ConversationEntity({ role: 'ai' }).entity]
   }),
-  shouldContinue: Annotation<boolean>({
-    reducer: (x, y) => y ?? x,
-    default: () => true
-  }),
   abortController: Annotation<AbortController | null>({
     reducer: (x, y) => y ?? x,
     default: () => new AbortController()
   })
-})
+}
 
-export type ChatGraphState = typeof chatGraphState.State
+export const baseGraphState = Annotation.Root(baseGraphStateConfig)
 
-export type ChatGraphNode = (
-  state: ChatGraphState
-) => Promise<Partial<ChatGraphState>>
+export type BaseGraphState = typeof baseGraphState.State
 
-export type CreateChatGraphNode = (
-  options: BaseStrategyOptions
-) => ChatGraphNode
+export type BaseGraphNode<State extends BaseGraphState = BaseGraphState> = (
+  state: State
+) => Promise<Partial<State>>
 
-export const chatGraphStateEventName = 'stream-chat-graph-state'
-export const dispatchChatGraphState = (state: Partial<ChatGraphState>) => {
+export type CreateBaseGraphNode<
+  StrategyOptions extends BaseStrategyOptions = BaseStrategyOptions,
+  State extends BaseGraphState = BaseGraphState
+> = (strategyOptions: StrategyOptions) => BaseGraphNode<State>
+
+export const baseGraphStateEventName = 'stream-base-graph-state'
+export const dispatchBaseGraphState = (state: Partial<BaseGraphState>) => {
   const deepClonedState = cloneDeep(state)
-  dispatchCustomEvent(chatGraphStateEventName, deepClonedState)
+  dispatchCustomEvent(baseGraphStateEventName, deepClonedState)
 }

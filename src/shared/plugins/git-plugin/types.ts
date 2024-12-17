@@ -1,3 +1,19 @@
+import type { Mention } from '@shared/entities'
+
+import { PluginId } from '../base/types'
+
+export enum GitMentionType {
+  Git = `${PluginId.Git}#git`,
+  GitCommit = `${PluginId.Git}#git-commit`,
+  GitDiff = `${PluginId.Git}#git-diff`,
+  GitPR = `${PluginId.Git}#git-pr`
+}
+
+export type GitCommitMention = Mention<GitMentionType.GitCommit, GitCommit>
+export type GitDiffMention = Mention<GitMentionType.GitDiff, GitDiff>
+export type GitPRMention = Mention<GitMentionType.GitPR, GitDiff>
+export type GitMention = GitCommitMention | GitDiffMention | GitPRMention
+
 export interface GitDiff {
   /**
    * @example '.github/workflows/ci.yml'
@@ -45,8 +61,4 @@ export interface GitCommit {
   date: string
 }
 
-export interface GitPluginState {
-  gitCommitsFromEditor: GitCommit[]
-  gitDiffWithMainBranchFromEditor: GitDiff | null
-  gitDiffOfWorkingStateFromEditor: GitDiff | null
-}
+export interface GitPluginState {}

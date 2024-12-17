@@ -2,6 +2,7 @@ import { AideKeyUsageStatusBarRegister } from './aide-key-usage-statusbar-regist
 import { AutoOpenCorrespondingFilesRegister } from './auto-open-corresponding-files-register'
 import { BaseRegister } from './base-register'
 import { CodebaseWatcherRegister } from './codebase-watcher-register'
+import { ControllerRegister } from './controller-register'
 import { InlineDiffRegister } from './inline-diff-register'
 import { ModelRegister } from './model-register'
 import { RegisterManager } from './register-manager'
@@ -22,6 +23,7 @@ export const setupRegisters = async (registerManager: RegisterManager) => {
     InlineDiffRegister,
     TerminalWatcherRegister,
     ServerPluginRegister,
+    ControllerRegister,
     WebviewRegister,
     ModelRegister,
     CodebaseWatcherRegister
