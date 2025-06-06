@@ -41,11 +41,6 @@
   // "typescript.inlayHints.propertyDeclarationTypes.enabled": true,
   "typescript.inlayHints.parameterTypes.enabled": true,
   // "typescript.inlayHints.functionLikeReturnTypes.enabled": true,
-  "workbench.colorCustomizations": {
-    "activityBar.background": "#0E3140",
-    "titleBar.activeBackground": "#14455A",
-    "titleBar.activeForeground": "#F8FCFD"
-  },
   "cSpell.words": [
     "allowtransparency",
     "autoplay",
