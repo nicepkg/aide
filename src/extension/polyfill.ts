@@ -1,9 +1,8 @@
 const enableFetchPolyfill = async () => {
   if (!globalThis.fetch) {
     // if globalThis.fetch is not available, we use undici
-    const { fetch, FormData, Headers, Request, Response, File } = await import(
-      'undici'
-    )
+    const { fetch, FormData, Headers, Request, Response, File } =
+      await import('undici')
 
     Object.assign(globalThis, {
       fetch,
