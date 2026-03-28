@@ -2,7 +2,7 @@
 import { getConfigKey } from '@extension/config'
 import { t } from '@extension/i18n'
 
-export type ModelUrlType = 'openai' | 'azure-openai' | 'anthropic'
+export type ModelUrlType = 'openai' | 'azure-openai' | 'anthropic' | 'minimax'
 export const parseModelBaseUrl = async (): Promise<{
   urlType: ModelUrlType
   url: string
@@ -20,7 +20,7 @@ export const parseModelBaseUrl = async (): Promise<{
 
   // Use regexp to parse the urlType
   const regex =
-    /^(openai|azure-openai|anthropic|copilot)?@?(https?:\/\/[^\s]+)?$/
+    /^(openai|azure-openai|anthropic|minimax|copilot)?@?(https?:\/\/[^\s]+)?$/
   const match = baseUrl.trim().match(regex)
 
   if (match) {

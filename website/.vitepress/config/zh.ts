@@ -219,6 +219,7 @@ function sidebar(): DefaultTheme.Sidebar {
           { text: '谷歌', link: '/google' },
           { text: '讯飞', link: '/iflytek' },
           { text: 'LocalAI', link: '/local-ai' },
+          { text: 'MiniMax', link: '/minimax' },
           { text: 'Ollama', link: '/ollama' },
           { text: 'OpenAI', link: '/openai' },
           { text: '通义千问', link: '/qwen' },

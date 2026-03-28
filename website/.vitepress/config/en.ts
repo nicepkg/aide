@@ -184,6 +184,7 @@ function sidebar(): DefaultTheme.Sidebar {
           { text: 'Google', link: '/google' },
           { text: 'IFlytek', link: '/iflytek' },
           { text: 'LocalAI', link: '/local-ai' },
+          { text: 'MiniMax', link: '/minimax' },
           { text: 'Ollama', link: '/ollama' },
           { text: 'OpenAI', link: '/openai' },
           { text: 'Qwen', link: '/qwen' },

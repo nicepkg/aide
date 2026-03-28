@@ -9,9 +9,9 @@ export interface Storage {
   readonly length: number
 }
 
-export class StateStorage<T extends Record<string, any> = Record<string, any>>
-  implements Storage
-{
+export class StateStorage<
+  T extends Record<string, any> = Record<string, any>
+> implements Storage {
   state: T
 
   createInitState: () => T
